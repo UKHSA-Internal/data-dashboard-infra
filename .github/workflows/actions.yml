@@ -33,9 +33,9 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Terraform Init
-        uses: hashicorp/terraform-github-actions/init@v0.4.0
+        uses: hashicorp/terraform-github-actions/init@v0.8.0
         env:
           TF_ACTION_WORKING_DIR: "terraform"
 
       - name: Terraform Validate
-        uses: hashicorp/terraform-github-actions/validate@v0.3.7
+        uses: hashicorp/terraform-github-actions/validate@v0.8.0
