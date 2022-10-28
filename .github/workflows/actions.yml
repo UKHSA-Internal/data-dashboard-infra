@@ -43,5 +43,10 @@ jobs:
         id: init
         run: terraform init
      
-      #- name: Terraform Validate
-      #  uses: hashicorp/terraform-github-actions/validate@v0.8.0
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply
