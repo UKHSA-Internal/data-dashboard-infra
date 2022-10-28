@@ -9,6 +9,9 @@ env:
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
+defaults:
+  run:
+    working-directory: terraform
 jobs:
   #S3PackageUpload:
   #  runs-on: ubuntu-latest
@@ -35,8 +38,6 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-        env:
-          TF_ACTION_WORKING_DIR: "terraform"
 
       - name: Terraform Init
         id: init
