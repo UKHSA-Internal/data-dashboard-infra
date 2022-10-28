@@ -30,12 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
-        uses: hashicorp/setup-terraform@v2
-        env:
-          TF_ACTION_WORKING_DIR: "terraform"
-
+        id: init
+        run: terraform init
+     
       #- name: Terraform Validate
       #  uses: hashicorp/terraform-github-actions/validate@v0.8.0
