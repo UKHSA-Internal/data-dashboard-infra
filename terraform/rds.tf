@@ -15,7 +15,6 @@ resource "aws_db_instance" "app_rds" {
   instance_class            = var.rds_instance_class
   username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
-  vpc_security_group_ids    = data.aws_security_groups.app_sg.ids
   storage_type              = var.rds_storage_type
   db_subnet_group_name      = "main"
   skip_final_snapshot       = true
