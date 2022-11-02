@@ -7,6 +7,7 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 
+
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds"
   allocated_storage         = var.rds_allocated_storage
@@ -16,7 +17,7 @@ resource "aws_db_instance" "app_rds" {
   username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
-  db_subnet_group_name      = "default"
+  #db_subnet_group_name      = "main"
   skip_final_snapshot       = true
 }
 
