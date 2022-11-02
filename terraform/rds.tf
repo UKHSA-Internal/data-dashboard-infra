@@ -7,19 +7,24 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 
-data "aws_vpcs" "wp_vpc" {}
-
-data "aws_vpc" "foo" {
-  id    = "vpc-015357d5ad719a7a2"
+# Networking
+data "aws_vpc" "app_vpc" {
+  id = var.vpc_id
 }
-
-
-data "aws_subnet_ids" "example" {
-  vpc_id = "vpc-015357d5ad719a7a2"
+data "aws_subnet_ids" "app_subnet" {
+  vpc_id = data.aws_vpc.app_vpc.id
 }
+data "aws_security_groups" "app_sg" {
+  filter {
+    name   = "group-name"
+    values = ["default"]
+  }
 
-
-
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.app_vpc.id]
+  }
+}
 
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds"
