@@ -7,6 +7,16 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 
+data "aws_vpcs" "wp_vpc" {}
+
+variable "vpc_id" {default = data.aws_vpc[0].id}
+
+data "aws_subnet_ids" "example" {
+  vpc_id = var.vpc_id
+}
+
+
+
 
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds"
