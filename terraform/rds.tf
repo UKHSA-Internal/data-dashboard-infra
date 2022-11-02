@@ -12,7 +12,7 @@ data "aws_vpcs" "wp_vpc" {}
 
 
 data "aws_subnet_ids" "example" {
-  vpc_id = var.vpc_id
+  vpc_id = data.aws_vpc.aws_vpcs[0].id
 }
 
 
