@@ -10,12 +10,13 @@ data "aws_secretsmanager_secret_version" "current" {
 data "aws_vpcs" "wp_vpc" {}
 
 data "aws_vpc" "foo" {
-  arn = "arn:aws:ec2:eu-west-2:574290571051:vpc/vpc-015357d5ad719a7a2"
+  count = length(data.aws_vpcs.wp_vpc.ids)
+  id    = tolist(data.aws_vpcs.wp_vpc.ids)[0]
 }
 
 
 data "aws_subnet_ids" "example" {
-  vpc_id = data.aws_vpc.foo.id
+  vpc_id = data.aws_vpc.foo[0].id
 }
 
 
