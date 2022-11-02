@@ -9,10 +9,14 @@ data "aws_secretsmanager_secret_version" "current" {
 
 data "aws_vpcs" "wp_vpc" {}
 
+data "aws_vpc" "foo" {
+  count = length(data.aws_vpcs.wp_vpc.ids)
+  id    = tolist(data.aws_vpcs.wp_vpc.ids)[count.index]
+}
 
 
 data "aws_subnet_ids" "example" {
-  vpc_id = data.aws_vpc.aws_vpcs[0].id
+  vpc_id = data.aws_vpc.aws_vpcs[count.index].id
 }
 
 
