@@ -1,0 +1,23 @@
+# Postgres database RDS
+data "aws_secretsmanager_secret" "secrets" {
+  arn = "arn:aws:secretsmanager:eu-west-2:574290571051:secret:rds/postgres-e9vo14"
+}
+
+data "aws_secretsmanager_secret_version" "current" {
+  secret_id = data.aws_secretsmanager_secret.secrets.id
+}
+
+resource "aws_db_instance" "app_rds" {
+  identifier                = "${var.project_name}-1-rds"
+  allocated_storage         = var.rds_allocated_storage
+  engine                    = var.rds_engine
+  engine_version            = var.rds_engine_version
+  instance_class            = var.rds_instance_class
+  username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
+  password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
+  vpc_security_group_ids    = data.aws_security_groups.app_sg.ids
+  storage_type              = var.rds_storage_type
+  db_subnet_group_name      = "main"
+  skip_final_snapshot       = true
+}
+
