@@ -16,7 +16,7 @@ data "aws_vpc" "foo" {
 
 
 data "aws_subnet_ids" "example" {
-  vpc_id = data.aws_vpc.wp_vpc[count.index].id
+  vpc_id = data.aws_vpc.foo[count.index].id
 }
 
 
