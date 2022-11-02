@@ -11,12 +11,12 @@ data "aws_vpcs" "wp_vpc" {}
 
 data "aws_vpc" "foo" {
   count = length(data.aws_vpcs.wp_vpc.ids)
-  id    = tolist(data.aws_vpcs.wp_vpc.ids)[count.index]
+  id    = tolist(data.aws_vpcs.wp_vpc.ids)[0]
 }
 
 
 data "aws_subnet_ids" "example" {
-  vpc_id = data.aws_vpc.foo[count.index].id
+  vpc_id = data.aws_vpc.foo[0].id
 }
 
 
