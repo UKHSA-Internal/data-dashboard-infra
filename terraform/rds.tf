@@ -9,7 +9,7 @@ data "aws_secretsmanager_secret_version" "current" {
 
 data "aws_vpcs" "wp_vpc" {}
 
-variable "vpc_id" {default = data.aws_vpc[0].id}
+
 
 data "aws_subnet_ids" "example" {
   vpc_id = var.vpc_id
