@@ -8,11 +8,9 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 # Networking
-data "aws_vpc" "app_vpc" {
-  id = var.vpc_id
-}
+
 data "aws_subnet_ids" "app_subnet" {
-  vpc_id = data.aws_vpc.app_vpc.id
+  vpc_id = var.vpc_id
 }
 data "aws_security_groups" "app_sg" {
   filter {
@@ -22,7 +20,7 @@ data "aws_security_groups" "app_sg" {
 
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.app_vpc.id]
+    values = [var.vpc_id]
   }
 }
 
