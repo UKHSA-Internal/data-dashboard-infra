@@ -12,17 +12,6 @@ data "aws_secretsmanager_secret_version" "current" {
 data "aws_subnet_ids" "app_subnet" {
   vpc_id = var.vpc_id
 }
-data "aws_security_groups" "app_sg" {
-  filter {
-    name   = "group-name"
-    values = ["default"]
-  }
-
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
-}
 
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds"
