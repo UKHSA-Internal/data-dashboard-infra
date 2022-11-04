@@ -8,6 +8,7 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 # Networking
+variable "vpc_id" {default = "vpc-015357d5ad719a7a2"}
 
 data "aws_subnets" "app_subnets"{
   filter{
@@ -25,7 +26,7 @@ resource "aws_db_instance" "app_rds" {
   username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
-  db_subnet_group_name      = "main"
+  #db_subnet_group_name      = "main"
   skip_final_snapshot       = true
 }
 
