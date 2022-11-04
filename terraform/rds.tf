@@ -11,6 +11,7 @@ data "aws_secretsmanager_secret_version" "current" {
 variable "vpc_id" {default = "vpc-015357d5ad719a7a2"}
 variable "aws_region" { default = "eu-west-2" }
 variable "aws_profile" {default = "default"}
+
 provider "aws" {
   region  = var.aws_region
   profile = var.aws_profile
