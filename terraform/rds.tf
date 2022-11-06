@@ -13,6 +13,7 @@ variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
 
 data "aws_subnet" "subnet_1" {
   id = var.subnet_id_1
+  default_for_az = true
 }
 
 data "aws_subnet" "subnet_2" {
