@@ -7,8 +7,21 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 
-# Networking
-#variable "vpc_id" {default = "vpc-015357d5ad719a7a2"}
+variable "subnet_id_1" {default = "subnet-0e46d470a44e33e79"}
+variable "subnet_id_2" {default = "subnet-078da0d9d54aeed64"}
+variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
+
+data "aws_subnet" "selected" {
+  id = var.subnet_id_1
+}
+
+data "aws_subnet" "selected" {
+  id = var.subnet_id_2
+}
+
+data "aws_subnet" "selected" {
+  id = var.subnet_id_3
+}
 
 
 data "aws_subnets" "app_subnets"{

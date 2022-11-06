@@ -1,6 +1,6 @@
 
 # Variables
-variable "vpc_id" {}
+variable "vpc_id" {default = "vpc-015357d5ad719a7a2"}
 variable "project_name" {default = "wp-dashboard"}
 variable "launch_type" { default = "FARGATE" }
 #
