@@ -11,16 +11,19 @@ variable "subnet_id_1" {default = "subnet-0e46d470a44e33e79"}
 variable "subnet_id_2" {default = "subnet-078da0d9d54aeed64"}
 variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
 
-data "aws_subnet" "selected" {
+data "aws_subnet" "subnet_1" {
   id = var.subnet_id_1
+  arn = "arn:aws:ec2:eu-west-2:574290571051:subnet/subnet-0e46d470a44e33e79"
 }
 
-data "aws_subnet" "selected" {
+data "aws_subnet" "subnet_2" {
   id = var.subnet_id_2
+  arn = "arn:aws:ec2:eu-west-2:574290571051:subnet/subnet-078da0d9d54aeed64"
 }
 
-data "aws_subnet" "selected" {
+data "aws_subnet" "subnet_3" {
   id = var.subnet_id_3
+  arn = "arn:aws:ec2:eu-west-2:574290571051:subnet/subnet-0b9f20fcc12e0d218"
 }
 
 
