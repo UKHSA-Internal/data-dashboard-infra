@@ -37,28 +37,18 @@ resource "aws_db_subnet_group" "default" {
   subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
 }
 
-output "rds_username" {
-  value = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
-  sensitive = false
+
+
+resource "aws_db_instance" "app_rds" {
+  identifier                = "${var.project_name}-rds"
+  allocated_storage         = var.rds_allocated_storage
+  engine                    = var.rds_engine
+  engine_version            = var.rds_engine_version
+  instance_class            = var.rds_instance_class
+  username                  = "wp_user"#jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
+  password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
+  storage_type              = var.rds_storage_type
+  db_subnet_group_name      = "${aws_db_subnet_group.default.id}"
+  skip_final_snapshot       = true
 }
-
-output "rds_password" {
-  value = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
-  sensitive = false
-}
-
-
-
-#resource "aws_db_instance" "app_rds" {
-#  identifier                = "${var.project_name}-rds"
-#  allocated_storage         = var.rds_allocated_storage
-#  engine                    = var.rds_engine
-#  engine_version            = var.rds_engine_version
-#  instance_class            = var.rds_instance_class
-#  username                  = "testing"#jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
-#  password                  = "eyr4ggy4guwhreut48"#jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
-#  storage_type              = var.rds_storage_type
-#  db_subnet_group_name      = "${aws_db_subnet_group.default.id}"
-#  skip_final_snapshot       = true
-#}
 
