@@ -31,7 +31,7 @@ data "aws_subnets" "app_subnets"{
   }
 }
 
-resource "aws_db_subnet_group" "default" {
+resource "aws_db_subnet_group" "default_1" {
   name        = "main"
   description = "Terraform example RDS subnet group"
   subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
