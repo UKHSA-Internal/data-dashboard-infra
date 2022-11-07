@@ -39,10 +39,12 @@ resource "aws_db_subnet_group" "default" {
 
 output "rds_username" {
   value = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
+  sensitive = true
 }
 
 output "rds_password" {
   value = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
+  sensitive = true
 
 }
 
