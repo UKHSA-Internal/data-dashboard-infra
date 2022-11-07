@@ -43,8 +43,8 @@ resource "aws_db_instance" "app_rds" {
   engine                    = var.rds_engine
   engine_version            = var.rds_engine_version
   instance_class            = var.rds_instance_class
-  username                  = "${jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]}"
-  password                  = "${jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]}"
+  username                  = "testing"#jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
+  password                  = "eyr4ggy4guwhreut48"#jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
   db_subnet_group_name      = "${aws_db_subnet_group.default.id}"
   skip_final_snapshot       = true
