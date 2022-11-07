@@ -46,7 +46,7 @@ resource "aws_db_instance" "app_rds" {
   username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
-  db_subnet_group_name      = "${aws_db_subnet_group.default.name}"
+  db_subnet_group_name      = "wp-subnet-group"
   skip_final_snapshot       = true
 }
 
