@@ -13,7 +13,6 @@ variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
 
 data "aws_subnet" "subnet_1" {
   id = var.subnet_id_1
-  default_for_az = true
 }
 
 data "aws_subnet" "subnet_2" {
@@ -32,6 +31,12 @@ data "aws_subnets" "app_subnets"{
   }
 }
 
+resource "aws_db_subnet_group" "default" {
+  name        = "wp-subnet-group"
+  description = "Terraform example RDS subnet group"
+  subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+}
+
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds"
   allocated_storage         = var.rds_allocated_storage
@@ -41,7 +46,7 @@ resource "aws_db_instance" "app_rds" {
   username                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
-  #db_subnet_group_name      = "main"
+  db_subnet_group_name      = "${aws_db_subnet_group.default.id}"
   skip_final_snapshot       = true
 }
 
