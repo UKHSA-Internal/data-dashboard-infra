@@ -106,6 +106,7 @@ resource "aws_iam_policy" "devops_github_actions_policy" {
                 "iam:ListPolicyVersions",
                 "iam:DeletePolicy",
                 "iam:DetachRolePolicy",
+                "iam:PassRole",
                 "ecs:RegisterTaskDefinition"
             ],
             "Resource": "*"
