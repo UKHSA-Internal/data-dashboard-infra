@@ -72,6 +72,7 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
 }
 
 data "aws_iam_role" "devops_github_actions" {
+  name = "devops_github_actions"
   arn = "arn:aws:iam::574290571051:role/devops_github_actions"
 }
 
