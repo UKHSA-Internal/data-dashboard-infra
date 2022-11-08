@@ -70,3 +70,52 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
   role       = aws_iam_role.role.name
   policy_arn = aws_iam_policy.policy.arn
 }
+
+data "aws_iam_role" "devops_github_actions" {
+  arn = "arn:aws:iam::574290571051:role/devops_github_actions"
+}
+
+resource "aws_iam_policy" "devops_github_actions_policy" {
+  name        = "devops_github_actions_policy"
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetResourcePolicy",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+                "s3:*",
+                "secretsmanager:ListSecretVersionIds",
+                "rds:*",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeSubnets",
+                "iam:AttachRolePolicy",
+                "iam:CreateRole",
+                "iam:GetRole",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:CreatePolicy",
+                "iam:ListInstanceProfilesForRole",
+                "iam:GetPolicy",
+                "iam:DeleteRole",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:DeletePolicy",
+                "ecs:RegisterTaskDefinition"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
+
+
+resource "aws_iam_role_policy_attachment" "test-attach" {
+  role       = data.aws_iam_role.devops_github_actions.id
+  policy_arn = aws_iam_policy.devops_github_actions_policy.arn
+}
