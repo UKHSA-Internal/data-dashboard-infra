@@ -71,12 +71,36 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
   policy_arn = aws_iam_policy.policy.arn
 }
 
-data "aws_iam_role" "devops_github_actions" {
-  name = "devops_github_actions"
+#data "aws_iam_role" "devops_github_actions" {
+#  name = "devops_github_actions"
+#}
+
+resource "aws_iam_role" "devops_github_actions_role" {
+  name = "devops_github_actions_wp_infra"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::574290571051:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-infra:*"
+                }
+            }
+        }
+    ]
+}
+EOF
 }
 
 resource "aws_iam_policy" "devops_github_actions_policy" {
-  name        = "devops_github_actions_33"
+  name        = "devops_github_actions_infra_policy"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -120,6 +144,6 @@ EOF
 
 
 resource "aws_iam_role_policy_attachment" "devops_github_actions_attach" {
-  role       = data.aws_iam_role.devops_github_actions.id
+  role       = aws_iam_role.devops_github_actions_role.name
   policy_arn = aws_iam_policy.devops_github_actions_policy.arn
 }

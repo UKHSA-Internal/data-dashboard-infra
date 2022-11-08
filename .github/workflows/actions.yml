@@ -51,7 +51,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions
+          role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions_wp_api
           role-session-name: testsession2
           aws-region: ${{ env.AWS_REGION }}
 
