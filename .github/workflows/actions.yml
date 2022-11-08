@@ -51,8 +51,8 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions_33
-          role-session-name: testsession
+          role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions
+          role-session-name: testsession2
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
