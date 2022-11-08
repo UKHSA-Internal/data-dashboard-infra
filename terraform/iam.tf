@@ -35,7 +35,7 @@ resource "aws_iam_role" "role" {
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringLike": {
-                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-api:*"
+                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-infra:*"
                 }
             }
         }
@@ -55,7 +55,31 @@ resource "aws_iam_policy" "policy" {
     {
       "Action": [
         "rds:*",
-        "ecr:*"
+        "ecr:*",
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+        "s3:*",
+        "secretsmanager:ListSecretVersionIds",
+        "rds:*",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "iam:AttachRolePolicy",
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:CreatePolicy",
+        "iam:ListInstanceProfilesForRole",
+        "iam:GetPolicy",
+        "iam:DeleteRole",
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions",
+        "iam:DeletePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PassRole",
+        "iam:CreatePolicyVersion",
+        "ecs:RegisterTaskDefinition"
 
       ],
       "Effect": "Allow",
