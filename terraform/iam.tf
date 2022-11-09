@@ -76,7 +76,7 @@ data "aws_iam_role" "devops_github_actions" {
 }
 
 resource "aws_iam_policy" "devops_github_actions_policy" {
-  name        = "devops_github_actions"
+  name        = "devops_github_actions_33"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -108,7 +108,6 @@ resource "aws_iam_policy" "devops_github_actions_policy" {
                 "iam:DetachRolePolicy",
                 "iam:PassRole",
                 "iam:CreatePolicyVersion",
-                "ecs:DescribeTaskDefinition",
                 "ecs:RegisterTaskDefinition"
                 
             ],
