@@ -40,7 +40,7 @@ resource "aws_db_subnet_group" "default" {
 
 
 resource "aws_db_instance" "app_rds" {
-  identifier                = "${var.project_name}-rds"
+  identifier                = "${var.project_name}-rds-1"
   db_name                   = "winterpressures"
   allocated_storage         = var.rds_allocated_storage
   engine                    = var.rds_engine
