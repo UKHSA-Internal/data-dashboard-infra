@@ -1,8 +1,9 @@
 
 # Variables
-variable "vpc_id" {}
+variable "vpc_id" {default = "vpc-015357d5ad719a7a2"}
 variable "project_name" {default = "wp-dashboard"}
 variable "launch_type" { default = "FARGATE" }
+variable "aws_region" { default = "eu-west-2" }
 #
 variable "rds_allocated_storage" {default = "10"}
 variable "rds_engine" {default = "postgres"}
