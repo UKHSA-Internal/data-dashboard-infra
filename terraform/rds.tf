@@ -7,38 +7,6 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = data.aws_secretsmanager_secret.secrets.id
 }
 
-variable "subnet_id_1" {default = "subnet-0e46d470a44e33e79"}
-variable "subnet_id_2" {default = "subnet-078da0d9d54aeed64"}
-variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
-
-data "aws_subnet" "subnet_1" {
-  id = var.subnet_id_1
-}
-
-data "aws_subnet" "subnet_2" {
-  id = var.subnet_id_2
-}
-
-data "aws_subnet" "subnet_3" {
-  id = var.subnet_id_3
-}
-
-
-data "aws_subnets" "app_subnets"{
-  filter{
-    name = "vpc-id"
-    values = [var.vpc_id]
-  }
-}
-
-resource "aws_db_subnet_group" "default" {
-  name        = "main"
-  description = "Terraform example RDS subnet group"
-  subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
-}
-
-
-
 resource "aws_db_instance" "app_rds" {
   identifier                = "${var.project_name}-rds-1"
   db_name                   = "winterpressures"
