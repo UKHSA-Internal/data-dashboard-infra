@@ -57,7 +57,7 @@ resource "aws_ecs_service" "wp_api_service" {
   desired_count   = 3 # Setting the number of containers we want deployed to 3
 
    network_configuration {
-    subnets          = ["${aws_default_subnet.default_subnet_a.id}", "${aws_default_subnet.default_subnet_b.id}", "${aws_default_subnet.default_subnet_c.id}"]
+    subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
     assign_public_ip = true # Providing our containers with public IPs
   }
 }
