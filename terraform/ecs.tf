@@ -50,4 +50,17 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
 }
 
 
+resource "aws_ecs_service" "wp_api_service" {
+  name            = "wp-api-service"                             # Naming our first service
+  cluster         = "${aws_ecs_cluster.wp_api_cluster.id}"             # Referencing our created Cluster
+  task_definition = "${aws_ecs_task_definition.wp_api_task.arn}" # Referencing the task our service will spin up
+  launch_type     = "FARGATE"
+  desired_count   = 3 # Setting the number of containers we want deployed to 3
+
+   network_configuration {
+    subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+    assign_public_ip = true # Providing our containers with public IPs
+  }
+}
+
 
