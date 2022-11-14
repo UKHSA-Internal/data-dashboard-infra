@@ -55,7 +55,8 @@ resource "aws_iam_policy" "policy" {
     {
       "Action": [
         "rds:*",
-        "ecr:*"
+        "ecr:*",
+        "ec2:*"
 
       ],
       "Effect": "Allow",
