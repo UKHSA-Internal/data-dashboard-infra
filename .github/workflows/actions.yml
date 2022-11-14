@@ -13,33 +13,6 @@ defaults:
   run:
     working-directory: terraform
 jobs:
-  #S3PackageUpload:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - name: Git clone the repository
-  #      uses: actions/checkout@v3
-  #    - name: configure aws credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions
-  #        role-session-name: testsession
-  #        aws-region: ${{ env.AWS_REGION }}
-  #    # Upload a file to AWS s3
-  #    - name: Copy index.html to s3
-  #      run: |
-  #        aws s3 cp ./README.md s3://${{ env.BUCKET_NAME }}/
-  #deployment:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #  - name: Deploy Stage
-  #    uses: fjogeleit/http-request-action@v1
-  #    with:
-  #      url: 'https://ansible.io/api/v2/job_templates/84/launch/'
-  #      method: 'POST'
-  #      username: ${{ secrets.AWX_USER }}
-  #      password: ${{ secrets.AWX_PASSWORD }}
-  #      customHeaders: '{"Content-Type": "application/json"}'
-  #      data: '{"key_1": "value_1", "key_2": "value_2"}'
   tf_fmt:
     name: Deploy Site
     runs-on: ubuntu-latest
