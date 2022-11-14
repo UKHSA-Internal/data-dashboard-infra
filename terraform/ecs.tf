@@ -1,29 +1,68 @@
-# Task definition
-data "template_file" "django_app" {
-  template = file("./task-definition.json")
-  vars = {
-    app_name       = var.project_name
-    app_image      = "${var.docker_image_name}:${var.docker_image_revision}"
-    app_port       = 8000
-    app_db_address = aws_db_instance.app_rds.address
-    app_db_port    = aws_db_instance.app_rds.port
-    fargate_cpu    = "256"
-    fargate_memory = "512"
-    aws_region     = var.aws_region
+resource "aws_ecs_cluster" "wp_api_cluster" {
+  name = "wp-api-cluster" 
+}
+
+resource "aws_ecs_task_definition" "wp_api_task" {
+  family                   = "wp-api-task" # Naming our first task
+  container_definitions    = <<DEFINITION
+  [
+    {
+      "name": "wp-api-task",
+      "image": "${aws_ecr_repository.ecr_repository_api.repository_url}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ],
+      "memory": 512,
+      "cpu": 256
+    }
+  ]
+  DEFINITION
+  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
+  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
+  memory                   = 512         # Specifying the memory our container requires
+  cpu                      = 256         # Specifying the CPU our container requires
+  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
+}
+
+resource "aws_iam_role" "ecsTaskExecutionRole" {
+  name               = "ecsTaskExecutionRole"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+}
+
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
   }
 }
-resource "aws_ecs_task_definition" "django_app" {
-  container_definitions    = data.template_file.django_app.rendered
-  family                   = var.project_name
-  requires_compatibilities = [var.launch_type]
-  task_role_arn            = aws_iam_role.app_execution_role.arn
-  execution_role_arn       = aws_iam_role.app_execution_role.arn
 
-  cpu          = "256"
-  memory       = "512"
-  network_mode = "awsvpc"
+resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_service_linked_role" "ecs" {
+  aws_service_name = "ecs.amazonaws.com"
+}
 
+resource "aws_ecs_service" "wp_api_service" {
+  name            = "wp-api-service"                             # Naming our first service
+  cluster         = "${aws_ecs_cluster.wp_api_cluster.id}"             # Referencing our created Cluster
+  task_definition = "${aws_ecs_task_definition.wp_api_task.arn}" # Referencing the task our service will spin up
+  launch_type     = "FARGATE"
+  desired_count   = 3 # Setting the number of containers we want deployed to 3
+   network_configuration {
+    subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+    assign_public_ip = true # Providing our containers with public IPs
+  }
+}
 
 
