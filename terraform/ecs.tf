@@ -55,9 +55,7 @@ resource "aws_ecs_service" "wp_api_service" {
   task_definition = "${aws_ecs_task_definition.wp_api_task.arn}" # Referencing the task our service will spin up
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers we want deployed to 3
-  iam_role        = aws_iam_role.ecsTaskExecutionRole.arn
-  depends_on      = [aws_iam_role.ecsTaskExecutionRole.policy]
-
+  
    network_configuration {
     subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
     assign_public_ip = true # Providing our containers with public IPs
