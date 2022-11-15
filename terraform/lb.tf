@@ -8,6 +8,7 @@ resource "aws_alb" "wp_application_load_balancer" {
 
 # Creating a security group for the load balancer:
 resource "aws_security_group" "load_balancer_security_group" {
+  vpc_id      = var.vpc_id
   ingress {
     from_port   = 80 # Allowing traffic in from port 80
     to_port     = 80
