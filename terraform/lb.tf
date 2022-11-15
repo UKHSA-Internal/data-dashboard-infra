@@ -1,5 +1,5 @@
 resource "aws_alb" "wp_application_load_balancer" {
-  name               = "wp-lb" # Naming our load balancer
+  name               = "wp-lb-1" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
   # Referencing the security group
