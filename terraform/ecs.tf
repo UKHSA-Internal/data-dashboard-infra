@@ -54,7 +54,7 @@ resource "aws_iam_service_linked_role" "ecs" {
 }
 
 resource "aws_ecs_service" "wp_api_service" {
-  name            = "wp-api-service"                             # Naming our first service
+  name            = "wp-api-service-1"                             # Naming our first service
   cluster         = "${aws_ecs_cluster.wp_api_cluster.id}"             # Referencing our created Cluster
   task_definition = "${aws_ecs_task_definition.wp_api_task.arn}" # Referencing the task our service will spin up
   launch_type     = "FARGATE"
