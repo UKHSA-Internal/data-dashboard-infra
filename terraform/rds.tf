@@ -8,7 +8,7 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 resource "aws_db_instance" "app_rds" {
-  identifier                = "${var.project_name}-rds-1"
+  identifier                = "${var.project_name}-rds-2"
   db_name                   = "winterpressures"
   allocated_storage         = var.rds_allocated_storage
   engine                    = var.rds_engine
