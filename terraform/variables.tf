@@ -15,6 +15,9 @@ variable "subnet_id_1" {default = "subnet-021cb27db0cd8d3e8"}
 variable "subnet_id_2" {default = "subnet-078da0d9d54aeed64"}
 variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
 
+variable "subnet_id_4" {default = "subnet-0e46d470a44e33e79"}
+
+
 #
 #variable "database_name" {default = "database-2"}
 #variable "database_user" {default = "fargate"}
