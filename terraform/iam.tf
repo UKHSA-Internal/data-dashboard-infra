@@ -56,7 +56,11 @@ resource "aws_iam_policy" "policy" {
       "Action": [
         "rds:*",
         "ecr:*",
-        "ec2:*"
+        "ec2:*",
+        "secretsmanager:ListSecretVersionIds",
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
 
       ],
       "Effect": "Allow",
