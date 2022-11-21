@@ -20,7 +20,7 @@ resource "aws_iam_role" "app_execution_role" {
 EOF
 }
 
-resource "aws_iam_role" "role" {
+resource "aws_iam_role" "api_role" {
   name = "devops_github_actions_wp_api"
 
   assume_role_policy = <<EOF
@@ -44,7 +44,7 @@ resource "aws_iam_role" "role" {
 EOF
 }
 
-resource "aws_iam_policy" "policy" {
+resource "aws_iam_policy" "api_policy" {
   name        = "devops_github_actions_wp_api_policy"
   description = "A test policy"
 
@@ -71,8 +71,58 @@ resource "aws_iam_policy" "policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "test-attach" {
-  role       = aws_iam_role.role.name
-  policy_arn = aws_iam_policy.policy.arn
+resource "aws_iam_role" "frontend_role" {
+  name = "devops_github_actions_wp_frontend"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::574290571051:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-frontend:*"
+                }
+            }
+        }
+    ]
+}
+EOF
 }
 
+resource "aws_iam_policy" "frontend_policy" {
+  name        = "devops_github_actions_wp_frontend_policy"
+  description = "A test policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "rds:*",
+        "ecr:*",
+        "ec2:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "api_attach" {
+  role       = aws_iam_role.api_role.name
+  policy_arn = aws_iam_policy.api_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "frontend_attach" {
+  role       = aws_iam_role.frontend_role.name
+  policy_arn = aws_iam_policy.frontend_policy.arn
+}
