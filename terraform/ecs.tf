@@ -104,8 +104,8 @@ resource "aws_ecs_service" "wp_frontend_service" {
   desired_count   = 3 # Setting the number of containers we want deployed to 3
 
   load_balancer {
-    target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
-    container_name   = "${aws_ecs_task_definition.wp_api_frontend_task.family}"
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-2:574290571051:targetgroup/wp-target-group/abe08abe96988b87"#"${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
+    container_name   = "wp-frontend"#"${aws_ecs_task_definition.wp_api_frontend_task.family}"
     container_port   = 3000 # Specifying the container port
   }
 
