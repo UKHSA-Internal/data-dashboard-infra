@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "wp_api_frontend_task" {
       "portMappings": [
         {
           "containerPort": 80,
-          "hostPort": 3000
+          "hostPort": 80
         }
       ],
       "memory": 512,
