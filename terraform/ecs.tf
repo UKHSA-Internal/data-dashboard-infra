@@ -105,7 +105,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
 
   load_balancer {
     target_group_arn = "arn:aws:elasticloadbalancing:eu-west-2:574290571051:targetgroup/wp-target-group/abe08abe96988b87"#"${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
-    container_name   = "wp-frontend"#"${aws_ecs_task_definition.wp_api_frontend_task.family}"
+    container_name   = "wp-frontend-task"#"${aws_ecs_task_definition.wp_api_frontend_task.family}"
     container_port   = 3000 # Specifying the container port
   }
 
