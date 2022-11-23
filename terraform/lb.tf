@@ -76,6 +76,6 @@ resource "aws_lb_listener" "api_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our tagrte group
+    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our tagrte group
   }
 }
