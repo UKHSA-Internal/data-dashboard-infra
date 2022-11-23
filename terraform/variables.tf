@@ -19,6 +19,10 @@ variable "subnet_id_4" {default = "subnet-0e46d470a44e33e79"}
 variable "subnet_id_5" {default = "subnet-01c72710c3c139ea8"}
 variable "subnet_id_6" {default = "subnet-05b6ba72b4bd1d1b4"}
 
+variable "subnet_id_7" {default = "subnet-0b3dd195a9f7ade77"}
+
+
+
 
 #
 #variable "database_name" {default = "database-2"}
