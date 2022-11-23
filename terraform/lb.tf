@@ -9,7 +9,7 @@ resource "aws_alb" "wp_application_load_balancer" {
 resource "aws_alb" "wp_application_load_balancer_api" {
   name               = "wp-lb-api" # Naming our load balancer
   load_balancer_type = "application"
-  subnets = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+  subnets = [var.subnet_id_1,var.subnet_id_5,var.subnet_id_6]
   # Referencing the security group
   security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
 }
@@ -39,8 +39,9 @@ resource "aws_lb_target_group" "wp_target_group" {
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200,301,302"
+    matcher = "200-400"
     path = "/"
+    interval = 70
   }
 }
 
@@ -51,8 +52,9 @@ resource "aws_lb_target_group" "wp_api_target_group" {
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200,301,302"
+    matcher = "200-400"
     path = "/"
+    interval = 70
   }
 }
 
