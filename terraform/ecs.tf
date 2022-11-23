@@ -90,6 +90,12 @@ resource "aws_ecs_service" "wp_api_service" {
   task_definition = "${aws_ecs_task_definition.wp_api_task.arn}" # Referencing the task our service will spin up
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers we want deployed to 3
+
+    load_balancer {
+    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our target group
+    container_name   = "${aws_ecs_task_definition.wp_api_task.family}"
+    container_port   = 80 # Specifying the container port
+  }
    
   network_configuration {
     subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
@@ -111,7 +117,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
   }
 
   network_configuration {
-    subnets          = [var.subnet_id_7,var.subnet_id_5,var.subnet_id_6]
+    subnets          =[var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
     assign_public_ip = true # Providing our containers with public IPs
   }
 }

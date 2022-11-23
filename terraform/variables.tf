@@ -16,7 +16,7 @@ variable "subnet_id_2" {default = "subnet-078da0d9d54aeed64"}
 variable "subnet_id_3" {default = "subnet-0b9f20fcc12e0d218"}
 
 variable "subnet_id_4" {default = "subnet-0e46d470a44e33e79"}
-variable "subnet_id_5" {default = "subnet-01c72710c3c139ea8"}
+variable "subnet_id_5" {default = "subnet-0cdf4e1f4de658548"}
 variable "subnet_id_6" {default = "subnet-05b6ba72b4bd1d1b4"}
 
 variable "subnet_id_7" {default = "subnet-0b3dd195a9f7ade77"}
