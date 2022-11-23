@@ -16,15 +16,15 @@ data "aws_subnet" "subnet_4" {
   id = var.subnet_id_4
 }
 
-data "aws_subnet" "subnet_4" {
+data "aws_subnet" "subnet_5" {
   id = var.subnet_id_5
 }
 
-data "aws_subnet" "subnet_4" {
+data "aws_subnet" "subnet_6" {
   id = var.subnet_id_6
 }
 
-data "aws_subnet" "subnet_4" {
+data "aws_subnet" "subnet_7" {
   id = var.subnet_id_7
 }
 
