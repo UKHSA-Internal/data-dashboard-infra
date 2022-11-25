@@ -33,7 +33,7 @@ resource "aws_security_group" "load_balancer_security_group" {
 
 resource "aws_lb_target_group" "wp_target_group" {
   name        = "wp-target-group"
-  port        = 80
+  port        = 443
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
@@ -59,7 +59,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer.arn}" # Referencing our load balancer
-  port              = "80"
+  port              = "443"
   protocol          = "HTTP"
 
   default_action {
