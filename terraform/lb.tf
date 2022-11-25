@@ -17,8 +17,8 @@ resource "aws_alb" "wp_application_load_balancer_api" {
 resource "aws_security_group" "load_balancer_security_group" {
   vpc_id      = var.vpc_id
   ingress {
-    from_port   = 443 # Allowing traffic in from port 80
-    to_port     = 443
+    from_port   = 80 # Allowing traffic in from port 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
   }
@@ -33,7 +33,7 @@ resource "aws_security_group" "load_balancer_security_group" {
 
 resource "aws_lb_target_group" "wp_target_group" {
   name        = "wp-target-group"
-  port        = 443
+  port        = 80
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
@@ -59,7 +59,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer.arn}" # Referencing our load balancer
-  port              = "443"
+  port              = "80"
   protocol          = "HTTP"
 
   default_action {
