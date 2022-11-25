@@ -113,7 +113,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
   load_balancer {
     target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
     container_name   = "${aws_ecs_task_definition.wp_api_frontend_task.family}"
-    container_port   = 80 # Specifying the container port
+    container_port   = 443 # Specifying the container port
   }
 
   network_configuration {
