@@ -22,13 +22,3 @@ variable "subnet_id_6" {default = "subnet-05b6ba72b4bd1d1b4"}
 variable "subnet_id_7" {default = "subnet-0b3dd195a9f7ade77"}
 
 
-
-
-#
-#variable "database_name" {default = "database-2"}
-#variable "database_user" {default = "fargate"}
-#variable "database_password" {default = ""}
-#
-variable "docker_image_name" {default = "martinzugnoni/sampleapp"}
-variable "docker_image_revision" {default = "0.0.1"}
-#

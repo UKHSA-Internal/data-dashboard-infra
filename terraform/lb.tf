@@ -9,7 +9,7 @@ resource "aws_alb" "wp_application_load_balancer" {
 resource "aws_alb" "wp_application_load_balancer_api" {
   name               = "wp-lb-api" # Naming our load balancer
   load_balancer_type = "application"
-  subnets = [var.subnet_id_7,var.subnet_id_5,var.subnet_id_6]
+  subnets = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
   # Referencing the security group
   security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
 }
