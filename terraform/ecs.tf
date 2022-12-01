@@ -98,7 +98,7 @@ resource "aws_ecs_service" "wp_api_service" {
   }
    
   network_configuration {
-    subnets          = [var.subnet_id_5,var.subnet_id_6,var.subnet_id_7]
+    subnets          = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]#[var.subnet_id_5,var.subnet_id_6,var.subnet_id_7]
     assign_public_ip = true # Providing our containers with public IPs
     security_groups  = ["${aws_security_group.service_security_group.id}"]
   }
