@@ -7,31 +7,31 @@ resource "aws_ecs_cluster" "wp_frontend_cluster" {
 }
 
 
-#resource "aws_ecs_task_definition" "wp_api_task" {
-#  family                   = "wp-api-task" # Naming our first task
-#  container_definitions    = <<DEFINITION
-#  [
-#    {
-#      "name": "wp-api-task",
-#      "image": "${aws_ecr_repository.ecr_repository_api.repository_url}",
-#      "essential": true,
-#      "portMappings": [
-#        {
-#          "containerPort": 80,
-#          "hostPort": 80
-#        }
-#      ],
-#      "memory": 512,
-#      "cpu": 256
-#    }
-#  ]
-#  DEFINITION
-#  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
-#  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
-#  memory                   = 512         # Specifying the memory our container requires
-#  cpu                      = 256         # Specifying the CPU our container requires
-#  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
-#}
+resource "aws_ecs_task_definition" "wp_api_task" {
+  family                   = "wp-api-task" # Naming our first task
+  container_definitions    = <<DEFINITION
+  [
+    {
+      "name": "wp-api-task",
+      "image": "${aws_ecr_repository.ecr_repository_api.repository_url}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ],
+      "memory": 512,
+      "cpu": 256
+    }
+  ]
+  DEFINITION
+  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
+  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
+  memory                   = 512         # Specifying the memory our container requires
+  cpu                      = 256         # Specifying the CPU our container requires
+  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
+}
 
 resource "aws_ecs_task_definition" "wp_api_frontend_task" {
   family                   = "wp-frontend-task" # Naming our first task
