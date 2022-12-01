@@ -17,8 +17,8 @@ resource "aws_ecs_task_definition" "wp_api_task" {
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 443,
-          "hostPort": 443
+          "containerPort": 80,
+          "hostPort": 80
         }
       ],
       "memory": 512,
@@ -94,12 +94,13 @@ resource "aws_ecs_service" "wp_api_service" {
   load_balancer {
     target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our target group
     container_name   = "${aws_ecs_task_definition.wp_api_task.family}"
-    container_port   = 443 # Specifying the container port
+    container_port   = 80 # Specifying the container port
   }
    
   network_configuration {
     subnets          = [var.subnet_id_5,var.subnet_id_6,var.subnet_id_7]
     assign_public_ip = true # Providing our containers with public IPs
+    security_groups  = ["${aws_security_group.service_security_group.id}"]
   }
 }
 
@@ -119,6 +120,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
   network_configuration {
     subnets          =[var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
     assign_public_ip = true # Providing our containers with public IPs
+    security_groups  = ["sg-022a80347f5834f84"]#["${aws_security_group.service_security_group.id}"]
   }
 }
 
@@ -129,7 +131,7 @@ resource "aws_security_group" "service_security_group" {
     to_port   = 0
     protocol  = "-1"
     # Only allowing traffic in from the load balancer security group
-    security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+    security_groups = ["sg-022a80347f5834f84"]# ["${aws_security_group.load_balancer_security_group.id}"]
   }
 
   egress {

@@ -38,7 +38,7 @@ resource "aws_lb_target_group" "wp_target_group" {
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200-400"
+    matcher = "200,301,302"
     path = "/"
     interval = 70
   }
@@ -51,7 +51,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
   target_type = "ip"
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200-400"
+    matcher = "200,301,302"
     path = "/"
     interval = 70
   }
