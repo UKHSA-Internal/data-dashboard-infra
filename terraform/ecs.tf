@@ -120,7 +120,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
   network_configuration {
     subnets          =[var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
     assign_public_ip = true # Providing our containers with public IPs
-    security_groups  = ["sg-022a80347f5834f84"]#["${aws_security_group.service_security_group.id}"]
+    security_groups  = ["${aws_security_group.service_security_group.id}"]
   }
 }
 
@@ -131,7 +131,7 @@ resource "aws_security_group" "service_security_group" {
     to_port   = 0
     protocol  = "-1"
     # Only allowing traffic in from the load balancer security group
-    security_groups = ["sg-022a80347f5834f84"]# ["${aws_security_group.load_balancer_security_group.id}"]
+    security_groups =["${aws_security_group.load_balancer_security_group.id}"]
   }
 
   egress {
