@@ -17,8 +17,8 @@ resource "aws_ecs_task_definition" "wp_api_task" {
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80
+          "containerPort": 3000,
+          "hostPort": 3000
         }
       ],
       "memory": 512,
@@ -94,7 +94,7 @@ resource "aws_ecs_service" "wp_api_service" {
   load_balancer {
     target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our target group
     container_name   = "${aws_ecs_task_definition.wp_api_task.family}"
-    container_port   = 80 # Specifying the container port
+    container_port   = 3000 #------80  Specifying the container port
   }
    
   network_configuration {
