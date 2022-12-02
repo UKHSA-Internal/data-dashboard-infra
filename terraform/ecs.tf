@@ -15,6 +15,15 @@ resource "aws_ecs_task_definition" "wp_api_task" {
       "name": "wp-api-task",
       "image": "${aws_ecr_repository.ecr_repository_api.repository_url}",
       "essential": true,
+      "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "awslogs-rds",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "awslogs-api"
+                }
+      },
       "environment":[
         {
           "name":"APIENV",
@@ -67,6 +76,15 @@ resource "aws_ecs_task_definition" "wp_api_frontend_task" {
       "name": "wp-frontend-task",
       "image": "${aws_ecr_repository.ecr_repository_frontend.repository_url}",
       "essential": true,
+      "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "awslogs-rds-fe",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "awslogs-frontend"
+                }
+      },
       "portMappings": [
         {
           "containerPort": 80,
