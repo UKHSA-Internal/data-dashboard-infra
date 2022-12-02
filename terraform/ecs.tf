@@ -15,6 +15,32 @@ resource "aws_ecs_task_definition" "wp_api_task" {
       "name": "wp-api-task",
       "image": "${aws_ecr_repository.ecr_repository_api.repository_url}",
       "essential": true,
+      "environment":[
+        {
+          "name":"APIENV",
+          "value":"PROD"
+        },
+        {
+           "name":"AWS_REGION",
+           "value": "eu-west-2"          
+        },
+        {
+          "name":"POSTGRES_HOST",
+          "value":"wp-dashboard-rds-2.cao5mkmud7br.eu-west-2.rds.amazonaws.com"
+        },
+        {
+          "name":"POSTGRES_USER",
+          "value":"wp_user"
+        },
+        {
+          "name":"POSTGRES_PASSWORD",
+          "value":"${secrets.POSTGRES_PASSWORD}"
+        },
+        {
+          "name":"POSTGRES_DB",
+          "value":"winterpressures"
+        }
+      ],
       "portMappings": [
         {
           "containerPort": 80,
