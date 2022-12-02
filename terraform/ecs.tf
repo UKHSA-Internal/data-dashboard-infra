@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "wp_api_task" {
         },
         {
           "name":"POSTGRES_PASSWORD",
-          "value":"${secrets.POSTGRES_PASSWORD}"
+          "value":"oejgirejtt434855t4ijijteie594944er**865"
         },
         {
           "name":"POSTGRES_DB",
