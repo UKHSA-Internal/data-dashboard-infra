@@ -44,7 +44,7 @@ resource "aws_db_subnet_group" "default" {
 resource aws_vpc_endpoint "s3_endpoint" {
   vpc_id = var.vpc_id
   service_name = "com.amazonaws.eu-west-2.s3"
-  route_table_ids = ["rtb-0cfb031ff2c0029c"]
+  route_table_ids = ["rtb-0cfb03a1ff2c0029c"]
 }
 
 
