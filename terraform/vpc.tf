@@ -41,56 +41,10 @@ resource "aws_db_subnet_group" "default" {
   subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3,var.subnet_id_4,var.subnet_id_5,var.subnet_id_6,var.subnet_id_7]
 }
 
-
-resource aws_route_table "s3_route_table" {
-  vpc_id = var.vpc_id
-}
-
-#resource aws_route "s3_route" {
-#  route_table_id = aws_route_table.s3_route_table.id
-#  destination_cidr_block = "0.0.0.0/0"
-#  gateway_id = aws_internet_gateway.s3_gateway.id
-#}
-
-resource aws_route_table_association "s3_route_table_association_1" {
-  subnet_id = data.aws_subnet.subnet_1.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_2" {
-  subnet_id = data.aws_subnet.subnet_2.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_3" {
-  subnet_id = data.aws_subnet.subnet_3.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_4" {
-  subnet_id = data.aws_subnet.subnet_4.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_5" {
-  subnet_id = data.aws_subnet.subnet_5.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_6" {
-  subnet_id = data.aws_subnet.subnet_6.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
-resource aws_route_table_association "s3_route_table_association_7" {
-  subnet_id = data.aws_subnet.subnet_7.id
-  route_table_id = aws_route_table.s3_route_table.id
-}
-
 resource aws_vpc_endpoint "s3_endpoint" {
   vpc_id = var.vpc_id
   service_name = "com.amazonaws.eu-west2.s3"
-  route_table_ids = [aws_route_table.s3_route_table.id]
+  route_table_ids = ["rtb-0cfb031ff2c0029c"]
 }
 
 
