@@ -1,6 +1,6 @@
 # Sample workflow to access AWS resources when workflow is tied to branch
 # The workflow Creates static website using aws s3
-name: Winter Pressures Infra
+name: winter-pressures-nl-development
 on: push
 env:
   AWS_REGION: "eu-west-2"
