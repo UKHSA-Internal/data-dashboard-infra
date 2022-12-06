@@ -3,7 +3,6 @@
 name: Winter Pressures Infra
 on: push
 env:
-  BUCKET_NAME: "wl-dashboard"
   AWS_REGION: "eu-west-2"
 # permission can be added at job level or workflow level
 permissions:
@@ -24,7 +23,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::574290571051:role/devops_github_actions
+          role-to-assume: arn:aws:iam::518944279943:role/devops_github_actions_role
           role-session-name: testsession
           aws-region: ${{ env.AWS_REGION }}
 

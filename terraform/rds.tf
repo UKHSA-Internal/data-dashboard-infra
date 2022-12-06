@@ -1,6 +1,6 @@
 # Postgres database RDS
 data "aws_secretsmanager_secret" "secrets" {
-  arn = "arn:aws:secretsmanager:eu-west-2:574290571051:secret:rds/postgres-e9vo14"
+  arn = "arn:aws:secretsmanager:eu-west-2:518944279943:secret:rds_credentials-CsBKKO"
 }
 
 data "aws_secretsmanager_secret_version" "current" {
@@ -8,8 +8,8 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 resource "aws_db_instance" "app_rds" {
-  identifier                = "${var.project_name}-rds-2"
-  db_name                   = "winterpressures"
+  identifier                = "${var.project_name}-rds"
+  db_name                   = var.rds_db_name
   allocated_storage         = var.rds_allocated_storage
   engine                    = var.rds_engine
   engine_version            = var.rds_engine_version
