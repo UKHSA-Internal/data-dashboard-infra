@@ -1,10 +1,13 @@
-rds_db_name = "winterpressures"
 project_name = "wp-dashboard-dev"
 launch_type = "FARGATE"
 aws_region = "eu-west-2" 
+rds_db_name = "winterpressures"
+rds_username = "wp_user"
 rds_allocated_storage = "10"
 rds_engine = "postgres"
 rds_engine_version = "13.7"
 rds_instance_class = "db.t3.micro"
 rds_storage_type = "standard"
-rds_username = "wp_user"
+
+
+

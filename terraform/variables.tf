@@ -1,7 +1,6 @@
 variable "project_name" {}
 variable "launch_type" {}
 variable "aws_region" {}
-
 variable "rds_db_name" {}
 variable "rds_username" {}
 variable "rds_allocated_storage" {}
