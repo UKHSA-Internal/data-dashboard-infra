@@ -38,7 +38,7 @@ resource "aws_subnet" "subnet_3" {
 resource "aws_db_subnet_group" "default" {
   name        = "main"
   description = "Terraform example RDS subnet group"
-  subnet_ids  = [var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+  subnet_ids  = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
 }
 
 
