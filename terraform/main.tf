@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "ukhsa-dashboard-terra-backend"
+    bucket = "wp-dev-terraform-backend"
     key    = "wp-backend-s3"
     region = "eu-west-2"
   }
