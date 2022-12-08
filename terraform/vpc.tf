@@ -7,6 +7,20 @@ resource "aws_vpc" "wp_dev_vpc" {
   }
 }
 
+resource "aws_internet_gateway" "wp_dev_vpc_gw" {
+  vpc_id = aws_vpc.wp_dev_vpc.id
+
+  tags = {
+    Name = "main"
+  }
+}
+
+resource "aws_route" "r" {
+  route_table_id              = var.route_table_id
+  destination_ipv6_cidr_block = "0.0.0.0/0"
+  gateway_id                  = aws_internet_gateway.wp_dev_vpc_gw.id
+}
+
 resource "aws_subnet" "subnet_1" {
   vpc_id     = aws_vpc.wp_dev_vpc.id
   cidr_block = "10.10.144.64/27"
@@ -50,16 +64,6 @@ resource "aws_route_table_association" "aws_route_table_association_subnet_2" {
 resource "aws_route_table_association" "aws_route_table_association_subnet_3" {
   subnet_id      = aws_subnet.subnet_3.id
   route_table_id = var.route_table_id
-}
-
-resource "aws_egress_only_internet_gateway" "egress" {
-  vpc_id = aws_vpc.wp_dev_vpc.id
-}
-
-resource "aws_route" "r" {
-  route_table_id              = var.route_table_id
-  destination_ipv6_cidr_block = "::/0"
-  egress_only_gateway_id      = aws_egress_only_internet_gateway.egress.id
 }
 
 resource "aws_db_subnet_group" "default" {
