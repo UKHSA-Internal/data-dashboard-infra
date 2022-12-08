@@ -37,17 +37,17 @@ resource "aws_subnet" "subnet_3" {
   }
 }
 
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "aws_route_table_association_subnet_1" {
   subnet_id      = aws_subnet.subnet_1.id
   route_table_id = var.route_table_id
 }
 
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "aws_route_table_association_subnet_2" {
   subnet_id      = aws_subnet.subnet_2.id
   route_table_id = var.route_table_id
 }
 
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "aws_route_table_association_subnet_3" {
   subnet_id      = aws_subnet.subnet_3.id
   route_table_id = var.route_table_id
 }
