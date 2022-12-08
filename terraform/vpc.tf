@@ -7,14 +7,6 @@ resource "aws_vpc" "wp_dev_vpc" {
   }
 }
 
-resource "aws_internet_gateway" "wp_dev_vpc_igw" {
-  vpc_id = aws_vpc.wp_dev_vpc.id
-
-  tags = {
-    Name = "wp_dev_vpc_igw"
-  }
-}
-
 resource "aws_subnet" "subnet_1" {
   vpc_id     = aws_vpc.wp_dev_vpc.id
   cidr_block = "10.10.144.64/27"
@@ -44,6 +36,22 @@ resource "aws_subnet" "subnet_3" {
     Name = "wp-dev-subnet"
   }
 }
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subnet_1.id
+  route_table_id = var.route_table_id
+}
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subnet_2.id
+  route_table_id = var.route_table_id
+}
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subnet_3.id
+  route_table_id = var.route_table_id
+}
+
 
 
 resource "aws_db_subnet_group" "default" {

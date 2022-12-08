@@ -171,8 +171,8 @@ resource "aws_ecs_service" "wp_frontend_service" {
 resource "aws_security_group" "service_security_group" {
   vpc_id      = aws_vpc.wp_dev_vpc.id
   ingress {
-    from_port = 0
-    to_port   = 0
+    from_port = 80
+    to_port   = 80
     protocol  = "-1"
     # Only allowing traffic in from the load balancer security group
     security_groups =["${aws_security_group.load_balancer_security_group.id}"]
