@@ -44,11 +44,7 @@ resource "aws_route_table_association" "aws_route_table_association_subnet_3" {
   route_table_id = var.route_table_id
 }
 
-resource "aws_db_subnet_group" "default" {
-  name        = "main"
-  description = "Terraform example RDS subnet group"
-  subnet_ids  = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
-}
+
 
 
 data "aws_subnets" "app_subnets"{
