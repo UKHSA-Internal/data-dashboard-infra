@@ -1,12 +1,4 @@
 
-resource "aws_internet_gateway" "wp_dev_vpc_gw" {
-  vpc_id = var.vpc_id
-
-  tags = {
-    Name = "main"
-  }
-}
-
 resource "aws_subnet" "subnet_1" {
   vpc_id     = var.vpc_id
   cidr_block = "10.14.208.64/27"
@@ -29,7 +21,7 @@ resource "aws_subnet" "subnet_2" {
 
 resource "aws_subnet" "subnet_3" {
   vpc_id     = var.vpc_id
-  cidr_block = "10.10.144.0/27"
+  cidr_block = "10.14.208.0/27"
   availability_zone = "${var.aws_region}a"
 
   tags = {
