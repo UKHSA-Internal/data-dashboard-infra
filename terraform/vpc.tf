@@ -13,7 +13,7 @@ resource "aws_subnet" "subnet_1" {
   availability_zone = "${var.aws_region}c"
 
   tags = {
-    Name = "Main"
+    Name = "wp-dev-subnet"
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "subnet_2" {
   availability_zone = "${var.aws_region}b"
 
   tags = {
-    Name = "Main"
+    Name = "wp-dev-subnet"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_subnet" "subnet_3" {
   availability_zone = "${var.aws_region}a"
 
   tags = {
-    Name = "Main"
+    Name = "wp-dev-subnet"
   }
 }
 
