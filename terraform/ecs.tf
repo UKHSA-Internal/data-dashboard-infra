@@ -169,7 +169,7 @@ resource "aws_ecs_service" "wp_frontend_service" {
 }
 
 resource "aws_security_group" "service_security_group" {
-  vpc_id      = aws_vpc.wp_dev_vpc.id
+  vpc_id      = var.vpc_id
   ingress {
     from_port = 0
     to_port   = 0

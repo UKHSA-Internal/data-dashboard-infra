@@ -1,29 +1,15 @@
-resource "aws_vpc" "wp_dev_vpc" {
-  cidr_block       = "10.10.144.0/20"
-  instance_tenancy = "default"
-
-  tags = {
-    Name = "wp_dev_vpc"
-  }
-}
 
 resource "aws_internet_gateway" "wp_dev_vpc_gw" {
-  vpc_id = aws_vpc.wp_dev_vpc.id
+  vpc_id = var.vpc_id
 
   tags = {
     Name = "main"
   }
 }
 
-resource "aws_route" "r" {
-  route_table_id              = var.route_table_id
-  destination_ipv6_cidr_block = "::/0"
-  gateway_id                  = aws_internet_gateway.wp_dev_vpc_gw.id
-}
-
 resource "aws_subnet" "subnet_1" {
-  vpc_id     = aws_vpc.wp_dev_vpc.id
-  cidr_block = "10.10.144.64/27"
+  vpc_id     = var.vpc_id
+  cidr_block = "10.14.208.64/27"
   availability_zone = "${var.aws_region}c"
 
   tags = {
@@ -32,8 +18,8 @@ resource "aws_subnet" "subnet_1" {
 }
 
 resource "aws_subnet" "subnet_2" {
-  vpc_id     = aws_vpc.wp_dev_vpc.id
-  cidr_block = "10.10.144.128/27"
+  vpc_id     = var.vpc_id
+  cidr_block = "10.14.208.128/27"
   availability_zone = "${var.aws_region}b"
 
   tags = {
@@ -42,7 +28,7 @@ resource "aws_subnet" "subnet_2" {
 }
 
 resource "aws_subnet" "subnet_3" {
-  vpc_id     = aws_vpc.wp_dev_vpc.id
+  vpc_id     = var.vpc_id
   cidr_block = "10.10.144.0/27"
   availability_zone = "${var.aws_region}a"
 
@@ -76,7 +62,7 @@ resource "aws_db_subnet_group" "default" {
 data "aws_subnets" "app_subnets"{
   filter{
     name = "vpc-id"
-    values = [aws_vpc.wp_dev_vpc.id]
+    values = [var.vpc_id]
   }
 }
 
