@@ -1,13 +1,13 @@
-variable "project_name" {}
-variable "launch_type" {}
-variable "aws_region" {}
-variable "rds_db_name" {}
-variable "rds_username" {}
-variable "rds_allocated_storage" {}
-variable "rds_engine" {}
-variable "rds_engine_version" {}
-variable "rds_instance_class" {}
-variable "rds_storage_type" {}
+variable "project_name" {default = "wp-dashboard-dev"}
+variable "launch_type" {default = "FARGATE" }
+variable "aws_region" {default = "eu-west-2"  }
+variable "rds_db_name" {default = "winterpressures"}
+variable "rds_username" {default = "wp_user"}
+variable "rds_allocated_storage" {default = "10"}
+variable "rds_engine" {default = "postgres"}
+variable "rds_engine_version" {default = "13.7"}
+variable "rds_instance_class" {default = "db.t3.micro"}
+variable "rds_storage_type" {default = "standard"}
 
 
 
