@@ -142,7 +142,7 @@ resource "aws_ecs_service" "wp_api_service" {
   }
   
   network_configuration {
-    subnets          = [var.subnet_id_5,var.subnet_id_6,var.subnet_id_7]
+    subnets          = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
     assign_public_ip = true # Providing our containers with public IPs
     security_groups  = ["${aws_security_group.service_security_group.id}"]
   }
@@ -162,14 +162,14 @@ resource "aws_ecs_service" "wp_frontend_service" {
   }
 
   network_configuration {
-    subnets          =[var.subnet_id_1,var.subnet_id_2,var.subnet_id_3]
+    subnets          =[aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
     assign_public_ip = true # Providing our containers with public IPs
     security_groups  = ["${aws_security_group.service_security_group.id}"]
   }
 }
 
 resource "aws_security_group" "service_security_group" {
-  vpc_id      = var.vpc_id
+  vpc_id      = aws_vpc.wp_dev_vpc.id
   ingress {
     from_port = 0
     to_port   = 0

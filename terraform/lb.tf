@@ -16,7 +16,7 @@ resource "aws_alb" "wp_application_load_balancer_api" {
 
 # Creating a security group for the load balancer:
 resource "aws_security_group" "load_balancer_security_group" {
-  vpc_id      = var.vpc_id
+  vpc_id      = aws_vpc.wp_dev_vpc.id
   ingress {
     from_port   = 80 # Allowing traffic in from port 80
     to_port     = 80
@@ -37,7 +37,7 @@ resource "aws_lb_target_group" "wp_target_group" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = var.vpc_id # Referencing the default VPC
+  vpc_id      = aws_vpc.wp_dev_vpc.id # Referencing the default VPC
   health_check {
     matcher = "200,301,302"
     path = "/"
@@ -50,7 +50,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = var.vpc_id # Referencing the default VPC
+  vpc_id      = aws_vpc.wp_dev_vpc.id # Referencing the default VPC
   health_check {
     matcher = "200,301,302"
     path = "/"
