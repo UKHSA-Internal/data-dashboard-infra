@@ -48,7 +48,7 @@ resource "aws_db_subnet_group" "default" {
 data "aws_subnets" "app_subnets"{
   filter{
     name = "vpc-id"
-    values = [aws_vpc.wp_dev_vpc]
+    values = [aws_vpc.wp_dev_vpc.id]
   }
 }
 
