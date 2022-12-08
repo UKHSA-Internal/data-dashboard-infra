@@ -21,7 +21,7 @@ resource "aws_subnet" "subnet_2" {
 
 resource "aws_subnet" "subnet_3" {
   vpc_id     = var.vpc_id
-  cidr_block = "10.14.208.90/27"
+  cidr_block = "10.14.208.96/27"
   availability_zone = "${var.aws_region}a"
 
   tags = {
