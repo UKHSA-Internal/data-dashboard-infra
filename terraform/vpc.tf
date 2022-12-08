@@ -3,7 +3,15 @@ resource "aws_vpc" "wp_dev_vpc" {
   instance_tenancy = "default"
 
   tags = {
-    Name = "main"
+    Name = "wp_dev_vpc"
+  }
+}
+
+resource "aws_internet_gateway" "wp_dev_vpc_igw" {
+  vpc_id = aws_vpc.wp_dev_vpc.id
+
+  tags = {
+    Name = "wp_dev_vpc_igw"
   }
 }
 
