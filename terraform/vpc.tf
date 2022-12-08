@@ -9,7 +9,7 @@ resource "aws_vpc" "wp_dev_vpc" {
 
 resource "aws_subnet" "subnet_1" {
   vpc_id     = aws_vpc.wp_dev_vpc.id
-  cidr_block = "10.10.144.16/27"
+  cidr_block = "10.10.144.64/27"
 
   tags = {
     Name = "Main"
@@ -18,7 +18,7 @@ resource "aws_subnet" "subnet_1" {
 
 resource "aws_subnet" "subnet_2" {
   vpc_id     = aws_vpc.wp_dev_vpc.id
-  cidr_block = "10.10.144.32/27"
+  cidr_block = "10.10.144.128/27"
 
   tags = {
     Name = "Main"
