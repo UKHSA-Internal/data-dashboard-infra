@@ -9,7 +9,7 @@ variable "rds_engine_version" {default = "13.7"}
 variable "rds_instance_class" {default = "db.t3.micro"}
 variable "rds_storage_type" {default = "standard"}
 
-variable "route_table_id" {default = "rtb-0f58d0af4522bbf9e"}
+variable "route_table_id" {default = "rtb-0c321ed2e5dd60ac4"}
 
 
 
