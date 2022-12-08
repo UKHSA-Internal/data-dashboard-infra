@@ -135,11 +135,11 @@ resource "aws_ecs_service" "wp_api_service" {
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers we want deployed to 3
 
-  #load_balancer {
-  #  target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our target group
-  #  container_name   = "${aws_ecs_task_definition.wp_api_task.family}"
-  #  container_port   = 80 #------80  Specifying the container port
-  #}
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our target group
+    container_name   = "${aws_ecs_task_definition.wp_api_task.family}"
+    container_port   = 80 #------80  Specifying the container port
+  }
   
   network_configuration {
     subnets          = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
@@ -155,11 +155,11 @@ resource "aws_ecs_service" "wp_frontend_service" {
   launch_type     = "FARGATE"
   desired_count   = 3 # Setting the number of containers we want deployed to 3
 
-  #load_balancer {
-  #  target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
-  #  container_name   = "${aws_ecs_task_definition.wp_api_frontend_task.family}"
-  #  container_port   = 80 # Specifying the container port
-  #}
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our target group
+    container_name   = "${aws_ecs_task_definition.wp_api_frontend_task.family}"
+    container_port   = 80 # Specifying the container port
+  }
 
   network_configuration {
     subnets          =[aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
@@ -186,20 +186,4 @@ resource "aws_security_group" "service_security_group" {
   }
 }
 
-resource "aws_security_group" "load_balancer_security_group" {
-  vpc_id      = aws_vpc.wp_dev_vpc.id
-  ingress {
-    from_port   = 80 # Allowing traffic in from port 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
-  }
-  
-  egress {
-    from_port   = 0 # Allowing any incoming port
-    to_port     = 0 # Allowing any outgoing port
-    protocol    = "-1" # Allowing any outgoing protocol 
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
-  }
-}
 

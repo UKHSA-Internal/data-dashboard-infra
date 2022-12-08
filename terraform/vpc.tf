@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "wp_dev_vpc_gw" {
 
 resource "aws_route" "r" {
   route_table_id              = var.route_table_id
-  destination_ipv6_cidr_block = "::/0"
+  destination_ipv6_cidr_block = "0.0.0.0/0"
   gateway_id                  = aws_internet_gateway.wp_dev_vpc_gw.id
 }
 
