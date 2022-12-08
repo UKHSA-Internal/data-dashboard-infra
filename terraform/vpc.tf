@@ -52,7 +52,15 @@ resource "aws_route_table_association" "aws_route_table_association_subnet_3" {
   route_table_id = var.route_table_id
 }
 
+resource "aws_egress_only_internet_gateway" "egress" {
+  vpc_id = aws_vpc.wp_dev_vpc.id
+}
 
+resource "aws_route" "r" {
+  route_table_id              = var.route_table_id
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.egress.id
+}
 
 resource "aws_db_subnet_group" "default" {
   name        = "main"
