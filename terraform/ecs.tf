@@ -129,7 +129,13 @@ resource "aws_iam_policy" "create_logs_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "logs:CreateLogGroup"
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents"
             ],
             "Resource": "*"
         }
