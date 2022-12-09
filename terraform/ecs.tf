@@ -106,16 +106,32 @@ resource "aws_ecs_task_definition" "wp_api_frontend_task" {
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = "ecsTaskExecutionRole"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  managed_policy_arns = [aws_iam_policy.create_logs_policy.arn]
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
-    actions = ["sts:AssumeRole","logs:CreateLogStream","logs:PutLogEvents","logs:PutLogEventsBatch",]
+    actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
       identifiers = ["ecs-tasks.amazonaws.com"]
     }
   }
+}
+
+resource "aws_iam_policy" "create_logs_policy" {
+  name = "log-management"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["logs:CreateLogGroup"]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
