@@ -11,6 +11,7 @@ variable "rds_storage_type" {default = "standard"}
 
 variable "route_table_id" {default = "rtb-0f58d0af4522bbf9e"}
 variable "vpc_id" {default = "vpc-0043d08600204dc0c"}
+variable "default_sg" {default = "sg-05032a61e7b440e1b"}
 
 
 

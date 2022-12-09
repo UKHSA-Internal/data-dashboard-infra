@@ -9,5 +9,7 @@ rds_engine_version = "13.7"
 rds_instance_class = "db.t3.micro"
 rds_storage_type = "standard"
 
-
+route_table_id = "rtb-0f58d0af4522bbf9e"
+vpc_id = "vpc-0043d08600204dc0c"
+default_sg = "sg-05032a61e7b440e1b"
 

@@ -9,6 +9,15 @@ resource "aws_subnet" "subnet_1" {
   }
 }
 
+resource "aws_security_group_rule" "example" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.default_sg
+}
+
 resource "aws_subnet" "subnet_2" {
   vpc_id     = var.vpc_id
   cidr_block = "10.14.208.128/27"
