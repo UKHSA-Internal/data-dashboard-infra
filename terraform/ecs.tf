@@ -119,19 +119,28 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
+
 resource "aws_iam_policy" "create_logs_policy" {
-  name = "log-management"
+  name = "ecs_policy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action   = ["logs:CreateLogGroup"]
-        Effect   = "Allow"
-        Resource = "*"
-      },
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
     ]
-  })
+})
 }
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
