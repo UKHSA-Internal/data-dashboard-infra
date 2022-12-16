@@ -6,8 +6,24 @@ resource "aws_alb" "wp_application_load_balancer" {
   security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
 }
 
+resource "aws_alb" "wp_application_load_balancer_2" {
+  name               = "wp-lb-frontend-2" # Naming our load balancer
+  load_balancer_type = "application"
+  subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
+  # Referencing the security group
+  security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+}
+
 resource "aws_alb" "wp_application_load_balancer_api" {
   name               = "wp-lb-api" # Naming our load balancer
+  load_balancer_type = "application"
+  subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
+  # Referencing the security group
+  security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
+}
+
+resource "aws_alb" "wp_application_load_balancer_api_2" {
+  name               = "wp-lb-api-2" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
   # Referencing the security group
@@ -69,8 +85,30 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = "${aws_alb.wp_application_load_balancer_2.arn}" # Referencing our load balancer
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our tagrte group
+  }
+}
+
 resource "aws_lb_listener" "api_listener" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer_api.arn}" # Referencing our load balancer
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our tagrte group
+  }
+}
+
+resource "aws_lb_listener" "api_listener" {
+  load_balancer_arn = "${aws_alb.wp_application_load_balancer_api_2.arn}" # Referencing our load balancer
   port              = "80"
   protocol          = "HTTP"
 
