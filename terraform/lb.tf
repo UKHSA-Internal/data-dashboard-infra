@@ -85,7 +85,7 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
-resource "aws_lb_listener" "listener" {
+resource "aws_lb_listener" "listener_2" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer_2.arn}" # Referencing our load balancer
   port              = "80"
   protocol          = "HTTP"
@@ -107,7 +107,7 @@ resource "aws_lb_listener" "api_listener" {
   }
 }
 
-resource "aws_lb_listener" "api_listener" {
+resource "aws_lb_listener" "api_listener_2" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer_api_2.arn}" # Referencing our load balancer
   port              = "80"
   protocol          = "HTTP"
