@@ -105,22 +105,36 @@ resource "aws_ecs_task_definition" "wp_api_frontend_task" {
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = "ecsTaskExecutionRole"
-  assume_role_policy = "${data.aws_iam_policy_document.access_s3_policy.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  managed_policy_arns = [aws_iam_policy.s3_policy.arn]
 }
 
-data "aws_iam_policy_document" "access_s3_policy" {
+resource "aws_iam_policy" "s3_policy" {
+  name = "devops-wp-ecs-s3-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["s3:*"]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::wp-incoming-dev"
+      },
+    ]
+  })
+}
+
+data "aws_iam_policy_document" "assume_role_policy" {
   statement {
-    effect = "Allow"
+    actions = ["sts:AssumeRole"]
 
-    actions = [
-      "s3:*",
-    ]
-
-    resources = [
-      "arn:aws:s3:::wp-incoming-dev",         
-    ]
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
   }
 }
+
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
   role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
