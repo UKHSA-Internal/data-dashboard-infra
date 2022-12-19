@@ -106,7 +106,25 @@ resource "aws_ecs_task_definition" "wp_api_frontend_task" {
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = "ecsTaskExecutionRole"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
-  managed_policy_arns = [aws_iam_policy.create_logs_policy.arn]
+  managed_policy_arns = [
+    aws_iam_policy.create_logs_policy.arn,
+    aws_iam_policy.s3_policy.arn
+  ]
+}
+
+resource "aws_iam_policy" "s3_policy" {
+  name = "devops-wp-ecs-s3-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["s3:*"]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::wp-incoming-dev"
+      },
+    ]
+  })
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
