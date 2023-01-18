@@ -30,7 +30,7 @@ resource "aws_iam_role" "api_role" {
         {
             "Effect": "Allow",
             "Principal": {
-                "Federated": "arn:aws:iam::"${var.account_id}":oidc-provider/token.actions.githubusercontent.com"
+                "Federated": "arn:aws:iam::${var.account_id}:oidc-provider/token.actions.githubusercontent.com"
             },
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
@@ -81,7 +81,7 @@ resource "aws_iam_role" "frontend_role" {
         {
             "Effect": "Allow",
             "Principal": {
-                "Federated": "arn:aws:iam::"${var.account_id}":oidc-provider/token.actions.githubusercontent.com"
+                "Federated": "arn:aws:iam::${var.account_id}:oidc-provider/token.actions.githubusercontent.com"
             },
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
