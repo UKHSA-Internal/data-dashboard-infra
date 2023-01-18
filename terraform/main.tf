@@ -7,8 +7,8 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "wp-dev-terraform-backend"
-    key    = "wp-backend-s3"
+    bucket = "wp-test-terraform-backend"
+    key    = "wp-test-backend-s3"
     region = "eu-west-2"
   }
 

@@ -32,7 +32,7 @@ resource "aws_security_group" "load_balancer_security_group" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [] # Allowing traffic in from all sources
-    security_groups  = ["sg-05032a61e7b440e1b"]
+    security_groups  = [var.default_sg]
   }
 
   ingress {
@@ -40,7 +40,7 @@ resource "aws_security_group" "load_balancer_security_group" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [] # Allowing traffic in from all sources
-    security_groups  = ["sg-05032a61e7b440e1b"]
+    security_groups  = [var.default_sg]
   }
   
   

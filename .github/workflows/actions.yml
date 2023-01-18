@@ -1,6 +1,6 @@
 # Sample workflow to access AWS resources when workflow is tied to branch
 # The workflow Creates static website using aws s3
-name: winter-pressures-nl-development
+name: winter-pressures-nl-test
 on: push
 env:
   AWS_REGION: "eu-west-2"
@@ -23,7 +23,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::518944279943:role/devops_github_actions_role
+          role-to-assume: arn:aws:iam::039901296652:role/devops_github_actions_role
           role-session-name: testsession
           aws-region: ${{ env.AWS_REGION }}
 

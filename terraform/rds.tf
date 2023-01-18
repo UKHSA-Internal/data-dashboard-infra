@@ -1,6 +1,6 @@
 # Postgres database RDS
 data "aws_secretsmanager_secret" "secrets" {
-  arn = "arn:aws:secretsmanager:eu-west-2:518944279943:secret:rds_credentials-CsBKKO"
+  arn = "arn:aws:secretsmanager:eu-west-2:039901296652:secret:rds_credentials-vC77QM"
 }
 
 data "aws_secretsmanager_secret_version" "current" {

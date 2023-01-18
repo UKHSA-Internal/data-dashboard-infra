@@ -121,7 +121,7 @@ resource "aws_iam_policy" "s3_policy" {
       {
         Action   = ["s3:*"]
         Effect   = "Allow"
-        Resource = "arn:aws:s3:::wp-incoming-dev"
+        Resource = "arn:aws:s3:::wp-incoming-test"
       },
     ]
   })
