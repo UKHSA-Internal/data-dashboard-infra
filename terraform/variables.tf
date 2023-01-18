@@ -15,6 +15,8 @@ variable "default_sg" {default = "sg-066543e2b425d1789"}
 
 variable "s3bucket" {default = "wp-incoming-test"}
 
+variable "account_id" {default = "039901296652"}
+
 
 
 
