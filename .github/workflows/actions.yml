@@ -1,9 +1,10 @@
 # Sample workflow to access AWS resources when workflow is tied to branch
 # The workflow Creates static website using aws s3
 name: winter-pressures-nl-development
-on: push
-branches:
- - main # trigger enabled for main only
+on:
+  push:
+    branches:
+    - main # trigger enabled for main only
 env:
   AWS_REGION: "eu-west-2"
 # permission can be added at job level or workflow level
