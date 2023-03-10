@@ -3,7 +3,7 @@
 name: winter-pressures-nl-development
 on: push
 branches:
-    - master
+ - main # trigger enabled for main only
 env:
   AWS_REGION: "eu-west-2"
 # permission can be added at job level or workflow level
