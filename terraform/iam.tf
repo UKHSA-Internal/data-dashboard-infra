@@ -108,7 +108,7 @@ resource "aws_iam_policy" "frontend_policy" {
         "rds:*",
         "ecr:*",
         "ec2:*",
-        "ecs:*", 
+        "ecs:*" 
       ],
       "Effect": "Allow",
       "Resource": "*"
