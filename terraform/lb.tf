@@ -84,7 +84,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = "${aws_alb.wp_application_load_balancer.arn}" # Referencing our load balancer
-  port              = "80"
+  port              = "3000"
   protocol          = "HTTP"
 
   default_action {
