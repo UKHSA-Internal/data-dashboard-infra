@@ -108,8 +108,7 @@ resource "aws_iam_policy" "frontend_policy" {
         "rds:*",
         "ecr:*",
         "ec2:*",
-        "ecs:*",
-        "iam:DeletePolicyVersion" 
+        "ecs:*", 
       ],
       "Effect": "Allow",
       "Resource": "*"
