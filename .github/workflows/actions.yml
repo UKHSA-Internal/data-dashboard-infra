@@ -38,7 +38,6 @@ jobs:
         id: validate
         run: terraform validate
         
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan
-        #run: terraform plan -auto-approve 
+      - name: Terraform Apply
+        id: apply
+        run: terraform plan -auto-approve 
