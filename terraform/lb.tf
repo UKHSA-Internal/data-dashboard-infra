@@ -61,7 +61,6 @@ resource "aws_lb_target_group" "wp_target_group" {
   health_check {
     matcher = "200,301,302"
     path = "/"
-    override = 3000
     interval = 70
   }
 }
