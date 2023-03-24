@@ -57,6 +57,7 @@ resource "aws_iam_policy" "policy" {
         "rds:*",
         "ecr:*",
         "ec2:*",
+        "ecs:*",
         "secretsmanager:ListSecretVersionIds",
         "secretsmanager:GetResourcePolicy",
         "secretsmanager:GetSecretValue",
