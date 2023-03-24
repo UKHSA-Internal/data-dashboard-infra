@@ -57,10 +57,10 @@ resource "aws_ecs_task_definition" "wp_api_task" {
     }
   ]
   DEFINITION
-  #  {
-  #        "name":"POSTGRES_PASSWORD",
-  #        "value":"${jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]}"
-  #      },
+    {
+          "name":"POSTGRES_PASSWORD",
+          "value":"${jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]}"
+        },
   requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
   network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
   memory                   = 512         # Specifying the memory our container requires

@@ -37,7 +37,11 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate
-        
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply -auto-approve 
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan
+
+      #- name: Terraform Apply
+       # id: apply
+        #run: terraform apply -auto-approve 
