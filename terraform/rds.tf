@@ -8,8 +8,7 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name        = "main"
-  description = "Terraform example RDS subnet group"
+  rdsgroupname = var.rdsgroupname
   subnet_ids  = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
 }
 
@@ -20,7 +19,7 @@ resource "aws_db_instance" "app_rds" {
   engine                    = var.rds_engine
   engine_version            = var.rds_engine_version
   instance_class            = var.rds_instance_class
-  username                  = "wp_user"
+  username                  = var.rds_username
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
   db_subnet_group_name      = "${aws_db_subnet_group.rds_subnet_group.id}"
