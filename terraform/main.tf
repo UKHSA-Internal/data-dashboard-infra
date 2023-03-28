@@ -7,9 +7,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "wp-dev-terraform-backend"
-    key    = "wp-backend-s3"
-    region = "eu-west-2"
+    bucket = var.aws_s3_tfbucket
+    key    = var.aws_s3_tfbucket_key
+    region = var.aws_region
   }
 
   required_version = ">=1.2.0"
@@ -17,7 +17,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-west-2"
+  region  = var.aws_region
 }
 
 
