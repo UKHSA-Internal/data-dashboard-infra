@@ -1,6 +1,6 @@
 resource "aws_alb" "wp_application_load_balancer" {
-  name               = "wp-lb-frontend" # Naming our load balancer
-  load_balancer_type = "application"
+  name               = var.lb_ui_name # Naming our load balancer
+  load_balancer_type = var.lb_type 
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
   # Referencing the security group
   security_groups = ["${aws_security_group.load_balancer_security_group.id}"]
@@ -8,8 +8,8 @@ resource "aws_alb" "wp_application_load_balancer" {
 
 
 resource "aws_alb" "wp_application_load_balancer_api" {
-  name               = "wp-lb-api" # Naming our load balancer
-  load_balancer_type = "application"
+  name               = var.lb_api_name # Naming our load balancer
+  load_balancer_type = var.lb_type 
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
   # Referencing the security group
   security_groups = ["${aws_security_group.load_balancer_security_group.id}"]

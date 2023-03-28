@@ -50,3 +50,31 @@ variable "default_sg" {
  type        = string
  description = "Security Group"
 }
+variable "aws_s3_bucket" {
+ type        = string
+ description = "S3 bucket for UAT incoming"
+}
+variable "aws_s3_tfbucket" {
+ type        = string
+ description = "S3 bucket for UAT terraform backend"
+}
+variable "aws_s3_tfbucket_key" {
+ type        = string
+ description = "S3 bucket key for UAT terraform backend"
+}
+variable "rds_subnetgroup_name" {
+ type        = string
+ description = "Name of the RDS subnet group"
+}
+variable "lb_ui_name" {
+ type        = string
+ description = "Name of the UI loadbalancer"
+}
+variable "lb_api_name" {
+ type        = string
+ description = "Name of the API loadbalancer"
+}
+variable "lb_type " {
+ type        = string
+ description = "Type of the API/UI loadbalancer"
+}

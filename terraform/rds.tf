@@ -8,7 +8,7 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  rdsgroupname = var.rdsgroupname
+  rdsgroupname = var.rds_subnetgroup_name
   subnet_ids  = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
 }
 

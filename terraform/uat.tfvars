@@ -11,4 +11,12 @@ rds_storage_type = "standard"
 route_table_id = "rtb-02346889948f2ca96"
 vpc_id = "vpc-084bc88278f98249f"
 default_sg = "sg-0234785b766522ec2"
+aws_s3_bucket = "wp-incoming-uat"
+aws_s3_tfbucket = "wp-uat-terraform-backend"
+aws_s3_tfbucket_key = "wp-backend-s3"
+rds_subnetgroup_name = "main"
+lb_ui_name = "wp-lb-frontend"
+lb_api_name = "wp-lb-api"
+lb_type = "application"
+
 
