@@ -1,4 +1,4 @@
-resource "aws_alb" "wp_application_load_balancer" {
+resource "aws_alb" "wp_application_load_balancer_ui" {
   name               = var.lb_ui_name # Naming our load balancer
   load_balancer_type = var.lb_type 
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
@@ -21,88 +21,89 @@ resource "aws_alb" "wp_application_load_balancer_api" {
 resource "aws_security_group" "load_balancer_security_group" {
   vpc_id      = var.vpc_id
   ingress {
-    from_port   = 80 # Allowing traffic in from port 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["82.16.94.117/32","5.71.224.176/32","81.141.183.138/32","81.187.210.205/32","137.22.182.58/32","62.253.228.2/32","94.192.79.9/32"] 
+    from_port   = var.ingress1_port  # Allowing traffic in from port 80
+    to_port     = var.ingress1_port
+    protocol    = var.ingress_protocal
+    cidr_blocks = var.ingress1_cidr 
   }
 
   ingress {
-    from_port   = 80 # Allowing traffic in from port 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [] # Allowing traffic in from all sources
-    security_groups  = ["sg-05032a61e7b440e1b"]
+    from_port   = var.ingress1_port # Allowing traffic in from port 80
+    to_port     = var.ingress1_port
+    protocol    = var.ingress_protocal
+    cidr_blocks = var.ingress2_cidr # Allowing traffic in from all sources
+    security_groups  = var.allowed_sg_list
   }
 
   ingress {
-    from_port   = 443 # Allowing traffic in from port 80
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [] # Allowing traffic in from all sources
-    security_groups  = ["sg-05032a61e7b440e1b"]
+    from_port   = var.ingress2_port # Allowing traffic in from port 443
+    to_port     = var.ingress2_port
+    protocol    = var.ingress_protocal
+    cidr_blocks = var.ingress2_cidr # Allowing traffic in from all sources
+    security_groups  = var.allowed_sg_list
   }
   
   
   egress {
-    from_port   = 0 # Allowing any incoming port
-    to_port     = 0 # Allowing any outgoing port
-    protocol    = "-1" # Allowing any outgoing protocol 
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+    from_port   = var.egress_port # Allowing any incoming port
+    to_port     = var.egress_port # Allowing any outgoing port
+    protocol    = var.egress_protocal # Allowing any outgoing protocol 
+    cidr_blocks = var.egress_cidr # Allowing traffic out to all IP addresses
   }
 }
 
-resource "aws_lb_target_group" "wp_target_group" {
-  name        = "wp-target-group"
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "ip"
+# Created UI target group
+resource "aws_lb_target_group" "wp_ui_target_group" {
+  name        = var.ui_target_group
+  port        = var.ui_targetgroup_port
+  protocol    = var.ui_targetgroup_protocol
+  target_type = var.ui_targetgroup_type
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200,301,302"
-    path = "/"
-    interval = 70
+    matcher = var.ui_healthcheck_matcher
+    path = var.ui_healthcheck_path
+    interval = var.ui_healthcheck_interval
   }
 }
 
 
-
+# Created API target group
 resource "aws_lb_target_group" "wp_api_target_group" {
-  name        = "wp-api-target-group"
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "ip"
+  name        = var.api_target_group
+  port        = var.api_targetgroup_port
+  protocol    = var.api_targetgroup_protocol
+  target_type = var.api_targetgroup_type
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
-    matcher = "200,301,302"
-    path = "/"
-    interval = 70
+    matcher = var.api_healthcheck_matcher
+    path = var.api_healthcheck_path
+    interval = var.api_healthcheck_interval
   }
 }
 
 
-
+# Created UI LB listener
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = "${aws_alb.wp_application_load_balancer.arn}" # Referencing our load balancer
-  port              = "80"
-  protocol          = "HTTP"
+  load_balancer_arn = "${aws_alb.wp_application_load_balancer_ui.arn}" # Referencing UI load balancer
+  port              = var.ui_lb_listener_port
+  protocol          = var.ui_lb_listener_protocol
 
   default_action {
-    type             = "forward"
-    target_group_arn = "${aws_lb_target_group.wp_target_group.arn}" # Referencing our tagrte group
+    type             = var.ui_lb_listener_type
+    target_group_arn = "${aws_lb_target_group.wp_ui_target_group.arn}" # Referencing UI target group
   }
 }
 
 
-
+# Created API LB listener
 resource "aws_lb_listener" "api_listener" {
-  load_balancer_arn = "${aws_alb.wp_application_load_balancer_api.arn}" # Referencing our load balancer
-  port              = "80"
-  protocol          = "HTTP"
+  load_balancer_arn = "${aws_alb.wp_application_load_balancer_api.arn}" # Referencing API load balancer
+  port              = var.api_lb_listener_port
+  protocol          = var.api_lb_listener_protocol
 
   default_action {
-    type             = "forward"
-    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing our tagrte group
+    type             = var.api_lb_listener_type
+    target_group_arn = "${aws_lb_target_group.wp_api_target_group.arn}" # Referencing API tagrte group
   }
 }
 
