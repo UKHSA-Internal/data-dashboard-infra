@@ -1,6 +1,6 @@
 # Postgres database RDS
 data "aws_secretsmanager_secret" "secrets" {
-  arn = "arn:aws:secretsmanager:eu-west-2:518944279943:secret:rds_credentials-CsBKKO"
+  arn = var.rds_cred_arn
 }
 
 data "aws_secretsmanager_secret_version" "current" {
@@ -23,6 +23,6 @@ resource "aws_db_instance" "app_rds" {
   password                  = jsondecode(data.aws_secretsmanager_secret_version.current.secret_string)["rds_password"]
   storage_type              = var.rds_storage_type
   db_subnet_group_name      = "${aws_db_subnet_group.rds_subnet_group.id}"
-  skip_final_snapshot       = true
+  skip_final_snapshot       = var.rds_skip_final_snapshot
 }
 
