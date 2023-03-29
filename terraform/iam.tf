@@ -1,4 +1,5 @@
  # IAM roles
+ # Terraform for ECS execution
 resource "aws_iam_role" "app_execution_role" {
   name               = "${var.project_name}-execution-role"
   assume_role_policy = <<EOF
