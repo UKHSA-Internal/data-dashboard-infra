@@ -109,7 +109,7 @@ resource "aws_lb_target_group" "wp_api_target_group" {
   vpc_id      = var.vpc_id # Referencing the default VPC
   health_check {
     matcher = "200,301,302"
-    path = "/"
+    path = "/health/"
     interval = 70
   }
 }
