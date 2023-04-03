@@ -221,7 +221,7 @@ resource "aws_security_group" "service_security_group" {
     to_port   = 0
     protocol  = "-1"
     # Only allowing traffic in from the load balancer security group
-    security_groups =["${aws_security_group.load_balancer_security_group.id}"]
+    security_groups =[aws_security_group.load_balancer_security_group.id, aws_security_group.api_load_balancer_security_group.id]
   }
 
   egress {
