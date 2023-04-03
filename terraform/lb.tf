@@ -3,7 +3,7 @@ resource "aws_alb" "wp_application_load_balancer" {
   load_balancer_type = "application"
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
   # Referencing the security group
-  security_groups = aws_security_group.load_balancer_security_group
+  security_groups = [aws_security_group.load_balancer_security_group.id]
 }
 
 
@@ -12,7 +12,7 @@ resource "aws_alb" "wp_application_load_balancer_api" {
   load_balancer_type = "application"
   subnets = [aws_subnet.subnet_1.id,aws_subnet.subnet_2.id,aws_subnet.subnet_3.id]
   # Referencing the security group
-  security_groups = aws_security_group.api_load_balancer_security_group
+  security_groups = [aws_security_group.api_load_balancer_security_group.id]
 }
 
 resource "aws_lb_target_group" "wp_target_group" {
