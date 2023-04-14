@@ -35,7 +35,7 @@ resource "aws_iam_role" "api_role" {
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringLike": {
-                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-api:*"
+                    "token.actions.githubusercontent.com:sub": "repo:UKHSA-Internal/winter-pressures-api:*"
                 }
             }
         }
@@ -87,7 +87,7 @@ resource "aws_iam_role" "frontend_role" {
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringLike": {
-                    "token.actions.githubusercontent.com:sub": "repo:publichealthengland/winter-pressures-frontend:*"
+                    "token.actions.githubusercontent.com:sub": "repo:UKHSA-Internal/winter-pressures-frontend:*"
                 }
             }
         }
