@@ -16,6 +16,7 @@ function _uhd_commands_help() {
     echo "  help        - this help screen"
     echo
     echo "  aws         - aws commands"
+    echo "  terraform   - terraform commands"
     echo
 
     return 1
@@ -33,6 +34,7 @@ function uhd() {
 
     case $command in
         "aws") _aws "${@:2}" ;;
+        "terraform") _terraform "${@:2}" ;;
 
         *) _uhd_commands_help ;;
     esac
