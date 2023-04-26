@@ -9,6 +9,7 @@ function _aws_help() {
     echo "  help            - this help screen"
     echo
     echo "  login <profile> - login and assume the configured role"
+    echo "  whoami          - display the account you're logged into and which role you have assumed"
     echo
 
     return 1
@@ -20,6 +21,7 @@ function _aws() {
 
     case $verb in
         "login") _aws_login $args ;;
+        "whoami") _aws_whoami $args ;;
 
         *) _aws_help ;;
     esac
@@ -35,4 +37,8 @@ function _aws_login() {
     aws sso login --profile $profile_name
 
     export AWS_PROFILE=$profile_name
+}
+
+function _aws_whoami() {
+    aws sts get-caller-identity | jq .
 }

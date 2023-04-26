@@ -9,6 +9,7 @@ The tooling and scripts in this repo are tested with Linux and Mac. If you're us
 Please make sure you have the following software installed:
 
 1. `aws` - `brew install awscli`
+2. `jq` - `brew install jq`
 
 ## Configure AWS SSO
 
