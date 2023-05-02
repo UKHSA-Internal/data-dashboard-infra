@@ -26,7 +26,26 @@ Follow the prompts and configure the accounts / roles with the following profile
 | Development | Administrator | `uhd-dev:admin`   |
 | Tooling     | Administrator | `uhd-tools:admin` |
 
-## Getting started
+### Post config steps
+
+Due to a bug in the AWS Terraform provider ([hashicorp/terraform-provider-aws#28263](https://github.com/hashicorp/terraform-provider-aws/issues/28263#issuecomment-1378369615)), the following manual post config steps are needed:
+
+1. Open your `.aws/config` file
+2. Remove the `sso_session` parameter from the profile
+3. Add the `sso_start_url` and `sso_region` to the profile
+
+Example:
+
+```
+[profile foo]
+sso_region = eu-west-2
+sso_start_url = https://bar.awsapps.com/start
+sso_account_id = 999999999
+sso_role_name = Baz
+region = eu-west-2
+```
+
+## Getting started
 
 Source our CLI tool:
 
