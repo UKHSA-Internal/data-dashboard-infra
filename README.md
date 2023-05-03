@@ -69,7 +69,7 @@ aws s3 ls
 
 We use Terraform to manage the resources we deploy to AWS.
 
-The Terraform code split into two layers:
+The Terraform code is split into two layers:
 
 1.  For account level resources. We deploy one each of these resources in each AWS account.
 2.  For application resources. This is the infrastructure to run an instance of the application. We deploy multiple instances of these resources into each AWS account.
