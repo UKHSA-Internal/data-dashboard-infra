@@ -7,9 +7,9 @@ function _terraform_help() {
     echo "commands:"
     echo "  help                             - this help screen"
     echo
-    echo "  init:layer <layer>               - runs `terraform init` for the specified layer" 
-    echo "  plan:layer <layer> <workspace>   - runs `terraform plan` for the specified layer and workspace"
-    echo "  apply:layer <layer> <workspace>  - runs `terraform apply` for the specified layer and workspace"
+    echo "  init:layer <layer>               - runs terraform init for the specified layer" 
+    echo "  plan:layer <layer> <workspace>   - runs terraform plan for the specified layer and workspace"
+    echo "  apply:layer <layer> <workspace>  - runs terraform apply for the specified layer and workspace"
     echo
 
     return 1
