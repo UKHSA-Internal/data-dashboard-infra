@@ -9,6 +9,7 @@ The tooling and scripts in this repo are tested with Linux and Mac. If you're us
 Please make sure you have the following software installed:
 
 1. `aws` - `brew install awscli`
+2. `jq` - `brew install jq`
 
 ## Configure AWS SSO
 
@@ -25,7 +26,26 @@ Follow the prompts and configure the accounts / roles with the following profile
 | Development | Administrator | `uhd-dev:admin`   |
 | Tooling     | Administrator | `uhd-tools:admin` |
 
-## Getting started
+### Post config steps
+
+Due to a bug in the AWS Terraform provider ([hashicorp/terraform-provider-aws#28263](https://github.com/hashicorp/terraform-provider-aws/issues/28263#issuecomment-1378369615)), the following manual post config steps are needed:
+
+1. Open your `.aws/config` file
+2. Remove the `sso_session` parameter from the profile
+3. Add the `sso_start_url` and `sso_region` to the profile
+
+Example:
+
+```
+[profile foo]
+sso_region = eu-west-2
+sso_start_url = https://bar.awsapps.com/start
+sso_account_id = 999999999
+sso_role_name = Baz
+region = eu-west-2
+```
+
+## Getting started
 
 Source our CLI tool:
 
@@ -33,16 +53,97 @@ Source our CLI tool:
 source uhd.sh
 ```
 
-Assume the admin role in our `dev` account:
+Assume the admin role in our `tools` account:
 
 ```
-uhd aws login uhd-dev:admin
+uhd aws login uhd-tools:admin
 ```
 
 And then test that you can query S3:
 
 ```
 aws s3 ls
+```
+
+## Terraform
+
+We use Terraform to manage the resources we deploy to AWS.
+
+The Terraform code is split into two layers:
+
+1.  For account level resources. We deploy one each of these resources in each AWS account.
+2.  For application resources. This is the infrastructure to run an instance of the application. We deploy multiple instances of these resources into each AWS account.
+
+## Initialize
+
+Terraform must be initialized on a new machine. To initialize for all layers:
+
+```
+uhd terraform init
+```
+
+Or to initialize a specific layer:
+
+```
+uhd terraform init <layer>
+```
+
+For example:
+
+```
+uhd terraform init 10-account
+```
+
+## Plan
+
+To run `terraform plan` for the application layer in your dev environment:
+
+```
+uhd terraform plan
+```
+
+To `plan` for all layers:
+
+```
+uhd terraform plan:all
+```
+
+Or to `plan` for a specific layer and environment:
+
+```
+uhd terraform plan:layer <layer> <env>
+```
+
+For example:
+
+```
+uhd terraform plan:layer 20-app foo
+```
+
+## Apply
+
+To run `terraform apply` for the application layer in your dev environment:
+
+```
+uhd terraform apply
+```
+
+To `apply` for all layers:
+
+```
+uhd terraform apply:all
+```
+
+Or to `apply` for a specific layer and environment:
+
+```
+uhd terraform apply:layer <layer> <env>
+```
+
+For example:
+
+```
+uhd terraform apply:layer 20-app foo
 ```
 
 ## Related repos
