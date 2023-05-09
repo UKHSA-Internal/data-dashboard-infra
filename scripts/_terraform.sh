@@ -59,16 +59,25 @@ function _terraform_plan_layer() {
     fi
 
     local terraform_dir=$(_get_terraform_dir $layer)
+    local target_account_name=$(_get_target_aws_account_name $layer $workspace)
 
-    echo "Running terraform plan for layer '$layer' and workspace '$workspace'..."
+    echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
+
+    local assume_account_id=$(_get_target_aws_account_id $target_account_name)
+
+    if [[ -z ${assume_account_id} ]]; then
+        echo "Can't find aws account id for account $workspace" >&2
+        return 1
+    fi
+
+    local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
-    local assume_account_id=$(_get_aws_account_id $workspace)
-
     terraform plan \
-        -var "assume_account_id=${assume_account_id}" 
+        -var "assume_account_id=${assume_account_id}" \
+        -var-file=$var_file || return 1
 }
 
 function _terraform_apply_layer() {
@@ -86,17 +95,26 @@ function _terraform_apply_layer() {
     fi
 
     local terraform_dir=$(_get_terraform_dir $layer)
+    local target_account_name=$(_get_target_aws_account_name $layer $workspace)
 
-    echo "Running terraform apply for layer '$layer' and workspace '$workspace'..."
+    echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
+
+    local assume_account_id=$(_get_target_aws_account_id $target_account_name)
+
+    if [[ -z ${assume_account_id} ]]; then
+        echo "Can't find aws account id for account $workspace" >&2
+        return 1
+    fi
+
+    local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
-    local assume_account_id=$(_get_aws_account_id $workspace)
-
     terraform apply \
         -var "assume_account_id=${assume_account_id}" \
-        -auto-approve 
+        -var-file=$var_file \
+        -auto-approve || return 1
 }
 
 function _get_terraform_dir() {
@@ -109,9 +127,32 @@ function _get_tools_account_id() {
   aws sts get-caller-identity | jq -r .Account 
 }
 
-function _get_aws_account_id() {
+function _get_target_aws_account_id() {
   local account=$1  
   local tools_account_id=$(_get_tools_account_id)
   
   aws secretsmanager get-secret-value --secret-id "aws/account-id/$account" --query SecretString --output text
+}
+
+function _get_target_aws_account_name() {
+    local layer=$1
+    local workspace=$2 
+
+    if [[ $layer == "10-account" ]]; then
+        echo $workspace
+    else
+        if [[ $workspace == "prod" ]]; then
+            echo "prod"
+        elif [[ $CI == "true" ]]; then
+            if [[ $GITHUB_REF_NAME == "wke/dev/"* ]]; then
+                echo "dev"
+            elif [[ $GITHUB_REF_NAME == "wke/uat/"* ]]; then
+                echo "uat"
+            else
+                echo "test"
+            fi    
+        else
+            echo "dev"
+        fi
+    fi 
 }
