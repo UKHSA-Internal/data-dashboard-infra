@@ -7,6 +7,9 @@ function _terraform_help() {
     echo "commands:"
     echo "  help                             - this help screen"
     echo
+    echo "  plan <workspace?>                - runs terraform plan for the app layer and optional workspace"
+    echo "  apply <workspace?>               - runs terraform apply for the app layer and optional workspace"
+    echo
     echo "  init:layer <layer>               - runs terraform init for the specified layer" 
     echo "  plan:layer <layer> <workspace>   - runs terraform plan for the specified layer and workspace"
     echo "  apply:layer <layer> <workspace>  - runs terraform apply for the specified layer and workspace"
@@ -20,6 +23,8 @@ function _terraform() {
     local args=(${@:2})
 
     case $verb in
+        "plan") _terraform_plan_app_layer $args ;;
+        "apply") _terraform_apply_app_layer $args ;;
         "init:layer") _terraform_init_layer $args ;;
         "plan:layer") _terraform_plan_layer $args ;;
         "apply:layer") _terraform_apply_layer $args ;;
@@ -42,6 +47,12 @@ function _terraform_init_layer() {
 
     cd $terraform_dir
     terraform init
+}
+
+function _terraform_plan_app_layer() {
+    local workspace="$(_get_workspace_name $1)"
+
+    _terraform_plan_layer "20-app" $workspace
 }
 
 function _terraform_plan_layer() {
@@ -78,6 +89,12 @@ function _terraform_plan_layer() {
     terraform plan \
         -var "assume_account_id=${assume_account_id}" \
         -var-file=$var_file || return 1
+}
+
+function _terraform_apply_app_layer() {
+    local workspace="$(_get_workspace_name $1)"
+
+    _terraform_apply_layer "20-app" $workspace
 }
 
 function _terraform_apply_layer() {
@@ -155,4 +172,17 @@ function _get_target_aws_account_name() {
             echo "dev"
         fi
     fi 
+}
+
+_get_workspace_name() {
+    local workspace=$1
+
+    if [[ -z $workspace ]]; then
+        # This creates a hash of your username on your machine.  We use this as your
+        # dev env name to ensure everyone has their own isolated environemtnt to break 🔥
+        # For example janesmith evaluates to 4279cbe8
+        echo $(whoami | openssl dgst -sha1 -binary | xxd -p | cut -c1-8)
+    else
+        echo $workspace
+    fi
 }
