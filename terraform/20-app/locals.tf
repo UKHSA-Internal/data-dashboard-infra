@@ -4,3 +4,7 @@ locals {
   environment = terraform.workspace
   prefix      = "${local.project}-${local.environment}"
 }
+
+locals {
+  is_dev = var.environment_type == "dev"
+}
