@@ -12,6 +12,6 @@ module "vpc" {
   create_database_subnet_route_table     = var.environment_type == "dev"
   create_database_internet_gateway_route = var.environment_type == "dev"
 
-  enable_dns_hostnames = var.environment_type == "dev"
-  enable_dns_support   = var.environment_type == "dev"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 }
