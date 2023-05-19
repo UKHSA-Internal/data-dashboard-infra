@@ -6,9 +6,9 @@ module "api_alb" {
 
   load_balancer_type = "application"
 
-  vpc_id             = module.vpc.vpc_id
-  subnets            = module.vpc.public_subnets
-  security_groups    = [module.api_alb_security_group.security_group_id]
+  vpc_id          = module.vpc.vpc_id
+  subnets         = module.vpc.public_subnets
+  security_groups = [module.api_alb_security_group.security_group_id]
 
   target_groups = [
     {
@@ -40,24 +40,24 @@ module "api_alb" {
 }
 
 module "api_alb_security_group" {
-    source = "terraform-aws-modules/security-group/aws"
+  source = "terraform-aws-modules/security-group/aws"
 
-    name   = "${local.prefix}-api-alb"
-    vpc_id = module.vpc.vpc_id
+  name   = "${local.prefix}-api-alb"
+  vpc_id = module.vpc.vpc_id
 
-    ingress_with_cidr_blocks = [
-        {
-            description     = "http from internet"
-            rule            = "http-80-tcp"
-            cidr_blocks     = "0.0.0.0/0"
-        }
-    ]
+  ingress_with_cidr_blocks = [
+    {
+      description = "http from internet"
+      rule        = "http-80-tcp"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
 
-    egress_with_source_security_group_id = [
-        {
-            description              = "lb to tasks"
-            rule                     = "http-80-tcp"
-            source_security_group_id = module.ecs.services[local.ecs.services.api].security_group_id 
-        }
-    ]
+  egress_with_source_security_group_id = [
+    {
+      description              = "lb to tasks"
+      rule                     = "http-80-tcp"
+      source_security_group_id = module.ecs.services[local.ecs.services.api].security_group_id
+    }
+  ]
 }
