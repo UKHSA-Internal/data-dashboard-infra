@@ -7,7 +7,7 @@ resource "aws_db_instance" "app_rds" {
   identifier             = "${local.prefix}-db"
   instance_class         = var.rds_app_db_instance_class
   password               = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["password"]
-  publicly_accessible    = local.is_dev
+  publicly_accessible    = local.enable_public_db
   skip_final_snapshot    = var.rds_app_db_skip_final_snapshot
   storage_type           = var.rds_app_db_storage_type
   username               = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]

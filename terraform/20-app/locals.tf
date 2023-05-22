@@ -7,4 +7,6 @@ locals {
 
 locals {
   is_dev = var.environment_type == "dev"
+
+  enable_public_db = local.is_dev
 }

@@ -34,8 +34,16 @@ module "ecs" {
           ]
           environment = [
             {
-              name  = "NEXT_PUBLIC_API_URL"
+              name  = "API_KEY"
+              value = aws_secretsmanager_secret_version.cms_api_key.secret_string
+            },
+            {
+              name  = "API_URL"
               value = module.api_alb.lb_dns_name
+            },
+            {
+              name  = "NEXT_REVALIDATE_TIME"
+              value = "false"
             }
           ]
         }
