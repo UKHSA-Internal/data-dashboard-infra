@@ -3,9 +3,9 @@ resource "aws_secretsmanager_secret" "rds_db_creds" {
 }
 
 resource "aws_secretsmanager_secret_version" "rds_db_creds" {
-  secret_id     = aws_secretsmanager_secret.rds_db_creds.id
+  secret_id = aws_secretsmanager_secret.rds_db_creds.id
   secret_string = jsonencode({
     username = "api_user"
-    password =  random_password.rds_db_password.result
+    password = random_password.rds_db_password.result
   })
 }
