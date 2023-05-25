@@ -57,7 +57,7 @@ module "api_alb_security_group" {
     {
       description              = "lb to tasks"
       rule                     = "http-80-tcp"
-      source_security_group_id = module.ecs.services[local.ecs.services.api].security_group_id
+      source_security_group_id = module.ecs_service_api.security_group_id
     }
   ]
 }

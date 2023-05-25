@@ -61,7 +61,7 @@ module "front_end_alb_security_group" {
       from_port                = 3000
       to_port                  = 3000
       protocol                 = "TCP"
-      source_security_group_id = module.ecs.services[local.ecs.services.front_end].security_group_id
+      source_security_group_id = module.ecs_service_front_end.security_group_id
     }
   ]
 }
