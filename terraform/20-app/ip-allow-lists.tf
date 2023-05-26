@@ -18,6 +18,7 @@ locals {
     other_stakeholders = [
       "82.47.98.5/32",     # Alex Staff
       "62.253.228.56/32",  # Heather
+      "86.155.251.109/32", # Heather 2
       "86.176.69.50/32",   # Steph
       "81.153.114.156/32", # Liz Thomas
       "90.243.49.40/32",   # Jason
