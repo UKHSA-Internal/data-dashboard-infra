@@ -79,7 +79,7 @@ function _terraform_plan_layer() {
     local assume_account_id=$(_get_target_aws_account_id $target_account_name)
 
     if [[ -z ${assume_account_id} ]]; then
-        echo "Can't find aws account id for account $workspace" >&2
+        echo "Can't find aws account id for account $target_account_name" >&2
         return 1
     fi
 
@@ -121,7 +121,7 @@ function _terraform_apply_layer() {
     local assume_account_id=$(_get_target_aws_account_id $target_account_name)
 
     if [[ -z ${assume_account_id} ]]; then
-        echo "Can't find aws account id for account $workspace" >&2
+        echo "Can't find aws account id for account $target_account_name" >&2
         return 1
     fi
 
@@ -158,7 +158,7 @@ function _terraform_destroy_layer() {
     local assume_account_id=$(_get_target_aws_account_id $target_account_name)
 
     if [[ -z ${assume_account_id} ]]; then
-        echo "Can't find aws account id for account $workspace" >&2
+        echo "Can't find aws account id for account $target_account_name" >&2
         return 1
     fi
 
