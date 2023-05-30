@@ -15,7 +15,8 @@ resource "aws_db_instance" "app_rds" {
 }
 
 module "app_rds_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "4.17.2"
 
   name   = "${local.prefix}-app-db"
   vpc_id = module.vpc.vpc_id
