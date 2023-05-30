@@ -1,6 +1,6 @@
 module "api_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.0"
+  version = "8.0.0"
 
   name = "${local.prefix}-api"
 
