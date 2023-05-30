@@ -23,18 +23,19 @@ function _uhd_commands_help() {
 }
 
 function uhd() {
-    if [ "$RUNNING_IN_CI" = "1" ]; then
+    if [ $CI ]; then
         echo $0 $@
     fi
 
     local current=$(pwd)
     local command=$1
+    local args=(${@:2}) 
 
     cd $root
 
     case $command in
-        "aws") _aws "${@:2}" ;;
-        "terraform") _terraform "${@:2}" ;;
+        "aws") _aws $args ;;
+        "terraform") _terraform $args ;;
 
         *) _uhd_commands_help ;;
     esac
