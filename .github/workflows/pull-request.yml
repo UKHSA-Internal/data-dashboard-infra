@@ -1,0 +1,112 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches:
+      - "*"
+      - "!wke/*"
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build_base:
+    name: Build base env
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Build base env
+        run: |
+          git fetch origin $GITHUB_BASE_REF
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+  terraform_plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    needs: ["build_base"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform plan
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform plan:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+  terraform_apply:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    needs: ["build_base", "terraform_plan"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+  terraform_destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: ["terraform_apply"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform destroy
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform destroy:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
