@@ -1,0 +1,9 @@
+name: "Short SHA"
+
+description: "Add SHORT_SHA env property with commit short sha"
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+      shell: bash
