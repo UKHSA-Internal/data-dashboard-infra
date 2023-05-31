@@ -200,9 +200,9 @@ function _get_target_aws_account_name() {
         if [[ $workspace == "prod" ]]; then
             echo "prod"
         elif [[ $CI == "true" ]]; then
-            if [[ $GITHUB_REF_NAME == "wke/dev/"* ]]; then
+            if [[ $GITHUB_REF_NAME == "env/dev/"* ]]; then
                 echo "dev"
-            elif [[ $GITHUB_REF_NAME == "wke/uat/"* ]]; then
+            elif [[ $GITHUB_REF_NAME == "env/uat/"* ]]; then
                 echo "uat"
             else
                 echo "test"
