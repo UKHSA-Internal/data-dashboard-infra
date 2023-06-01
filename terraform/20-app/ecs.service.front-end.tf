@@ -25,16 +25,18 @@ module "ecs_service_front_end" {
       ]
       environment = [
         {
-          name  = "API_KEY"
-          value = aws_secretsmanager_secret_version.cms_api_key.secret_string
-        },
-        {
           name  = "API_URL"
           value = "http://${module.api_alb.lb_dns_name}"
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
           value = "false"
+        }
+      ]
+      secrets = [
+        {
+          name      = "API_KEY"
+          valueFrom = aws_secretsmanager_secret.cms_api_key.arn
         }
       ]
     }

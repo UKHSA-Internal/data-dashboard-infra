@@ -26,14 +26,6 @@ module "ecs_service_api" {
       ]
       environment = [
         {
-          name  = "POSTGRES_USER"
-          value = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]
-        },
-        {
-          name  = "POSTGRES_PASSWORD"
-          value = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["password"]
-        },
-        {
           name  = "POSTGRES_DB"
           value = aws_db_instance.app_rds.db_name
         },
@@ -44,6 +36,16 @@ module "ecs_service_api" {
         {
           name  = "APIENV"
           value = "PROD"
+        }
+      ],
+      secrets = [
+        {
+          name      = "POSTGRES_USER"
+          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:username::"
+        },
+        {
+          name      = "POSTGRES_PASSWORD"
+          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:password::"
         },
       ]
     }
