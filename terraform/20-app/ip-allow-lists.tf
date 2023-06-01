@@ -13,7 +13,7 @@ locals {
       "18.133.111.70/32"   # UKHSA test gateway
     ],
     project_team = [
-      "2.222.188.51/32" # Debbie
+      "5.68.201.28/32" # Debbie
     ],
     other_stakeholders = [
       "82.47.98.5/32",     # Alex Staff
