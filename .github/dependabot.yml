@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "terraform"
+    directory: "/terraform/10-account"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "terraform"
+    directory: "/terraform/20-app"
+    schedule:
+      interval: "daily"
