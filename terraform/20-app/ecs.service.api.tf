@@ -12,10 +12,11 @@ module "ecs_service_api" {
 
   container_definitions = {
     api = {
-      cpu       = 256
-      memory    = 512
-      essential = true
-      image     = "${aws_ecr_repository.api.repository_url}:latest"
+      cpu                      = 256
+      memory                   = 512
+      essential                = true
+      readonly_root_filesystem = false
+      image                    = "${aws_ecr_repository.api.repository_url}:latest"
       port_mappings = [
         {
           containerPort = 80

@@ -30,7 +30,7 @@ module "ecs_service_front_end" {
         },
         {
           name  = "API_URL"
-          value = module.api_alb.lb_dns_name
+          value = "http://${module.api_alb.lb_dns_name}"
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
@@ -70,14 +70,11 @@ module "front_end_tasks_security_group_rules" {
       description = "https to internet"
       rule        = "https-443-tcp"
       cidr_blocks = "0.0.0.0/0"
-    }
-  ]
-
-  egress_with_source_security_group_id = [
+    },
     {
-      description              = "to api"
-      rule                     = "http-80-tcp"
-      source_security_group_id = module.api_alb_security_group.security_group_id
+      description = "to api"
+      rule        = "http-80-tcp"
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 }
