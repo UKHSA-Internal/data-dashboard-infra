@@ -15,7 +15,7 @@ module "ecs_service_front_end" {
       cpu       = 256
       memory    = 512
       essential = true
-      image     = "${aws_ecr_repository.frontend.repository_url}:latest"
+      image     = "${module.ecr_front_end.repository_url}:latest"
       port_mappings = [
         {
           containerPort = 3000
