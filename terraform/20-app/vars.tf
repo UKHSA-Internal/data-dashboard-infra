@@ -20,6 +20,10 @@ variable "rds_app_db_engine_version" {
   default = "13.7"
 }
 
+variable "tools_account_id" {
+  sensitive = true
+}
+
 variable "rds_app_db_instance_class" {
   default = "db.t3.micro"
 }
