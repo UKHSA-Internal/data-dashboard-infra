@@ -2,7 +2,7 @@
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)
 
-for script_file in "$root"/scripts/*.sh; do
+for script_file in "$root"/scripts/_*.sh; do
     source $script_file
 done
 
