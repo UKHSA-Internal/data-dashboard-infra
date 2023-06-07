@@ -1,0 +1,29 @@
+name: Production Workflow
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  fast_forward_env_branches:
+    name: Fast forward env branches
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Fast forward env branches
+        run: |
+          - git fetch
+          - scripts/fast-forward-env-branches.sh
+        shell: zsh {0}
