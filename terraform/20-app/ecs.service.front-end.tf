@@ -12,10 +12,11 @@ module "ecs_service_front_end" {
 
   container_definitions = {
     front-end = {
-      cpu       = 256
-      memory    = 512
-      essential = true
-      image     = "${module.ecr_front_end.repository_url}:latest"
+      cpu                      = 256
+      memory                   = 512
+      essential                = true
+      readonly_root_filesystem = false
+      image                    = "${module.ecr_front_end.repository_url}:latest"
       port_mappings = [
         {
           containerPort = 3000
