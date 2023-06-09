@@ -1,6 +1,8 @@
 output "passwords" {
   value = {
-    rds_db_password = random_password.rds_db_password.result
+    rds_db_password         = random_password.rds_db_password.result
+    api_key                 = local.api_key
+    api_admin_user_password = random_password.api_admin_user_password.result
   }
   sensitive = true
 }
