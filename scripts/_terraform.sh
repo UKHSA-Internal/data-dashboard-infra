@@ -5,17 +5,19 @@ function _terraform_help() {
     echo "uhd terraform <command> [options]"
     echo
     echo "commands:"
-    echo "  help                               - this help screen"
+    echo "  help                                            - this help screen"
     echo
-    echo "  plan <workspace?>                  - runs terraform plan for the app layer and optional workspace"
-    echo "  apply <workspace?>                 - runs terraform apply for the app layer and optional workspace"
+    echo "  plan <workspace?>                               - runs terraform plan for the app layer and optional workspace"
+    echo "  apply <workspace?>                              - runs terraform apply for the app layer and optional workspace"
     echo
-    echo "  init:layer <layer>                 - runs terraform init for the specified layer" 
-    echo "  plan:layer <layer> <workspace>     - runs terraform plan for the specified layer and workspace"
-    echo "  apply:layer <layer> <workspace>    - runs terraform apply for the specified layer and workspace"
-    echo "  destroy:layer <layer> <workspace>  - runs terraform destroy for the specified layer and workspace"
+    echo "  init:layer <layer>                              - runs terraform init for the specified layer" 
+    echo "  plan:layer <layer> <workspace>                  - runs terraform plan for the specified layer and workspace"
+    echo "  apply:layer <layer> <workspace>                 - runs terraform apply for the specified layer and workspace"
+    echo "  output:layer <layer> <workspace>                - runs terraform output for the specified layer and workspace"
+    echo "  destroy:layer <layer> <workspace>               - runs terraform destroy for the specified layer and workspace"
     echo
-
+    echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
+    echo
     return 1
 }
 
@@ -29,6 +31,8 @@ function _terraform() {
         "init:layer") _terraform_init_layer $args ;;
         "plan:layer") _terraform_plan_layer $args ;;
         "apply:layer") _terraform_apply_layer $args ;;
+        "output:layer") _terraform_output_layer $args ;;
+        "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
 
         *) _terraform_help ;;
@@ -138,7 +142,69 @@ function _terraform_apply_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
+
+    terraform output -json > output.json
 }
+
+function _terraform_output_layer() {
+    local layer=$1
+    local workspace=$2
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${workspace} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+    
+    echo "Running terraform output for layer '$layer', workspace '$workspace'..."
+
+    cd $terraform_dir
+
+    terraform workspace select "$workspace" || return 1
+    terraform output -json > output.json
+}
+
+function _terraform_output_layer_file() {
+    local layer=$1
+    local workspace=$2
+    local address=$3
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${workspace} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${address} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+    
+    echo "Running terraform output-file for layer '$layer', workspace '$workspace', for resource '$address'..."
+
+    cd $terraform_dir
+
+    terraform workspace select "$workspace" || return 1
+    
+    resource=$(terraform show -json | jq -r --arg ADDRESS $address '.values.root_module.resources[] | select(.address  == $ADDRESS)')
+    filename=$(jq -r .values.filename <<< $resource)
+
+    echo "Writing file content to '$filename'..."
+    jq -r .values.content <<< $resource > $filename
+}
+
 
 function _terraform_destroy_layer() {
     local layer=$1
