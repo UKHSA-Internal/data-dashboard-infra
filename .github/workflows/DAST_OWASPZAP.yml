@@ -1,0 +1,28 @@
+name: "ZAP Baseline Scan"
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  test:
+    name: OWASP ZAP SCANS
+    runs-on: ubuntu-latest
+ 
+    steps:
+       - uses: actions/checkout@v2
+         with:
+          ref: main
+       - name: Pulling Docker Image
+         run: docker pull owasp/zap2docker-stable
+       - name: Launching the app
+         run: docker run -u zap -p 8080:8080 -p 8090:8090 -i owasp/zap2docker-stable zap-webswing.sh -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+     
+       - name: OWASP ZAP
+         uses: zaproxy/action-baseline@v0.7.0
+         with:
+           target: "http://localhost:8080/?anonym=true&app=ZAP"
+           fail_action: false
+           command_opts: "-x [OUTPUT FILE LOCATION].xml"
+           # 14/6/23 - need a filepath to store the .xml report, and want to add to this .yml to extract info from the report to push to DefectDojo
