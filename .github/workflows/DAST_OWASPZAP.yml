@@ -3,7 +3,7 @@ name: "ZAP Baseline Scan"
 on:
   push:
     branches:
-      - main
+      - suyash-kumar2-patch-1
  
 jobs:
   test:
@@ -13,7 +13,7 @@ jobs:
     steps:
        - uses: actions/checkout@v2
          with:
-          ref: main
+          ref: suyash-kumar2-patch-1
        - name: Pulling Docker Image
          run: docker pull owasp/zap2docker-stable
        - name: Launching the app
