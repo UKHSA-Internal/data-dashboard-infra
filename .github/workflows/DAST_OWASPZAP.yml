@@ -25,8 +25,10 @@ jobs:
           echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
+         run: docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable touch /zap/wrk/test.txt
+         # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
          # docker run --rm -d -p 443:443 owasp/zap2docker-stable
+         
          
      
        - name: OWASP ZAP
