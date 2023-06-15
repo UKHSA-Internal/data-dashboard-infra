@@ -25,7 +25,7 @@ jobs:
           echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -d -p 8080:8080 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable /zap/wrk/test.txt
+         run: docker run --rm -d -p 8080:8080 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
          # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
          
      
