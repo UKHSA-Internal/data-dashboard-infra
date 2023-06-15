@@ -9,6 +9,9 @@ on:
     branches:
       - suyash-kumar2-patch-1 
       # change to main afterwards
+    
+permissions:
+     contents: read
 
 jobs:
   checkov:
@@ -17,7 +20,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        chmod a+r
 
       - name: Install Python
         uses: actions/setup-python@v2
