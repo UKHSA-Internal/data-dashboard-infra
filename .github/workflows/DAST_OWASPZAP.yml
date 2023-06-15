@@ -23,7 +23,7 @@ jobs:
          run: |
           echo $(ls -l /usr/bin/docker)
           echo $(ls -l /zap/wrk/zap.yaml)
-          chmod a+w /zap/wrk/zap.yaml
+          chmod a+w /zap/wrk
         
        - name: Launching the app
          run: docker run --rm -d owasp/zap2docker-stable
