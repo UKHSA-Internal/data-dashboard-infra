@@ -8,31 +8,12 @@ on:
 permissions:
      contents: read
  
-jobs:
-  test:
-    name: OWASP ZAP SCANS
+  jobs:
+  zap_scan:
     runs-on: ubuntu-latest
- 
+    name: Scan ZAP website
     steps:
-       - uses: actions/checkout@v2
-         with:
-          ref: suyash-kumar2-patch-1
-       - name: Pulling Docker Image
-         run: docker pull owasp/zap2docker-stable
-       - name: Check Permissions
-         run: |
-          echo $(ls -l /usr/bin/docker)
-          echo $(ls -l /zap/wrk/zap.yaml)
-          chmod a+w /zap/wrk
-        
-       - name: Launching the app
-         run: docker run --rm -d owasp/zap2docker-stable
-         # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
-         
-     
-       - name: OWASP ZAP
-         uses: zaproxy/action-baseline@v0.7.0
-         with:
-           target: "https://www.ukhsa.gov.uk"
-           fail_action: false
-           # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
+      - name: ZAP Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'https://www.gov.uk/government/organisations/uk-health-security-agency'
