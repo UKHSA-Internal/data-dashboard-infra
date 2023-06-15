@@ -18,17 +18,17 @@ jobs:
          with:
           ref: suyash-kumar2-patch-1
        - name: Pulling Docker Image
-         run: docker pull bkimminich/juice-shop
+         run: docker pull owasp/zap2docker-stable
        # name: Check Permissions
         # run: |
          # echo $(ls -l /usr/bin/docker)
          # echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -p 443:443 bkimminich/juice-shop
+         run: docker run --rm -d -p 443:443 owasp/zap2docker-stable
          # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable touch /zap/wrk/test.txt
          # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
-         # docker run --rm -d -p 443:443 owasp/zap2docker-stable
+      
          
          
      
