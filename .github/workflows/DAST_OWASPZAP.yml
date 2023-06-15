@@ -25,13 +25,13 @@ jobs:
           echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -d -p 8080:8080 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
+         run: docker run --rm -d -p -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
          # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
          
      
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
          with:
-           target: "http://localhost:8080"
+           target: "www.ukhsa.gov.uk"
            fail_action: false
            # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
