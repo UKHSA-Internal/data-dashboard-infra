@@ -32,6 +32,6 @@ jobs:
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
          with:
-           target: "www.ukhsa.gov.uk"
+           target: "https://www.ukhsa.gov.uk"
            fail_action: false
            # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
