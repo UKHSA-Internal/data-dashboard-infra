@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        chmod a+r
 
       - name: Install Python
         uses: actions/setup-python@v2
