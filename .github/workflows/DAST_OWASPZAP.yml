@@ -15,9 +15,9 @@ jobs:
          with:
           ref: suyash-kumar2-patch-1
        - name: Pulling Docker Image
-         run: docker pull owasp/zap2docker-stable
+         run: docker pull owasp/zap2docker-weekly
        - name: Launching the app
-         run: docker run --rm -d -p 8080:8080 owasp/zap2docker-stable -config api.disablekey=true
+         run: docker run --rm -d -p 8080:8080 owasp/zap2docker-weekly
      
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
