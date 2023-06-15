@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - suyash-kumar2-patch-1
+      
+permissions:
+     contents: read
  
 jobs:
   test:
