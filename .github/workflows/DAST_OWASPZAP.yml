@@ -6,7 +6,7 @@ on:
       - suyash-kumar2-patch-1
       
 permissions:
-     contents: write
+     contents: read
  
 jobs:
   test:
@@ -19,22 +19,19 @@ jobs:
           ref: suyash-kumar2-patch-1
        - name: Pulling Docker Image
          run: docker pull owasp/zap2docker-stable
-       # name: Check Permissions
-        # run: |
-         # echo $(ls -l /usr/bin/docker)
-         # echo $(ls -l /zap/wrk/zap.yaml)
+       - name: Check Permissions
+         run: |
+          echo $(ls -l /usr/bin/docker)
+          echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -d -p 443:443 owasp/zap2docker-stable
-         # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable touch /zap/wrk/test.txt
-         # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
-      
-         
+         run: docker run --rm -d -p 8080:8080 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
+         # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
          
      
-       - name: OWASP Scan
+       - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
          with:
-           target: "https://localhost:443"
-           # fail_action: false
+           target: "http://localhost:8080"
+           fail_action: false
            # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
