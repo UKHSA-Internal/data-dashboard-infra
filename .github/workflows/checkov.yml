@@ -1,0 +1,39 @@
+name: Checkov Scan
+
+on:
+  push:
+    branches:
+      - suyash-kumar2-patch-1 
+      # change to main afterwards
+  pull_request:
+    branches:
+      - suyash-kumar2-patch-1 
+      # change to main afterwards
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 'latest'
+          
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov scan
+        run: checkov -d . --output-file checkov-results.json
+
+      - name: Convert Checkov results to XML
+        run: python -c "import json; import dicttoxml; xml = dicttoxml.dicttoxml(json.load(open('checkov-results.json')), root=False, attr_type=False); f = open('checkov-results.xml', 'wb'); f.write(xml); f.close()"
+
+      - name: Upload Checkov XML report
+        uses: actions/upload-artifact@v2
+        with:
+          name: checkov-results
+          path: checkov-results.xml
