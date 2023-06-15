@@ -25,8 +25,8 @@ jobs:
          # echo $(ls -l /zap/wrk/zap.yaml)
         
        - name: Launching the app
-         run: docker run --rm -d -p 443:443 owasp/zap2docker-stable
-         # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable touch /zap/wrk/test.txt
+         run: docker run --rm -d -p 80:80 owasp/zap2docker-stable
+         # docker run --rm -d -p 80:80 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable touch /zap/wrk/test.txt
          # docker run --rm -d -p 443:443 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable
       
          
@@ -35,6 +35,6 @@ jobs:
        - name: OWASP Scan
          uses: zaproxy/action-baseline@v0.7.0
          with:
-           target: "https://localhost:443"
+           target: "http://localhost:80"
            # fail_action: false
            # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
