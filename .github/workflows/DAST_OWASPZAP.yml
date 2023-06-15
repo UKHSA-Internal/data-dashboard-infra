@@ -17,7 +17,7 @@ jobs:
        - name: Pulling Docker Image
          run: docker pull owasp/zap2docker-stable
        - name: Launching the app
-         run: docker run -u zap -p 8080:8080 -p 8090:8090 -i owasp/zap2docker-stable zap-webswing.sh -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+         run: docker run --rm -d -p 8080:8080 owasp/zap2docker-stable -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
      
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
