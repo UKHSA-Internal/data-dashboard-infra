@@ -24,5 +24,5 @@ jobs:
          with:
            target: "http://localhost:8080/?anonym=true&app=ZAP"
            fail_action: false
-           command_opts: "-x .github/workflows/OWASP_report.xml"
-           # 14/6/23 - need a filepath to store the .xml report, and want to add to this .yml to extract info from the report to push to DefectDojo
+           command_opts: "-x ./OWASP_report.xml"
+           # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
