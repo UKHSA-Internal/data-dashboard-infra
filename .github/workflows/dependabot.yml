@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        chmod a+r
 
       - name: Run Dependabot scan
         uses: dependabot/dependabot-core@v0.155.1
