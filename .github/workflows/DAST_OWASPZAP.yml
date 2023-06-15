@@ -46,7 +46,7 @@ jobs:
           sudo chmod a+w /zap/wrk
         
        - name: Launching the app
-         run: docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap.sh -cmd -autorun /zap/wrk/zap.txt
+         run: docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap.sh -cmd -autorun /zap/wrk/zap.yml
          # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
          
      
