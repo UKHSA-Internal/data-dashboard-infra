@@ -10,6 +10,9 @@ on:
       - suyash-kumar2-patch-1
       # change to main later
 
+permissions:
+     contents: read
+     
 jobs:
   dependabot:
     runs-on: ubuntu-latest
