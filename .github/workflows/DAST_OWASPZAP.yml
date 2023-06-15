@@ -19,6 +19,7 @@ jobs:
         
        - name: Launching the app
          run: docker run --rm -p 8080:8080 bkimminich/juice-shop
+         chmod a+r
      
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
