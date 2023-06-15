@@ -1,0 +1,34 @@
+name: Dependabot Scan
+
+on:
+  push:
+    branches:
+      - suyash-kumar2-patch-1
+      # change to main later
+  pull_request:
+    branches:
+      - suyash-kumar2-patch-1
+      # change to main later
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run Dependabot scan
+        uses: dependabot/dependabot-core@v0.155.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          directory: '/'
+
+      - name: Generate XML report
+        run: echo "<xml>Dependabot scan report</xml>" > dependabot-report.xml
+
+      - name: Upload Dependabot XML report
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependabot-report
+          path: dependabot-report.xml
