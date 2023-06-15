@@ -1,3 +1,23 @@
+# name: "ZAP Baseline Scan"
+ 
+# on:
+#   push:
+#     branches:
+#       - suyash-kumar2-patch-1
+      
+# permissions:
+#      contents: read
+# jobs:
+#   test:
+#     name: OWASP ZAP SCANS
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: ZAP Scan
+#         uses: zaproxy/action-baseline@v0.7.0
+#         with:
+#           target: 'https://www.gov.uk/government/organisations/uk-health-security-agency'
+
+
 name: "ZAP Baseline Scan"
  
 on:
@@ -7,12 +27,32 @@ on:
       
 permissions:
      contents: read
+ 
 jobs:
   test:
     name: OWASP ZAP SCANS
     runs-on: ubuntu-latest
+ 
     steps:
-      - name: ZAP Scan
-        uses: zaproxy/action-baseline@v0.7.0
-        with:
-          target: 'https://www.gov.uk/government/organisations/uk-health-security-agency'
+       - uses: actions/checkout@v2
+         with:
+          ref: suyash-kumar2-patch-1
+       - name: Pulling Docker Image
+         run: docker run -v $(pwd):/zap/wrk/:rw -t ubuntu:20.04 touch /zap/wrk/test.txt
+       - name: Check Permissions
+         run: |
+          echo $(ls -l /usr/bin/docker)
+          echo $(ls -l /zap/wrk/zap.yaml)
+          sudo chmod a+w /zap/wrk
+        
+       - name: Launching the app
+         run: docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap.sh -cmd -autorun /zap/wrk/zap.yaml
+         # docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
+         
+     
+       - name: OWASP ZAP
+         uses: zaproxy/action-baseline@v0.7.0
+         with:
+           target: "https://www.ukhsa.gov.uk"
+           fail_action: false
+           # 14/6/23 - want to add to this .yml to extract info from the report to push to DefectDojo
