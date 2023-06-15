@@ -17,7 +17,7 @@ jobs:
        - name: Pulling Docker Image
          run: docker pull owasp/zap2docker-stable
        - name: Launching the app
-         run: docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
+         run: sudo docker run --rm -d -p 8080:8080 owasp/zap2docker-stable
      
        - name: OWASP ZAP
          uses: zaproxy/action-baseline@v0.7.0
