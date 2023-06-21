@@ -1,0 +1,27 @@
+{
+  "cluster": "${cluster_arn}",
+  "count": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ${jsonencode([for subnet_id in subnet_ids : "${subnet_id}"])},
+      "securityGroups": [
+        "${security_group_id}"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "overrides": {
+    "containerOverrides": [
+      {
+        "name": "api",
+        "command": [
+          "boot.sh",
+          "${api_key}",
+          "${admin_password}"
+        ]
+      }
+    ]
+  },
+  "taskDefinition": "${task_arn}"
+}
