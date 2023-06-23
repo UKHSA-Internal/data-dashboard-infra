@@ -1,3 +1,13 @@
+output "ecs" {
+  value = {
+    cluster_name = module.ecs.cluster_name
+    service_names = {
+      api = module.ecs_service_api.name
+      front_end = module.ecs_service_front_end.name
+    }
+  }
+}
+
 output "passwords" {
   value = {
     rds_db_password         = random_password.rds_db_password.result

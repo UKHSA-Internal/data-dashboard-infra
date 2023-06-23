@@ -7,7 +7,8 @@ function _ecs_help() {
     echo "commands:"
     echo "  help                 - this help screen"
     echo 
-    echo "  run job - run the specified job"
+    echo "  restart-services     - restart all the ecs services"
+    echo "  run <job name>       - run the specified job"
     echo "  logs <env> <task id> - tail logs for the specified task"
 
     return 0
@@ -19,6 +20,7 @@ function _ecs() {
 
     case $verb in
         "run") _ecs_run $args ;;
+        "restart-services") _ecs_restart_services $args ;;
         "logs") _ecs_logs $args ;;
 
         *) _ecs_help ;;
@@ -55,3 +57,17 @@ function _ecs_logs() {
    aws logs tail "/aws/ecs/uhd-${env}-api/api" --follow --log-stream-names "ecs/api/$task_id"
 }
 
+function _ecs_restart_services() {
+
+    local cluster_name=$(jq -r '.ecs.value.cluster_name'  terraform/20-app/output.json)
+    local api_service_name=$(jq -r '.ecs.value.service_names.api'  terraform/20-app/output.json)
+    local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  terraform/20-app/output.json)
+
+    echo "Restarting services..."
+
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $api_service_name 
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $front_end_service_name
+
+    echo "Waiting for services to reach a steady state..."
+    aws ecs wait services-stable --cluster $cluster_name --services $api_service_name $front_end_service_name
+}
