@@ -6,3 +6,11 @@ resource "random_password" "rds_db_password" {
   min_upper   = 1
   special     = true
 }
+
+resource "random_password" "api_admin_user_password" {
+  length = 10
+  min_numeric = 1
+  min_lower = 1
+  min_upper = 1
+  special = false
+}

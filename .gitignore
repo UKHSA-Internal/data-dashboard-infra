@@ -32,3 +32,9 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Rendered ECS task overrides
+terraform/20-app/ecs-jobs/*.json
+
+# Terraform output
+terraform/**/output.json

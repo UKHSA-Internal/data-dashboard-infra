@@ -13,10 +13,11 @@ module "ecr_api" {
   version = "1.6.0"
 
   create_lifecycle_policy           = false
+  repository_force_delete           = true
   repository_image_tag_mutability   = "MUTABLE"
   repository_name                   = "${local.prefix}-api"
-  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
   repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
+  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
 }
 
 module "ecr_front_end" {
@@ -24,6 +25,7 @@ module "ecr_front_end" {
   version = "1.6.0"
 
   create_lifecycle_policy           = false
+  repository_force_delete           = true
   repository_image_tag_mutability   = "MUTABLE"
   repository_name                   = "${local.prefix}-front-end"
   repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
