@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "env/**"
+  workflow_dispatch:
 
 env:
   AWS_REGION: "eu-west-2"
