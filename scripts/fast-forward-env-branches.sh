@@ -1,6 +1,8 @@
 #!/bin/bash 
 
 env_branchs=("env/uat/uat"
+             "env/test/pen"
+             "env/test/perf"
              "env/test/test"
              "env/dev/dev")
 
