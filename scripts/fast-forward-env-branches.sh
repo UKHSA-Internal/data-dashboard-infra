@@ -15,8 +15,11 @@ for branch in ${env_branchs[@]}; do
         git checkout $branch
         git merge main --ff-only
         git push
-        
         echo
+
+        if [ $CI ]; then
+            gh workflow run well-known-environment.yml --ref $branch
+        fi
     else
         echo "Fast forward merge is not possible to branch $branch"
         echo
