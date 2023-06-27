@@ -13,7 +13,7 @@ for branch in ${env_branchs[@]}; do
         echo 
 
         git checkout $branch
-        git merge master --ff-only
+        git merge main --ff-only
         git push
         
         echo
