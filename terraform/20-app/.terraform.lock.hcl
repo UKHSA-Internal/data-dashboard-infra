@@ -25,7 +25,6 @@ provider "registry.terraform.io/hashicorp/aws" {
 }
 
 provider "registry.terraform.io/hashicorp/local" {
-  version = "2.4.0"
   version     = "2.4.0"
   constraints = "2.4.0"
   hashes = [
