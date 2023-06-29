@@ -12,7 +12,7 @@ function _docker_help() {
     echo
     echo "  ecr:login            - login to ECR in the dev account"
     echo "  ecr:login <account>  - login to ECR in the specified account"
-    echo 
+    echo
 
     return 0
 }

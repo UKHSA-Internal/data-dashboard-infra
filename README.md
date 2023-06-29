@@ -146,6 +146,79 @@ For example:
 uhd terraform apply:layer 20-app foo
 ```
 
+## Push containers to your ECR
+
+Until we finalize our strategy for ECR, you'll need to pull the latest container images and push them to your ECR:
+
+First login to ECR:
+
+```
+uhd docker ecr:login
+```
+
+Then to pull the latest images:
+
+```
+uhd docker pull
+```
+
+And to push them to your ECR:
+
+```
+uhd docker push <account> <env>
+```
+
+For example:
+
+```
+uhd docker push dev 12345678
+```
+
+## Bootstrap your environment
+
+Once your infrastructure is deployed, you'll need to bootstrap your environment. This will set the API key, CMS admin user password, and seed your database with content and metrics.
+
+> **These commands must be run from the `dev` account**
+
+Open a new terminal window and login to AWS:
+
+```
+source uhd.sh
+uhd aws login uhd-dev:admin
+```
+
+Run the bootstrap job:
+
+```
+uhd ecs run bootstrap-env
+```
+
+Make a note of the task ID. It is the last part of the task ARN. In the example below it is `e3a5dc3fc35546c6980fabe45bc59fe6`
+
+```
+arn:aws:ecs:eu-west-2:123456789012:task/uhd-12345678-cluster/e3a5dc3fc35546c6980fabe45bc59fe6
+```
+
+You can then tail the logs from the task. It may take a minute or two for the task to start:
+
+```
+uhd ecs logs <env> <task id>
+```
+
+For example:
+
+```
+uhd ecs logs 12345678 d20ee493b97143f293ae6ebb5f7b7c0a
+```
+
+## Restart your services
+
+Your environment should now be setup. The final step is to restart your services:
+
+```
+uhd ecs restart-services
+```
+
 ## Related repos
 
 These repos contain the app source code:

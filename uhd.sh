@@ -17,6 +17,7 @@ function _uhd_commands_help() {
     echo
     echo "  aws         - aws commands"
     echo "  docker      - docker commands"
+    echo "  ecs         - ecs commands" 
     echo "  terraform   - terraform commands"
     echo
 
@@ -37,6 +38,7 @@ function uhd() {
     case $command in
         "aws") _aws $args ;;
         "docker") _docker $args ;;
+        "ecs") _ecs $args ;;
         "terraform") _terraform $args ;;
 
         *) _uhd_commands_help ;;

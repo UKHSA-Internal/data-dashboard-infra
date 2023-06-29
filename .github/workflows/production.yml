@@ -20,10 +20,14 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - uses: ./.github/actions/setup-zsh
 
       - name: Fast forward env branches
         run: |
-          - git fetch
           - scripts/fast-forward-env-branches.sh
         shell: zsh {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
