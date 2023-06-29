@@ -19,7 +19,7 @@ module "front_end_alb" {
       health_check = {
         enabled             = true
         interval            = 30
-        path                = "/"
+        path                = "/api/health"
         port                = "traffic-port"
         healthy_threshold   = 3
         unhealthy_threshold = 3
