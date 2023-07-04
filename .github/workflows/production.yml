@@ -26,6 +26,7 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Fast forward env branches
+        if: false
         run: |
           - scripts/fast-forward-env-branches.sh
         shell: zsh {0}
