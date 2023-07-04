@@ -31,7 +31,7 @@ module "ecs_service_front_end" {
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
-          value = "false"
+          value = "360"
         }
       ]
       secrets = [
