@@ -26,6 +26,10 @@ module "ecs_service_api" {
       ]
       environment = [
         {
+          name  = "FRONTEND_URL"
+          value = "http://${module.front_end_alb.lb_dns_name}"
+        },
+        {
           name  = "POSTGRES_DB"
           value = aws_db_instance.app_rds.db_name
         },
