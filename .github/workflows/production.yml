@@ -45,6 +45,7 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/dev/dev
+    secrets: inherit
 
   deploy_test:
     needs: fast_forward_env_branches
@@ -52,6 +53,7 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/test
+    secrets: inherit
 
   deploy_perf:
     needs: fast_forward_env_branches
@@ -59,6 +61,7 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/perf
+    secrets: inherit
 
   deploy_pen:
     needs: fast_forward_env_branches
@@ -66,6 +69,7 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/pen
+    secrets: inherit
 
   deploy_uat:
     needs: fast_forward_env_branches
@@ -73,3 +77,4 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/uat/uat
+    secrets: inherit
