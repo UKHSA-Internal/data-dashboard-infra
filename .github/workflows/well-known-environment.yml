@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "env/**"
-  workflow_dispatch:
   workflow_call:
     inputs:
       branch:
@@ -13,7 +12,7 @@ on:
 
 env:
   AWS_REGION: "eu-west-2"
-  branch: ${{ github.event_name == 'workflow_call' && inputs.branch || github.ref_name }}
+  branch: ${{ inputs.branch == '' && github.ref_name || inputs.branch }}
 
 permissions:
   id-token: write
