@@ -44,6 +44,8 @@ jobs:
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
+        env:
+          branch: ${{ env.branch }}
         shell: zsh {0}
 
   terraform_apply:
@@ -72,6 +74,8 @@ jobs:
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
+        env:
+          branch: ${{ env.branch }}
         shell: zsh {0}
 
   push_docker_images:
@@ -102,4 +106,6 @@ jobs:
           uhd docker pull
           uhd docker ecr:login $TARGET_ACCOUNT_NAME
           uhd docker push $TARGET_ACCOUNT_NAME $ENVIRONMENT_NAME
+        env:
+          branch: ${{ env.branch }}
         shell: zsh {0}
