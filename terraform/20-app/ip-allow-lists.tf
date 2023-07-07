@@ -24,6 +24,7 @@ locals {
     ],
     other_stakeholders = [
       "151.228.223.174/32", # Kelly
+      "152.37.69.61/32",    # Ashley M
       "51.148.179.77/32",   # Tina
       "62.253.228.56/32",   # Heather & Steven R
       "81.153.114.156/32",  # Liz Thomas
