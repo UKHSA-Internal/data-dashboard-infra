@@ -44,7 +44,11 @@ function uhd() {
         *) _uhd_commands_help ;;
     esac
 
+    local exit_code=$?
+
     cd $current
+
+    return $exit_code
 }
 
 echo "Usage: uhd"
