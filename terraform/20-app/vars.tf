@@ -17,7 +17,7 @@ variable "rds_app_db_engine" {
 }
 
 variable "rds_app_db_engine_version" {
-  default = "13.7"
+  default = "14.8"
 }
 
 variable "tools_account_id" {
