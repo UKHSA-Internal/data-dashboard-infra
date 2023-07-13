@@ -14,6 +14,15 @@ resource "random_password" "api_key_suffix" {
   special     = false
 }
 
+resource "random_password" "api_secret_key" {
+  length      = 50
+  min_lower   = 1
+  min_numeric = 1
+  min_special = 1
+  min_upper   = 1
+  special     = true
+}
+
 locals {
   api_key = "${random_password.api_key_prefix.result}.${random_password.api_key_suffix.result}"
 }

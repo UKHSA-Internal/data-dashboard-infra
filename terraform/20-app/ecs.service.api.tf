@@ -51,6 +51,10 @@ module "ecs_service_api" {
           name      = "POSTGRES_PASSWORD"
           valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:password::"
         },
+        {
+          name      = "SECRET_KEY",
+          valueFrom = aws_secretsmanager_secret.api_secret_key.arn
+        }
       ]
     }
   }
