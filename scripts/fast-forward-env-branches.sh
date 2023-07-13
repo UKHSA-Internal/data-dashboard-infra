@@ -1,12 +1,14 @@
 #!/bin/bash 
 
-env_branchs=("env/uat/uat"
-             "env/test/pen"
-             "env/test/perf"
-             "env/test/test"
-             "env/dev/dev")
+env_branches=("env/uat/uat"
+              "env/test/pen"
+              "env/test/perf"
+              "env/test/test"
+              "env/dev/dev")
 
-for branch in ${env_branchs[@]}; do
+for branch in ${env_branches[@]}; do 
+    env=$(echo $branch | cut -d : -f 1 | xargs basename)
+    
     if git merge-base --is-ancestor origin/$branch main
     then
         echo "Fast forward merge is possible to branch $branch"
@@ -18,10 +20,14 @@ for branch in ${env_branchs[@]}; do
         echo
 
         if [ $CI ]; then
-            gh workflow run well-known-environment.yml --ref $branch
+            echo "deploy_$env=true" >> "$GITHUB_OUTPUT"
         fi
     else
         echo "Fast forward merge is not possible to branch $branch"
         echo
+
+        if [ $CI ]; then
+            echo "deploy_$env=false" >> "$GITHUB_OUTPUT"
+        fi
     fi
 done

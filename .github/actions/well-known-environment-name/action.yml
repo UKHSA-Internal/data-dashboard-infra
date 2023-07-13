@@ -1,0 +1,16 @@
+name: "Well known environment name"
+
+description: "Generates the well known environment name from the branch name"
+
+inputs:
+  branch:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "ENVIRONMENT_NAME=$(echo $branch | grep -P '([^\/]+$)' -o)" >> $GITHUB_ENV
+      env:
+        branch: ${{ inputs.branch }}
+      shell: bash

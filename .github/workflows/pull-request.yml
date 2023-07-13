@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_ref }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,8 +33,6 @@ jobs:
 
       - name: Build base env
         run: |
-          git fetch origin $GITHUB_BASE_REF
-          git checkout $GITHUB_BASE_REF
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
@@ -111,11 +111,47 @@ jobs:
           uhd docker push test ci-$SHORT_SHA
         shell: zsh {0}
 
+  restart_ecs_services:
+    name: Restart ECS services
+    runs-on: ubuntu-latest
+    needs: ["push_docker_images"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for ECS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Restart ECS services
+        run: |
+          source uhd.sh
+          uhd ecs restart-services
+        shell: zsh {0}
+
   terraform_destroy:
     name: Terraform destroy
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: ["push_docker_images"]
+    needs: ["restart_ecs_services"]
     steps:
       - uses: actions/checkout@v3
 

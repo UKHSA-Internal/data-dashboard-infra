@@ -1,6 +1,6 @@
 module "api_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "8.6.0"
+  version = "8.7.0"
 
   name = "${local.prefix}-api"
 
@@ -41,7 +41,8 @@ module "api_alb" {
 
 module "api_alb_security_group" {
   source = "terraform-aws-modules/security-group/aws"
-
+  version = "5.1.0"
+  
   name   = "${local.prefix}-api-alb"
   vpc_id = module.vpc.vpc_id
 

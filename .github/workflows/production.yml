@@ -18,6 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
+      deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
+      deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
+      deploy_pen: ${{ steps.fast_forward_merge.outputs.deploy_pen }}
+      deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,9 +32,49 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Fast forward env branches
-        if: false
+        id: fast_forward_merge
         run: |
           - scripts/fast-forward-env-branches.sh
         shell: zsh {0}
         env:
           GH_TOKEN: ${{ github.token }}
+
+  deploy_dev:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_dev}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/dev/dev
+    secrets: inherit
+
+  deploy_test:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_test}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/test/test
+    secrets: inherit
+
+  deploy_perf:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_perf}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/test/perf
+    secrets: inherit
+
+  deploy_pen:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_pen}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/test/pen
+    secrets: inherit
+
+  deploy_uat:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_uat}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/uat/uat
+    secrets: inherit
