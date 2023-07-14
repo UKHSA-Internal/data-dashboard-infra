@@ -21,7 +21,7 @@ locals {
       "92.15.13.74/32"      # Ravi D
     ],
     project_team = [
-      "2.222.81.211/32" # Debbie
+      "2.222.81.211/32"     # Debbie
     ],
     other_stakeholders = [
       "151.228.223.13/32",  # Kelly
@@ -35,6 +35,7 @@ locals {
       "82.47.98.5/32",      # Alex Staff
       "82.68.136.38/32",    # Steve Ryan
       "86.130.164.47/32",   # Sam Organ
+      "109.155.125.77/32",  # Sam Organ 2
       "86.155.251.109/32",  # Heather 2
       "86.171.247.217/32",  # Nadine
       "86.176.69.50/32",    # Steph
