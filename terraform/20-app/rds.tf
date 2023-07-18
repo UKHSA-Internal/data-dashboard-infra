@@ -24,9 +24,19 @@ module "app_rds_security_group" {
 
   ingress_with_source_security_group_id = [
     {
-      description              = "api tasks to db"
+      description              = "private api tasks to db"
       rule                     = "postgresql-tcp"
-      source_security_group_id = module.ecs_service_api.security_group_id
+      source_security_group_id = module.ecs_service_private_api.security_group_id
+    },
+    {
+      description              = "public api tasks to db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.ecs_service_public_api.security_group_id
+    },
+    {
+      description              = "cms admin tasks to db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.ecs_service_cms_admin.security_group_id
     }
   ]
 }
