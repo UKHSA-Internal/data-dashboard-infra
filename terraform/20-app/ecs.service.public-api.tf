@@ -73,7 +73,7 @@ module "public_api_tasks_security_group_rules" {
   version = "5.1.0"
 
   create_sg         = false
-  security_group_id = module.ecs_service_api.security_group_id
+  security_group_id = module.ecs_service_public_api.security_group_id
 
   ingress_with_source_security_group_id = [
     {
