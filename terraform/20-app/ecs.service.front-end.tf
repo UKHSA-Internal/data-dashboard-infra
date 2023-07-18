@@ -27,7 +27,7 @@ module "ecs_service_front_end" {
       environment = [
         {
           name  = "API_URL"
-          value = "http://${module.api_alb.lb_dns_name}"
+          value = "http://${module.private_api_alb.lb_dns_name}"
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
