@@ -30,6 +30,10 @@ module "ecs_service_public_api" {
           value = "PUBLIC_API"
         },
         {
+          name  = "FRONTEND_URL"
+          value = "http://${module.front_end_alb.lb_dns_name}"
+        },
+        {
           name  = "POSTGRES_DB"
           value = aws_db_instance.app_rds.db_name
         },
