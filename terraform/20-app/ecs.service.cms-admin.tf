@@ -27,7 +27,7 @@ module "ecs_service_cms_admin" {
       environment = [
         {
           name  = "APP_MODE"
-          value = "CMS"
+          value = "CMS_ADMIN"
         },
         {
           name  = "POSTGRES_DB"
