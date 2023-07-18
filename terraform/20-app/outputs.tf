@@ -2,8 +2,10 @@ output "ecs" {
   value = {
     cluster_name = module.ecs.cluster_name
     service_names = {
-      api = module.ecs_service_api.name
-      front_end = module.ecs_service_front_end.name
+      cms_admin   = module.ecs_service_cms_admin.name
+      private_api = module.ecs_service_private_api.name
+      public_api  = module.ecs_service_public_api.name
+      front_end   = module.ecs_service_front_end.name
     }
   }
 }
