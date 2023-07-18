@@ -8,8 +8,9 @@ function _terraform_help() {
     echo "  help                                            - this help screen"
     echo
     echo "  init                                            - runs terraform init for all layers" 
+    echo "  plan                                            - runs terraform plan for the app layer in your dev workspace"
     echo
-    echo "  plan <workspace?>                               - runs terraform plan for the app layer and optional workspace"
+    echo "  plan <workspace>                                - runs terraform plan for the app layer and workspace"
     echo "  apply <workspace?>                              - runs terraform apply for the app layer and optional workspace"
     echo
     echo "  init:layer <layer>                              - runs terraform init for the specified layer" 

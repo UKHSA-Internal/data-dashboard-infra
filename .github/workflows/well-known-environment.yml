@@ -42,7 +42,9 @@ jobs:
       - name: Terraform plan
         run: |
           source uhd.sh
+          TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)
           uhd terraform init
+          uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
