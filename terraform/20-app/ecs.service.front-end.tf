@@ -30,6 +30,10 @@ module "ecs_service_front_end" {
           value = "http://${module.private_api_alb.lb_dns_name}"
         },
         {
+          name  = "PUBLIC_API_URL"
+          value = "http://${module.public_api_alb.lb_dns_name}"
+        },
+        {
           name  = "NEXT_REVALIDATE_TIME"
           value = "360"
         }
