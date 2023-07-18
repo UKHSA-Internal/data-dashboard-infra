@@ -1,6 +1,7 @@
 #!/bin/bash 
 
-env_branches=("env/uat/uat"
+env_branches=("env/uat/train"
+              "env/uat/uat"
               "env/test/pen"
               "env/test/perf"
               "env/test/test"
