@@ -42,9 +42,8 @@ jobs:
       - name: Terraform plan
         run: |
           source uhd.sh
-          TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)
           uhd terraform init
-          uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
+          [ $IS_ACCOUNT_LAYER_BRANCH == "true" ] && uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
@@ -74,9 +73,8 @@ jobs:
       - name: Terraform apply
         run: |
           source uhd.sh
-          TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)
           uhd terraform init
-          uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
+          [ $IS_ACCOUNT_LAYER_BRANCH == "true" ] && uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
           uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
@@ -105,7 +103,6 @@ jobs:
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)
           uhd docker ecr:login
           uhd docker pull
           uhd docker ecr:login $TARGET_ACCOUNT_NAME
