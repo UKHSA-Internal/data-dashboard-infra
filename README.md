@@ -122,12 +122,6 @@ To run `terraform apply` for the application layer in your dev environment:
 uhd terraform apply
 ```
 
-To `apply` for all layers:
-
-```
-uhd terraform apply:all
-```
-
 Or to `apply` for a specific layer and environment:
 
 ```

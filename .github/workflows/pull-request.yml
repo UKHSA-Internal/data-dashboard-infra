@@ -84,6 +84,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
+          uhd terraform apply:layer 10-account test
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
