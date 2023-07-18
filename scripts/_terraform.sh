@@ -7,6 +7,8 @@ function _terraform_help() {
     echo "commands:"
     echo "  help                                            - this help screen"
     echo
+    echo "  init                                            - runs terraform init for all layers" 
+    echo
     echo "  plan <workspace?>                               - runs terraform plan for the app layer and optional workspace"
     echo "  apply <workspace?>                              - runs terraform apply for the app layer and optional workspace"
     echo
@@ -26,6 +28,7 @@ function _terraform() {
     local args=(${@:2})
 
     case $verb in
+        "init") _terraform_init $args ;;
         "plan") _terraform_plan_app_layer $args ;;
         "apply") _terraform_apply_app_layer $args ;;
         "init:layer") _terraform_init_layer $args ;;
@@ -37,6 +40,12 @@ function _terraform() {
 
         *) _terraform_help ;;
     esac
+}
+
+function _terraform_init() {
+    _terraform_init_layer "10-account"
+    echo
+    _terraform_init_layer "20-app"
 }
 
 function _terraform_init_layer() {

@@ -42,7 +42,7 @@ jobs:
       - name: Terraform plan
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
+          uhd terraform init
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
@@ -72,7 +72,7 @@ jobs:
       - name: Terraform apply
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
+          uhd terraform init
           uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
