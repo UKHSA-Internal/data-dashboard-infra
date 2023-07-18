@@ -21,7 +21,9 @@ output "passwords" {
 
 output "urls" {
   value = {
-    front_end = "http://${module.front_end_alb.lb_dns_name}"
-    api       = "http://${module.api_alb.lb_dns_name}"
+    front_end         = "http://${module.front_end_alb.lb_dns_name}"
+    cms_admin         = "http://${module.cms_admin_alb.lb_dns_name}"
+    private_api       = "http://${module.private_api_alb.lb_dns_name}"
+    public_api        = "http://${module.public_api_alb.lb_dns_name}"
   }
 }
