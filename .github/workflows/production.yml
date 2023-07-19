@@ -24,6 +24,7 @@ jobs:
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
       deploy_pen: ${{ steps.fast_forward_merge.outputs.deploy_pen }}
       deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
+      deploy_train: ${{ steps.fast_forward_merge.outputs.deploy_train }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -77,4 +78,12 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/uat/uat
+    secrets: inherit
+
+  deploy_train:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_train}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/uat/train
     secrets: inherit
