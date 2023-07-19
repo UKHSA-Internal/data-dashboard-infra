@@ -58,7 +58,8 @@ jobs:
       - name: Terraform plan
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
+          uhd terraform init
+          uhd terraform plan:layer 10-account test
           uhd terraform plan:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
@@ -82,7 +83,8 @@ jobs:
       - name: Terraform apply
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
+          uhd terraform init
+          uhd terraform apply:layer 10-account test
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 

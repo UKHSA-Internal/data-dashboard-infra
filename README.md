@@ -102,12 +102,6 @@ To run `terraform plan` for the application layer in your dev environment:
 uhd terraform plan
 ```
 
-To `plan` for all layers:
-
-```
-uhd terraform plan:all
-```
-
 Or to `plan` for a specific layer and environment:
 
 ```
@@ -126,12 +120,6 @@ To run `terraform apply` for the application layer in your dev environment:
 
 ```
 uhd terraform apply
-```
-
-To `apply` for all layers:
-
-```
-uhd terraform apply:all
 ```
 
 Or to `apply` for a specific layer and environment:
