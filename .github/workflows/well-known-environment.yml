@@ -43,7 +43,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
-          [ $IS_ACCOUNT_LAYER_BRANCH == "true" ] && uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
+          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
@@ -74,7 +74,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
-          [ $IS_ACCOUNT_LAYER_BRANCH == "true" ] && uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
+          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
           uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
