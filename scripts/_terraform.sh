@@ -10,6 +10,7 @@ function _terraform_help() {
     echo "  init                                            - runs terraform init for all layers" 
     echo "  plan                                            - runs terraform plan for the app layer in your dev workspace"
     echo "  apply                                           - runs terraform apply for the app layer in your dev workspace"
+    echo "  upgrade                                         - runs terraform upgrade for all layers"
     echo
     echo "  plan <workspace>                                - runs terraform plan for the app layer and workspace"
     echo "  apply <workspace>                               - runs terraform apply for the app layer and workspace"
@@ -18,6 +19,7 @@ function _terraform_help() {
     echo "  plan:layer <layer> <workspace>                  - runs terraform plan for the specified layer and workspace"
     echo "  apply:layer <layer> <workspace>                 - runs terraform apply for the specified layer and workspace"
     echo "  output:layer <layer> <workspace>                - runs terraform output for the specified layer and workspace"
+    echo "  upgrade:layer <layer>                           - runs terraform upgrade for the specified layer"
     echo "  destroy:layer <layer> <workspace>               - runs terraform destroy for the specified layer and workspace"
     echo
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
@@ -33,9 +35,11 @@ function _terraform() {
         "init") _terraform_init $args ;;
         "plan") _terraform_plan_app_layer $args ;;
         "apply") _terraform_apply_app_layer $args ;;
+        "upgrade") _terraform_upgrade $args ;;
         "init:layer") _terraform_init_layer $args ;;
         "plan:layer") _terraform_plan_layer $args ;;
         "apply:layer") _terraform_apply_layer $args ;;
+        "upgrade:layer") _terraform_upgrade_layer $args ;;
         "output:layer") _terraform_output_layer $args ;;
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
@@ -64,6 +68,30 @@ function _terraform_init_layer() {
 
     cd $terraform_dir
     terraform init
+}
+
+function _terraform_upgrade() {
+    _terraform_upgrade_layer "10-account"
+    echo
+    _terraform_upgrade_layer "20-app"
+}
+
+function _terraform_upgrade_layer() {
+    local layer=$1
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+
+    echo "Upgrading terraform providers for layer '$layer'..."
+
+    cd $terraform_dir
+
+    terraform init -upgrade
+    terraform providers lock -platform=darwin_amd64 -platform=darwin_arm64 -platform=linux_amd64
 }
 
 function _terraform_plan_app_layer() {
