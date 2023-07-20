@@ -4,7 +4,7 @@ resource "random_password" "rds_db_password" {
   min_numeric = 1
   min_special = 1
   min_upper   = 1
-  special     = true
+  special     = false
 }
 
 resource "random_password" "api_admin_user_password" {
