@@ -31,7 +31,7 @@ resource "aws_secretsmanager_secret_version" "cms_admin_user_credentials" {
   secret_id = aws_secretsmanager_secret.cms_admin_user_credentials.id
   secret_string = jsonencode({
     username = "testadmin"
-    password = random_password.api_admin_user_password.result
+    password = random_password.cms_admin_user_password.result
   })
 }
 
