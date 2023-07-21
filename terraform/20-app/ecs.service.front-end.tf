@@ -18,7 +18,7 @@ module "ecs_service_front_end" {
       memory                   = 1024
       essential                = true
       readonly_root_filesystem = false
-      image                    = "${module.ecr_front_end.repository_url}:latest"
+      image                    = "${module.ecr_front_end.repository_url}:ssr"
       port_mappings = [
         {
           containerPort = 3000

@@ -40,7 +40,7 @@ module "front_end_alb" {
 }
 
 module "front_end_alb_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   name   = "${local.prefix}-front-end-alb"
@@ -50,9 +50,7 @@ module "front_end_alb_security_group" {
     {
       description = "http from allowed ips"
       rule        = "http-80-tcp"
-      cidr_blocks = join(",", local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-      local.ip_allow_list.other_stakeholders)
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 
