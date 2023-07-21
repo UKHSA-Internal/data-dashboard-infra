@@ -2,7 +2,6 @@
 
 env_branches=("env/uat/train"
               "env/uat/uat"
-              "env/test/pen"
               "env/test/perf"
               "env/test/test"
               "env/dev/dev")
