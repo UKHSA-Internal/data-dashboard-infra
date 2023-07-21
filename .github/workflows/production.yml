@@ -22,7 +22,7 @@ jobs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
-      deploy_pen: ${{ steps.fast_forward_merge.outputs.deploy_pen }}
+      deploy_pen: "false"
       deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
       deploy_train: ${{ steps.fast_forward_merge.outputs.deploy_train }}
     steps:
