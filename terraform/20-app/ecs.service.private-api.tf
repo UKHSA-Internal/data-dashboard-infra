@@ -5,15 +5,17 @@ module "ecs_service_private_api" {
   name        = "${local.prefix}-private-api"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu              = 256
-  memory           = 512
-  assign_public_ip = true
-  subnet_ids       = module.vpc.public_subnets
+  cpu                = 512
+  memory             = 1024
+  assign_public_ip   = true
+  subnet_ids         = module.vpc.public_subnets
+  enable_autoscaling = false
+  desired_count      = 1
 
   container_definitions = {
     api = {
-      cpu                      = 256
-      memory                   = 512
+      cpu                      = 512
+      memory                   = 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"

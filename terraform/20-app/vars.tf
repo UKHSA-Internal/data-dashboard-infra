@@ -9,7 +9,7 @@ variable "assume_role_name" {
 variable "environment_type" {}
 
 variable "rds_app_db_allocated_storage" {
-  default = "10"
+  default = "20"
 }
 
 variable "rds_app_db_engine" {
@@ -25,7 +25,7 @@ variable "tools_account_id" {
 }
 
 variable "rds_app_db_instance_class" {
-  default = "db.t3.micro"
+  default = "db.t3.small"
 }
 
 variable "rds_app_db_skip_final_snapshot" {
@@ -33,5 +33,5 @@ variable "rds_app_db_skip_final_snapshot" {
 }
 
 variable "rds_app_db_storage_type" {
-  default = "standard"
+  default = "gp3"
 }
