@@ -3,11 +3,14 @@ resource "aws_secretsmanager_secret" "rds_db_creds" {
 }
 
 resource "aws_secretsmanager_secret" "private_api_key" {
-  name = "${local.prefix}-private-api-key"
+  name        = "${local.prefix}-private-api-key"
+  description = "This is the API key required in request headers when interacting with the private API."
+
 }
 
 resource "aws_secretsmanager_secret" "cms_admin_user_credentials" {
-  name = "${local.prefix}-cms-admin-user-credentials"
+  name        = "${local.prefix}-cms-admin-user-credentials"
+  description = "This is the base admin user name and password for the CMS admin application."
 }
 
 resource "aws_secretsmanager_secret" "backend_cryptographic_signing_key" {
