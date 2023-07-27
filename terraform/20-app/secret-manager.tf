@@ -39,3 +39,20 @@ resource "aws_secretsmanager_secret_version" "api_secret_key" {
   secret_id     = aws_secretsmanager_secret.api_secret_key.id
   secret_string = random_password.api_secret_key.result
 }
+
+################################################################################
+# Email configuration
+################################################################################
+
+resource "aws_secretsmanager_secret" "private_api_email_credentials" {
+  name = "${local.prefix}-private-api-email-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "private_api_email_credentials" {
+  secret_id = aws_secretsmanager_secret.private_api_email_credentials.id
+  secret_string = jsonencode({
+    email_host_user                   = ""
+    email_host_password               = ""
+    feedback_email_recipient_address  = ""
+  })
+}
