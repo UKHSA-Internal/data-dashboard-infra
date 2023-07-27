@@ -71,7 +71,7 @@ module "ecs_service_private_api" {
 }
 
 module "private_api_tasks_security_group_rules" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   create_sg         = false
