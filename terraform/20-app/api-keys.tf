@@ -14,7 +14,7 @@ resource "random_password" "private_api_key_suffix" {
   special     = false
 }
 
-resource "random_password" "backend_application_secret_key" {
+resource "random_password" "backend_cryptographic_signing_key" {
   length      = 50
   min_lower   = 1
   min_numeric = 1

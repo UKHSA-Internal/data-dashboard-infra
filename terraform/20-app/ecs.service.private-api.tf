@@ -53,7 +53,7 @@ module "ecs_service_private_api" {
         },
         {
           name      = "SECRET_KEY",
-          valueFrom = aws_secretsmanager_secret.backend_application_secret_key.arn
+          valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
         }
       ]
     }

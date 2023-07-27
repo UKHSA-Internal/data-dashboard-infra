@@ -10,8 +10,9 @@ resource "aws_secretsmanager_secret" "cms_admin_user_credentials" {
   name = "${local.prefix}-cms-admin-user-credentials"
 }
 
-resource "aws_secretsmanager_secret" "backend_application_secret_key" {
-  name = "${local.prefix}-backend-application-secret-key"
+resource "aws_secretsmanager_secret" "backend_cryptographic_signing_key" {
+  name        = "${local.prefix}-backend-cryptographic-signing-key"
+  description = "This is the cryptographic signing key used by the backend application only."
 }
 
 resource "aws_secretsmanager_secret_version" "rds_db_creds" {
@@ -35,7 +36,7 @@ resource "aws_secretsmanager_secret_version" "cms_admin_user_credentials" {
   })
 }
 
-resource "aws_secretsmanager_secret_version" "backend_application_secret_key" {
-  secret_id     = aws_secretsmanager_secret.backend_application_secret_key.id
-  secret_string = random_password.backend_application_secret_key.result
+resource "aws_secretsmanager_secret_version" "backend_cryptographic_signing_key" {
+  secret_id     = aws_secretsmanager_secret.backend_cryptographic_signing_key.id
+  secret_string = random_password.backend_cryptographic_signing_key.result
 }
