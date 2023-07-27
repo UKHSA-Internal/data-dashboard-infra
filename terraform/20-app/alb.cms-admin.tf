@@ -1,18 +1,18 @@
-module "api_alb" {
+module "cms_admin_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "8.7.0"
 
-  name = "${local.prefix}-api"
+  name = "${local.prefix}-cms-admin"
 
   load_balancer_type = "application"
 
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnets
-  security_groups = [module.api_alb_security_group.security_group_id]
+  security_groups = [module.cms_admin_alb_security_group.security_group_id]
 
   target_groups = [
     {
-      name             = "${local.prefix}-api"
+      name             = "${local.prefix}-cms-admin"
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "ip"
@@ -39,11 +39,11 @@ module "api_alb" {
   ]
 }
 
-module "api_alb_security_group" {
+module "cms_admin_alb_security_group" {
   source = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
   
-  name   = "${local.prefix}-api-alb"
+  name   = "${local.prefix}-cms-admin-alb"
   vpc_id = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
@@ -58,7 +58,7 @@ module "api_alb_security_group" {
     {
       description              = "lb to tasks"
       rule                     = "http-80-tcp"
-      source_security_group_id = module.ecs_service_api.security_group_id
+      source_security_group_id = module.ecs_service_cms_admin.security_group_id
     }
   ]
 }

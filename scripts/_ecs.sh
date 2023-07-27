@@ -58,16 +58,23 @@ function _ecs_logs() {
 }
 
 function _ecs_restart_services() {
+    local terraform_output_file=terraform/20-app/output.json
 
-    local cluster_name=$(jq -r '.ecs.value.cluster_name'  terraform/20-app/output.json)
-    local api_service_name=$(jq -r '.ecs.value.service_names.api'  terraform/20-app/output.json)
-    local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  terraform/20-app/output.json)
+    local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
+    local cms_admin_service_name=$(jq -r '.ecs.value.service_names.cms_admin'  $terraform_output_file)
+    local private_api_service_name=$(jq -r '.ecs.value.service_names.private_api'  $terraform_output_file)
+    local public_api_service_name=$(jq -r '.ecs.value.service_names.public_api'  $terraform_output_file)
+    local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  $terraform_output_file)
 
     echo "Restarting services..."
 
-    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $api_service_name 
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $cms_admin_service_name
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $private_api_service_name
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $public_api_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $front_end_service_name
 
     echo "Waiting for services to reach a steady state..."
-    aws ecs wait services-stable --cluster $cluster_name --services $api_service_name $front_end_service_name
+    aws ecs wait services-stable \
+        --cluster $cluster_name \
+        --services $cms_admin_service_name $private_api_service_name $public_api_service_name $front_end_service_name
 }

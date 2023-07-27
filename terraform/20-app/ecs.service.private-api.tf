@@ -1,19 +1,21 @@
-module "ecs_service_api" {
+module "ecs_service_private_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-api"
+  name        = "${local.prefix}-private-api"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu              = 256
-  memory           = 512
-  assign_public_ip = true
-  subnet_ids       = module.vpc.public_subnets
+  cpu                = 512
+  memory             = 1024
+  assign_public_ip   = true
+  subnet_ids         = module.vpc.public_subnets
+  enable_autoscaling = false
+  desired_count      = 1
 
   container_definitions = {
     api = {
-      cpu                      = 256
-      memory                   = 512
+      cpu                      = 512
+      memory                   = 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
@@ -26,8 +28,8 @@ module "ecs_service_api" {
       ]
       environment = [
         {
-          name  = "FRONTEND_URL"
-          value = "http://${module.front_end_alb.lb_dns_name}"
+          name  = "APP_MODE"
+          value = "PRIVATE_API"
         },
         {
           name  = "POSTGRES_DB"
@@ -61,25 +63,25 @@ module "ecs_service_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = element(module.api_alb.target_group_arns, 0)
+      target_group_arn = element(module.private_api_alb.target_group_arns, 0)
       container_name   = "api"
       container_port   = 80
     }
   }
 }
 
-module "api_tasks_security_group_rules" {
-  source = "terraform-aws-modules/security-group/aws"
+module "private_api_tasks_security_group_rules" {
+  source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   create_sg         = false
-  security_group_id = module.ecs_service_api.security_group_id
+  security_group_id = module.ecs_service_private_api.security_group_id
 
   ingress_with_source_security_group_id = [
     {
       description              = "lb to tasks"
       rule                     = "http-80-tcp"
-      source_security_group_id = module.api_alb_security_group.security_group_id
+      source_security_group_id = module.private_api_alb_security_group.security_group_id
     }
   ]
 

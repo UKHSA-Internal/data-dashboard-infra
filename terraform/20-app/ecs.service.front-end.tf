@@ -5,15 +5,17 @@ module "ecs_service_front_end" {
   name        = "${local.prefix}-front-end"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu              = 256
-  memory           = 512
-  assign_public_ip = true
-  subnet_ids       = module.vpc.public_subnets
+  cpu                = 512
+  memory             = 1024
+  assign_public_ip   = true
+  subnet_ids         = module.vpc.public_subnets
+  enable_autoscaling = false
+  desired_count      = 1
 
   container_definitions = {
     front-end = {
-      cpu                      = 256
-      memory                   = 512
+      cpu                      = 512
+      memory                   = 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_front_end.repository_url}:latest"
@@ -27,7 +29,11 @@ module "ecs_service_front_end" {
       environment = [
         {
           name  = "API_URL"
-          value = "http://${module.api_alb.lb_dns_name}"
+          value = "http://${module.private_api_alb.lb_dns_name}"
+        },
+        {
+          name  = "PUBLIC_API_URL"
+          value = "http://${module.public_api_alb.lb_dns_name}"
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
@@ -53,7 +59,7 @@ module "ecs_service_front_end" {
 }
 
 module "front_end_tasks_security_group_rules" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   create_sg         = false
