@@ -56,6 +56,18 @@ module "ecs_service_private_api" {
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.api_secret_key.arn
+        },
+        {
+          name      = "EMAIL_HOST_USER",
+          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_user::"
+        },
+        {
+          name      = "EMAIL_HOST_PASSWORD",
+          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_password::"
+        },
+        {
+          name      = "FEEDBACK_EMAIL_RECIPIENT_ADDRESS",
+          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:feedback_email_recipient_address::"
         }
       ]
     }
