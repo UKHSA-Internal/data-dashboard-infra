@@ -102,7 +102,14 @@ module "private_api_tasks_security_group_rules" {
       description = "https to internet"
       rule        = "https-443-tcp"
       cidr_blocks = "0.0.0.0/0"
-    }
+    },
+    {
+      from_port   = 587
+      to_port     = 587
+      protocol    = "tcp"
+      description = "Allow SMTP traffic from egress"
+      cidr_blocks = "0.0.0.0/0"
+    },
   ]
 
   egress_with_source_security_group_id = [
