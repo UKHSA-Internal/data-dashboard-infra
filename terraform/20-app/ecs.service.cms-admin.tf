@@ -55,7 +55,7 @@ module "ecs_service_cms_admin" {
         },
         {
           name      = "SECRET_KEY",
-          valueFrom = aws_secretsmanager_secret.api_secret_key.arn
+          valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
         }
       ]
     }

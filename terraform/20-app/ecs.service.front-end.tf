@@ -43,7 +43,7 @@ module "ecs_service_front_end" {
       secrets = [
         {
           name      = "API_KEY"
-          valueFrom = aws_secretsmanager_secret.cms_api_key.arn
+          valueFrom = aws_secretsmanager_secret.private_api_key.arn
         }
       ]
     }

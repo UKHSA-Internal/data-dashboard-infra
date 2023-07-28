@@ -7,7 +7,7 @@ resource "random_password" "rds_db_password" {
   special     = false
 }
 
-resource "random_password" "api_admin_user_password" {
+resource "random_password" "cms_admin_user_password" {
   length = 10
   min_numeric = 1
   min_lower = 1

@@ -2,16 +2,20 @@ resource "aws_secretsmanager_secret" "rds_db_creds" {
   name = "${local.prefix}-rds-db-creds"
 }
 
-resource "aws_secretsmanager_secret" "cms_api_key" {
-  name = "${local.prefix}-cms-api-key"
+resource "aws_secretsmanager_secret" "private_api_key" {
+  name        = "${local.prefix}-private-api-key"
+  description = "This is the API key required in request headers when interacting with the private API."
+
 }
 
 resource "aws_secretsmanager_secret" "cms_admin_user_credentials" {
-  name = "${local.prefix}-cms-admin-user-credentials"
+  name        = "${local.prefix}-cms-admin-user-credentials"
+  description = "This is the base admin user name and password for the CMS admin application."
 }
 
-resource "aws_secretsmanager_secret" "api_secret_key" {
-  name = "${local.prefix}-api-secret-key"
+resource "aws_secretsmanager_secret" "backend_cryptographic_signing_key" {
+  name        = "${local.prefix}-backend-cryptographic-signing-key"
+  description = "This is the cryptographic signing key used by the backend application only."
 }
 
 resource "aws_secretsmanager_secret_version" "rds_db_creds" {
@@ -22,22 +26,22 @@ resource "aws_secretsmanager_secret_version" "rds_db_creds" {
   })
 }
 
-resource "aws_secretsmanager_secret_version" "cms_api_key" {
-  secret_id     = aws_secretsmanager_secret.cms_api_key.id
-  secret_string = local.api_key
+resource "aws_secretsmanager_secret_version" "private_api_key" {
+  secret_id     = aws_secretsmanager_secret.private_api_key.id
+  secret_string = local.private_api_key
 }
 
 resource "aws_secretsmanager_secret_version" "cms_admin_user_credentials" {
   secret_id = aws_secretsmanager_secret.cms_admin_user_credentials.id
   secret_string = jsonencode({
     username = "testadmin"
-    password = random_password.api_admin_user_password.result
+    password = random_password.cms_admin_user_password.result
   })
 }
 
-resource "aws_secretsmanager_secret_version" "api_secret_key" {
-  secret_id     = aws_secretsmanager_secret.api_secret_key.id
-  secret_string = random_password.api_secret_key.result
+resource "aws_secretsmanager_secret_version" "backend_cryptographic_signing_key" {
+  secret_id     = aws_secretsmanager_secret.backend_cryptographic_signing_key.id
+  secret_string = random_password.backend_cryptographic_signing_key.result
 }
 
 ################################################################################
