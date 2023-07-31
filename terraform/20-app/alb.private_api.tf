@@ -10,6 +10,8 @@ module "private_api_alb" {
   subnets         = module.vpc.public_subnets
   security_groups = [module.private_api_alb_security_group.security_group_id]
 
+  idle_timeout    = 4 # in seconds
+
   target_groups = [
     {
       name             = "${local.prefix}-private-api"
