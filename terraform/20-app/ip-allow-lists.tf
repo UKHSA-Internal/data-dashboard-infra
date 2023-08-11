@@ -56,7 +56,8 @@ locals {
       "154.51.64.64/27",    # NCC Leeds
       "167.98.200.192/27",  # NCC London  
       "5.148.32.192/26",    # NCC Manchester
-      "195.95.131.0/24"     # NCC Manchester
+      "195.95.131.0/24",    # NCC Manchester
+      "62.253.228.2/32",    # Office
     ]
   }
 }
