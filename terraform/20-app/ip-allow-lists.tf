@@ -2,7 +2,7 @@ locals {
   ip_allow_list = {
     engineers = [
       "109.157.41.145/32",  # Rajee
-      "87.81.107.25/32",    # Afaan Temp
+      "79.79.37.95/32",     # Afaan Temp
       "147.12.250.16/32",   # Afaan 3
       "147.12.250.150/32",  # Afaan 2
       "147.12.250.151/32",  # Afaan
