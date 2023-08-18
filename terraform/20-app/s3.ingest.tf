@@ -1,6 +1,6 @@
 module "s3_ingest" {
   source = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.14.0"
+  version = "3.14.1"
 
   bucket = "${local.prefix}-ingest"
 
