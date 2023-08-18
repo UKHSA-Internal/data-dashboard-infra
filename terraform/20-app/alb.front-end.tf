@@ -69,3 +69,10 @@ module "front_end_alb_security_group" {
     }
   ]
 }
+
+
+resource "aws_servicequotas_service_quota" "vpc_rules_quota" {
+  quota_code   = "L-0EA8095F"
+  service_code = "vpc"
+  value        = 100
+}
