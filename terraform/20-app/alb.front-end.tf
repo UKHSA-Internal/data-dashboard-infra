@@ -50,9 +50,12 @@ module "front_end_alb_security_group" {
     {
       description = "http from allowed ips"
       rule        = "http-80-tcp"
-      cidr_blocks = join(",", local.ip_allow_list.engineers,
+      cidr_blocks = join(",",
+        local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
-      local.ip_allow_list.other_stakeholders)
+        local.ip_allow_list.other_stakeholders,
+        local.ip_allow_list.user_testing_participants
+      )
     }
   ]
 
@@ -65,4 +68,11 @@ module "front_end_alb_security_group" {
       source_security_group_id = module.ecs_service_front_end.security_group_id
     }
   ]
+}
+
+
+resource "aws_servicequotas_service_quota" "vpc_rules_quota" {
+  quota_code   = "L-0EA8095F"
+  service_code = "vpc"
+  value        = 100
 }
