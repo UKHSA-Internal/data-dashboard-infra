@@ -2,10 +2,8 @@ locals {
   ip_allow_list = {
     engineers = [
       "109.157.41.145/32",  # Rajee
-      "147.12.250.17/32",   # Afaan Temp
-      "147.12.250.16/32",   # Afaan 3
-      "147.12.250.150/32",  # Afaan 2
-      "147.12.250.151/32",  # Afaan
+      "147.12.250.17/32",   # Afaan
+      "147.12.250.16/32",   # Afaan 2
       "154.51.68.102/32",   # Burendo
       "18.133.111.70/32",   # UKHSA test gateway
       "188.220.99.50/32",   # Phil
@@ -24,8 +22,8 @@ locals {
       "92.15.13.74/32"      # Ravi D
     ],
     project_team = [
-      "2.222.81.211/32", # Debbie
-      "94.11.140.104/32" # Debbie 2
+      "2.222.81.211/32",    # Debbie
+      "94.1.91.180/32"      # Debbie 2
     ],
     other_stakeholders = [
       "109.155.125.77/32",  # Sam Organ 2
@@ -55,6 +53,7 @@ locals {
       "54.149.2.5/32",      # Luke W
       "172.27.130.43/32",   # Asad
       "81.98.182.178/32",   # Bea Taylor
+      "81.136.36.68/32",    # Jack G Brown
       "154.51.64.64/27",    # NCC Leeds
       "167.98.200.192/27",  # NCC London  
       "5.148.32.192/26",    # NCC Manchester
