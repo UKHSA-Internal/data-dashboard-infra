@@ -22,8 +22,8 @@ locals {
       "92.15.13.74/32"      # Ravi D
     ],
     project_team = [
-      "2.222.81.211/32",    # Debbie
-      "94.1.91.180/32"      # Debbie 2
+      "2.222.81.211/32", # Debbie
+      "94.1.91.180/32"   # Debbie 2
     ],
     other_stakeholders = [
       "109.155.125.77/32",  # Sam Organ 2
@@ -59,6 +59,7 @@ locals {
       "5.148.32.192/26",    # NCC Manchester
       "195.95.131.0/24",    # NCC Manchester
       "62.253.228.2/32",    # Office
+      "18.135.62.168/32"    # Load test rig
     ]
     user_testing_participants = [
       "51.194.186.251/32",
