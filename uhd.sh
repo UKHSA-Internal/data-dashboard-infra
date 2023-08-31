@@ -20,6 +20,8 @@ function _uhd_commands_help() {
     echo "  ecs         - ecs commands" 
     echo "  terraform   - terraform commands"
     echo
+    echo "  update      - update all the things - infra, containers, etc"
+    echo
 
     return 1
 }
@@ -40,6 +42,7 @@ function uhd() {
         "docker") _docker $args ;;
         "ecs") _ecs $args ;;
         "terraform") _terraform $args ;;
+        "update") _update $args ;;
 
         *) _uhd_commands_help ;;
     esac
