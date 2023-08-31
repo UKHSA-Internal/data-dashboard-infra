@@ -36,7 +36,13 @@ function _aws_login() {
 
     aws sso login --profile $profile_name
 
-    export AWS_PROFILE=$profile_name
+    case $profile_name in
+        "uhd-dev" | "uhd-tools")
+            export AWS_PROFILE=${profile_name}/assumed-role ;;
+
+        "*")
+            export AWS_PROFILE=$profile_name ;;
+    esac
 }
 
 function _aws_whoami() {
