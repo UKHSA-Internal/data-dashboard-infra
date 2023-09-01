@@ -7,8 +7,7 @@ module "ecs_service_private_api" {
 
   cpu                = 512
   memory             = 1024
-  assign_public_ip   = true
-  subnet_ids         = module.vpc.public_subnets
+  subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 1
 
@@ -59,15 +58,15 @@ module "ecs_service_private_api" {
         },
         {
           name      = "EMAIL_HOST_USER",
-          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_user::"
+          valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_user::"
         },
         {
           name      = "EMAIL_HOST_PASSWORD",
-          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_password::"
+          valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_password::"
         },
         {
           name      = "FEEDBACK_EMAIL_RECIPIENT_ADDRESS",
-          valueFrom ="${aws_secretsmanager_secret.private_api_email_credentials.arn}:feedback_email_recipient_address::"
+          valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:feedback_email_recipient_address::"
         }
       ]
     }

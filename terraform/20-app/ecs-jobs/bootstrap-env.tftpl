@@ -7,8 +7,7 @@
       "subnets": ${jsonencode([for subnet_id in subnet_ids : "${subnet_id}"])},
       "securityGroups": [
         "${security_group_id}"
-      ],
-      "assignPublicIp": "ENABLED"
+      ]
     }
   },
   "overrides": {
