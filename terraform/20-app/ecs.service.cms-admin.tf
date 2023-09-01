@@ -7,8 +7,7 @@ module "ecs_service_cms_admin" {
 
   cpu                = 512
   memory             = 1024
-  assign_public_ip   = true
-  subnet_ids         = module.vpc.public_subnets
+  subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 1
 

@@ -6,7 +6,15 @@ variable "assume_role_name" {
   default = "terraform"
 }
 
+variable "azs" {
+  default = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+}
+
 variable "environment_type" {}
+
+variable "one_nat_gateway_per_az" {
+  default = false
+}
 
 variable "rds_app_db_allocated_storage" {
   default = "20"
@@ -22,6 +30,10 @@ variable "rds_app_db_engine_version" {
 
 variable "tools_account_id" {
   sensitive = true
+}
+
+variable "single_nat_gateway" {
+  default = true
 }
 
 variable "rds_app_db_instance_class" {
