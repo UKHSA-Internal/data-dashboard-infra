@@ -59,22 +59,12 @@ module "public_api_alb_security_group" {
     {
       description = "http from internet"
       rule        = "http-80-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
+      cidr_blocks = "0.0.0.0/0"
     },
     {
       description = "https from internet"
       rule        = "https-443-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 

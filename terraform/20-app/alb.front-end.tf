@@ -59,22 +59,7 @@ module "front_end_alb_security_group" {
     {
       description = "http from allowed ips"
       rule        = "http-80-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
-    },
-    {
-      description = "https from allowed ips"
-      rule        = "https-443-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 
