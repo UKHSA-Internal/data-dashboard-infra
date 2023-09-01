@@ -1,3 +1,4 @@
+variable "account_dns_name" {}
 variable "assume_account_id" {
   sensitive = true
 }
