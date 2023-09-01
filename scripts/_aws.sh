@@ -8,6 +8,7 @@ function _aws_help() {
     echo "commands:"
     echo "  help            - this help screen"
     echo
+    echo "  login           - login to the dev and tools accounts as a developer"
     echo "  login <profile> - login and assume the configured role"
     echo "  whoami          - display the account you're logged into and which role you have assumed"
     echo
@@ -30,8 +31,10 @@ function _aws() {
 function _aws_login() {
     local profile_name=$1
     if [[ -z ${profile_name} ]]; then
-        echo "Profile name is required." >&2
-        return 1
+        uhd aws login uhd-dev
+        uhd aws login uhd-tools
+        
+        return 0
     fi
 
     aws sso login --profile $profile_name

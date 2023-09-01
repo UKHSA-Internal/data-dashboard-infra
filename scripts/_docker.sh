@@ -8,6 +8,7 @@ function _docker_help() {
     echo "  help                 - this help screen"
     echo
     echo "  pull                 - pull the latest source images from the dev account"
+    echo "  push                 - push images to your dev ECR"
     echo "  push <account> <env> - tag and push images"
     echo
     echo "  ecr:login            - login to ECR in the dev account"
