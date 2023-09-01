@@ -36,14 +36,6 @@ module "cms_admin_alb" {
     }
   ]
 
-  http_tcp_listeners = [
-    {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
-    }
-  ]
-
   https_listeners = [
     {
       port               = 443
@@ -67,15 +59,6 @@ module "cms_admin_alb_security_group" {
   vpc_id = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
-    {
-      description = "http from internet"
-      rule        = "http-80-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders
-      )
-    },
     {
       description = "https from internet"
       rule        = "https-443-tcp"
