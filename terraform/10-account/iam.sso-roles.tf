@@ -15,8 +15,8 @@ data "aws_iam_roles" "report_viewer" {
 
 locals {
   sso_role_arns = {
-    administrator = tolist(data.aws_iam_roles.administrator.arns)[0]
-    developer     = tolist(data.aws_iam_roles.developer.arns)[0]
-    report_viewer = tolist(data.aws_iam_roles.report_viewer.arns)[0]
+    administrator = one(data.aws_iam_roles.administrator.arns)
+    developer     = one(data.aws_iam_roles.developer.arns)
+    report_viewer = one(data.aws_iam_roles.report_viewer.arns)
   }
 }
