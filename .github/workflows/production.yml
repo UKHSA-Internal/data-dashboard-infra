@@ -13,6 +13,50 @@ permissions:
   contents: read
 
 jobs:
+  terraform_plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform plan
+        run: |
+          source uhd.sh
+          uhd terraform init
+          uhd terraform plan:layer 10-account prod
+        shell: zsh {0}
+
+  terraform_apply:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    needs: ["terraform_plan"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init
+          uhd terraform apply:layer 10-account prod
+        shell: zsh {0}
+
   fast_forward_env_branches:
     name: Fast forward env branches
     runs-on: ubuntu-latest
