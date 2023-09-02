@@ -11,8 +11,8 @@ module "iam_developer_role" {
     "arn:aws:iam::aws:policy/AdministratorAccess",
   ]
 
-  trusted_role_arns = [
+  trusted_role_arns = compact([
     local.sso_role_arns.administrator,
     local.sso_role_arns.developer
-  ]
+  ])
 }
