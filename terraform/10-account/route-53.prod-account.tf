@@ -9,31 +9,37 @@ module "route_53_records" {
     {
       name    = "dev"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.dev.dns.account.name_servers
     },
     {
       name    = "test"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.test.dns.account.name_servers
     },
     {
       name    = "pen"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.test.dns.wke.pen.name_servers
     },
     {
       name    = "perf"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.test.dns.wke.perf.name_servers
     },
     {
       name    = "uat"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.uat.dns.account.name_servers
     },
     {
       name    = "train"
       type    = "NS"
+      ttl     = 300
       records = local.account_states.uat.dns.wke.train.name_servers
     }
   ]
