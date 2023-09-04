@@ -35,6 +35,33 @@ module "front_end_alb" {
       port               = 80
       protocol           = "HTTP"
       target_group_index = 0
+      action_type        = "fixed-response"
+      fixed_response = {
+        content_type = "text/plain"
+        message_body = "service unavailable"
+        status_code  = "503"
+      }
+    }
+  ]
+
+  http_tcp_listener_rules = [
+    {
+      http_tcp_listener_index = 0
+      priority                = 1
+      actions                 = [
+        {
+          type                = "forward"
+          target_group_index  = 0
+        }
+      ]
+      conditions = [
+        {
+          http_headers = [{
+            http_header_name  = jsondecode(aws_secretsmanager_secret_version.cdn_front_end_secure_header_value.secret_string)["header"]
+            values            = [jsondecode(aws_secretsmanager_secret_version.cdn_front_end_secure_header_value.secret_string)["value"]]
+          }]
+        }
+      ]
     }
   ]
 

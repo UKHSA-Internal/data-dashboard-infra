@@ -18,6 +18,16 @@ resource "aws_secretsmanager_secret" "backend_cryptographic_signing_key" {
   description = "This is the cryptographic signing key used by the backend application only."
 }
 
+resource "aws_secretsmanager_secret" "cdn_front_end_secure_header_value" {
+  name        = "${local.prefix}-cdn-front-end-secure-header-value"
+  description = "This is the secure header value for restricting direct access to load balancer in favour of CloudFront"
+}
+
+resource "aws_secretsmanager_secret" "cdn_public_api_secure_header_value" {
+  name        = "${local.prefix}-cdn-public-api-secure-header-value"
+  description = "This is the secure header value for restricting direct access to load balancer in favour of CloudFront"
+}
+
 resource "aws_secretsmanager_secret_version" "rds_db_creds" {
   secret_id = aws_secretsmanager_secret.rds_db_creds.id
   secret_string = jsonencode({
@@ -42,6 +52,22 @@ resource "aws_secretsmanager_secret_version" "cms_admin_user_credentials" {
 resource "aws_secretsmanager_secret_version" "backend_cryptographic_signing_key" {
   secret_id     = aws_secretsmanager_secret.backend_cryptographic_signing_key.id
   secret_string = random_password.backend_cryptographic_signing_key.result
+}
+
+resource "aws_secretsmanager_secret_version" "cdn_front_end_secure_header_value" {
+  secret_id     = aws_secretsmanager_secret.cdn_front_end_secure_header_value.id
+  secret_string = jsonencode({
+    header  = "X-cd-secure-header"
+    value   = random_password.cdn_front_end_secure_header_value.result 
+  })
+}
+
+resource "aws_secretsmanager_secret_version" "cdn_public_api_secure_header_value" {
+  secret_id     = aws_secretsmanager_secret.cdn_public_api_secure_header_value.id
+  secret_string = jsonencode({
+    header  = "X-cd-secure-header"
+    value   = random_password.cdn_public_api_secure_header_value.result
+  })
 }
 
 ################################################################################
