@@ -35,12 +35,6 @@ module "front_end_alb" {
       port               = 80
       protocol           = "HTTP"
       target_group_index = 0
-      action_type        = "fixed-response"
-      fixed_response = {
-        content_type = "text/plain"
-        message_body = "service unavailable"
-        status_code  = "503"
-      }
     }
   ]
 
