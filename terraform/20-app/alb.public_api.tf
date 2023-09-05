@@ -51,8 +51,8 @@ module "public_api_alb" {
       conditions = [
         {
           http_headers = [{
-            http_header_name  = jsondecode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)["header"]
-            values            = [jsondecode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)["value"]]
+            http_header_name  = "x-cdn-auth"
+            values            = [jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)]
           }]
         }
       ]

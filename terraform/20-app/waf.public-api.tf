@@ -49,23 +49,23 @@ locals {
     waf_public_api = {
         rules = [
             {
-                priority    = 1
+                priority    = 2
                 name        = "AWSManagedRulesCommonRuleSet"
             },
             {
-                priority    = 2
+                priority    = 3
                 name        = "AWSManagedRulesKnownBadInputsRuleSet"
             },
             {
-                priority    = 3
+                priority    = 4
                 name        = "AWSManagedRulesAmazonIpReputationList"
             },
             {
-                priority    = 4
+                priority    = 5
                 name        = "AWSManagedRulesLinuxRuleSet"
             },
             {
-                priority    = 5
+                priority    = 6
                 name        = "AWSManagedRulesUnixRuleSet"
             }
         ]

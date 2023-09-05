@@ -13,7 +13,7 @@ module "cloudfront_front_end" {
             http_port     = 80
             https_port    = 443
             origin_protocol_policy = "http-only"
-            origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+            origin_ssl_protocols   = ["TLSv1.2"]
         }
 
         custom_header = [
@@ -22,8 +22,8 @@ module "cloudfront_front_end" {
                 value   = "text/html"
             },
             {
-                name    = jsondecode(aws_secretsmanager_secret_version.cdn_front_end_secure_header_value.secret_string)["header"]
-                value   = jsondecode(aws_secretsmanager_secret_version.cdn_front_end_secure_header_value.secret_string)["value"]
+                name    = "x-cdn-auth"
+                value   = jsonencode(aws_secretsmanager_secret_version.cdn_front_end_secure_header_value.secret_string)
             }
         ]
     }

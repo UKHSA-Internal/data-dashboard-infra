@@ -56,18 +56,12 @@ resource "aws_secretsmanager_secret_version" "backend_cryptographic_signing_key"
 
 resource "aws_secretsmanager_secret_version" "cdn_front_end_secure_header_value" {
   secret_id     = aws_secretsmanager_secret.cdn_front_end_secure_header_value.id
-  secret_string = jsonencode({
-    header  = "X-cd-secure-header"
-    value   = random_password.cdn_front_end_secure_header_value.result 
-  })
+  secret_string = random_password.cdn_front_end_secure_header_value.result 
 }
 
 resource "aws_secretsmanager_secret_version" "cdn_public_api_secure_header_value" {
   secret_id     = aws_secretsmanager_secret.cdn_public_api_secure_header_value.id
-  secret_string = jsonencode({
-    header  = "X-cd-secure-header"
-    value   = random_password.cdn_public_api_secure_header_value.result
-  })
+  secret_string = random_password.cdn_public_api_secure_header_value.result
 }
 
 ################################################################################
