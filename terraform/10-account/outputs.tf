@@ -20,3 +20,22 @@ output "dns" {
     }
   }
 }
+
+output "acm" {
+  value = {
+    account = {
+      certificate_arn = module.acm_account.acm_certificate_arn
+    }
+    wke = {
+      pen = local.account == "test" ? {
+        certificate_arn = module.acm_wke_pen.acm_certificate_arn
+      } : null
+      perf = local.account == "test" ? {
+        certificate_arn = module.acm_wke_perf.acm_certificate_arn
+      } : null
+      train = local.account == "uat" ? {
+        certificate_arn = module.acm_wke_train.acm_certificate_arn
+      } : null
+    }
+  }
+}
