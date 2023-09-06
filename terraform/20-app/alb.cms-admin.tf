@@ -37,6 +37,15 @@ module "cms_admin_alb" {
       target_group_index = 0
     }
   ]
+
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = local.account_layer.acm.account.certificate_arn
+      target_group_index = 0
+    }
+  ]
 }
 
 module "cms_admin_alb_security_group" {
@@ -50,6 +59,15 @@ module "cms_admin_alb_security_group" {
     {
       description = "http from internet"
       rule        = "http-80-tcp"
+      cidr_blocks = join(",",
+        local.ip_allow_list.engineers,
+        local.ip_allow_list.project_team,
+        local.ip_allow_list.other_stakeholders
+      )
+    },
+    {
+      description = "https from internet"
+      rule        = "https-443-tcp"
       cidr_blocks = join(",",
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,

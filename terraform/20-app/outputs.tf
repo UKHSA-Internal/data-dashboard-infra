@@ -19,11 +19,18 @@ output "passwords" {
   sensitive = true
 }
 
-output "urls" {
-  value = {
-    front_end         = "http://${module.front_end_alb.lb_dns_name}"
-    cms_admin         = "http://${module.cms_admin_alb.lb_dns_name}"
-    private_api       = "http://${module.private_api_alb.lb_dns_name}"
-    public_api        = "http://${module.public_api_alb.lb_dns_name}"
+locals {
+  urls = contains(["dev", "test", "uat", "prod"], local.environment) ? {
+    front_end  = "https://${local.account_layer.dns.account.dns_name}"
+    cms_admin  = "https://cms.${local.account_layer.dns.account.dns_name}"
+    public_api = "https://api.${local.account_layer.dns.account.dns_name}"
+    } : {
+    front_end  = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
+    cms_admin  = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
+    public_api = "https://${local.environment}-api.${local.account_layer.dns.account.dns_name}"
   }
+}
+
+output "urls" {
+  value = local.urls
 }
