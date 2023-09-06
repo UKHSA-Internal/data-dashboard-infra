@@ -20,14 +20,16 @@ output "passwords" {
 }
 
 locals {
-  urls = contains(["dev", "test", "perf", "pen", "uat", "train", "prod"], local.environment) ? {
-    front_end  = "https://${local.account_layer.dns.wke_dns_names[local.environment]}"
-    cms_admin  = "https://cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    public_api = "https://api.${local.account_layer.dns.wke_dns_names[local.environment]}"
+  urls = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
+    front_end   = "https://${local.account_layer.dns.wke_dns_names[local.environment]}"
+    cms_admin   = "https://cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
+    public_api  = "https://api.${local.account_layer.dns.wke_dns_names[local.environment]}"
+    private_api = "http://${module.private_api_alb.lb_dns_name}"
     } : {
-    front_end  = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
-    cms_admin  = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
-    public_api = "https://${local.environment}-api.${local.account_layer.dns.account.dns_name}"
+    front_end   = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
+    cms_admin   = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
+    public_api  = "https://${local.environment}-api.${local.account_layer.dns.account.dns_name}"
+    private_api = "http://${module.private_api_alb.lb_dns_name}"
   }
 }
 

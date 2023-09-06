@@ -32,7 +32,7 @@ module "ecs_service_public_api" {
         },
         {
           name  = "FRONTEND_URL"
-          value = "http://${module.front_end_alb.lb_dns_name}"
+          value = local.urls.front_end
         },
         {
           name  = "POSTGRES_DB"
