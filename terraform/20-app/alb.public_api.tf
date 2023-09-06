@@ -42,7 +42,7 @@ module "public_api_alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = local.account_layer.acm.account.certificate_arn
+      certificate_arn    = local.certificate_arn
       target_group_index = 0
     }
   ]

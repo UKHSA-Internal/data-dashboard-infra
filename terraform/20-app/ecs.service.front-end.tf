@@ -28,11 +28,11 @@ module "ecs_service_front_end" {
       environment = [
         {
           name  = "API_URL"
-          value = "http://${module.private_api_alb.lb_dns_name}"
+          value = local.urls.private_api
         },
         {
           name  = "PUBLIC_API_URL"
-          value = "http://${module.public_api_alb.lb_dns_name}"
+          value = local.urls.public_api
         },
         {
           name  = "NEXT_REVALIDATE_TIME"
