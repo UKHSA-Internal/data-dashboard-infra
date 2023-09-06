@@ -2,7 +2,7 @@ locals {
   ip_allow_list = {
     engineers = [
       "109.157.41.145/32",  # Rajee
-      "147.12.231.142/32",  # Afaan
+      "147.12.251.28/32",   # Afaan
       "154.51.68.102/32",   # Burendo
       "18.133.111.70/32",   # UKHSA test gateway
       "188.220.99.50/32",   # Phil
@@ -30,7 +30,6 @@ locals {
       "152.37.69.61/32",    # Ashley M
       "51.148.179.77/32",   # Tina
       "62.253.228.56/32",   # Heather & Steven R
-      "192.168.1.254/32",   # Stats reviewer
       "81.153.114.156/32",  # Liz Thomas
       "81.141.223.255/32",  # Liz Thomas 2
       "82.19.117.10/32",    # Jack T
