@@ -20,10 +20,10 @@ output "passwords" {
 }
 
 locals {
-  urls = contains(["dev", "test", "uat", "prod"], local.environment) ? {
-    front_end  = "https://${local.account_layer.dns.account.dns_name}"
-    cms_admin  = "https://cms.${local.account_layer.dns.account.dns_name}"
-    public_api = "https://api.${local.account_layer.dns.account.dns_name}"
+  urls = contains(["dev", "test", "perf", "pen", "uat", "train", "prod"], local.environment) ? {
+    front_end  = "https://${local.account_layer.dns.wke_dns_names[local.environment]}"
+    cms_admin  = "https://cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
+    public_api = "https://api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     } : {
     front_end  = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
     cms_admin  = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
