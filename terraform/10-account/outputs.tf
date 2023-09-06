@@ -5,6 +5,7 @@ output "dns" {
       name_servers = module.route_53_zone_account.route53_zone_name_servers[var.account_dns_name]
       dns_name     = var.account_dns_name
     }
+
     wke = {
       pen = local.account == "test" ? {
         zone_id      = module.route_53_zone_wke_test_account.route53_zone_zone_id[local.wke_dns_names.pen]
@@ -19,6 +20,8 @@ output "dns" {
         name_servers = module.route_53_zone_wke_uat_account.route53_zone_name_servers[local.wke_dns_names.train]
       } : null
     }
+
+    wke_dns_names = local.wke_dns_names
   }
 }
 
