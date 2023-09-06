@@ -2,8 +2,8 @@ module "route_53_records_wke_others" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
   version = "2.10.2"
 
-  create  = contains(["pen", "perf", "train"], local.environment)
-  zone_id = contains(["pen", "perf", "train"], local.environment) ? local.account_layer.dns.wke[local.environment].zone_id : ""
+  create  = contains(local.wke.other, local.environment)
+  zone_id = contains(local.wke.other, local.environment) ? local.account_layer.dns.wke[local.environment].zone_id : ""
 
   records = [
     {
