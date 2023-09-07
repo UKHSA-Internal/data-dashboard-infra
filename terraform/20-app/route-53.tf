@@ -22,6 +22,14 @@ module "route_53_records" {
       }
     },
     {
+      name  = "${local.environment}-private-api",
+      type  = "A"
+      alias = {
+        name    = module.private_api_alb.lb_dns_name
+        zone_id = module.private_api_alb.lb_zone_id
+      }
+    },
+    {
       name = "${local.environment}-cms"
       type = "A"
       alias = {

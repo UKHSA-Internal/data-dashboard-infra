@@ -23,6 +23,14 @@ module "route_53_records_wke_account" {
       }
     },
     {
+      name  = "private-api"
+      type  = "A"
+      alias = {
+        name    = module.private_api_alb.lb_dns_name
+        zone_id = module.private_api_alb.lb_zone_id
+      }
+    },
+    {
       name = "cms"
       type = "A"
       alias = {
