@@ -24,12 +24,12 @@ locals {
     front_end   = "https://${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin   = "https://cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api  = "https://api.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    private_api = "http://${module.private_api_alb.lb_dns_name}"
+    private_api = "https://private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     } : {
     front_end   = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
     cms_admin   = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     public_api  = "https://${local.environment}-api.${local.account_layer.dns.account.dns_name}"
-    private_api = "http://${module.private_api_alb.lb_dns_name}"
+    private_api = "https://${local.environment}-private-api.${local.account_layer.dns.account.dns_name}"
   }
 }
 
