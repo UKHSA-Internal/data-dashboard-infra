@@ -13,7 +13,10 @@ resource "aws_db_instance" "app_rds" {
   storage_type                = var.rds_app_db_storage_type
   username                    = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]
   vpc_security_group_ids      = [module.app_rds_security_group.security_group_id]
+  storage_encrypted           = true
+  kms_key_id                  = module.kms_app_rds.key_arn
 }
+
 
 module "app_rds_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
