@@ -39,11 +39,15 @@ function _aws_login() {
 
     aws sso login --profile $profile_name
 
+    echo
+
     case $profile_name in
         "uhd-dev" | "uhd-tools")
+            echo "Logged into AWS using profile '$profile_name', and switched to profile '${profile_name}/assumed-role'"
             export AWS_PROFILE=${profile_name}/assumed-role ;;
 
-        "*")
+        *)
+            echo "Logged into AWS using profile '$profile_name'"
             export AWS_PROFILE=$profile_name ;;
     esac
 }
