@@ -37,6 +37,15 @@ module "private_api_alb" {
       target_group_index = 0
     }
   ]
+
+  https_listeners = [
+    {
+      port                = 443
+      protocol            = "HTTPS"
+      certificate_arn     = local.certificate_arn
+      target_group_index  = 0
+    }
+  ]
 }
 
 module "private_api_alb_security_group" {
@@ -50,6 +59,11 @@ module "private_api_alb_security_group" {
     {
       description = "http from internet"
       rule        = "http-80-tcp"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      description = "https from internet"
+      rule        = "https-443-tcp"
       cidr_blocks = "0.0.0.0/0"
     }
   ]
