@@ -12,6 +12,14 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::${var.assume_account_id}:role/${var.assume_role_name}"
+  }
+}
+
 terraform {
   backend "s3" {
     region         = "eu-west-2"
