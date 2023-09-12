@@ -3,6 +3,8 @@ locals {
   project     = "uhd"
   environment = terraform.workspace
   prefix      = "${local.project}-${local.environment}"
+
+  alb_security_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 }
 
 locals {
