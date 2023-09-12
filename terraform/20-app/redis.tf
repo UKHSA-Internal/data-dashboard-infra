@@ -23,7 +23,7 @@ module "app_elasticache_security_group" {
 
 resource "aws_elasticache_cluster" "app_elasticache" {
   cluster_id               = "${local.prefix}-app-redis-cluster"
-  engine                   = "redis"
+  engine                   = var.elasticache_app_engine
   node_type                = var.elasticache_app_node_type
   num_cache_nodes          = var.elasticache_app_num_cache_nodes
   parameter_group_name     = var.elasticache_app_parameter_group_name
