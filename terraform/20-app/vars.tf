@@ -49,3 +49,30 @@ variable "rds_app_db_skip_final_snapshot" {
 variable "rds_app_db_storage_type" {
   default = "gp3"
 }
+
+
+# Elasticache variables
+
+variable "elasticache_app_node_type" {
+  default = "cache.t3.micro"
+}
+
+
+variable "elasticache_app_num_cache_nodes" {
+  default = 1
+}
+
+
+variable "elasticache_app_parameter_group_name" {
+  default = "default.redis7"
+}
+
+
+variable "elasticache_app_engine_version" {
+  default = "7.0"
+}
+
+
+variable "elasticache_app_port" {
+  default = 6379
+}
