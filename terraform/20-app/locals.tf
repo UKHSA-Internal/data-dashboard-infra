@@ -5,12 +5,6 @@ locals {
   prefix      = "${local.project}-${local.environment}"
 
   alb_security_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-}
-
-locals {
-  is_dev = var.environment_type == "dev"
-
-  enable_public_db = local.is_dev
 
   wke = {
     account = ["dev", "test", "uat", "prod"]
@@ -19,5 +13,8 @@ locals {
 }
 
 locals {
-  certificate_arn = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
+  certificate_arn  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
+  enable_public_db = local.is_dev
+  is_dev           = var.environment_type == "dev"
 }
+
