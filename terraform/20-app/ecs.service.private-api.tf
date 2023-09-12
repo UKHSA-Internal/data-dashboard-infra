@@ -11,6 +11,8 @@ module "ecs_service_private_api" {
   enable_autoscaling = false
   desired_count      = 1
 
+  security_group_ids = [module.app_elasticache_security_group.security_group_id]
+
   container_definitions = {
     api = {
       cpu                      = 512
@@ -41,6 +43,10 @@ module "ecs_service_private_api" {
         {
           name  = "APIENV"
           value = "PROD"
+        },
+        {
+          name  = "REDIS_HOST"
+          value = "redis://${aws_elasticache_cluster.app_elasticache.cache_nodes[0].address}:${var.elasticache_app_port}"
         }
       ],
       secrets = [
@@ -116,6 +122,11 @@ module "private_api_tasks_security_group_rules" {
       description              = "lb to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.app_rds_security_group.security_group_id
+    },
+    {
+      description              = "lb to cache"
+      rule                     = "redis-tcp"
+      source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
   ]
 }
