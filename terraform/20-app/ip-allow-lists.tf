@@ -62,6 +62,8 @@ locals {
       "86.171.247.217/32",  # Nadine
       "86.178.161.110/32",  # Georgina 2
       "90.209.101.73/32",   # Christie
+      "109.153.151.195/32", # Ciara
+      "86.29.186.201/32",   # Charlotte (Analyst)
       "90.243.49.40/32",    # Jason
     ]
     user_testing_participants = [
