@@ -1,6 +1,6 @@
 resource "aws_elasticache_subnet_group" "app_elasticache_subnet" {
   name       = "${local.prefix}-app-elasticache-subnet"
-  subnet_ids = module.vpc.public_subnets
+  subnet_ids = module.vpc.intra_subnets
 
 }
 
