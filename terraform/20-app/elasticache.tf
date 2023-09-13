@@ -23,12 +23,12 @@ module "app_elasticache_security_group" {
 
 resource "aws_elasticache_cluster" "app_elasticache" {
   cluster_id           = "${local.prefix}-app-redis-cluster"
-  engine               = var.elasticache_app_engine
-  node_type            = var.elasticache_app_node_type
-  num_cache_nodes      = var.elasticache_app_num_cache_nodes
-  parameter_group_name = var.elasticache_app_parameter_group_name
-  engine_version       = var.elasticache_app_engine_version
-  port                 = var.elasticache_app_port
+  engine               = "redis"
+  node_type            = "cache.t3.micro"
+  num_cache_nodes      = 1
+  parameter_group_name = "default.redis7"
+  engine_version       = "7.0"
+  port                 = 6379
   subnet_group_name    = aws_elasticache_subnet_group.app_elasticache_subnet.name
   security_group_ids   = [module.app_elasticache_security_group.security_group_id]
 }
