@@ -10,6 +10,12 @@ module "cms_admin_alb" {
   subnets         = module.vpc.public_subnets
   security_groups = [module.cms_admin_alb_security_group.security_group_id]
 
+  access_logs = {
+    bucket  = module.s3_logs.s3_bucket_id
+    enabled = true
+    prefix  = "cms-admin-alb"
+  }
+
   target_groups = [
     {
       name             = "${local.prefix}-cms-admin"
@@ -46,6 +52,10 @@ module "cms_admin_alb" {
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
     }
+  ]
+
+  depends_on = [
+    module.s3_logs
   ]
 }
 

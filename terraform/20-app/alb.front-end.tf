@@ -10,6 +10,12 @@ module "front_end_alb" {
   subnets         = module.vpc.public_subnets
   security_groups = [module.front_end_alb_security_group.security_group_id]
 
+  access_logs = {
+    bucket  = module.s3_logs.s3_bucket_id
+    enabled = true
+    prefix  = "front-end-alb"
+  }
+
   target_groups = [
     {
       name             = "${local.prefix}-front-end"
@@ -46,6 +52,10 @@ module "front_end_alb" {
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
     }
+  ]
+
+  depends_on = [
+    module.s3_logs
   ]
 }
 
