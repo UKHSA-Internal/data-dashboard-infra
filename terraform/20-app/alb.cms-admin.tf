@@ -44,6 +44,7 @@ module "cms_admin_alb" {
       protocol           = "HTTPS"
       certificate_arn    = local.certificate_arn
       target_group_index = 0
+      ssl_policy         = local.alb_security_policy
     }
   ]
 }
