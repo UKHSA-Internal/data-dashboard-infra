@@ -36,14 +36,6 @@ module "public_api_alb" {
     }
   ]
 
-  http_tcp_listeners = [
-    {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
-    }
-  ]
-
   https_listeners = [
     {
       port               = 443
@@ -51,6 +43,33 @@ module "public_api_alb" {
       certificate_arn    = local.certificate_arn
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
+      action_type        = "fixed-response"
+      fixed_response = {
+        content_type = "text/plain"
+        message_body = "403 Forbidden"
+        status_code  = "403"
+      }
+    }
+  ]
+
+  https_listener_rules = [
+    {
+      https_listener_index     = 0
+      priority                 = 1
+      actions                  = [
+        {
+          type                = "forward"
+          target_group_index  = 0
+        }
+      ]
+      conditions = [
+        {
+          http_headers = [{
+            http_header_name  = "x-cdn-auth"
+            values            = [jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)]
+          }]
+        }
+      ]
     }
   ]
 
@@ -68,24 +87,9 @@ module "public_api_alb_security_group" {
 
   ingress_with_cidr_blocks = [
     {
-      description = "http from internet"
-      rule        = "http-80-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
-    },
-    {
       description = "https from internet"
       rule        = "https-443-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 
