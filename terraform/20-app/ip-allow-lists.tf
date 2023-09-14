@@ -27,6 +27,7 @@ locals {
     ],
     other_stakeholders = [
       "109.155.125.77/32",  # Sam Organ 2
+      "86.180.56.160/32",   # Sam Organ 3
       "109.156.137.191/32", # Georgina
       "151.228.223.13/32",  # Kelly
       "109.178.242.23/32",  # Kelly (temp)
