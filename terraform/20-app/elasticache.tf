@@ -1,7 +1,6 @@
 resource "aws_elasticache_subnet_group" "app_elasticache_subnet" {
   name       = "${local.prefix}-app-elasticache-subnet"
-  subnet_ids = module.vpc.intra_subnets
-
+  subnet_ids = module.vpc.elasticache_subnets
 }
 
 module "app_elasticache_security_group" {
@@ -19,7 +18,6 @@ module "app_elasticache_security_group" {
     }
   ]
 }
-
 
 resource "aws_elasticache_cluster" "app_elasticache" {
   cluster_id           = "${local.prefix}-app-redis-cluster"
