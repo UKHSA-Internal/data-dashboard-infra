@@ -32,6 +32,13 @@ module "cloudfront_public_api" {
         }
     }
 
+    logging_config = {
+        bucket          = module.s3_logs.s3_bucket_bucket_domain_name
+        enabled         = true
+        include_cookies = false
+        prefix          = "public-api-cloudfront"
+    }
+
     viewer_certificate = {
         acm_certificate_arn = local.cloud_front_certificate_arn
         ssl_support_method  = "sni-only"
