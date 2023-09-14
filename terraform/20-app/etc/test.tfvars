@@ -1,1 +1,2 @@
-environment_type="test"
+environment_type  = "test"
+halo_account_type = "nl2"

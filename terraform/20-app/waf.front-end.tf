@@ -1,6 +1,6 @@
-resource "aws_wafv2_web_acl" "public_api" {
-  name        = "${local.prefix}-public-api"
-  description = "Web ACL for public api application"
+resource "aws_wafv2_web_acl" "front_end" {
+  name        = "${local.prefix}-front-end"
+  description = "Web ACL for front-end application"
   scope       = "CLOUDFRONT"
   provider    = aws.us_east_1
 
@@ -30,7 +30,7 @@ resource "aws_wafv2_web_acl" "public_api" {
   }
 
   dynamic "rule" {
-    for_each = local.waf_public_api.rules
+    for_each = local.waf_front_end.rules
 
     content {
       name     = rule.value.name
@@ -56,14 +56,14 @@ resource "aws_wafv2_web_acl" "public_api" {
   }
 
   visibility_config {
-    metric_name                = "${local.prefix}-public-api"
+    metric_name                = "${local.prefix}-front-end"
     cloudwatch_metrics_enabled = true
     sampled_requests_enabled   = true
   }
 }
 
 locals {
-  waf_public_api = {
+  waf_front_end = {
     rules = [
       {
         priority = 2
@@ -89,8 +89,8 @@ locals {
   }
 }
 
-resource "aws_wafv2_web_acl_logging_configuration" "public_api" {
+resource "aws_wafv2_web_acl_logging_configuration" "front_end" {
   log_destination_configs = [data.aws_s3_bucket.halo_waf_logs_us_east_1.arn]
   provider                = aws.us_east_1
-  resource_arn            = aws_wafv2_web_acl.public_api.arn
+  resource_arn            = aws_wafv2_web_acl.front_end.arn
 }
