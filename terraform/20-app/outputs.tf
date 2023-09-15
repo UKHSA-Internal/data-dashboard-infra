@@ -20,16 +20,13 @@ output "passwords" {
 }
 
 locals {
-  urls = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
-    front_end   = "https://${local.account_layer.dns.wke_dns_names[local.environment]}"
-    cms_admin   = "https://cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    public_api  = "https://api.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    private_api = "https://private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    } : {
-    front_end   = "https://${local.environment}.${local.account_layer.dns.account.dns_name}"
-    cms_admin   = "https://${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
-    public_api  = "https://${local.environment}-api.${local.account_layer.dns.account.dns_name}"
-    private_api = "https://${local.environment}-private-api.${local.account_layer.dns.account.dns_name}"
+  urls = {
+    cms_admin      = "https://${local.dns_names.cms_admin}"
+    front_end      = "https://${local.dns_names.front_end}"
+    front_end_lb   = "https://${local.dns_names.front_end_lb}"
+    private_api    = "https://${local.dns_names.private_api}"
+    public_api     = "https://${local.dns_names.public_api}"
+    public_api_lb  = "https://${local.dns_names.public_api_lb}"
   }
 }
 

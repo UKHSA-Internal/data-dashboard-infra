@@ -6,4 +6,5 @@ module "s3_logs" {
 
   attach_deny_insecure_transport_policy = true
   attach_elb_log_delivery_policy        = true
+  force_destroy = true
 }

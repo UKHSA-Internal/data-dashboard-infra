@@ -14,7 +14,23 @@ module "route_53_records" {
       }
     },
     {
+      name = "${local.environment}-lb"
+      type = "A"
+      alias = {
+        name    = module.front_end_alb.lb_dns_name
+        zone_id = module.front_end_alb.lb_zone_id
+      }
+    },
+    {
       name = "${local.environment}-api"
+      type = "A"
+      alias = {
+        name    = module.cloudfront_public_api.cloudfront_distribution_domain_name
+        zone_id = module.cloudfront_public_api.cloudfront_distribution_hosted_zone_id
+      }
+    },
+    {
+      name = "${local.environment}-api-lb"
       type = "A"
       alias = {
         name    = module.public_api_alb.lb_dns_name
@@ -39,3 +55,4 @@ module "route_53_records" {
     }
   ]
 }
+

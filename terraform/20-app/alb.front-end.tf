@@ -11,9 +11,9 @@ module "front_end_alb" {
   security_groups = [module.front_end_alb_security_group.security_group_id]
 
   access_logs = {
-    bucket  = module.s3_logs.s3_bucket_id
-    enabled = true
-    prefix  = "front-end-alb"
+    bucket    = module.s3_logs.s3_bucket_id
+    enabled   = true
+    prefix    = "front-end-alb"
   }
 
   target_groups = [
@@ -38,9 +38,14 @@ module "front_end_alb" {
 
   http_tcp_listeners = [
     {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
+      port        = 80
+      protocol    = "HTTP"
+      action_type = "redirect"
+      redirect    = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
     }
   ]
 
@@ -67,16 +72,6 @@ module "front_end_alb_security_group" {
   vpc_id = module.vpc.vpc_id
 
   ingress_with_cidr_blocks = [
-    {
-      description = "http from allowed ips"
-      rule        = "http-80-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants
-      )
-    },
     {
       description = "https from allowed ips"
       rule        = "https-443-tcp"
