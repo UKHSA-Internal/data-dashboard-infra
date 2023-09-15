@@ -12,11 +12,17 @@ module "cloudfront_front_end" {
   origin = {
     alb = {
       domain_name = local.dns_names.front_end_lb
+
       custom_origin_config = {
         http_port              = 80
         https_port             = 443
         origin_protocol_policy = "https-only"
         origin_ssl_protocols   = ["TLSv1.2"]
+      }
+
+      origin_shield = {
+        enabled              = true
+        origin_shield_region = local.region
       }
 
       custom_header = [
