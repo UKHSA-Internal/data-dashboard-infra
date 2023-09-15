@@ -21,7 +21,7 @@ output "passwords" {
 
 locals {
   urls = {
-    cms_admin      = "https://${local.dns_names.cms_admin}"
+    cms_admin      = "http://${local.dns_names.cms_admin}"
     front_end      = "https://${local.dns_names.front_end}"
     front_end_lb   = "https://${local.dns_names.front_end_lb}"
     private_api    = "https://${local.dns_names.private_api}"
