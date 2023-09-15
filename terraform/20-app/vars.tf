@@ -47,3 +47,5 @@ variable "rds_app_db_skip_final_snapshot" {
 variable "rds_app_db_storage_type" {
   default = "gp3"
 }
+
+variable "halo_account_type" {}
