@@ -44,6 +44,7 @@ module "cloudfront_front_end" {
     allowed_methods            = ["GET", "HEAD", "OPTIONS"]
     cache_policy_id            = aws_cloudfront_cache_policy.front_end.id
     cached_methods             = ["GET", "HEAD"]
+    compress                   = true
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
     response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
     target_origin_id           = "alb"
