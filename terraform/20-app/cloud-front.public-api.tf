@@ -52,7 +52,7 @@ module "cloudfront_public_api" {
     response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
     target_origin_id           = "alb"
     use_forwarded_values       = false
-    viewer_protocol_policy     = "allow-all"
+    viewer_protocol_policy     = "redirect-to-https"
   }
 }
 
