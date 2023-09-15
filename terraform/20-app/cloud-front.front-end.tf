@@ -41,7 +41,7 @@ module "cloudfront_front_end" {
   }
 
   default_cache_behavior = {
-    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
     cache_policy_id            = aws_cloudfront_cache_policy.front_end.id
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
