@@ -16,6 +16,16 @@ variable "one_nat_gateway_per_az" {
   default = false
 }
 
+variable "tools_account_id" {
+  sensitive = true
+}
+
+variable "single_nat_gateway" {
+  default = true
+}
+
+# RDS variables
+
 variable "rds_app_db_allocated_storage" {
   default = "20"
 }
@@ -26,14 +36,6 @@ variable "rds_app_db_engine" {
 
 variable "rds_app_db_engine_version" {
   default = "15.3"
-}
-
-variable "tools_account_id" {
-  sensitive = true
-}
-
-variable "single_nat_gateway" {
-  default = true
 }
 
 variable "rds_app_db_instance_class" {
