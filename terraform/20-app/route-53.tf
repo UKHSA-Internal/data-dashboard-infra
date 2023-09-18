@@ -9,8 +9,8 @@ module "route_53_records" {
       name = local.environment
       type = "A"
       alias = {
-        name    = module.front_end_alb.lb_dns_name
-        zone_id = module.front_end_alb.lb_zone_id
+        name    = module.cloudfront_front_end.cloudfront_distribution_domain_name
+        zone_id = module.cloudfront_front_end.cloudfront_distribution_hosted_zone_id
       }
     },
     {
@@ -38,8 +38,8 @@ module "route_53_records" {
       }
     },
     {
-      name  = "${local.environment}-private-api",
-      type  = "A"
+      name = "${local.environment}-private-api",
+      type = "A"
       alias = {
         name    = module.private_api_alb.lb_dns_name
         zone_id = module.private_api_alb.lb_zone_id
