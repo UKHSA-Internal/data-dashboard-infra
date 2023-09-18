@@ -11,7 +11,7 @@ module "front_end_alb" {
   security_groups = [module.front_end_alb_security_group.security_group_id]
 
   access_logs = {
-    bucket  = module.s3_logs.s3_bucket_id
+    bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
     enabled = true
     prefix  = "front-end-alb"
   }
