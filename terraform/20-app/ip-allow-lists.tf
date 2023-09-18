@@ -2,7 +2,7 @@ locals {
   ip_allow_list = {
     engineers = [
       "109.157.41.145/32",  # Rajee
-      "45.159.90.57/32",    # Afaan
+      "95.214.230.59/32",   # Afaan
       "154.51.68.102/32",   # Burendo
       "18.133.111.70/32",   # UKHSA test gateway
       "188.220.99.50/32",   # Phil
@@ -34,8 +34,10 @@ locals {
       "152.37.69.61/32",    # Ashley M
       "154.51.64.64/27",    # NCC Leeds
       "165.225.17.145/32",  # Steph
+      "86.185.54.180/32",   # Steph 2
       "167.98.200.192/27",  # NCC London  
       "172.27.130.21/32",   # Asad
+      "86.163.132.245/32",  # Asad 2
       "18.135.62.168/32",   # Load test rig
       "195.95.131.0/24",    # NCC Manchester
       "5.148.32.192/26",    # NCC Manchester
@@ -67,6 +69,7 @@ locals {
       "86.151.190.40/32",   # Ciara 2
       "86.29.186.201/32",   # Charlotte (Analyst)
       "90.243.49.40/32",    # Jason
+      "2.25.205.147/32",    # Prince
     ]
     user_testing_participants = [
       "51.194.186.251/32",

@@ -36,6 +36,14 @@ module "cms_admin_alb" {
     }
   ]
 
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
+
   https_listeners = [
     {
       port               = 443
@@ -52,9 +60,9 @@ module "cms_admin_alb" {
 }
 
 module "cms_admin_alb_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
+  source = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
-
+  
   name   = "${local.prefix}-cms-admin-alb"
   vpc_id = module.vpc.vpc_id
 
@@ -65,7 +73,18 @@ module "cms_admin_alb_security_group" {
       cidr_blocks = join(",",
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders
+        local.ip_allow_list.other_stakeholders,
+        local.ip_allow_list.user_testing_participants
+      )
+    },
+    {
+      description = "http from internet"
+      rule        = "http-80-tcp"
+      cidr_blocks = join(",",
+        local.ip_allow_list.engineers,
+        local.ip_allow_list.project_team,
+        local.ip_allow_list.other_stakeholders,
+        local.ip_allow_list.user_testing_participants
       )
     }
   ]
