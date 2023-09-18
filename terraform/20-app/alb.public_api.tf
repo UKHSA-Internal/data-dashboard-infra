@@ -11,7 +11,7 @@ module "public_api_alb" {
   security_groups = [module.public_api_alb_security_group.security_group_id]
 
   access_logs = {
-    bucket  = module.s3_logs.s3_bucket_id
+    bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
     enabled = true
     prefix  = "public-api-alb"
   }
@@ -54,27 +54,23 @@ module "public_api_alb" {
 
   https_listener_rules = [
     {
-      https_listener_index     = 0
-      priority                 = 1
-      actions                  = [
+      https_listener_index = 0
+      priority             = 1
+      actions = [
         {
-          type                = "forward"
-          target_group_index  = 0
+          type               = "forward"
+          target_group_index = 0
         }
       ]
       conditions = [
         {
           http_headers = [{
-            http_header_name  = "x-cdn-auth"
-            values            = [jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)]
+            http_header_name = "x-cdn-auth"
+            values           = [jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)]
           }]
         }
       ]
     }
-  ]
-
-  depends_on = [
-    module.s3_logs
   ]
 }
 
