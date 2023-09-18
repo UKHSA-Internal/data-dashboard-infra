@@ -45,10 +45,6 @@ module "private_api_alb" {
       ssl_policy         = local.alb_security_policy
     }
   ]
-
-  depends_on = [
-    module.s3_logs
-  ]
 }
 
 module "private_api_alb_security_group" {

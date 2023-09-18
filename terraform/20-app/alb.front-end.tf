@@ -72,10 +72,6 @@ module "front_end_alb" {
       ]
     }
   ]
-
-  depends_on = [
-    module.s3_logs
-  ]
 }
 
 module "front_end_alb_security_group" {

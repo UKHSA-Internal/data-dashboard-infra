@@ -72,10 +72,6 @@ module "public_api_alb" {
       ]
     }
   ]
-
-  depends_on = [
-    module.s3_logs
-  ]
 }
 
 module "public_api_alb_security_group" {

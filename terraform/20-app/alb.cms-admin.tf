@@ -53,16 +53,12 @@ module "cms_admin_alb" {
       ssl_policy         = local.alb_security_policy
     }
   ]
-
-  depends_on = [
-    module.s3_logs
-  ]
 }
 
 module "cms_admin_alb_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
+  source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
-  
+
   name   = "${local.prefix}-cms-admin-alb"
   vpc_id = module.vpc.vpc_id
 
