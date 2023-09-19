@@ -68,7 +68,7 @@ module "private_api_alb" {
         {
           http_headers = [{
             http_header_name = "Authorization"
-            values           = [local.private_api_key]
+            values           = [jsonencode(aws_secretsmanager_secret_version.private_api_key.secret_string)]
           }]
         }
       ]
