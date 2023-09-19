@@ -18,6 +18,7 @@ locals {
   cloud_front_certificate_arn = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   enable_public_db            = local.is_dev
   is_dev                      = var.environment_type == "dev"
+  use_prod_sizing             = true
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
