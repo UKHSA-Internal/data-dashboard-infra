@@ -9,7 +9,7 @@ module "ecs_service_ingestion" {
   memory             = 1024
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
-  desired_count      = 1
+  desired_count      = 0
 
   container_definitions = {
     api = {
