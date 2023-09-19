@@ -43,6 +43,35 @@ module "private_api_alb" {
       certificate_arn    = local.certificate_arn
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
+      action_type        = "fixed-response"
+      fixed_response = {
+        content_type = "application/json"
+        message_body = jsonencode({
+          message = "Authentication credentials were not provided."
+        })
+        status_code = "401"
+      }
+    }
+  ]
+
+  https_listener_rules = [
+    {
+      https_listener_index = 0
+      priority             = 1
+      actions = [
+        {
+          type               = "forward"
+          target_group_index = 0
+        }
+      ]
+      conditions = [
+        {
+          http_headers = [{
+            http_header_name = "Authorization"
+            values           = [local.private_api_key]
+          }]
+        }
+      ]
     }
   ]
 }
