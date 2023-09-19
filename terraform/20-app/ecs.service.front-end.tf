@@ -30,6 +30,10 @@ module "ecs_service_front_end" {
           name  = "API_URL"
           value = local.urls.private_api
         },
+        {
+          name  = "FEEDBACK_API_URL"
+          value = local.urls.feedback_api
+        },
         # Variables intended for the browser require the NEXT_PUBLIC_ prefix
         # https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#bundling-environment-variables-for-the-browser
         {

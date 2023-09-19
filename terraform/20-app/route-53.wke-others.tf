@@ -47,6 +47,14 @@ module "route_53_records_wke_others" {
       }
     },
     {
+      name = "feedback-api"
+      type = "A"
+      alias = {
+        name    = module.feedback_api_alb.lb_dns_name
+        zone_id = module.feedback_api_alb.lb_zone_id
+      }
+    },
+    {
       name = "cms"
       type = "A"
       alias = {

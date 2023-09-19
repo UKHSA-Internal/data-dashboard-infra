@@ -64,6 +64,8 @@ function _ecs_restart_services() {
     local cms_admin_service_name=$(jq -r '.ecs.value.service_names.cms_admin'  $terraform_output_file)
     local private_api_service_name=$(jq -r '.ecs.value.service_names.private_api'  $terraform_output_file)
     local public_api_service_name=$(jq -r '.ecs.value.service_names.public_api'  $terraform_output_file)
+    local feedback_api_service_name=$(jq -r '.ecs.value.service_names.feedback_api'  $terraform_output_file)
+
     local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  $terraform_output_file)
 
     echo "Restarting services..."
@@ -71,10 +73,16 @@ function _ecs_restart_services() {
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $cms_admin_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $private_api_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $public_api_service_name
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $feedback_api_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $front_end_service_name
 
     echo "Waiting for services to reach a steady state..."
     aws ecs wait services-stable \
         --cluster $cluster_name \
-        --services $cms_admin_service_name $private_api_service_name $public_api_service_name $front_end_service_name
+        --services \
+         $cms_admin_service_name \
+         $private_api_service_name \
+         $public_api_service_name \
+         $feedback_api_service_name \
+         $front_end_service_name
 }
