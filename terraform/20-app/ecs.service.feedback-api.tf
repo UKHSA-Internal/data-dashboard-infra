@@ -5,20 +5,20 @@ module "ecs_service_feedback_api" {
   name        = "${local.prefix}-feedback-api"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 512
-  memory             = 1024
+  cpu                = 256
+  memory             = 512
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 1
 
   container_definitions = {
     api = {
-      cpu                      = 512
-      memory                   = 1024
+      cpu                      = 256
+      memory                   = 512
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
