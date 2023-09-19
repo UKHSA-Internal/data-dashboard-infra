@@ -22,7 +22,7 @@ module "feedback_api_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "ip"
-      health_check = {
+      health_check     = {
         enabled             = true
         interval            = 30
         path                = "/health/"
