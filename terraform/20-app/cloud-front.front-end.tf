@@ -51,6 +51,13 @@ module "cloudfront_front_end" {
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
   }
+
+  logging_config = {
+    bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
+    enabled         = true
+    include_cookies = false
+    prefix          = "${local.prefix}-front-end"
+  }
 }
 
 resource "aws_cloudfront_origin_request_policy" "front_end" {
