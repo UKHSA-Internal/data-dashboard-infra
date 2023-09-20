@@ -5,20 +5,20 @@ module "ecs_service_feedback_api" {
   name        = "${local.prefix}-feedback-api"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 256
-  memory             = 512
+  cpu                = local.use_prod_sizing ? 2048 : 512
+  memory             = local.use_prod_sizing ? 4096 : 1024
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
-  desired_count      = 1
+  desired_count      = local.use_prod_sizing ? 3 : 1
 
   container_definitions = {
     api = {
-      cpu                      = 256
-      memory                   = 512
+      cpu                      = local.use_prod_sizing ? 2048 : 512
+      memory                   = local.use_prod_sizing ? 4096 : 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings            = [
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -31,27 +31,11 @@ module "ecs_service_feedback_api" {
           value = "FEEDBACK_API"
         },
         {
-          name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
-        },
-        {
-          name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
-        },
-        {
           name  = "APIENV"
-          value = "PROD"
+          value = "STANDALONE"
         },
       ],
       secrets = [
-        {
-          name      = "POSTGRES_USER"
-          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:username::"
-        },
-        {
-          name      = "POSTGRES_PASSWORD"
-          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:password::"
-        },
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
@@ -109,13 +93,5 @@ module "feedback_api_tasks_security_group_rules" {
       description = "Allow SMTP traffic from egress"
       cidr_blocks = "0.0.0.0/0"
     },
-  ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "lb to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
-    }
   ]
 }
