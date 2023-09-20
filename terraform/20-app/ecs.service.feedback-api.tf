@@ -32,7 +32,7 @@ module "ecs_service_feedback_api" {
         },
         {
           name  = "APIENV"
-          value = "PROD"
+          value = "STANDALONE"
         },
       ],
       secrets = [
