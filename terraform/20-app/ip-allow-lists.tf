@@ -22,8 +22,9 @@ locals {
       "77.103.163.44/32"    # Milan K
     ],
     project_team = [
-      "2.222.81.211/32", # Debbie
-      "94.1.91.180/32"   # Debbie 2
+      "2.222.81.211/32",  # Debbie
+      "94.1.91.180/32",   # Debbie 2
+      "81.156.234.204/32" # Marc
     ],
     other_stakeholders = [
       "86.138.132.22/32",   # Sam Organ
