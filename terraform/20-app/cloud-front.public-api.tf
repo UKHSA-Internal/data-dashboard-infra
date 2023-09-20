@@ -27,10 +27,6 @@ module "cloudfront_public_api" {
 
       custom_header = [
         {
-          name  = "Accept"
-          value = "text/html"
-        },
-        {
           name  = "x-cdn-auth"
           value = jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)
         }
