@@ -47,11 +47,6 @@ module "app_rds_security_group" {
       description              = "cms admin tasks to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.ecs_service_cms_admin.security_group_id
-    },
-    {
-      description              = "feedback api tasks to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.ecs_service_feedback_api.security_group_id
-    },
+    }
   ]
 }
