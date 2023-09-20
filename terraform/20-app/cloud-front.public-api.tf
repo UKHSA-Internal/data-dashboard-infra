@@ -27,10 +27,6 @@ module "cloudfront_public_api" {
 
       custom_header = [
         {
-          name  = "Accept"
-          value = "text/html"
-        },
-        {
           name  = "x-cdn-auth"
           value = jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)
         }
@@ -93,7 +89,10 @@ resource "aws_cloudfront_cache_policy" "public_api" {
       cookie_behavior = "none"
     }
     headers_config {
-      header_behavior = "none"
+      header_behavior = "whitelist"
+      headers {
+        items = ["accept"]
+      }
     }
     query_strings_config {
       query_string_behavior = "all"
