@@ -93,7 +93,10 @@ resource "aws_cloudfront_cache_policy" "public_api" {
       cookie_behavior = "none"
     }
     headers_config {
-      header_behavior = "none"
+      header_behavior = "whitelist"
+      headers {
+        items = ["accept"]
+      }
     }
     query_strings_config {
       query_string_behavior = "all"
