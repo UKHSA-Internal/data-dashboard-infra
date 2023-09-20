@@ -34,11 +34,11 @@ module "ecs_service_private_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
+          value = local.rds.app.private_api_replica.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
+          value = local.rds.app.private_api_replica.address
         },
         {
           name  = "APIENV"

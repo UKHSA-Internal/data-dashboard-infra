@@ -32,11 +32,11 @@ module "ecs_service_ingestion" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
+          value = local.rds.app.primary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
+          value = local.rds.app.primary.address
         },
         {
           name  = "APIENV"
