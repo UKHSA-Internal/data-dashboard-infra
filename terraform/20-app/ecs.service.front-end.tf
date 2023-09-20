@@ -5,16 +5,16 @@ module "ecs_service_front_end" {
   name        = "${local.prefix}-front-end"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 512
-  memory             = 1024
+  cpu                = local.use_prod_sizing ? 2048 : 512
+  memory             = local.use_prod_sizing ? 4096 : 1024
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
-  desired_count      = 1
+  desired_count      = local.use_prod_sizing ? 3 : 1
 
   container_definitions = {
     front-end = {
-      cpu                      = 512
-      memory                   = 1024
+      cpu                      = local.use_prod_sizing ? 2048 : 512
+      memory                   = local.use_prod_sizing ? 4096 : 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_front_end.repository_url}:latest"

@@ -5,20 +5,20 @@ module "ecs_service_ingestion" {
   name        = "${local.prefix}-ingestion"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 512
-  memory             = 1024
+  cpu                = 2048
+  memory             = 4096
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 0
 
   container_definitions = {
     api = {
-      cpu                      = 512
-      memory                   = 1024
+      cpu                      = 2048
+      memory                   = 4096
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings            = [
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -32,11 +32,11 @@ module "ecs_service_ingestion" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
+          value = local.rds.app.primary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
+          value = local.rds.app.primary.address
         },
         {
           name  = "APIENV"

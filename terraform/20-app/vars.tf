@@ -24,30 +24,4 @@ variable "single_nat_gateway" {
   default = true
 }
 
-# RDS variables
-
-variable "rds_app_db_allocated_storage" {
-  default = "20"
-}
-
-variable "rds_app_db_engine" {
-  default = "postgres"
-}
-
-variable "rds_app_db_engine_version" {
-  default = "15.3"
-}
-
-variable "rds_app_db_instance_class" {
-  default = "db.t3.small"
-}
-
-variable "rds_app_db_skip_final_snapshot" {
-  default = true
-}
-
-variable "rds_app_db_storage_type" {
-  default = "gp3"
-}
-
 variable "halo_account_type" {}

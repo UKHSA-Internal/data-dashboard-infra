@@ -5,18 +5,18 @@ module "ecs_service_private_api" {
   name        = "${local.prefix}-private-api"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 512
-  memory             = 1024
+  cpu                = local.use_prod_sizing ? 2048 : 512
+  memory             = local.use_prod_sizing ? 4096 : 1024
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
-  desired_count      = 1
+  desired_count      = local.use_prod_sizing ? 3 : 1
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
   container_definitions = {
     api = {
-      cpu                      = 512
-      memory                   = 1024
+      cpu                      = local.use_prod_sizing ? 2048 : 512
+      memory                   = local.use_prod_sizing ? 4096 : 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
@@ -34,11 +34,11 @@ module "ecs_service_private_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
+          value = local.rds.app.private_api_replica.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
+          value = local.rds.app.private_api_replica.address
         },
         {
           name  = "APIENV"

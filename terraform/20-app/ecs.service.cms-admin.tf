@@ -5,16 +5,16 @@ module "ecs_service_cms_admin" {
   name        = "${local.prefix}-cms-admin"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 512
-  memory             = 1024
+  cpu                = local.use_prod_sizing ? 2048 : 512
+  memory             = local.use_prod_sizing ? 4096 : 1024
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
-  desired_count      = 1
+  desired_count      = local.use_prod_sizing ? 3 : 1
 
   container_definitions = {
     api = {
-      cpu                      = 512
-      memory                   = 1024
+      cpu                      = local.use_prod_sizing ? 2048 : 512
+      memory                   = local.use_prod_sizing ? 4096 : 1024
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
@@ -32,11 +32,11 @@ module "ecs_service_cms_admin" {
         },
         {
           name  = "POSTGRES_DB"
-          value = aws_db_instance.app_rds.db_name
+          value = local.rds.app.primary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = aws_db_instance.app_rds.address
+          value = local.rds.app.primary.address
         },
         {
           name  = "APIENV"
