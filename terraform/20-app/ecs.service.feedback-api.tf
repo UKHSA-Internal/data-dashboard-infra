@@ -94,12 +94,4 @@ module "feedback_api_tasks_security_group_rules" {
       cidr_blocks = "0.0.0.0/0"
     },
   ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "lb to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
-    }
-  ]
 }
