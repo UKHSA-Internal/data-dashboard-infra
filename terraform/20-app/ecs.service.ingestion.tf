@@ -42,6 +42,10 @@ module "ecs_service_ingestion" {
           name  = "APIENV"
           value = "PROD"
         },
+        {
+          name  = "REDIS_HOST"
+          value = "redis://${aws_elasticache_cluster.app_elasticache.cache_nodes[0].address}:${aws_elasticache_cluster.app_elasticache.cache_nodes[0].port}"
+        }
       ],
       secrets = [
         {
@@ -78,9 +82,14 @@ module "ingestion_tasks_security_group_rules" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "lb to db"
+      description              = "tasks to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.app_rds_security_group.security_group_id
+    },
+    {
+      description              = "tasks to cache"
+      rule                     = "redis-tcp"
+      source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
   ]
 }
