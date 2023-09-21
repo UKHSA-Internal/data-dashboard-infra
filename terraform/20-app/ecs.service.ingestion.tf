@@ -11,9 +11,11 @@ module "ecs_service_ingestion" {
   enable_autoscaling = false
   desired_count      = 0
 
-  task_exec_iam_role_policies = {
-    permissions = module.iam_policy_ingest_service.arn
-  }
+  iam_role_statements = [
+    {
+      permissions = module.iam_policy_ingestion_service.arn
+    }
+  ]
 
   container_definitions = {
     api = {
@@ -93,11 +95,11 @@ module "ingestion_tasks_security_group_rules" {
   ]
 }
 
-module "iam_policy_ingest_service" {
+module "iam_policy_ingestion_service" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "5.30.0"
 
-  name = "${local.prefix}-ingest-service"
+  name = "${local.prefix}-ingestion"
 
   policy = jsonencode(
     {
@@ -105,19 +107,18 @@ module "iam_policy_ingest_service" {
       Statement = [
         {
           Action = [
-            "s3:GetObject",
-            "s3:DeleteObject"
+            "s3:*",
           ],
           Effect   = "Allow",
-          Resource = "${module.s3_ingest.s3_bucket_arn}/in"
-        },
-        {
-          Action = [
-            "s3:PutObject"
-          ],
-          Effect   = "Allow",
-          Resource = "${module.s3_ingest.s3_bucket_arn}/processed"
+          Resource = [module.s3_ingest.s3_bucket_arn, "${module.s3_ingest.s3_bucket_arn}/*"]
         }
+#        {
+#          Action = [
+#            "s3:PutObject"
+#          ],
+#          Effect   = "Allow",
+#          Resource = "${module.s3_ingest.s3_bucket_arn}/processed"
+#        }
       ]
     }
   )
