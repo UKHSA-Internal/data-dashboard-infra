@@ -11,9 +11,18 @@ module "ecs_service_ingestion" {
   enable_autoscaling = false
   desired_count      = 0
 
-  iam_role_statements = [
+  tasks_iam_role_statements = [
     {
-      permissions = module.iam_policy_ingestion_service.arn
+      actions = [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListObjects"
+      ]
+      effect = "Allow"
+      resources = [
+        module.s3_ingest.s3_bucket_arn,
+        "${module.s3_ingest.s3_bucket_arn}/*"
+      ]
     }
   ]
 
@@ -93,33 +102,4 @@ module "ingestion_tasks_security_group_rules" {
       source_security_group_id = module.app_rds_security_group.security_group_id
     }
   ]
-}
-
-module "iam_policy_ingestion_service" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.30.0"
-
-  name = "${local.prefix}-ingestion"
-
-  policy = jsonencode(
-    {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Action = [
-            "s3:*",
-          ],
-          Effect   = "Allow",
-          Resource = [module.s3_ingest.s3_bucket_arn, "${module.s3_ingest.s3_bucket_arn}/*"]
-        }
-#        {
-#          Action = [
-#            "s3:PutObject"
-#          ],
-#          Effect   = "Allow",
-#          Resource = "${module.s3_ingest.s3_bucket_arn}/processed"
-#        }
-      ]
-    }
-  )
 }
