@@ -42,7 +42,7 @@ module "iam_sentinel_policy" {
             "s3:GetObject"
           ],
           Effect   = "Allow",
-          Resource = module.s3_elb_logs.s3_bucket_arn
+          Resource = "${module.s3_elb_logs.s3_bucket_arn}/*"
         }
       ]
     }
