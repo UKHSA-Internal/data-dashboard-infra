@@ -14,6 +14,20 @@ module "ecs_service_ingestion" {
   tasks_iam_role_statements = [
     {
       actions = [
+        "s3:ListBucket"
+      ]
+      effect = "Allow"
+      resources = [module.s3_ingest.s3_bucket_arn]
+    },
+    {
+      actions = [
+        "s3:ListObjects"
+      ]
+      effect = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/in"]
+    },
+    {
+      actions = [
         "s3:GetObject",
         "s3:PutObject",
         "s3:ListObjects"
