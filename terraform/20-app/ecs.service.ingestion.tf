@@ -68,6 +68,14 @@ module "ingestion_tasks_security_group_rules" {
   create_sg         = false
   security_group_id = module.ecs_service_ingestion.security_group_id
 
+  egress_with_cidr_blocks = [
+    {
+      description = "https to internet"
+      rule        = "https-443-tcp"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+
   egress_with_source_security_group_id = [
     {
       description              = "lb to db"
