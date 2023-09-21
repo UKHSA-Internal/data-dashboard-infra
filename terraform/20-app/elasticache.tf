@@ -22,7 +22,7 @@ module "app_elasticache_security_group" {
 resource "aws_elasticache_cluster" "app_elasticache" {
   cluster_id           = "${local.prefix}-app-redis-cluster"
   engine               = "redis"
-  node_type            = "cache.t3.micro"
+  node_type            = local.use_prod_sizing ? "cache.t3.medium" : "cache.t3.micro"
   num_cache_nodes      = 1
   parameter_group_name = "default.redis7"
   engine_version       = "7.0"
