@@ -18,7 +18,7 @@ module "ecs_service_ingestion" {
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
@@ -29,6 +29,10 @@ module "ecs_service_ingestion" {
         {
           name  = "APP_MODE"
           value = "INGESTION"
+        },
+        {
+          name  = "INGESTION_BUCKET_NAME"
+          value = module.s3_ingest.s3_bucket_id
         },
         {
           name  = "POSTGRES_DB"
