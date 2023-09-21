@@ -12,6 +12,7 @@ module "ecs_service_ingestion" {
   desired_count      = 0
 
   tasks_iam_role_statements = [
+    # Gives permission to list information at the bucket-level
     {
       actions = [
         "s3:ListBucket"
@@ -19,6 +20,7 @@ module "ecs_service_ingestion" {
       effect = "Allow"
       resources = [module.s3_ingest.s3_bucket_arn]
     },
+    # Gives permission to list all files within the `in/` folder
     {
       actions = [
         "s3:ListObjects"
@@ -26,6 +28,8 @@ module "ecs_service_ingestion" {
       effect = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/in"]
     },
+    # Gives permission to download & delete files from the `in/` folder
+    # Note that there is strictly no move-type operation hence the need to combine get and delete
     {
       actions = [
         "s3:GetObject",
@@ -34,6 +38,7 @@ module "ecs_service_ingestion" {
       effect = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/in/*"]
     },
+    # Gives permission to add files to the `processed/` folder
     {
       actions = [
         "s3:PutObject"
