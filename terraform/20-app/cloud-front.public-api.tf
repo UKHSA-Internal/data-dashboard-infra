@@ -77,9 +77,9 @@ resource "aws_cloudfront_origin_request_policy" "public_api" {
 resource "aws_cloudfront_cache_policy" "public_api" {
   name = "${local.prefix}-public-api"
 
-  min_ttl     = local.environment == "prod" ? 2592000 : 900
-  default_ttl = local.environment == "prod" ? 2592000 : 900
-  max_ttl     = local.environment == "prod" ? 2592000 : 900
+  min_ttl     = local.use_prod_sizing ? 2592000 : 900
+  default_ttl = local.use_prod_sizing ? 2592000 : 900
+  max_ttl     = local.use_prod_sizing ? 2592000 : 900
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
