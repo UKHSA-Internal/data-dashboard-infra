@@ -29,14 +29,17 @@ module "ecs_service_ingestion" {
     {
       actions = [
         "s3:GetObject",
-        "s3:PutObject",
-        "s3:ListObjects"
+        "s3:DeleteObject"
       ]
       effect = "Allow"
-      resources = [
-        module.s3_ingest.s3_bucket_arn,
-        "${module.s3_ingest.s3_bucket_arn}/*"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/in/*"]
+    },
+    {
+      actions = [
+        "s3:PutObject"
       ]
+      effect = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/processed/*"]
     }
   ]
 
