@@ -1,0 +1,22 @@
+{
+  "cluster": "${cluster_arn}",
+  "count": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ${jsonencode([for subnet_id in subnet_ids : "${subnet_id}"])},
+      "securityGroups": [
+        "${security_group_id}"
+      ]
+    }
+  },
+  "overrides": {
+    "containerOverrides": [
+      {
+        "name": "api",
+        "command": ["scripts/upload_files_from_s3.sh"]
+      }
+    ]
+  },
+  "taskDefinition": "${task_arn}"
+}
