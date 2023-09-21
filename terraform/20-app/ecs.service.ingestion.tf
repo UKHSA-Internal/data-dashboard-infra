@@ -6,7 +6,7 @@ module "ecs_service_ingestion" {
   cluster_arn = module.ecs.cluster_arn
 
   cpu                = 2048
-  memory             = 4096
+  memory             = 16384
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 0
@@ -17,7 +17,7 @@ module "ecs_service_ingestion" {
       actions = [
         "s3:ListBucket"
       ]
-      effect = "Allow"
+      effect    = "Allow"
       resources = [module.s3_ingest.s3_bucket_arn]
     },
     # Gives permission to list all files within the `in/` folder
@@ -25,7 +25,7 @@ module "ecs_service_ingestion" {
       actions = [
         "s3:ListObjects"
       ]
-      effect = "Allow"
+      effect    = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/in"]
     },
     # Gives permission to download & delete files from the `in/` folder
@@ -35,7 +35,7 @@ module "ecs_service_ingestion" {
         "s3:GetObject",
         "s3:DeleteObject"
       ]
-      effect = "Allow"
+      effect    = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/in/*"]
     },
     # Gives permission to add files to the `processed/` folder
@@ -43,7 +43,7 @@ module "ecs_service_ingestion" {
       actions = [
         "s3:PutObject"
       ]
-      effect = "Allow"
+      effect    = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/processed/*"]
     }
   ]
@@ -51,11 +51,11 @@ module "ecs_service_ingestion" {
   container_definitions = {
     api = {
       cpu                      = 2048
-      memory                   = 4096
+      memory                   = 16384
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
