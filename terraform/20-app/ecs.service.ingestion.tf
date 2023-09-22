@@ -6,19 +6,56 @@ module "ecs_service_ingestion" {
   cluster_arn = module.ecs.cluster_arn
 
   cpu                = 2048
-  memory             = 4096
+  memory             = 16384
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 0
 
+  tasks_iam_role_statements = [
+    # Gives permission to list information at the bucket-level
+    {
+      actions = [
+        "s3:ListBucket"
+      ]
+      effect    = "Allow"
+      resources = [module.s3_ingest.s3_bucket_arn]
+    },
+    # Gives permission to list all files within the `in/` folder
+    {
+      actions = [
+        "s3:ListObjects"
+      ]
+      effect    = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/in"]
+    },
+    # Gives permission to download & delete files from the `in/` folder
+    # Note that there is strictly no move-type operation hence the need to combine get and delete
+    {
+      actions = [
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ]
+      effect    = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/in/*"]
+    },
+    # Gives permission to add files to the `processed/` folder
+    {
+      actions = [
+        "s3:PutObject"
+      ]
+      effect    = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/processed/*"]
+    }
+  ]
+
   container_definitions = {
     api = {
       cpu                      = 2048
-      memory                   = 4096
+      memory                   = 16384
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
@@ -29,6 +66,10 @@ module "ecs_service_ingestion" {
         {
           name  = "APP_MODE"
           value = "INGESTION"
+        },
+        {
+          name  = "INGESTION_BUCKET_NAME"
+          value = module.s3_ingest.s3_bucket_id
         },
         {
           name  = "POSTGRES_DB"
