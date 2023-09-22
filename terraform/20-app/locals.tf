@@ -21,7 +21,8 @@ locals {
   enable_public_db            = local.is_dev
   is_dev                      = var.environment_type == "dev"
   
-  use_auto_scaling = local.use_prod_sizing
+  use_auto_scaling  = local.use_prod_sizing
+  use_ip_allow_list = local.environment != "prod"
   
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"

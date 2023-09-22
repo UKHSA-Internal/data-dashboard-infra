@@ -5,7 +5,16 @@ resource "aws_wafv2_web_acl" "front_end" {
   provider    = aws.us_east_1
 
   default_action {
-    block {}
+    dynamic "block" {
+      for_each = local.use_ip_allow_list ? [""] : []
+      content {
+      }
+    }
+    dynamic "allow" {
+      for_each = local.use_ip_allow_list ? [] : [""]
+      content {
+      }
+    }
   }
 
   rule {
