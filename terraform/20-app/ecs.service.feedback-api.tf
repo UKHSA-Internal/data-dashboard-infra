@@ -8,8 +8,10 @@ module "ecs_service_feedback_api" {
   cpu                = local.use_prod_sizing ? 2048 : 512
   memory             = local.use_prod_sizing ? 4096 : 1024
   subnet_ids         = module.vpc.private_subnets
-  enable_autoscaling = false
-  desired_count      = local.use_prod_sizing ? 3 : 1
+  
+  enable_autoscaling       = local.use_auto_scaling
+  desired_count            = local.use_prod_sizing ? 3 : 1
+  autoscaling_max_capacity = local.use_auto_scaling ? 20 : 1
 
   container_definitions = {
     api = {

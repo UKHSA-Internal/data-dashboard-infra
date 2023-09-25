@@ -7,6 +7,8 @@ locals {
   account_id          = var.assume_account_id
   alb_security_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
+  use_prod_sizing = contains(["perf", "train", "uat", "prod"], local.environment)
+  
   wke = {
     account = ["dev", "test", "uat", "prod"]
     other   = ["pen", "perf", "train"]
@@ -18,8 +20,9 @@ locals {
   cloud_front_certificate_arn = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   enable_public_db            = local.is_dev
   is_dev                      = var.environment_type == "dev"
-  use_prod_sizing             = contains(["perf", "train", "uat", "prod"], local.environment)
-
+  
+  use_auto_scaling = local.use_prod_sizing
+  
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
     front_end     = "${local.account_layer.dns.wke_dns_names[local.environment]}"
