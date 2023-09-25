@@ -21,4 +21,9 @@ module "vpc" {
   enable_nat_gateway     = true
   one_nat_gateway_per_az = var.one_nat_gateway_per_az
   single_nat_gateway     = var.single_nat_gateway
+
+  enable_flow_log           = true
+  flow_log_destination_arn  = "${data.aws_s3_bucket.vpc_flow_logs_eu_west_2.arn}/${local.prefix}-main/"
+  flow_log_destination_type = "s3"
+  flow_log_file_format      = "plain-text"
 }
