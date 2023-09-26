@@ -10,7 +10,8 @@ module "ecs_service_private_api" {
   subnet_ids         = module.vpc.private_subnets
 
   enable_autoscaling       = local.use_auto_scaling
-  desired_count            = local.use_prod_sizing ? 3 : 1
+  desired_count            = local.use_auto_scaling ? 3 : 1
+  autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
   autoscaling_max_capacity = local.use_auto_scaling ? 20 : 1
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]

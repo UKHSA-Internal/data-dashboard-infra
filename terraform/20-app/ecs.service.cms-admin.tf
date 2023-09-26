@@ -10,7 +10,8 @@ module "ecs_service_cms_admin" {
   subnet_ids         = module.vpc.private_subnets
 
   enable_autoscaling       = local.use_auto_scaling
-  desired_count            = local.use_prod_sizing ? 3 : 1
+  desired_count            = local.use_auto_scaling ? 3 : 1
+  autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
   autoscaling_max_capacity = local.use_auto_scaling ? 5 : 1
 
   container_definitions = {
