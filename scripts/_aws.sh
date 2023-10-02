@@ -53,5 +53,8 @@ function _aws_login() {
 }
 
 function _aws_whoami() {
+    echo "Using profile $AWS_PROFILE"
+    echo
+
     aws sts get-caller-identity | jq .
 }
