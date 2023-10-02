@@ -5,8 +5,8 @@ module "ecs_service_ingestion" {
   name        = "${local.prefix}-ingestion"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 4096
-  memory             = 30720
+  cpu                = 16384
+  memory             = 32768
   subnet_ids         = module.vpc.private_subnets
   enable_autoscaling = false
   desired_count      = 0
@@ -50,8 +50,8 @@ module "ecs_service_ingestion" {
 
   container_definitions = {
     api = {
-      cpu                      = 4096
-      memory                   = 30720
+      cpu                      = 16384
+      memory                   = 32768
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
