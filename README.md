@@ -10,8 +10,13 @@ Please make sure you have the following software installed:
 
 1. `aws` - `brew install awscli`
 2. `jq` - `brew install jq`
+3. `docker` - `brew install --cask docker`
 
 ## Configure AWS SSO
+
+You need to sign into AWS and configure your profiles. You can either do this via the AWS CLI or by editing your config files directly. For UKHSA engineers we recommend editing your config files directly.
+
+### Using the AWS CLI
 
 Sign into AWS and configure your profiles:
 
@@ -21,12 +26,12 @@ aws configure sso
 
 Follow the prompts and configure the accounts / roles with the following profile names. When prompted for the region, enter `eu-west-2`.
 
-| Account     | Role          | Profile Name      |
-| ----------- | ------------- | ----------------- |
-| Development | Administrator | `uhd-dev:admin`   |
-| Tooling     | Administrator | `uhd-tools:admin` |
+| Account     | Role      | Profile Name |
+| ----------- | --------- | ------------ |
+| Development | Developer | `uhd-dev`    |
+| Tooling     | Developer | `uhd-tools`  |
 
-### Post config steps
+#### Post config steps
 
 Due to a bug in the AWS Terraform provider ([hashicorp/terraform-provider-aws#28263](https://github.com/hashicorp/terraform-provider-aws/issues/28263#issuecomment-1378369615)), the following manual post config steps are needed:
 
@@ -45,6 +50,19 @@ sso_role_name = Baz
 region = eu-west-2
 ```
 
+You will also need to add the `assumed-role` profiles the CLI is expecting for both the `dev` and `tools` accounts:
+
+```
+[profile foo/assumed-role]
+role_arn = arn:aws:iam::foo:role/Developer
+source_profile = foo
+region = eu-west-2
+```
+
+### Updating the config files directly
+
+The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://digitaltools.phe.org.uk/confluence/display/DPD/Configuring+the+AWS+CLI).
+
 ## Getting started
 
 Source our CLI tool:
@@ -53,16 +71,16 @@ Source our CLI tool:
 source uhd.sh
 ```
 
-Assume the admin role in our `tools` account:
+Assume the Developer role in our `tools` account:
 
 ```
-uhd aws login uhd-tools:admin
+uhd aws login
 ```
 
-And then test that you can query S3:
+And then test that you can query `whoami`
 
 ```
-aws s3 ls
+uhd aws whoami
 ```
 
 ## Terraform
@@ -172,7 +190,7 @@ Open a new terminal window and login to AWS:
 
 ```
 source uhd.sh
-uhd aws login uhd-dev:admin
+uhd aws login uhd-dev
 ```
 
 Run the bootstrap job:
@@ -206,6 +224,31 @@ Your environment should now be setup. The final step is to restart your services
 ```
 uhd ecs restart-services
 ```
+
+## Update
+
+The update command can be used to run all the previous steps together to simplify updating your environment. This command requires you to be logged in to both the `tools` and `dev` accounts at the same time. This can be done with the following command:
+
+```
+uhd aws login
+```
+
+Now that you are logged in to both accounts, you can run the update command:
+
+```
+uhd update
+```
+
+The update command will perform the following tasks:
+
+1. Switch to the tools account
+2. Run `terraform apply`
+3. Run `Docker ECR login`
+4. Run `Docker pull` to grab the latest images
+5. Run `Docker push` to deploy the latest images to your environment
+6. Switch to the dev account
+7. Restart ecs services
+8. Switch back to tools account
 
 ## Related repos
 
