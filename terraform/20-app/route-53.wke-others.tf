@@ -34,8 +34,8 @@ module "route_53_records_wke_others" {
       name = "api-lb"
       type = "A"
       alias = {
-        name    = module.front_end_alb.lb_dns_name
-        zone_id = module.front_end_alb.lb_zone_id
+        name    = module.public_api_alb.lb_dns_name
+        zone_id = module.public_api_alb.lb_zone_id
       }
     },
     {
