@@ -14,6 +14,7 @@ function _terraform_help() {
     echo
     echo "  plan <workspace>                                - runs terraform plan for the app layer and workspace"
     echo "  apply <workspace>                               - runs terraform apply for the app layer and workspace"
+    echo "  output <workspace>                              - runs terraform output for the app layer and workspace and write ECS task files"
     echo
     echo "  init:layer <layer>                              - runs terraform init for the specified layer" 
     echo "  plan:layer <layer> <workspace>                  - runs terraform plan for the specified layer and workspace"
@@ -36,6 +37,7 @@ function _terraform() {
         "plan") _terraform_plan_app_layer $args ;;
         "apply") _terraform_apply_app_layer $args ;;
         "upgrade") _terraform_upgrade $args ;;
+        "output") _terraform_output $args ;;
         "init:layer") _terraform_init_layer $args ;;
         "plan:layer") _terraform_plan_layer $args ;;
         "apply:layer") _terraform_apply_layer $args ;;
@@ -183,6 +185,21 @@ function _terraform_apply_layer() {
         -auto-approve || return 1
 
     terraform output -json > output.json
+}
+
+function _terraform_output() {
+    local workspace=$1
+
+    if [[ -z ${workspace} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    uhd terraform output:layer 20-app $workspace
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_frontend_cache 
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache 
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_public_api_cache 
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.upload_files_from_s3 
 }
 
 function _terraform_output_layer() {
