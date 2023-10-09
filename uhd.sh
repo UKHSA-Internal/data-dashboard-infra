@@ -7,8 +7,18 @@ for script_file in "$root"/scripts/_*.sh; do
 done
 
 function _uhd_commands_help() {
+
+    echo 
+    echo "                    █░█ █▄▀ █░█ █▀ ▄▀█ "
+    echo "                    █▄█ █░█ █▀█ ▄█ █▀█ "
+    echo 
+    echo "    █▀▄ ▄▀█ ▀█▀ ▄▀█   █▀▄ ▄▀█ █▀ █░█ █▄▄ █▀█ ▄▀█ █▀█ █▀▄ "
+    echo "    █▄▀ █▀█ ░█░ █▀█   █▄▀ █▀█ ▄█ █▀█ █▄█ █▄█ █▀█ █▀▄ █▄▀ "
+    echo 
+    echo "                        █▀▀ █░░ █"
+    echo "                        █▄▄ █▄▄ █"
     echo
-    echo UKHSA Dashboard CLI Tool 
+    echo "               UKHSA Data Dashboard CLI Tool" 
     echo
     echo "uhd <command> [options]"
     echo
@@ -16,6 +26,7 @@ function _uhd_commands_help() {
     echo "  help        - this help screen"
     echo
     echo "  aws         - aws commands"
+    echo "  cache       - cache commands"
     echo "  docker      - docker commands"
     echo "  ecs         - ecs commands" 
     echo "  terraform   - terraform commands"
@@ -23,7 +34,7 @@ function _uhd_commands_help() {
     echo "  update      - update all the things - infra, containers, etc"
     echo
 
-    return 1
+    return 0
 }
 
 function uhd() {
@@ -40,6 +51,7 @@ function uhd() {
     case $command in
         "aws") _aws $args ;;
         "docker") _docker $args ;;
+        "cache") _cache $args ;;
         "ecs") _ecs $args ;;
         "terraform") _terraform $args ;;
         "update") _update $args ;;
@@ -54,4 +66,10 @@ function uhd() {
     return $exit_code
 }
 
-echo "Usage: uhd"
+echo
+echo "uhd cli loaded"
+echo
+echo "Type uhd for the help screen"
+echo
+
+return 0

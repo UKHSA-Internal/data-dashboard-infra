@@ -10,6 +10,9 @@ function _aws_help() {
     echo
     echo "  login           - login to the dev and tools accounts as a developer"
     echo "  login <profile> - login and assume the configured role"
+    echo
+    echo "  use <profile>   - switch to the specified profile"
+    echo
     echo "  whoami          - display the account you're logged into and which role you have assumed"
     echo
 
@@ -22,6 +25,7 @@ function _aws() {
 
     case $verb in
         "login") _aws_login $args ;;
+        "use") _aws_use $args ;;
         "whoami") _aws_whoami $args ;;
 
         *) _aws_help ;;
@@ -52,6 +56,28 @@ function _aws_login() {
     esac
 }
 
+function _aws_use() {
+    local profile_name=$1
+    if [[ -z ${profile_name} ]]; then
+        echo "Profile is required"
+        
+        return 1
+    fi
+
+    case $profile_name in
+        "uhd-dev" | "uhd-tools")
+            echo "Switching to profile '${profile_name}/assumed-role'"
+            export AWS_PROFILE=${profile_name}/assumed-role ;;
+
+        *)
+            echo "Switching to profile '$profile_name'"
+            export AWS_PROFILE=$profile_name ;;
+    esac
+}
+
 function _aws_whoami() {
+    echo "Using profile $AWS_PROFILE"
+    echo
+
     aws sts get-caller-identity | jq .
 }
