@@ -250,6 +250,55 @@ The update command will perform the following tasks:
 7. Restart ecs services
 8. Switch back to tools account
 
+## Flushing caches
+
+We cache very aggressively in the app to maximize performance. The trade off is that at the moment we must flush the caches if we make changes to CMS content or metric data. We have three caches:
+
+1. A Redis cache which sits between the private API and the database
+2. A CloudFront cache which sits in front of the public API load balancer
+3. A CloudFront cache which sits in front of the front end load balancer
+
+Depending on what has changed, there are a couple of options:
+
+### Flushing caches for CMS content changes
+
+Both the Redis and front end CloudFront caches must be flushed.
+
+First sign into AWS and switch to the `dev` account:
+
+```
+uhd aws login
+uhd aws use uhd-dev
+```
+
+Then flush the caches:
+
+```
+uhd cache flush-redis
+uhd cache flush-front-end
+uhd cache fill-front-end
+```
+
+### Flushing caches for metric data changes
+
+All caches must be flushed for metric data changes:
+
+```
+uhd cache flush-redis
+uhd cache flush-front-end
+uhd cache flush-public-api
+uhd cache fill-front-end
+uhd cache fill-public-api
+```
+
+## Flush all caches
+
+Flushing the caches one by one, and waiting for each one to finish before starting the next one is tedious. To flush them all in one command:
+
+```
+uhd cache flush
+```
+
 ## Related repos
 
 These repos contain the app source code:

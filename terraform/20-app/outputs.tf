@@ -2,11 +2,11 @@ output "ecs" {
   value = {
     cluster_name = module.ecs.cluster_name
     service_names = {
-      cms_admin   = module.ecs_service_cms_admin.name
+      cms_admin    = module.ecs_service_cms_admin.name
       feedback_api = module.ecs_service_feedback_api.name
-      private_api = module.ecs_service_private_api.name
-      public_api  = module.ecs_service_public_api.name
-      front_end   = module.ecs_service_front_end.name
+      private_api  = module.ecs_service_private_api.name
+      public_api   = module.ecs_service_public_api.name
+      front_end    = module.ecs_service_front_end.name
     }
   }
 }
@@ -22,16 +22,27 @@ output "passwords" {
 
 locals {
   urls = {
-    cms_admin      = "https://${local.dns_names.cms_admin}"
-    front_end      = "https://${local.dns_names.front_end}"
-    front_end_lb   = "https://${local.dns_names.front_end_lb}"
-    feedback_api    = "https://${local.dns_names.feedback_api}"
-    private_api    = "https://${local.dns_names.private_api}"
-    public_api     = "https://${local.dns_names.public_api}"
-    public_api_lb  = "https://${local.dns_names.public_api_lb}"
+    cms_admin     = "https://${local.dns_names.cms_admin}"
+    front_end     = "https://${local.dns_names.front_end}"
+    front_end_lb  = "https://${local.dns_names.front_end_lb}"
+    feedback_api  = "https://${local.dns_names.feedback_api}"
+    private_api   = "https://${local.dns_names.private_api}"
+    public_api    = "https://${local.dns_names.public_api}"
+    public_api_lb = "https://${local.dns_names.public_api_lb}"
   }
 }
 
 output "urls" {
   value = local.urls
+}
+
+output "environment" {
+  value = local.environment
+}
+
+output "cloud_front" {
+  value = {
+    front_end  = module.cloudfront_front_end.cloudfront_distribution_id
+    public_api = module.cloudfront_public_api.cloudfront_distribution_id
+  }
 }
