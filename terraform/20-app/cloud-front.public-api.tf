@@ -52,6 +52,12 @@ module "cloudfront_public_api" {
     viewer_protocol_policy     = "redirect-to-https"
   }
 
+  custom_error_response = [{
+    count                 = 0
+    error_code            = 404
+    error_caching_min_ttl = local.use_prod_sizing ? local.prod_cloudfront_min_ttl : 900
+  }]
+
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
     enabled         = true
@@ -77,9 +83,9 @@ resource "aws_cloudfront_origin_request_policy" "public_api" {
 resource "aws_cloudfront_cache_policy" "public_api" {
   name = "${local.prefix}-public-api"
 
-  min_ttl     = local.use_prod_sizing ? 2592000 : 900
-  default_ttl = local.use_prod_sizing ? 2592000 : 900
-  max_ttl     = local.use_prod_sizing ? 2592000 : 900
+  min_ttl     = local.use_prod_sizing ? local.prod_cloudfront_min_ttl : 900
+  max_ttl     = local.use_prod_sizing ? local.prod_cloudfront_max_ttl : 900
+  default_ttl = local.use_prod_sizing ? local.prod_cloudfront_default_ttl : 900
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
