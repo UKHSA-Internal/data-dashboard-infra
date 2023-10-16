@@ -19,7 +19,7 @@ resource "aws_wafv2_web_acl" "front_end" {
 
   rule {
     name     = "ip-allow-list"
-    priority = 1
+    priority = 6
 
     action {
       allow {}
@@ -46,7 +46,7 @@ resource "aws_wafv2_web_acl" "front_end" {
       priority = rule.value.priority
 
       override_action {
-        count {}
+        none {}
       }
 
       statement {
@@ -75,23 +75,23 @@ locals {
   waf_front_end = {
     rules = [
       {
-        priority = 2
+        priority = 1
         name     = "AWSManagedRulesCommonRuleSet"
       },
       {
-        priority = 3
+        priority = 2
         name     = "AWSManagedRulesKnownBadInputsRuleSet"
       },
       {
-        priority = 4
+        priority = 3
         name     = "AWSManagedRulesAmazonIpReputationList"
       },
       {
-        priority = 5
+        priority = 4
         name     = "AWSManagedRulesLinuxRuleSet"
       },
       {
-        priority = 6
+        priority = 5
         name     = "AWSManagedRulesUnixRuleSet"
       }
     ]
