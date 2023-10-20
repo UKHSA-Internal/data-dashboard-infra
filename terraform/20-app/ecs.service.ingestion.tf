@@ -45,6 +45,14 @@ module "ecs_service_ingestion" {
       ]
       effect    = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/processed/*"]
+    },
+    # Gives permission to add files to the `failed/` folder
+    {
+      actions = [
+        "s3:PutObject"
+      ]
+      effect    = "Allow"
+      resources = ["${module.s3_ingest.s3_bucket_arn}/failed/*"]
     }
   ]
 
