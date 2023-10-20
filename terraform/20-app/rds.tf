@@ -75,6 +75,24 @@ locals {
 }
 
 
+module "app_rds_security_group_rules" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.1.0"
+
+  count             = local.is_dev ? 1 : 0
+  create_sg         = false
+  security_group_id = module.app_rds_security_group.security_group_id
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      description = "engineers access to app db"
+      cidr_blocks = join(",", local.ip_allow_list.engineers)
+    }
+  ]
+}
+
 module "app_rds_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
