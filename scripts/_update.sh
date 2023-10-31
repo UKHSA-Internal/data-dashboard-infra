@@ -3,6 +3,7 @@
 function _update() {
     local workspace="$(_get_workspace_name)"
 
+    uhd terraform init
     uhd terraform apply
     uhd docker ecr:login
     uhd docker pull 

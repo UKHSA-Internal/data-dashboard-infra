@@ -1,22 +1,33 @@
-# UKHSA Dashboard Infrastructure
+# UKHSA Data Dashboard Infrastructure
 
-This repo contains the infrastructure to bootstrap our AWS accounts and deploy an instance of the UKHSA Dashboard app.
+This repo contains the infrastructure to bootstrap our AWS accounts and deploy an instance of the [UKHSA Data Dashboard](https://ukhsa-dashboard.data.gov.uk) app.
 
 The tooling and scripts in this repo are tested with Linux and Mac. If you're using Windows these may work with WSL2 🤞.
 
 ## Prerequisites
 
+There are a few steps needed before you can get started:
+
+1. [Install tools](#install-tools)
+2. [Configure AWS SSO](#configure-aws-sso)
+3. [Login to the GitHub CLI](#login-to-the-github-cli)
+4. [Enable multi-platform Docker builds](#enable-multi-platform-docker-builds)
+
+### Install tools
+
 Please make sure you have the following software installed:
 
-1. `aws` - `brew install awscli`
-2. `jq` - `brew install jq`
-3. `docker` - `brew install --cask docker`
+- AWS CLI - `brew install awscli`
+- Docker - `brew install --cask docker`
+- GitHub CLI - `brew install gh`
+- JQ - `brew install jq`
+- Terraform version manager - `brew install tfenv`
 
-## Configure AWS SSO
+### Configure AWS SSO
 
 You need to sign into AWS and configure your profiles. You can either do this via the AWS CLI or by editing your config files directly. For UKHSA engineers we recommend editing your config files directly.
 
-### Using the AWS CLI
+#### Using the AWS CLI
 
 Sign into AWS and configure your profiles:
 
@@ -59,9 +70,25 @@ source_profile = foo
 region = eu-west-2
 ```
 
-### Updating the config files directly
+#### Updating the config files directly
 
 The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://digitaltools.phe.org.uk/confluence/display/DPD/Configuring+the+AWS+CLI).
+
+### Login to the GitHub CLI
+
+We use the GitHub CLI to check out pull request branches. To enable this feature you must login to the GitHub CLI:
+
+```
+gh auth login
+```
+
+### Enable multi-platform Docker builds
+
+We use `docker buildx` to enable us to produce `amd64` images on Apple Silicon. You'll need to enable it if you haven't already:
+
+```
+docker buildx create --use
+```
 
 ## Getting started
 
@@ -71,7 +98,7 @@ Source our CLI tool:
 source uhd.sh
 ```
 
-Assume the Developer role in our `tools` account:
+Assume the Developer role in our `tools` and `dev` accounts:
 
 ```
 uhd aws login
@@ -225,7 +252,7 @@ Your environment should now be setup. The final step is to restart your services
 uhd ecs restart-services
 ```
 
-## Update
+## Update your dev environment
 
 The update command can be used to run all the previous steps together to simplify updating your environment. This command requires you to be logged in to both the `tools` and `dev` accounts at the same time. This can be done with the following command:
 
@@ -242,13 +269,14 @@ uhd update
 The update command will perform the following tasks:
 
 1. Switch to the tools account
-2. Run `terraform apply`
-3. Run `Docker ECR login`
-4. Run `Docker pull` to grab the latest images
-5. Run `Docker push` to deploy the latest images to your environment
-6. Switch to the dev account
-7. Restart ecs services
-8. Switch back to tools account
+2. Run `terraform init`
+3. Run `terraform apply`
+4. Run `Docker ECR login`
+5. Run `Docker pull` to grab the latest images
+6. Run `Docker push` to deploy the latest images to your environment
+7. Switch to the dev account
+8. Restart ecs services
+9. Switch back to tools account
 
 ## Flushing caches
 
@@ -298,6 +326,85 @@ Flushing the caches one by one, and waiting for each one to finish before starti
 ```
 uhd cache flush
 ```
+
+## Testing a feature branch in your dev environment
+
+There are a few steps to test feature branch in your dev environment:
+
+1. [Clone all repos](#clone-all-repos)
+2. [Pull the latest code](#pull-the-latest-code)
+3. [Deploy the latest infra](#deploy-the-latest-infra)
+4. [Cut a custom image and push it](#cut-a-custom-image-and-push-it)
+5. [Test it](#test-it)
+
+### Clone all repos
+
+Firstly, clone all the repos if you don't have them already. Our tooling expects the other repos to be cloned as siblings of this repo.
+
+```
+uhd gh clone
+```
+
+### Pull the latest code
+
+If you have been working on other tickets, it's recommended to switch all branches back to `main` and pull the latest code:
+
+```
+uhd gh main
+```
+
+If for some reason you don't want to do that, at least pull the latest infra:
+
+```
+git checkout main && git pull
+```
+
+### Deploy the latest infra
+
+This will pull the latest prod images, and update your env to use the latest infra:
+
+```
+uhd aws login
+uhd docker ecr:login
+uhd update
+```
+
+### Cut a custom image and push it
+
+Now we can checkout the branch for pull request. The pattern is:
+
+```
+uhd gh co [repo] [pull request number | url | branch]
+```
+
+For example:
+
+```
+uhd gh co api 123
+```
+
+Next, build and push a custom image:
+
+```
+uhd docker build [repo]
+```
+
+For example:
+
+```
+uhd docker build api
+```
+
+And finally restart the ECS services:
+
+```
+uhd aws use uhd-dev
+uhd ecs restart-services
+```
+
+### Test it
+
+You can now commence testing the pull request in your dev environment.
 
 ## Related repos
 

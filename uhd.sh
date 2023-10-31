@@ -29,6 +29,7 @@ function _uhd_commands_help() {
     echo "  cache       - cache commands"
     echo "  docker      - docker commands"
     echo "  ecs         - ecs commands" 
+    echo "  gh          - github commands"
     echo "  terraform   - terraform commands"
     echo
     echo "  update      - update all the things - infra, containers, etc"
@@ -53,6 +54,7 @@ function uhd() {
         "docker") _docker $args ;;
         "cache") _cache $args ;;
         "ecs") _ecs $args ;;
+        "gh") _gh $args ;;
         "terraform") _terraform $args ;;
         "update") _update $args ;;
 
