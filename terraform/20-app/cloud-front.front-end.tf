@@ -52,6 +52,11 @@ module "cloudfront_front_end" {
     viewer_protocol_policy     = "redirect-to-https"
   }
 
+  custom_error_response = [{
+    error_code            = 404
+    error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  }]
+
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
     enabled         = true
@@ -77,9 +82,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
-  min_ttl     = local.use_prod_sizing ? 2592000 : 900
-  default_ttl = local.use_prod_sizing ? 2592000 : 900
-  max_ttl     = local.use_prod_sizing ? 2592000 : 900
+  min_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  max_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  default_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
@@ -91,7 +96,7 @@ resource "aws_cloudfront_cache_policy" "front_end" {
     headers_config {
       header_behavior = "none"
     }
-    
+
     query_strings_config {
       query_string_behavior = "whitelist"
       query_strings {
