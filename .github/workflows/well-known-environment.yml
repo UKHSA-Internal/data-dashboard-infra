@@ -28,7 +28,7 @@ jobs:
           ref: ${{ env.branch }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -59,7 +59,7 @@ jobs:
           ref: ${{ env.branch }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -90,7 +90,7 @@ jobs:
           ref: ${{ env.branch }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -121,7 +121,7 @@ jobs:
           ref: ${{ env.branch }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -141,7 +141,7 @@ jobs:
         shell: zsh {0}
 
       - name: Configure AWS credentials for ECS (dev)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         if: startsWith(env.branch, 'env/dev/')
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_DEV }}
@@ -149,7 +149,7 @@ jobs:
           role-chaining: true
 
       - name: Configure AWS credentials for ECS (test)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         if: startsWith(env.branch, 'env/test/')
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
@@ -157,7 +157,7 @@ jobs:
           role-chaining: true
 
       - name: Configure AWS credentials for ECS (uat)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         if: startsWith(env.branch, 'env/uat/')
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}

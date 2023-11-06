@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -106,7 +106,7 @@ jobs:
         shell: zsh {0}
 
       - name: Configure AWS credentials for ECS
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_PROD }}
           aws-region: ${{ env.AWS_REGION }}
