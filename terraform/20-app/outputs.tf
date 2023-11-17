@@ -46,3 +46,9 @@ output "cloud_front" {
     public_api = module.cloudfront_public_api.cloudfront_distribution_id
   }
 }
+
+output "s3" {
+  value = {
+    ingest_bucket_id = module.s3_ingest.s3_bucket_id
+  }
+}

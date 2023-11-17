@@ -27,6 +27,7 @@ function _uhd_commands_help() {
     echo
     echo "  aws         - aws commands"
     echo "  cache       - cache commands"
+    echo "  data        - upload and ingest metric data"
     echo "  docker      - docker commands"
     echo "  ecs         - ecs commands" 
     echo "  gh          - github commands"
@@ -51,8 +52,9 @@ function uhd() {
 
     case $command in
         "aws") _aws $args ;;
-        "docker") _docker $args ;;
         "cache") _cache $args ;;
+        "data") _data $args ;;
+        "docker") _docker $args ;;
         "ecs") _ecs $args ;;
         "gh") _gh $args ;;
         "terraform") _terraform $args ;;
