@@ -46,7 +46,7 @@ function _aws_login() {
     echo
 
     case $profile_name in
-        "uhd-dev" | "uhd-tools")
+        "uhd-dev" | "uhd-dev:ops" | "uhd-test" | "uhd-uat" | "uhd-prod" | "uhd-tools" | "uhd-tools:ops" )
             echo "Logged into AWS using profile '$profile_name', and switched to profile '${profile_name}/assumed-role'"
             export AWS_PROFILE=${profile_name}/assumed-role ;;
 
