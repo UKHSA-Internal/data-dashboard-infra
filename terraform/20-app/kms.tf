@@ -1,6 +1,6 @@
 module "kms_app_rds" {
 	source  = "terraform-aws-modules/kms/aws"
-	version = "1.5.0"
+	version = "2.1.0"
 
 	description             = "RDS encryption key"
 	key_usage               = "ENCRYPT_DECRYPT"
