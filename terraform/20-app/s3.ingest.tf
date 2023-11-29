@@ -5,6 +5,7 @@ module "s3_ingest" {
   bucket = "${local.prefix}-ingest"
 
   attach_deny_insecure_transport_policy = true
+  force_destroy                         = true
 
   lifecycle_rule = [
     {
