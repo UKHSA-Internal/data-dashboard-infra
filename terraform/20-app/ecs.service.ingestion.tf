@@ -72,10 +72,6 @@ module "ecs_service_ingestion" {
       ]
       environment = [
         {
-          name  = "APP_MODE"
-          value = "INGESTION"
-        },
-        {
           name  = "INGESTION_BUCKET_NAME"
           value = module.s3_ingest.s3_bucket_id
         },
