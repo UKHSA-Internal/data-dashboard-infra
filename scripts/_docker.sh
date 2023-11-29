@@ -61,6 +61,7 @@ function _docker_pull() {
     src_account_id=$(_get_target_aws_account_id "dev")
     
     src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-api:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-ingestion:latest"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-frontend:latest")
 
     echo $src | xargs -P10 -n1 docker pull
@@ -83,10 +84,12 @@ function _docker_push() {
     src_account_id=$(_get_target_aws_account_id "dev")
     dest_account_id=$(_get_target_aws_account_id $account)
     
-    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-api:latest" 
+    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-api:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-ingestion:latest"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-frontend:latest")
 
     dest=("${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-api:latest"
+          "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion j:latest"
           "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end:latest")
 
     for ((i=1; i<=${#src[@]}; ++i)); do
