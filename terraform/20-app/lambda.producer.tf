@@ -5,9 +5,9 @@ module "lambda_producer" {
   description   = "Acts as the conduit between the S3 ingest bucket and the Kinesis data stream."
 
   create_package = true
-  runtime        = "python3.11"
-  handler        = "producer.handler"
-  source_path    = "./lambda"
+  runtime        = "nodejs18.x"
+  handler        = "index.handler"
+  source_path    = "../../src/lambda-producer-handler"
 
   maximum_retry_attempts = 1
   timeout                = 60         # Timeout after 1 minute
