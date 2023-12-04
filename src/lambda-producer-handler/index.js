@@ -77,15 +77,18 @@ async function writeDataToKinesis(payload, kinesisClient = new KinesisClient()) 
  *
  * @param {Object} event - The event object triggered by the Lambda invocation.
  * @param {Object} context - The Lambda execution context.
- * @param dependencies
+ * @param overridenDependencies - Object used to override the default dependencies.
  * @throws {Error} - Throws an error if there are issues during file download or Kinesis publishing.
  */
-async function handler(event, context, dependencies = {
-    extractBucketAndObjectKey,
-    downloadFileFromS3,
-    constructPayload,
-    writeDataToKinesis
-}) {
+async function handler(event, context, overridenDependencies = {}) {
+    const defaultDependencies = {
+        extractBucketAndObjectKey,
+        downloadFileFromS3,
+        constructPayload,
+        writeDataToKinesis
+    };
+    const dependencies = {...defaultDependencies, ...overridenDependencies};
+
     const {bucket, key} = dependencies.extractBucketAndObjectKey(event)
     const fileContents = await dependencies.downloadFileFromS3(bucket, key)
 
