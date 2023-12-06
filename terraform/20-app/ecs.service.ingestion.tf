@@ -20,15 +20,15 @@ module "ecs_service_ingestion" {
       effect    = "Allow"
       resources = [module.s3_ingest.s3_bucket_arn]
     },
-    # Gives permission to list all files within the `in/` folder
+    # Gives permission to list all files within the `inbound_job/` folder
     {
       actions = [
         "s3:ListObjects"
       ]
       effect    = "Allow"
-      resources = ["${module.s3_ingest.s3_bucket_arn}/in"]
+      resources = ["${module.s3_ingest.s3_bucket_arn}/inbound_job/"]
     },
-    # Gives permission to download & delete files from the `in/` folder
+    # Gives permission to download & delete files from the `inbound_job/` folder
     # Note that there is strictly no move-type operation hence the need to combine get and delete
     {
       actions = [
@@ -36,7 +36,7 @@ module "ecs_service_ingestion" {
         "s3:DeleteObject"
       ]
       effect    = "Allow"
-      resources = ["${module.s3_ingest.s3_bucket_arn}/in/*"]
+      resources = ["${module.s3_ingest.s3_bucket_arn}/inbound_job/*"]
     },
     # Gives permission to add files to the `processed/` folder
     {
