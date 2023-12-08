@@ -25,12 +25,12 @@ module "ecr_ingestion" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.6.0"
 
-  repository_force_delete           = true
-  repository_image_tag_mutability   = "MUTABLE"
-  repository_name                   = "${local.prefix}-ingestion"
-  repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
-  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
-  # Add lambda ARN here
+  repository_force_delete            = true
+  repository_image_tag_mutability    = "MUTABLE"
+  repository_name                    = "${local.prefix}-ingestion"
+  repository_read_access_arns        = ["arn:aws:iam::${var.assume_account_id}:root"]
+  repository_read_write_access_arns  = ["arn:aws:iam::${var.tools_account_id}:root"]
+  repository_lambda_read_access_arns = [module.lambda_ingestion.lambda_role_arn]
 
   create_lifecycle_policy     = true
   repository_lifecycle_policy = jsonencode({
