@@ -1,0 +1,22 @@
+{
+  "name": "lambda-producer-handler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch",
+    "test:ci": "jest --ci --coverage"
+  },
+  "author": "UKHSA Data Dashboard",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "sinon": "^17.0.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kinesis": "^3.462.0",
+    "@aws-sdk/client-s3": "^3.462.0",
+    "uuid": "^9.0.1"
+  }
+}
