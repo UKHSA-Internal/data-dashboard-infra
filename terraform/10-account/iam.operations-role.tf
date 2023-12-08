@@ -16,7 +16,7 @@ module "iam_operations_role" {
     local.sso_role_arns.administrator,
     local.sso_role_arns.developer,
     local.sso_role_arns.operations
-    ] : [
+  ] : [
     local.sso_role_arns.administrator,
     local.sso_role_arns.operations
   ]
@@ -30,7 +30,7 @@ module "iam_operations_policy" {
 
   policy = jsonencode(
     {
-      Version = "2012-10-17",
+      Version   = "2012-10-17",
       Statement = [
         {
           Action = [
@@ -38,6 +38,13 @@ module "iam_operations_policy" {
           ],
           Effect   = "Allow",
           Resource = "arn:aws:s3:::uhd-*-ingest/in/*"
+        },
+        {
+          Action = [
+            "s3:PutObject",
+          ],
+          Effect   = "Allow",
+          Resource = "arn:aws:s3:::uhd-*-ingest/inbound_job/*"
         },
         {
           Action = [
