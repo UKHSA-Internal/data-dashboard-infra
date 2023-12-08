@@ -1,0 +1,9 @@
+# 
+# Use to query the cloud watch log group for the public api cloud front viewer request function
+# It will extract uri, accept header, and the value we normalized it to from the logs
+# 
+
+parse @message 'uri: "*"' as uri 
+| parse  'accept_header: "*"' as accept_header 
+| parse 'normalized_accept_header: "*"' as normalized_accept_header 
+| filter not (@message like /.*\Q START DistributionID: \E.*/ or @message like /.*\Q END\E/)
