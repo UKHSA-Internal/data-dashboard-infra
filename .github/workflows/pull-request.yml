@@ -65,6 +65,26 @@ jobs:
           junitxml-path: ./src/public-api-cloud-front-viewer-request/junit.xml
           title: Unit tests coverage
 
+  unit_test_lambda_functions:
+    name: Unit test lambda functions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ./src/lambda-producer-handler
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: NPM Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Unit tests
+        run: npm run test:ci
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
