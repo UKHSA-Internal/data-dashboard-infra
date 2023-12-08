@@ -50,6 +50,11 @@ module "cloudfront_public_api" {
     target_origin_id           = "alb"
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
+    function_association = {
+      viewer-request = {
+        function_arn = aws_cloudfront_function.public_api_viewer_request.arn
+      }
+    }
   }
 
   custom_error_response = [{
@@ -104,4 +109,11 @@ resource "aws_cloudfront_cache_policy" "public_api" {
       query_string_behavior = "all"
     }
   }
+}
+
+resource "aws_cloudfront_function" "public_api_viewer_request" {
+  name    = "${local.prefix}-public-api-viewer-request"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = file("../../src/public-api-cloud-front-viewer-request/index.js")
 }
