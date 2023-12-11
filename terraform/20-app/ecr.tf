@@ -36,9 +36,7 @@ module "ecr_api" {
 
 # This is a 1-time execution script to put an image into the ingestion ECR repo
 # So that when the ingestion lambda function is provisioned by terraform,
-# it will have an image to pull from.
-# Otherwise there is a chicken-egg scenario whereby the lambda can't be provisioned
-# because there would be no image in the ECR
+# there will be an image available to pull
 resource "terraform_data" "image_provisioner" {
   depends_on = [module.ecr_ingestion]
   provisioner "local-exec" {
