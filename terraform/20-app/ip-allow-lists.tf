@@ -2,7 +2,7 @@ locals {
   ip_allow_list = {
     engineers = [
       "109.157.41.145/32",  # Rajee
-      "185.241.167.28/32",  # Afaan
+      "185.241.166.214/32", # Afaan
       "154.51.68.102/32",   # Burendo
       "18.133.111.70/32",   # UKHSA test gateway
       "188.220.99.50/32",   # Phil
