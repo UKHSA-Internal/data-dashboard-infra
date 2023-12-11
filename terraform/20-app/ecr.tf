@@ -34,7 +34,7 @@ module "ecr_api" {
 }
 
 
-# This is a 1-time execution script to put a dummy image into the ingestion ECR repo
+# This puts a dummy image into the ingestion ECR repo.
 # So that when the ingestion lambda function is provisioned by terraform,
 # there will be an image available to pull
 resource "terraform_data" "dummy_ingestion_image_provisioner" {
