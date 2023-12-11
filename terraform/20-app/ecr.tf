@@ -34,18 +34,17 @@ module "ecr_api" {
 }
 
 
-# This is a 1-time execution script to put an image into the ingestion ECR repo
+# This is a 1-time execution script to put a dummy image into the ingestion ECR repo
 # So that when the ingestion lambda function is provisioned by terraform,
 # there will be an image available to pull
-resource "terraform_data" "image_provisioner" {
+resource "terraform_data" "dummy_ingestion_image_provisioner" {
   depends_on = [module.ecr_ingestion]
   provisioner "local-exec" {
     command = <<EOF
-      source ../../uhd.sh
-      uhd docker ecr:login
-      uhd docker pull
-      uhd docker ecr:login ${var.environment_type}
-      uhd docker push ${var.environment_type} ${local.environment}
+      docker login
+      docker pull alpine
+      docker tag alpine ${module.ecr_ingestion.repository_url}:latest
+      docker push ${module.ecr_ingestion.repository_url}:latest
     EOF
   }
 }
