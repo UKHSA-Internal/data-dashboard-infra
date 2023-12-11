@@ -41,7 +41,7 @@ resource "terraform_data" "dummy_ingestion_image_provisioner" {
   depends_on = [module.ecr_ingestion]
   provisioner "local-exec" {
     command = <<EOF
-      docker login
+      aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com
       docker pull alpine
       docker tag alpine ${module.ecr_ingestion.repository_url}:latest
       docker push ${module.ecr_ingestion.repository_url}:latest
