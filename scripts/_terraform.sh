@@ -186,28 +186,6 @@ function _terraform_apply_layer() {
 
     terraform output -json > output.json
 
-    if [[ $layer = "20-app" ]]; then
-      _deploy_latest_ingestion_image_to_lambda
-    fi
-}
-
-function _deploy_latest_ingestion_image_to_lambda() {
-    echo "Deploying latest image to ingestion lambda..."
-    local ingestion_image_uri=$(_get_ingestion_image_uri)
-    local ingestion_lambda_arn=$(_get_ingestion_lambda_arn)
-    aws lambda update-function-code --function-name $ingestion_lambda_arn --image-uri $ingestion_image_uri
-}
-
-function _get_ingestion_image_uri() {
-    local terraform_output_file=output.json
-    local ingestion_image_uri=$(jq -r '.ecr.value.ingestion_image_uri'  $terraform_output_file)
-    echo $ingestion_image_uri
-}
-
-function _get_ingestion_lambda_arn() {
-    local terraform_output_file=output.json
-    local ingestion_lambda_arn=$(jq -r '.lambda.value.ingestion_lambda_arn'  $terraform_output_file)
-    echo $ingestion_lambda_arn
 }
 
 function _terraform_output() {
