@@ -1,6 +1,6 @@
 output "ecs" {
   value = {
-    cluster_name = module.ecs.cluster_name
+    cluster_name  = module.ecs.cluster_name
     service_names = {
       cms_admin    = module.ecs_service_cms_admin.name
       feedback_api = module.ecs_service_feedback_api.name
