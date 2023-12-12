@@ -188,6 +188,7 @@ function _terraform_apply_layer() {
 
     if [[ $layer = "20-app" ]]; then
       _deploy_latest_ingestion_image_to_lambda
+    fi
 }
 
 function _deploy_latest_ingestion_image_to_lambda() {
