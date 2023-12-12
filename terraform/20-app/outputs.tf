@@ -52,3 +52,15 @@ output "s3" {
     ingest_bucket_id = module.s3_ingest.s3_bucket_id
   }
 }
+
+output "ecr" {
+  value = {
+    ingestion_image_uri = "${module.ecr_ingestion.repository_arn}:latest"
+  }
+}
+
+output "lambda" {
+  value = {
+    ingestion_lambda_arn = module.lambda_ingestion.lambda_function_arn
+  }
+}
