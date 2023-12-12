@@ -185,7 +185,6 @@ function _terraform_apply_layer() {
         -auto-approve || return 1
 
     terraform output -json > output.json
-
 }
 
 function _terraform_output() {
