@@ -1,6 +1,6 @@
 module "ecs_service_ingestion" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.2.0"
+  version = "5.7.3"
 
   name        = "${local.prefix}-ingestion"
   cluster_arn = module.ecs.cluster_arn
