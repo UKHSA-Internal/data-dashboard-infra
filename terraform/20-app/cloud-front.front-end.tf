@@ -100,7 +100,13 @@ resource "aws_cloudfront_cache_policy" "front_end" {
     query_strings_config {
       query_string_behavior = "whitelist"
       query_strings {
-        items = ["_rsc"]
+        items = [
+          "_rsc",
+          "areaName",
+          "areaType",
+          "page",
+          "search",
+        ]
       }
     }
   }
