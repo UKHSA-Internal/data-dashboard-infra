@@ -97,7 +97,9 @@ function _deploy_latest_ingestion_image_to_lambda() {
     aws lambda update-function-code \
         --function-name $ingestion_lambda_arn \
         --image-uri $ingestion_image_uri \
-        --no-cli-pager
+        --no-cli-pager \
+        --no-cli-auto-prompt \
+        > /dev/null
 
     echo "Waiting for lambda to update..."
     aws lambda wait function-updated-v2 --function-name $ingestion_lambda_arn
