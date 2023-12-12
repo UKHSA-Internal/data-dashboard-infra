@@ -199,13 +199,13 @@ function _deploy_latest_ingestion_image_to_lambda() {
 }
 
 function _get_ingestion_image_uri() {
-    local terraform_output_file=terraform/20-app/output.json
+    local terraform_output_file=output.json
     local ingestion_image_uri=$(jq -r '.ecr.value.ingestion_image_uri'  $terraform_output_file)
     echo $ingestion_image_uri
 }
 
 function _get_ingestion_lambda_arn() {
-    local terraform_output_file=terraform/20-app/output.json
+    local terraform_output_file=output.json
     local ingestion_lambda_arn=$(jq -r '.lambda.value.ingestion_lambda_arn'  $terraform_output_file)
     echo $ingestion_lambda_arn
 }
