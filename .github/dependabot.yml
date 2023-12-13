@@ -9,3 +9,13 @@ updates:
     directory: "/terraform/20-app"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/src/lambda-producer-handler"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/src/public-api-cloud-front-viewer-request"
+    schedule:
+      interval: "daily"
