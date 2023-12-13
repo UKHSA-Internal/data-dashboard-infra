@@ -8,6 +8,19 @@ moved {
   to   = module.ecr_front_end.aws_ecr_repository.this[0]
 }
 
+module "ecr_front_end" {
+  source  = "terraform-aws-modules/ecr/aws"
+  version = "1.6.0"
+
+  create_lifecycle_policy           = false
+  repository_force_delete           = true
+  repository_image_tag_mutability   = "MUTABLE"
+  repository_name                   = "${local.prefix}-front-end"
+  repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
+  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
+
+}
+
 module "ecr_api" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.6.0"
@@ -21,15 +34,31 @@ module "ecr_api" {
 }
 
 
+# This puts a dummy image into the ingestion ECR repo.
+# So that when the ingestion lambda function is provisioned by terraform,
+# there will be an image available to pull
+resource "terraform_data" "dummy_ingestion_image_provisioner" {
+  depends_on = [module.ecr_ingestion]
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com
+      docker pull alpine
+      docker tag alpine ${module.ecr_ingestion.repository_url}:latest
+      docker push ${module.ecr_ingestion.repository_url}:latest
+    EOF
+  }
+}
+
 module "ecr_ingestion" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.6.0"
 
-  repository_force_delete           = true
-  repository_image_tag_mutability   = "MUTABLE"
-  repository_name                   = "${local.prefix}-ingestion"
-  repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
-  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
+  repository_force_delete            = true
+  repository_image_tag_mutability    = "MUTABLE"
+  repository_name                    = "${local.prefix}-ingestion"
+  repository_read_access_arns        = ["arn:aws:iam::${var.assume_account_id}:root"]
+  repository_read_write_access_arns  = ["arn:aws:iam::${var.tools_account_id}:root"]
+  repository_lambda_read_access_arns = [module.lambda_ingestion.lambda_role_arn]
 
   create_lifecycle_policy     = true
   repository_lifecycle_policy = jsonencode({
@@ -48,18 +77,4 @@ module "ecr_ingestion" {
       }
     ]
   })
-}
-
-
-module "ecr_front_end" {
-  source  = "terraform-aws-modules/ecr/aws"
-  version = "1.6.0"
-
-  create_lifecycle_policy           = false
-  repository_force_delete           = true
-  repository_image_tag_mutability   = "MUTABLE"
-  repository_name                   = "${local.prefix}-front-end"
-  repository_read_access_arns       = ["arn:aws:iam::${var.assume_account_id}:root"]
-  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:root"]
-
 }

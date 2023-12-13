@@ -1,6 +1,6 @@
 output "ecs" {
   value = {
-    cluster_name = module.ecs.cluster_name
+    cluster_name  = module.ecs.cluster_name
     service_names = {
       cms_admin    = module.ecs_service_cms_admin.name
       feedback_api = module.ecs_service_feedback_api.name
@@ -50,5 +50,17 @@ output "cloud_front" {
 output "s3" {
   value = {
     ingest_bucket_id = module.s3_ingest.s3_bucket_id
+  }
+}
+
+output "ecr" {
+  value = {
+    ingestion_image_uri = "${module.ecr_ingestion.repository_url}:latest"
+  }
+}
+
+output "lambda" {
+  value = {
+    ingestion_lambda_arn = module.lambda_ingestion.lambda_function_arn
   }
 }
