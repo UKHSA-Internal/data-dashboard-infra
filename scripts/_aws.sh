@@ -76,8 +76,21 @@ function _aws_use() {
 }
 
 function _aws_whoami() {
-    echo "Using profile $AWS_PROFILE"
-    echo
+    local env=$(_get_env_name)
+    local urls=$(_get_public_urls)
+
+    echo "Using profile $AWS_PROFILE:"
 
     aws sts get-caller-identity | jq .
+
+    echo
+    echo Connected to $env environment:
+    echo $urls | jq .
+}
+
+function _get_public_urls() {
+    local terraform_output_file=terraform/20-app/output.json
+    local urls=$(jq -r '.urls.value | { cms_admin, front_end, public_api }'  $terraform_output_file)
+
+    echo $urls
 }
