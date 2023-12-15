@@ -43,6 +43,9 @@ terraform/20-app/ecs-jobs/*.json
 # Terraform output
 terraform/**/output.json
 
+# Lambda packages
+builds/
+
 ########################
 # Node.js
 ########################
