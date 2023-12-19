@@ -206,7 +206,7 @@ jobs:
     name: Terraform destroy
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: ["restart_ecs_services"]
+    needs: ["restart_services"]
     steps:
       - uses: actions/checkout@v4
 
