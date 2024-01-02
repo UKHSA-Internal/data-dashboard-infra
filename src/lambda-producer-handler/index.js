@@ -94,7 +94,7 @@ async function writeDataToKinesis(payload, kinesisClient = new KinesisClient()) 
  * Writes the data in the payload as a record to the Kinesis stream with a maximum of 3 jittered backoff retry attempts.
  *
  * @param {string} payload - The JSON serialized data payload
- * @param overridenDependencies - Object used to override the default dependencies.
+ * @param {Object} overridenDependencies - Object used to override the default dependencies.
  * @returns {Promise} A promise that resolves once the record has been successfully written to the Kinesis stream.
  */
 async function writeDataToKinesisWithRetry(payload, overridenDependencies = {}) {
