@@ -300,8 +300,7 @@ function _terraform_destroy_layer() {
         -var-file=$var_file \
         -auto-approve
 
-    _terraform_delete_workspace $workspace
-    return 1
+    _terraform_delete_workspace $workspace || return 1
 }
 
 function _terraform_delete_workspace() {
