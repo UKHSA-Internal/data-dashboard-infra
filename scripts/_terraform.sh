@@ -199,7 +199,6 @@ function _terraform_output() {
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_frontend_cache 
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache 
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_public_api_cache 
-    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.upload_files_from_s3 
 }
 
 function _terraform_output_layer() {
