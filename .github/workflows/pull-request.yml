@@ -85,10 +85,22 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
+      - name: Unit test coverage comment
+        uses: ukhsa-internal/jest-coverage-comment-action@v1
+        with:
+          coverage-summary-path: ./src/lamda-producer-handler/coverage/coverage-summary.json
+          junitxml-path: ./src/lamda-producer-handler/junit.xml
+          title: Unit tests coverage
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    needs: ["build_base", "unit_test_cloud_front_functions", "unit_test_lambda_functions"]
+    needs:
+      [
+        "build_base",
+        "unit_test_cloud_front_functions",
+        "unit_test_lambda_functions",
+      ]
     steps:
       - uses: actions/checkout@v4
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="18" failures="0" errors="0" skipped="0" time="2.584">
+  <testsuite name="downloadFileFromS3" errors="0" failures="0" skipped="0" timestamp="2024-01-02T15:41:35" time="2.584" tests="8">
+    <testcase classname="downloadFileFromS3 Should return the file contents when called" name="downloadFileFromS3 Should return the file contents when called" time="0.006"/>
+    <testcase classname="downloadFileFromS3 Calls the s3 client with the correct command object" name="downloadFileFromS3 Calls the s3 client with the correct command object" time="0.002"/>
+    <testcase classname="writeDataToKinesis Calls the kinesis client with the correct command object" name="writeDataToKinesis Calls the kinesis client with the correct command object" time="0.003"/>
+    <testcase classname="extractBucketAndObjectKey Bucket name and object key should be extracted from event" name="extractBucketAndObjectKey Bucket name and object key should be extracted from event" time="0.001"/>
+    <testcase classname="extractBucketAndObjectKey Object key with special character is URL decoded when returned" name="extractBucketAndObjectKey Object key with special character is URL decoded when returned" time="0.001"/>
+    <testcase classname="constructPayload Object key and file contents are serialized to correct payload" name="constructPayload Object key and file contents are serialized to correct payload" time="0.001"/>
+    <testcase classname="handler Orchestrates calls correctly" name="handler Orchestrates calls correctly" time="0.023"/>
+    <testcase classname="handler Records log statement once record has been written to Kinesis" name="handler Records log statement once record has been written to Kinesis" time="0.007"/>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2024-01-02T15:43:08" time="0.847" tests="10">
+    <testcase classname=" Headers should not be removed" name=" Headers should not be removed" time="0.026"/>
+    <testcase classname=" Accept header 'text/html, foo/bar' should normalized to 'text/html'" name=" Accept header 'text/html, foo/bar' should normalized to 'text/html'" time="0.002"/>
+    <testcase classname=" Accept header 'application/json, foo/bar' should normalized to 'application/json'" name=" Accept header 'application/json, foo/bar' should normalized to 'application/json'" time="0.002"/>
+    <testcase classname=" Accept header 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' should normalized to 'text/html'" name=" Accept header 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' should normalized to 'text/html'" time="0.004"/>
+    <testcase classname=" Accept header 'application/json,text/*;q=0.99' should normalized to 'application/json'" name=" Accept header 'application/json,text/*;q=0.99' should normalized to 'application/json'" time="0.003"/>
+    <testcase classname=" Accept header '' should normalized to 'application/json'" name=" Accept header '' should normalized to 'application/json'" time="0.003"/>
+    <testcase classname=" Accept headers for images, css etc should be normalized to '' - test for 'image/webp,image/avif,image/jxl,image/heic,image/heic-sequence,video/*;q=0.8,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5'" name=" Accept headers for images, css etc should be normalized to '' - test for 'image/webp,image/avif,image/jxl,image/heic,image/heic-sequence,video/*;q=0.8,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5'" time="0.002"/>
+    <testcase classname=" Accept headers for images, css etc should be normalized to '' - test for 'text/css,*/*;q=0.1'" name=" Accept headers for images, css etc should be normalized to '' - test for 'text/css,*/*;q=0.1'" time="0.002"/>
+    <testcase classname=" Accept headers for images, css etc should be normalized to '' - test for '*/*'" name=" Accept headers for images, css etc should be normalized to '' - test for '*/*'" time="0.002"/>
+    <testcase classname=" When accept header is missing it defaults to application/json" name=" When accept header is missing it defaults to application/json" time="0.002"/>
+  </testsuite>
+</testsuites>

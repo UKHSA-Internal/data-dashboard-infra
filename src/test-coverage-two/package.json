@@ -1,0 +1,11 @@
+{
+  "name": "test-coverage",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "merge-reports": "jrm combined.xml ../lambda-producer-handler/*.xml ../public-api-cloud-front-viewer-request/*.xml"
+  },
+  "author": "UKHSA Data Dashboard",
+  "license": "ISC",
+  "devDependencies": {}
+}
