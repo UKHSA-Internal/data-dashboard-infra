@@ -105,6 +105,12 @@ jobs:
 
   unit_tests_coverage_comment:
     name: unit tests coverage comment
+    needs:
+      [
+        "build_base",
+        "unit_test_cloud_front_functions",
+        "unit_test_lambda_functions",
+      ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
