@@ -75,7 +75,8 @@ locals {
       "86.151.190.40/32",   # Ciara 2
       "86.29.186.201/32",   # Charlotte (Analyst)
       "2.25.205.147/32",    # Prince
-      "86.128.102.66/32"    # Ester
+      "86.128.102.66/32",   # Ester
+      "172.29.176.6/32"     # Splunk synthetic monitioring - Azure UK South
     ]
     user_testing_participants = [
       "51.194.186.251/32",
