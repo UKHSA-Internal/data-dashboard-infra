@@ -101,16 +101,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: lambda-producer-handler-coverage-report
-          path: ./src/public-api-cloud-front-viewer-request/junit.xml
+          path: ./src/lambda-producer-handler/junit.xml
 
   unit_tests_coverage_comment:
     name: unit tests coverage comment
-    needs:
-      [
-        "build_base",
-        "unit_test_cloud_front_functions",
-        "unit_test_lambda_functions",
-      ]
+    needs: ["unit_test_cloud_front_functions", "unit_test_lambda_functions"]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -134,7 +129,9 @@ jobs:
           coverage-summary-path: |
             public-api-cloud-front-viewer-request-coverage-summary
             lambda-producer-handler-coverage-summary
-          junitxml-path: ./public-api-cloud-front-viewer-request/junit.xml
+          junitxml-path: |
+            public-api-cloud-front-viewer-request-coverage-report
+            lambda-producer-handler-coverage-report
           title: Unit tests coverage
 
   terraform_plan:
