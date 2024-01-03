@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: lambda-producer-handler-coverage-summary
-          path: ./src/coverage/coverage-summary.json
+          path: ./coverage/coverage-summary.json
           retention-days: 3
 
   unit_tests_coverage_comment:
@@ -109,7 +109,7 @@ jobs:
           coverage-summary-path: |
             public-api-cloud-front-viewer-request-coverage-summary
             lambda-producer-handler-coverage-summary
-          junitxml-path: ./src/public-api-cloud-front-viewer-request/junit.xml
+          junitxml-path: ./public-api-cloud-front-viewer-request/junit.xml
           title: Unit tests coverage
 
   terraform_plan:
