@@ -89,7 +89,7 @@ jobs:
         uses: ukhsa-internal/jest-coverage-comment-action@v1
         with:
           coverage-summary-path: ./src/lamda-producer-handler/coverage/coverage-summary.json
-          junitxml-path: ./src/lamda-producer-handler/junit.xml
+          junitxml-path: ./src/lambda-producer-handler/junit.xml
           title: Unit tests coverage report
 
   terraform_plan:
