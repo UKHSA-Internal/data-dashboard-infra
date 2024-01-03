@@ -90,7 +90,7 @@ jobs:
         with:
           coverage-summary-path: ./src/lamda-producer-handler/coverage/coverage-summary.json
           junitxml-path: ./src/lamda-producer-handler/junit.xml
-          title: Unit tests coverage
+          title: Unit tests coverage report
 
   terraform_plan:
     name: Terraform plan
