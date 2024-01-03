@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "merge-reports": "nyc istanbul-merge --out coverage.json .././lambda-producer-handler/coverage/coverage-summary.json .././public-api-cloud-front-viewer-request/coverage/coverage-summary.json",
-    "create-report": "nyc istanbul report --include coverage.json --dir f3 html"
+    "merge-reports": "nyc istanbul-merge --out coverage.json .././lambda-producer-handler/coverage/coverage-final.json .././public-api-cloud-front-viewer-request/coverage/coverage-final.json",
+    "create-report": "nyc istanbul report --include coverage.json --dir coverage html"
   },
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
