@@ -58,7 +58,7 @@ jobs:
         run: npm run test:ci
 
       - name: Cache unit test coverage
-        uses: ukhsa-internal/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: public-api-cloud-front-viewer-request-coverage-summary
           path: src/coverage/coverage-summary.json
@@ -85,7 +85,7 @@ jobs:
         run: npm run test:ci
 
       - name: Cache unit test coverage
-        uses: ukhsa-internal/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: lambda-producer-handler-coverage-summary
           path: src/coverage/coverage-summary.json
