@@ -298,7 +298,21 @@ function _terraform_destroy_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var-file=$var_file \
-        -auto-approve || return 1
+        -auto-approve
+
+    _terraform_delete_workspace workspace
+    return 1
+}
+
+function _terraform_delete_workspace() {
+    local workspace=$1
+
+    # terraform does not allow deletion of the current workspace.
+    # So we need to switch to another workspace before deleting it
+    terraform workspace select "default"
+    echo "Running terraform workspace delete for workspace '$workspace'"
+
+    terraform workspace delete "$workspace"
 }
 
 function _get_terraform_dir() {
