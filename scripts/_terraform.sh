@@ -298,7 +298,7 @@ function _terraform_destroy_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var-file=$var_file \
-        -auto-approve
+        -auto-approve || return 1
 
     _terraform_delete_workspace $workspace || return 1
 }
