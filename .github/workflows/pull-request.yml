@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: public-api-cloud-front-viewer-request-coverage-report
-          path: ./src/public-api-cloud-front-viewwe-request/junit.xml
+          path: ./src/public-api-cloud-front-viewer-request/junit.xml
 
   unit_test_lambda_functions:
     name: Unit test lambda functions
@@ -101,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: lambda-producer-handler-coverage-report
-          path: ./src/public-api-cloud-front-viewwe-request/junit.xml
+          path: ./src/public-api-cloud-front-viewer-request/junit.xml
 
   unit_tests_coverage_comment:
     name: unit tests coverage comment
@@ -117,6 +117,11 @@ jobs:
     steps:
       - name: download test summaries
         uses: actions/download-artifact@v3
+        with:
+          name: |
+            public-api-cloud-front-viewer-request-coverage-summary
+            lambda-producer-handler-coverage-summary
+
       - name: Create coverage test comment
         uses: ukhsa-internal/jest-coverage-comment-action@v1
         with:
