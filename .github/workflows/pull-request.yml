@@ -283,10 +283,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials for test role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
