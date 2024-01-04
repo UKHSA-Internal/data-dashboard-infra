@@ -58,12 +58,17 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
-      - name: Unit tests coverage comment
-        uses: ukhsa-internal/jest-coverage-comment-action@v1
+      - name: Cache unit test summary
+        uses: actions/upload-artifact@v3
         with:
-          coverage-summary-path: ./src/public-api-cloud-front-viewer-request/coverage/coverage-summary.json
-          junitxml-path: ./src/public-api-cloud-front-viewer-request/junit.xml
-          title: Unit tests coverage
+          name: public-api-cloud-front-viewer-request-coverage-summary
+          path: ./src/public-api-cloud-front-viewer-request/coverage/coverage-summary.json
+
+      - name: Cache unit test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: public-api-cloud-front-viewer-request-coverage-report
+          path: ./src/public-api-cloud-front-viewer-request/junit.xml
 
   unit_test_lambda_functions:
     name: Unit test lambda functions
@@ -85,10 +90,53 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
+      - name: Cache unit test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-producer-coverage-summary
+          path: ./src/lambda-producer-handler/coverage/coverage-summary.json
+
+      - name: Cache unit test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-producer-coverage-report
+          path: ./src/lambda-producer-handler/junit.xml
+
+  unit_test_report:
+    name: Unit test coverage report
+    runs-on: ubuntu-latest
+    needs: ["unit_test_cloud_front_functions", "unit_test_lambda_functions"]
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Download test coverage
+        uses: actions/download-artifact@v3
+        with:
+          path: ./reports
+
+      - name: Unit test report
+        uses: ukhsa-internal/jest-coverage-comment-action@v1
+        with:
+          multiple-files: |
+            public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-summary/coverage-summary.json
+            lambda-producer, ./reports/lambda-producer-coverage-summary/coverage-summary.json
+          multiple-junitxml-files: |
+            public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-report/junit.xml
+            lambda-producer, ./reports/lambda-producer-coverage-report/junit.xml
+          title: unit test coverage report
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    needs: ["build_base", "unit_test_cloud_front_functions", "unit_test_lambda_functions"]
+    needs:
+      [
+        "build_base",
+        "unit_test_cloud_front_functions",
+        "unit_test_lambda_functions",
+      ]
     steps:
       - uses: actions/checkout@v4
 
