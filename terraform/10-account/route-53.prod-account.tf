@@ -1,6 +1,6 @@
 module "route_53_records" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
-  version = "2.10.2"
+  version = "2.11.0"
 
   create  = local.account == "prod"
   zone_id = module.route_53_zone_account.route53_zone_zone_id[var.account_dns_name]
