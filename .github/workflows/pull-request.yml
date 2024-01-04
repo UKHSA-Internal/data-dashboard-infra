@@ -58,12 +58,17 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
-      - name: Unit tests coverage comment
-        uses: ukhsa-internal/jest-coverage-comment-action@v1
+      - name: Cache unit test summary
+        uses: actions/upload-artifact@v3
         with:
-          coverage-summary-path: ./src/public-api-cloud-front-viewer-request/coverage/coverage-summary.json
-          junitxml-path: ./src/public-api-cloud-front-viewer-request/junit.xml
-          title: Unit tests coverage
+          name: public-api-cloud-front-viewer-request-coverage-summary
+          path: ./src/public-api-cloud-front-viewer-request/coverage/coverage-summary.json
+
+      - name: Cache unit test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: public-api-cloud-front-viewer-request-coverage-report
+          path: ./src/public-api-cloud-front-viewer-request/junit.xml
 
   unit_test_lambda_functions:
     name: Unit test lambda functions
