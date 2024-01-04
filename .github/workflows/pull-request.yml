@@ -85,6 +85,12 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
+      - name: Cache unit test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-producer-coverage-summary
+          path: ./src/lambda-producer-handler/coverage/coverage-summary.json
+
       - name: Cache unit test report
         uses: actions/upload-artifact@v3
         with:
@@ -104,11 +110,15 @@ jobs:
       - name: Download test coverage
         uses: actions/download-artifact@v3
         with:
-          name: lambda-producer-coverage-report
+          path: ./reports
+
+      - name: Display structure of downloaded files
+        run: ls -R ./reports
 
       - name: Unit test report
         uses: ukhsa-internal/jest-coverage-comment-action@v1
         with:
+          coverage-summary-path: coverage-summary.json
           junitxml-path: junit.xml
           title: unit test coverage report
 
