@@ -1,6 +1,6 @@
 module "ecs_service_front_end" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.2.0"
+  version = "5.7.4"
 
   name        = "${local.prefix}-front-end"
   cluster_arn = module.ecs.cluster_arn
