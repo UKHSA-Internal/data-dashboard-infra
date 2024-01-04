@@ -199,7 +199,6 @@ function _terraform_output() {
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_frontend_cache 
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache 
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_public_api_cache 
-    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.upload_files_from_s3 
 }
 
 function _terraform_output_layer() {
@@ -299,6 +298,19 @@ function _terraform_destroy_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
+
+    _terraform_delete_workspace $workspace || return 1
+}
+
+function _terraform_delete_workspace() {
+    local workspace=$1
+
+    # terraform does not allow deletion of the current workspace.
+    # So we need to switch to another workspace before deleting it
+    terraform workspace select "default"
+    echo "Running terraform workspace delete for workspace '$workspace'"
+
+    terraform workspace delete "$workspace"
 }
 
 function _get_terraform_dir() {
