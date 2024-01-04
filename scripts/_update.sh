@@ -12,6 +12,7 @@ function _update() {
     export AWS_PROFILE=uhd-dev/assumed-role
 
     uhd ecs restart-services
+    uhd lambda redeploy-functions
 
     export AWS_PROFILE=uhd-tools/assumed-role
 }

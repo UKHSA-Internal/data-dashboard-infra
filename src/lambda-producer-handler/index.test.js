@@ -2,7 +2,9 @@ const {
     extractBucketAndObjectKey,
     downloadFileFromS3,
     constructPayload,
+    calculateJitteredBackoffPeriod,
     writeDataToKinesis,
+    writeDataToKinesisWithRetry,
     handler
 } = require('./index.js')
 const {GetObjectCommand} = require("@aws-sdk/client-s3");
@@ -207,6 +209,87 @@ describe('constructPayload', () => {
 })
 
 
+describe('calculateJitteredBackoffPeriod', () => {
+    /**
+     * Given a maximum delay period and a base period of 8s and 1s respectively
+     * When `calculateJitterBackoffPeriod()` is called
+     * Then a number between 1 and 8s is returned
+     */
+    test.each([
+        {minPeriod: 1000, maxPeriod: 8000},
+        {minPeriod: 2000, maxPeriod: 5000},
+        {minPeriod: 0, maxPeriod: 10000},
+        {minPeriod: 1500, maxPeriod: 7000},
+        {minPeriod: 100, maxPeriod: 9000},
+        {minPeriod: 3400, maxPeriod: 20000},
+    ])
+    ('Returns correct number between min and max allowable delay period', ({minPeriod, maxPeriod}) => {
+        // Given / When
+        const calculateJitterBackoffPeriod = calculateJitteredBackoffPeriod(maxPeriod, minPeriod)
+
+        // Then
+        expect(calculateJitterBackoffPeriod).toBeGreaterThanOrEqual(minPeriod)
+        expect(calculateJitterBackoffPeriod).toBeLessThanOrEqual(maxPeriod)
+    });
+})
+
+
+describe('writeDataToKinesisWithRetry', () => {
+    /**
+     * Given the `writeDataToKinesis()` function which returns successfully
+     *   on the first attempt
+     * When `writeDataToKinesisWithRetry()` is called
+     * Then `writeDataToKinesis()` is called once only
+     */
+    test('Calls `writeDataToKinesis()` once when no errors occur', async () => {
+        // Given
+        const expectedConstructedPayload = JSON.stringify(fakeFileContents)
+
+        // Injected mocked dependencies
+        const writeDataToKinesisSpy = sinon.spy();
+        const spyDependencies = {
+            writeDataToKinesis: writeDataToKinesisSpy
+        }
+
+        // When
+        await writeDataToKinesisWithRetry(expectedConstructedPayload, spyDependencies)
+
+        // Then
+        expect(writeDataToKinesisSpy.calledWith(expectedConstructedPayload)).toBeTruthy()
+        sinon.assert.calledOnce(writeDataToKinesisSpy);
+    })
+    /**
+     * Given the `writeDataToKinesis()` function which always errors
+     * When `writeDataToKinesisWithRetry()` is called
+     * Then `writeDataToKinesis()` is attempted 3 times
+     * And the error is ultimately raised by `writeDataToKinesisWithRetry()
+     */
+    test('Retries `writeDataToKinesis()` 3 times when errors occur', async () => {
+        // Given
+        const expectedConstructedPayload = JSON.stringify(fakeFileContents)
+        const expectedError = new TypeError
+
+        // Stub out the jitter calculation so that it always returns no delay on the retry
+        // otherwise a valid number between 1-8s would be calculated and applied by default
+        const stubbedCalculateJitteredBackoffPeriod = sinon.stub().returns(0)
+
+        // Injected mocked dependencies
+        const writeDataToKinesisSpy = sinon.stub().throws(expectedError);
+        const spyDependencies = {
+            writeDataToKinesis: writeDataToKinesisSpy,
+            calculateJitteredBackoffPeriod: stubbedCalculateJitteredBackoffPeriod
+        }
+
+        // When
+        // The error is re-thrown when all retries have been exhausted
+        await expect(writeDataToKinesisWithRetry(expectedConstructedPayload, spyDependencies)).rejects.toThrow(expectedError);
+
+        // Then
+        // Check that `writeDataToKinesis()` is retried 3 times
+        expect(writeDataToKinesisSpy.callCount === 3).toBeTruthy()
+    })
+})
+
 describe('handler', () => {
     /**
      * Given an S3 object key and the corresponding file contents object
@@ -226,12 +309,12 @@ describe('handler', () => {
         const extractBucketAndObjectKeySpy = sinon.stub().returns({bucket: expectedBucket, key: expectedObjectKey});
         const downloadFileFromS3Spy = sinon.stub().resolves(expectedFileContents);
         const constructPayloadSpy = sinon.stub().returns(expectedConstructedPayload);
-        const writeDataToKinesisSpy = sinon.stub().resolves();
+        const writeDataToKinesisWithRetrySpy = sinon.stub().resolves();
         const spyDependencies = {
             extractBucketAndObjectKey: extractBucketAndObjectKeySpy,
             downloadFileFromS3: downloadFileFromS3Spy,
             constructPayload: constructPayloadSpy,
-            writeDataToKinesis: writeDataToKinesisSpy
+            writeDataToKinesisWithRetry: writeDataToKinesisWithRetrySpy
         }
 
         // When
@@ -241,7 +324,7 @@ describe('handler', () => {
         expect(extractBucketAndObjectKeySpy.calledWith(lambdaEvent)).toBeTruthy()
         expect(downloadFileFromS3Spy.calledWith(expectedBucket, expectedObjectKey)).toBeTruthy()
         expect(constructPayloadSpy.calledWith(expectedObjectKey, expectedFileContents)).toBeTruthy()
-        expect(writeDataToKinesisSpy.calledWith(expectedConstructedPayload)).toBeTruthy()
+        expect(writeDataToKinesisWithRetrySpy.calledWith(expectedConstructedPayload)).toBeTruthy()
     })
 
     /**
@@ -262,7 +345,7 @@ describe('handler', () => {
             extractBucketAndObjectKey: sinon.stub().returns({bucket, key}),
             downloadFileFromS3: sinon.stub(),
             constructPayload: sinon.stub(),
-            writeDataToKinesis: sinon.stub()
+            writeDataToKinesisWithRetry: sinon.stub()
         }
 
         // When
