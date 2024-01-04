@@ -85,10 +85,36 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
 
+      - name: Cache unit test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-producer-coverage-report
+          path: ./src/lambda-producer-handler/junit.xml
+
+  unit_test_report:
+    name: Unit test coverage report
+    runs-on: ubuntu-latest
+    needs: ["unit_test_cloud_front_functions", "unit_test_lambda_functions"]
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Download test coverage
+        uses: actions/download-artifact@v3
+        with:
+          name: lambda-producer-coverage-report
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    needs: ["build_base", "unit_test_cloud_front_functions", "unit_test_lambda_functions"]
+    needs:
+      [
+        "build_base",
+        "unit_test_cloud_front_functions",
+        "unit_test_lambda_functions",
+      ]
     steps:
       - uses: actions/checkout@v4
 
