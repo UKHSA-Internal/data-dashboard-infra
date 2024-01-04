@@ -275,9 +275,26 @@ jobs:
           uhd terraform destroy:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
+  clean_up_remaining_resources:
+    name: Clean up remaining resources
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: ["terraform_destroy"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
       - name: Delete secrets
         run: |
           source uhd.sh
           uhd secrets delete-all-secrets ci-$SHORT_SHA
         shell: zsh {0}
-
