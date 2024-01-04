@@ -56,6 +56,24 @@ function constructPayload(key, fileContents) {
 
 
 /**
+ * Calculates a random number between `maxPeriod` and `baseDelay`
+ *
+ * This number can be used to represent the period in milliseconds
+ * to apply a backoff retry policy to.
+ * This incorporates an element of randomness to account
+ * for jitter in the calculated backoff.
+ *
+ * @param {int} [maxPeriod=8000] - An optional maximum allowable period which can be calculated
+ * @param {int} [minPeriod=1000] - An optional minimum allowable period which can be calculated
+ * @returns {number} A calculated integer between `maxPeriod` and `minPeriod`
+ */
+function calculateJitteredBackoffPeriod(maxPeriod = 8000, minPeriod = 1000) {
+    const jitter = Math.floor(Math.random() * (maxPeriod + 1));
+    return Math.min(minPeriod + jitter, maxPeriod);
+}
+
+
+/**
  * Writes the data in the payload as a record to the Kinesis stream.
  *
  * @param {string} payload - The JSON serialized data payload
@@ -73,6 +91,37 @@ async function writeDataToKinesis(payload, kinesisClient = new KinesisClient()) 
 
 
 /**
+ * Writes the data in the payload as a record to the Kinesis stream with a maximum of 3 jittered backoff retry attempts.
+ *
+ * @param {string} payload - The JSON serialized data payload
+ * @param {Object} overridenDependencies - Object used to override the default dependencies.
+ * @returns {Promise} A promise that resolves once the record has been successfully written to the Kinesis stream.
+ */
+async function writeDataToKinesisWithRetry(payload, overridenDependencies = {}) {
+    const defaultDependencies = {
+        writeDataToKinesis, calculateJitteredBackoffPeriod
+    };
+    const dependencies = {...defaultDependencies, ...overridenDependencies};
+
+    const maxRetries = 3;
+    for (let retry = 1; retry <= maxRetries; retry++) {
+        try {
+            await dependencies.writeDataToKinesis(payload);
+            return;
+        } catch (error) {
+            if (retry === maxRetries) {
+                console.error(`Failed to write data to Kinesis after ${maxRetries} retries. Error: ${error}`);
+                throw error;
+            }
+            const jitteredBackoffPeriod = dependencies.calculateJitteredBackoffPeriod()
+            console.warn(`Retrying in ${jitteredBackoffPeriod}ms after error: ${error}`);
+            await new Promise(resolve => setTimeout(resolve, jitteredBackoffPeriod));
+        }
+    }
+}
+
+
+/**
  * Lambda handler function for downloading the file from S3 and publishing the corresponding record to Kinesis.
  *
  * @param {Object} event - The event object triggered by the Lambda invocation.
@@ -85,7 +134,7 @@ async function handler(event, context, overridenDependencies = {}) {
         extractBucketAndObjectKey,
         downloadFileFromS3,
         constructPayload,
-        writeDataToKinesis
+        writeDataToKinesisWithRetry
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
@@ -94,7 +143,7 @@ async function handler(event, context, overridenDependencies = {}) {
 
     const payload = dependencies.constructPayload(key, fileContents)
 
-    await dependencies.writeDataToKinesis(payload)
+    await dependencies.writeDataToKinesisWithRetry(payload)
 
     const logMessage = `Record for '${key}' published to Kinesis`;
     console.log(logMessage);
@@ -103,7 +152,9 @@ async function handler(event, context, overridenDependencies = {}) {
 module.exports = {
     extractBucketAndObjectKey,
     downloadFileFromS3,
+    calculateJitteredBackoffPeriod,
     writeDataToKinesis,
+    writeDataToKinesisWithRetry,
     constructPayload,
     handler,
 }
