@@ -109,7 +109,7 @@ jobs:
       - name: Unit test report
         uses: ukhsa-internal/jest-coverage-comment-action@v1
         with:
-          junitxml-path: lambda-producer-coverage-report
+          junitxml-path: junit.xml
           title: unit test coverage report
 
   terraform_plan:
