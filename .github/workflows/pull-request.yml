@@ -106,6 +106,12 @@ jobs:
         with:
           name: lambda-producer-coverage-report
 
+      - name: Unit test report
+        uses: ukhsa-internal/jest-coverage-comment-action@v1
+        with:
+          junitxml-path: lambda-producer-coverage-report
+          title: unit test coverage report
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
