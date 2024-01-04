@@ -29,10 +29,12 @@ function _uhd_commands_help() {
     echo "  cache       - cache commands"
     echo "  data        - upload and ingest metric data"
     echo "  docker      - docker commands"
-    echo "  ecs         - ecs commands"
-    echo "  lambda      - lambda commands"
+    echo "  ecs         - aws ecs commands"
     echo "  gh          - github commands"
+    echo "  lambda      - aws lambda commands"
     echo "  terraform   - terraform commands"
+    echo "  secrets     - aws secrets commands"
+
     echo
     echo "  update      - update all the things - infra, containers, etc"
     echo
@@ -57,9 +59,10 @@ function uhd() {
         "data") _data $args ;;
         "docker") _docker $args ;;
         "ecs") _ecs $args ;;
-        "lambda") _lambda $args ;;
         "gh") _gh $args ;;
+        "lambda") _lambda $args ;;
         "terraform") _terraform $args ;;
+        "secrets") _secrets $args ;;
         "update") _update $args ;;
 
         *) _uhd_commands_help ;;
