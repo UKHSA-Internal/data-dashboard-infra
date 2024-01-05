@@ -32,7 +32,7 @@ module "lambda_ingestion" {
   environment_variables = {
     INGESTION_BUCKET_NAME              = module.s3_ingest.s3_bucket_id
     POSTGRES_DB                        = local.rds.app.primary.db_name
-    POSTGRES_HOST                      = local.rds.app.primary.address
+    POSTGRES_HOST                      = module.rds_proxy.proxy_endpoint
     POSTGRES_USER                      = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]
     SECRETS_MANAGER_DB_CREDENTIALS_ARN = aws_secretsmanager_secret.rds_db_creds.arn
     APIENV                             = "PROD"
