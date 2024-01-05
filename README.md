@@ -8,20 +8,43 @@ The tooling and scripts in this repo are tested with Linux and Mac. If you're us
 
 There are a few steps needed before you can get started:
 
-1. [Install tools](#install-tools)
-2. [Configure AWS SSO](#configure-aws-sso)
-3. [Login to the GitHub CLI](#login-to-the-github-cli)
-4. [Enable multi-platform Docker builds](#enable-multi-platform-docker-builds)
+1. [Setup an SSH key for GitHub](#setup-an-ssh-key-for-github)
+2. [Clone this repo](#clone-this-repo)
+3. [Install tools](#install-tools)
+4. [Configure AWS SSO](#configure-aws-sso)
+5. [Login to the GitHub CLI](#login-to-the-github-cli)
+6. [Enable multi-platform Docker builds](#enable-multi-platform-docker-builds)
+
+### Setup an SSH key for GitHub
+
+Please follow the instructions here to [setup an SSH key for GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+
+### Clone this repo
+
+Open a terminal and run the following commands:
+
+```
+git clone git@github.com:UKHSA-Internal/winter-pressures-infra.git
+cd winter-pressures-infra
+```
 
 ### Install tools
 
-Please make sure you have the following software installed:
+We use homebrew to manage our software dependencies. If you don't already have it installed:
 
-- AWS CLI - `brew install awscli`
-- Docker - `brew install --cask docker`
-- GitHub CLI - `brew install gh`
-- JQ - `brew install jq`
-- Terraform version manager - `brew install tfenv`
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then run the following commands to install the software dependencies:
+
+```
+brew install awscli
+brew install --cask docker
+brew install gh
+brew install jq
+brew install tfenv
+```
 
 ### Configure AWS SSO
 
@@ -334,8 +357,9 @@ There are a few steps to test feature branch in your dev environment:
 1. [Clone all repos](#clone-all-repos)
 2. [Pull the latest code](#pull-the-latest-code)
 3. [Deploy the latest infra](#deploy-the-latest-infra)
-4. [Cut a custom image and push it](#cut-a-custom-image-and-push-it)
-5. [Test it](#test-it)
+4. [Cut a custom image and push it (for API and front end changes)](<#cut-a-custom-image-and-push-it(for-api-and-front-end-changes)>)
+5. [Apply infra changes (for infra changes)](<#apply-infra-changes(for-infra-changes)>)
+6. [Test it](#test-it)
 
 ### Clone all repos
 
@@ -365,11 +389,12 @@ This will pull the latest prod images, and update your env to use the latest inf
 
 ```
 uhd aws login
-uhd docker ecr:login
 uhd update
 ```
 
-### Cut a custom image and push it
+### Cut a custom image and push it (for API and front end changes)
+
+> Only use this step if you're testing API or front end changes.
 
 Now we can checkout the branch for pull request. The pattern is:
 
@@ -400,6 +425,28 @@ And finally restart the ECS services:
 ```
 uhd aws use uhd-dev
 uhd ecs restart-services
+```
+
+### Apply infra changes (for infra changes)
+
+> Only use this step if you're testing infra changes
+
+First, checkout the branch for the pull request. For example:
+
+```
+uhd gh co infra 123
+```
+
+If you would like to preview the infra changes that Terraform will make:
+
+```
+uhd terraform plan
+```
+
+Then apply the changes:
+
+```
+uhd terraform apply
 ```
 
 ### Test it
