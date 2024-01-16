@@ -69,7 +69,7 @@ function _cache_flush_redis() {
         local env=$(_get_env_name)
         local taskId=${taskArn##*/}
 
-        aws logs tail "/aws/ecs/uhd-${env}-private-api/api" --follow --log-stream-names "ecs/api/$taskId"
+        aws logs tail "/aws/ecs/uhd-${env}-backend-utility-worker/api" --follow --log-stream-names "ecs/api/$taskId"
     fi
 }
 
