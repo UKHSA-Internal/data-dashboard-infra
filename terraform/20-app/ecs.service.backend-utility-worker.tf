@@ -10,7 +10,7 @@ module "ecs_service_backend_utility_worker" {
   subnet_ids         = module.vpc.private_subnets
 
   enable_autoscaling       = false
-  desired_count            = 1
+  desired_count            = 0
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
