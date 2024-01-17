@@ -1,6 +1,6 @@
 module "s3_ingest" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.14.0"
+  version = "4.0.1"
 
   bucket = "${local.prefix}-ingest"
 
@@ -25,7 +25,7 @@ module "s3_ingest" {
 
 module "s3_ingest_notification" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
-  version = "3.14.0"
+  version = "4.0.1"
 
   bucket = module.s3_ingest.s3_bucket_id
 
