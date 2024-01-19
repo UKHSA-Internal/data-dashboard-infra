@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,6 +45,7 @@ jobs:
     needs: ["terraform_plan"]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

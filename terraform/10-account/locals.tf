@@ -13,3 +13,7 @@ locals {
     uat   = "uat.ukhsa-dashboard.data.gov.uk"
   }
 }
+
+locals {
+  ship_cloud_watch_metrics_to_splunk = contains(["dev", "test"], local.account)
+}
