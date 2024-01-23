@@ -2,7 +2,7 @@ module "s3_kinesis_backup" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.14.0"
 
-  bucket = "splunk-cloud-watch-kinesis-backup-${local.account_id}-${local.region}"
+  bucket = "splunk-cw-metrics-kinesis-backup-${local.account_id}-${local.region}"
 
   attach_deny_insecure_transport_policy = true
   force_destroy                         = true
