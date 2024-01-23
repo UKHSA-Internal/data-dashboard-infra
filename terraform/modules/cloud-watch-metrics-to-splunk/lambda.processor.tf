@@ -1,6 +1,6 @@
 module "lambda_processor" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "6.4.0"
+  version       = "7.1.0"
   function_name = "cloud-watch-streaming-metrics-processor-${local.region}"
 
   create         = var.create
