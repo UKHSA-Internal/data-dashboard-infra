@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_metric_stream" "all_metrics" {
-  count = var.create ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   name          = "all-metrics-to-splunk"
   role_arn      = module.iam_cloud_watch_role.iam_role_arn
