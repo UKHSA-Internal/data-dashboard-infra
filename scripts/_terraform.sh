@@ -119,6 +119,7 @@ function _terraform_plan_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
+    local python_version=$(_get_python_version)
 
     echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -137,6 +138,7 @@ function _terraform_plan_layer() {
     terraform plan \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
+        -var "python_version=${python_version}" \
         -var-file=$var_file || return 1
 }
 
@@ -163,6 +165,7 @@ function _terraform_apply_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
+    local python_version=$(_get_python_version)
 
     echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -181,6 +184,7 @@ function _terraform_apply_layer() {
     terraform apply \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
+        -var "python_version=${python_version}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -278,6 +282,7 @@ function _terraform_destroy_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
+    local python_version=$(_get_python_version)
 
     echo "Running terraform destroy for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -296,6 +301,7 @@ function _terraform_destroy_layer() {
     terraform destroy \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
+        -var "python_version=${python_version}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -364,4 +370,8 @@ _get_workspace_name() {
     else
         echo $workspace
     fi
+}
+
+_get_python_version() {
+    cat .python-version
 }
