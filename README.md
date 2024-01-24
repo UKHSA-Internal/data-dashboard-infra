@@ -43,6 +43,7 @@ brew install awscli
 brew install --cask docker
 brew install gh
 brew install jq
+brew install python@3.11
 brew install tfenv
 ```
 
