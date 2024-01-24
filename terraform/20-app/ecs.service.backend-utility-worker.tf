@@ -30,6 +30,10 @@ module "ecs_service_backend_utility_worker" {
       ]
       environment = [
         {
+          name  = "APP_MODE"
+          value = "BACKEND_UTILITY_WORKER"
+        },
+        {
           name  = "POSTGRES_DB"
           value = local.rds.app.private_api_replica.db_name
         },
