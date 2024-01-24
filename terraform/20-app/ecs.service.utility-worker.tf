@@ -1,8 +1,8 @@
-module "ecs_service_backend_utility_worker" {
+module "ecs_service_utility_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-backend-utility-worker"
+  name        = "${local.prefix}-utility-worker"
   cluster_arn = module.ecs.cluster_arn
 
   cpu                = 16384
@@ -31,7 +31,7 @@ module "ecs_service_backend_utility_worker" {
       environment = [
         {
           name  = "APP_MODE"
-          value = "BACKEND_UTILITY_WORKER"
+          value = "UTILITY_WORKER"
         },
         {
           name  = "POSTGRES_DB"
@@ -76,12 +76,12 @@ module "ecs_service_backend_utility_worker" {
   }
 }
 
-module "backend_utility_worker_tasks_security_group_rules" {
+module "utility_worker_tasks_security_group_rules" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   create_sg         = false
-  security_group_id = module.ecs_service_backend_utility_worker.security_group_id
+  security_group_id = module.ecs_service_utility_worker.security_group_id
 
   ingress_with_source_security_group_id = [
     {
