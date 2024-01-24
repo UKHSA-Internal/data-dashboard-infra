@@ -15,6 +15,11 @@ module "app_elasticache_security_group" {
       description              = "private api tasks to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.ecs_service_private_api.security_group_id
+    },
+    {
+      description              = "backend utility worker tasks to cache"
+      rule                     = "redis-tcp"
+      source_security_group_id = module.ecs_service_backend_utility_worker.security_group_id
     }
   ]
 }
