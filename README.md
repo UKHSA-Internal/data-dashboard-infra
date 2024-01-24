@@ -427,7 +427,10 @@ And finally restart the ECS services:
 uhd aws use uhd-dev
 uhd ecs restart-services
 ```
-
+Flush the cache to reflect Front-end changes
+```
+uhd cache flush
+```
 ### Apply infra changes (for infra changes)
 
 > Only use this step if you're testing infra changes
