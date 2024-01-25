@@ -66,14 +66,6 @@ module "ecs_service_utility_worker" {
       ]
     }
   }
-
-  load_balancer = {
-    service = {
-      target_group_arn = element(module.private_api_alb.target_group_arns, 0)
-      container_name   = "api"
-      container_port   = 80
-    }
-  }
 }
 
 module "utility_worker_tasks_security_group_rules" {
