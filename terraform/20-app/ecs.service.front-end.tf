@@ -42,6 +42,10 @@ module "ecs_service_front_end" {
           value = local.urls.public_api
         },
         {
+          name  = "GOOGLE_TAG_MANAGER_ID"
+          value = "GTM-W39KF5J2"
+        },
+        {
           name  = "NEXT_REVALIDATE_TIME"
           value = "360"
         }

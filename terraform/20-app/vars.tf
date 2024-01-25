@@ -16,6 +16,8 @@ variable "one_nat_gateway_per_az" {
   default = false
 }
 
+variable "python_version" {}
+
 variable "tools_account_id" {
   sensitive = true
 }

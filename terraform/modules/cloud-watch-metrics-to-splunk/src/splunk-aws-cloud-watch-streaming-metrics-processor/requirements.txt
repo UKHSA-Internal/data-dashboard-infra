@@ -1,0 +1,2 @@
+opentelemetry-proto==1.1.0
+protobuf==3.15.8
