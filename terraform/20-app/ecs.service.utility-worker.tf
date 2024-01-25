@@ -77,7 +77,7 @@ module "utility_worker_tasks_security_group_rules" {
 
   ingress_with_source_security_group_id = [
     {
-      description              = "lb to tasks"
+      description              = "utility worker tasks to tasks"
       rule                     = "http-80-tcp"
       source_security_group_id = module.private_api_alb_security_group.security_group_id
     }
@@ -93,12 +93,12 @@ module "utility_worker_tasks_security_group_rules" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "lb to db"
+      description              = "utility worker tasks to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.app_rds_security_group.security_group_id
     },
     {
-      description              = "lb to cache"
+      description              = "utility worker tasks to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
