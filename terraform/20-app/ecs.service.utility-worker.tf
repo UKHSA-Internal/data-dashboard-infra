@@ -5,12 +5,12 @@ module "ecs_service_utility_worker" {
   name        = "${local.prefix}-utility-worker"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = 16384
-  memory             = 32768
-  subnet_ids         = module.vpc.private_subnets
+  cpu        = 16384
+  memory     = 32768
+  subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = false
-  desired_count            = 0
+  enable_autoscaling = false
+  desired_count      = 0
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
@@ -21,7 +21,7 @@ module "ecs_service_utility_worker" {
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
