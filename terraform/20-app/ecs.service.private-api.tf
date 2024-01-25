@@ -49,7 +49,7 @@ module "ecs_service_private_api" {
         },
         {
           name  = "REDIS_HOST"
-          value = "redis://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
+          value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
         }
       ],
       secrets = [
