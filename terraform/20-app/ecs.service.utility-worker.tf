@@ -49,7 +49,7 @@ module "ecs_service_utility_worker" {
           name  = "REDIS_HOST"
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
-          value = "rediss://${aws_elasticache_cluster.app_elasticache.cache_nodes[0].address}:${aws_elasticache_cluster.app_elasticache.cache_nodes[0].port}"
+          value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
         }
       ],
       secrets = [
