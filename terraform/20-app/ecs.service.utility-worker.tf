@@ -1,29 +1,27 @@
-module "ecs_service_private_api" {
+module "ecs_service_utility_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-private-api"
+  name        = "${local.prefix}-utility-worker"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = local.use_prod_sizing ? 2048 : 512
-  memory             = local.use_prod_sizing ? 4096 : 1024
-  subnet_ids         = module.vpc.private_subnets
+  cpu        = 16384
+  memory     = 32768
+  subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = local.use_auto_scaling
-  desired_count            = local.use_auto_scaling ? 3 : 1
-  autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
-  autoscaling_max_capacity = local.use_auto_scaling ? 20 : 1
+  enable_autoscaling = false
+  desired_count      = 0
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
   container_definitions = {
     api = {
-      cpu                      = local.use_prod_sizing ? 2048 : 512
-      memory                   = local.use_prod_sizing ? 4096 : 1024
+      cpu                      = 16384
+      memory                   = 32768
       essential                = true
       readonly_root_filesystem = false
       image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings            = [
         {
           containerPort = 80
           hostPort      = 80
@@ -33,7 +31,7 @@ module "ecs_service_private_api" {
       environment = [
         {
           name  = "APP_MODE"
-          value = "PRIVATE_API"
+          value = "UTILITY_WORKER"
         },
         {
           name  = "POSTGRES_DB"
@@ -70,26 +68,18 @@ module "ecs_service_private_api" {
       ]
     }
   }
-
-  load_balancer = {
-    service = {
-      target_group_arn = element(module.private_api_alb.target_group_arns, 0)
-      container_name   = "api"
-      container_port   = 80
-    }
-  }
 }
 
-module "private_api_tasks_security_group_rules" {
+module "utility_worker_tasks_security_group_rules" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
   create_sg         = false
-  security_group_id = module.ecs_service_private_api.security_group_id
+  security_group_id = module.ecs_service_utility_worker.security_group_id
 
   ingress_with_source_security_group_id = [
     {
-      description              = "lb to tasks"
+      description              = "utility worker tasks to tasks"
       rule                     = "http-80-tcp"
       source_security_group_id = module.private_api_alb_security_group.security_group_id
     }
@@ -105,12 +95,12 @@ module "private_api_tasks_security_group_rules" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "lb to db"
+      description              = "utility worker tasks to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.app_rds_security_group.security_group_id
     },
     {
-      description              = "lb to cache"
+      description              = "utility worker tasks to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
