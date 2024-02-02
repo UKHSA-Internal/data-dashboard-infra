@@ -3,6 +3,10 @@ moved {
   to   = aws_db_instance.app_rds_primary
 }
 
+locals {
+  engine_version = "15.5"
+}
+
 resource "aws_db_instance" "app_rds_primary" {
   allocated_storage           = local.use_prod_sizing ? 50 : 20
   allow_major_version_upgrade = true
@@ -11,7 +15,7 @@ resource "aws_db_instance" "app_rds_primary" {
   db_name                     = "cms"
   db_subnet_group_name        = module.vpc.database_subnet_group
   engine                      = "postgres"
-  engine_version              = "15.5"
+  engine_version              = local.engine_version
   identifier                  = "${local.prefix}-db"
   instance_class              = local.use_prod_sizing ? "db.t3.medium" : "db.t3.small"
   kms_key_id                  = module.kms_app_rds.key_arn
@@ -34,6 +38,7 @@ resource "aws_db_instance" "app_rds_private_api_read_replica" {
   kms_key_id                  = module.kms_app_rds.key_arn
   multi_az                    = true
   replicate_source_db         = aws_db_instance.app_rds_primary.identifier
+  engine_version              = local.engine_version
   skip_final_snapshot         = true
   storage_encrypted           = true
   storage_type                = "gp3"
@@ -49,6 +54,7 @@ resource "aws_db_instance" "app_rds_public_api_read_replica" {
   kms_key_id                  = module.kms_app_rds.key_arn
   multi_az                    = true
   replicate_source_db         = aws_db_instance.app_rds_primary.identifier
+  engine_version              = local.engine_version
   skip_final_snapshot         = true
   storage_encrypted           = true
   storage_type                = "gp3"
