@@ -64,6 +64,19 @@ jobs:
           uhd terraform apply:layer 20-app prod
         shell: zsh {0}
 
+  smoke_tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [terraform_apply]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/trigger-smoke-tests
+        with:
+          token: ${{ secrets.DEPLOYMENT_TRIGGER_TOKEN }}
+
   push_docker_images:
     name: Push docker images
     runs-on: ubuntu-latest
