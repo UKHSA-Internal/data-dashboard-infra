@@ -4,7 +4,7 @@ moved {
 }
 
 locals {
-  engine_version = "15.15"
+  engine_version = "15.5"
 }
 
 resource "aws_db_instance" "app_rds_primary" {
