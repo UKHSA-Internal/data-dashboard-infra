@@ -15,7 +15,7 @@ resource "aws_db_instance" "app_rds_primary" {
   db_name                     = "cms"
   db_subnet_group_name        = module.vpc.database_subnet_group
   engine                      = "postgres"
-  engine_version              = local.engine_version
+  engine_version              = "15.3"
   identifier                  = "${local.prefix}-db"
   instance_class              = local.use_prod_sizing ? "db.t3.medium" : "db.t3.small"
   kms_key_id                  = module.kms_app_rds.key_arn
