@@ -15,5 +15,5 @@ locals {
 }
 
 locals {
-  ship_cloud_watch_metrics_to_splunk = contains(["dev", "test"], local.account)
+  ship_cloud_watch_metrics_to_splunk = true
 }
