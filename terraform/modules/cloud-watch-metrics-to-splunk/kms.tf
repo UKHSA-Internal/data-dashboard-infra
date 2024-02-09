@@ -1,6 +1,6 @@
 module "kms_splunk" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "1.5.0"
+  version = "2.2.0"
 
   aliases    = ["splunk-cloud-watch-metrics-kinesis"]
   create     = var.create
