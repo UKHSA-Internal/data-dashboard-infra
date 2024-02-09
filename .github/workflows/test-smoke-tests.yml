@@ -3,7 +3,7 @@ name: Test smoke tests
 on:
   push:
     branches:
-      - "main"
+      - "feat/smoke-test-trigger"
   repository_dispatch:
     types: [trigger-deployments]
 
@@ -19,7 +19,7 @@ jobs:
     name: Trigger smoke tests
     # needs: [restart_services]
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
 
     steps:
       - name: Check out code
