@@ -129,6 +129,18 @@ jobs:
           uhd lambda redeploy-functions
         shell: zsh {0}
 
+  trigger-smoke-tests:
+    name: Trigger smoke tests
+    needs: [restart_services]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/trigger-smoke-tests
+        with:
+          token: ${{ secrets.DEPLOYMENT_TRIGGER_TOKEN }}
+
   fast_forward_env_branches:
     name: Fast forward env branches
     runs-on: ubuntu-latest
