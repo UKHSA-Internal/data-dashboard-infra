@@ -1,6 +1,6 @@
 module "iam_green_ops_s3_replication_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.33.0"
+  version = "5.34.0"
 
   create_role          = local.ship_cur_to_green_ops_dashboard
   max_session_duration = 3600
@@ -18,7 +18,7 @@ module "iam_green_ops_s3_replication_role" {
 
 module "iam_green_ops_s3_replication_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.33.0"
+  version = "5.34.0"
 
   create_policy = local.ship_cur_to_green_ops_dashboard
   name          = "uhd-green-ops-s3-replication-policy"
