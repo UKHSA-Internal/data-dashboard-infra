@@ -3,7 +3,7 @@ locals {
     engineers = [
       "185.241.166.214/32", # Afaan
       "82.132.233.98/32",   # Afaan's phone
-      "80.7.224.140/32",    # Amita
+      "82.30.169.233/32",   # Amita
       "154.51.68.102/32",   # Burendo
       "82.2.4.244/32",      # Kev
       "78.147.110.81/32",   # Kev 2
@@ -18,7 +18,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
     ],
     project_team = [
-      "78.105.110.118/32",  # Debbie
+      "78.105.5.74/32",     # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # Georgina
