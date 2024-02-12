@@ -4,8 +4,9 @@ locals {
   environment = terraform.workspace
   prefix      = "${local.project}-${local.environment}"
 
-  account_id          = var.assume_account_id
-  alb_security_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  account_id                    = var.assume_account_id
+  default_log_retention_in_days = 30
+  alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   use_prod_sizing = contains(["perf", "train", "uat", "prod"], local.environment)
 
@@ -25,6 +26,8 @@ locals {
 
   use_auto_scaling  = local.use_prod_sizing
   use_ip_allow_list = local.environment != "prod"
+
+  ship_cloud_watch_logs_to_splunk = contains(["dev", "test"], var.environment_type)
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"

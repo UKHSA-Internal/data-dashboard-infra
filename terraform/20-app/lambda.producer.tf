@@ -4,20 +4,22 @@ module "lambda_producer" {
   function_name = "${local.prefix}-producer"
   description   = "Acts as the conduit between the S3 ingest bucket and the Kinesis data stream."
 
+  cloudwatch_logs_retention_in_days = local.default_log_retention_in_days
+
   create_package = true
   runtime        = "nodejs18.x"
   handler        = "index.handler"
   source_path    = "../../src/lambda-producer-handler"
 
   maximum_retry_attempts = 1
-  timeout                = 60         # Timeout after 1 minute
+  timeout                = 60 # Timeout after 1 minute
 
   environment_variables = {
     KINESIS_DATA_STREAM_NAME = aws_kinesis_stream.kinesis_data_stream_ingestion.name
   }
 
   attach_policy_statements = true
-  policy_statements        = {
+  policy_statements = {
     get_items_from_in_folder_of_ingest_bucket = {
       actions   = ["s3:GetObject"]
       effect    = "Allow"
@@ -29,4 +31,14 @@ module "lambda_producer" {
       resources = [aws_kinesis_stream.kinesis_data_stream_ingestion.arn]
     }
   }
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "lambda_producer" {
+  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
+
+  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
+  filter_pattern  = ""
+  log_group_name  = module.lambda_producer.lambda_cloudwatch_log_group_name
+  name            = "splunk"
+  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
 }

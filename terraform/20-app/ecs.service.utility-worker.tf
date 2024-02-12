@@ -16,12 +16,13 @@ module "ecs_service_utility_worker" {
 
   container_definitions = {
     api = {
-      cpu                      = 16384
-      memory                   = 32768
-      essential                = true
-      readonly_root_filesystem = false
-      image                    = "${module.ecr_api.repository_url}:latest"
-      port_mappings            = [
+      cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
+      cpu                                    = 16384
+      memory                                 = 32768
+      essential                              = true
+      readonly_root_filesystem               = false
+      image                                  = "${module.ecr_api.repository_url}:latest"
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -46,7 +47,7 @@ module "ecs_service_utility_worker" {
           value = "PROD"
         },
         {
-          name  = "REDIS_HOST"
+          name = "REDIS_HOST"
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
@@ -105,4 +106,14 @@ module "utility_worker_tasks_security_group_rules" {
       source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
   ]
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "ecs_service_utility_worker" {
+  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
+
+  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
+  filter_pattern  = ""
+  log_group_name  = module.ecs_service_utility_worker.container_definitions["api"].cloudwatch_log_group_name
+  name            = "splunk"
+  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
 }
