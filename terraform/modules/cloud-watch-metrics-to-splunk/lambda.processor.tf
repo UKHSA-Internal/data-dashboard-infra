@@ -21,7 +21,7 @@ module "lambda_processor" {
   ]
 
   environment_variables = {
-    SPLUNK_CLOUDWATCH_SOURCETYPE = "aws:cloudwatch:metric"
+    SPLUNK_CLOUDWATCH_SOURCETYPE = "aws:cloudwatch"
     METRICS_OUTPUT_FORMAT        = "json"
   }
 }
