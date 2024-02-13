@@ -18,12 +18,16 @@ function _terraform_help() {
     echo
     echo "  init:layer <layer>                              - runs terraform init for the specified layer" 
     echo "  plan:layer <layer> <workspace>                  - runs terraform plan for the specified layer and workspace"
+    echo "  import:layer <layer> <workspace> <address> <id> - runs terraform import for the specified layer, workspace, address and id"
     echo "  apply:layer <layer> <workspace>                 - runs terraform apply for the specified layer and workspace"
     echo "  output:layer <layer> <workspace>                - runs terraform output for the specified layer and workspace"
     echo "  upgrade:layer <layer>                           - runs terraform upgrade for the specified layer"
     echo "  destroy:layer <layer> <workspace>               - runs terraform destroy for the specified layer and workspace"
     echo
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
+    echo
+    echo "  import:log-groups                               - imports log groups if they exist into your dev workspace"
+    echo "  import:log-groups <workspace>                   - imports log groups if they exist into the specified workspace"
     echo
     return 1
 }
@@ -41,10 +45,12 @@ function _terraform() {
         "init:layer") _terraform_init_layer $args ;;
         "plan:layer") _terraform_plan_layer $args ;;
         "apply:layer") _terraform_apply_layer $args ;;
+        "import:layer") _terraform_import_layer $args ;;
         "upgrade:layer") _terraform_upgrade_layer $args ;;
         "output:layer") _terraform_output_layer $args ;;
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
+        "import:log-groups") _terraform_import_log_groups $args ;;
 
         *) _terraform_help ;;
     esac
@@ -142,6 +148,72 @@ function _terraform_plan_layer() {
         -var-file=$var_file || return 1
 }
 
+function _terraform_import_log_groups() {
+    local workspace=$1
+
+    if [[ -z ${workspace} ]]; then
+        workspace="$(_get_workspace_name $1)"
+    fi
+
+    echo "Importing log groups for workspace $workspace"
+
+    uhd terraform import:layer 20-app $workspace aws_cloudwatch_log_group.cloud_front_function_public_api_viewer_request "/aws/cloudfront/function/uhd-$workspace-public-api-viewer-request" || return 0
+}
+
+function _terraform_import_layer() {
+    local layer=$1
+    local workspace=$2
+    local address=$3
+    local id=$4
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${workspace} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${address} ]]; then
+        echo "Address is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${id} ]]; then
+        echo "ID is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+    local target_account_name=$(_get_target_aws_account_name $layer $workspace)
+    local tools_account_id=$(_get_tools_account_id)
+    local python_version=$(_get_python_version)
+
+    echo "Running terraform import for address '$address' and id '$id' into layer '$layer', workspace '$workspace', and account '$target_account_name'..."
+
+    local assume_account_id=$(_get_target_aws_account_id $target_account_name)
+
+    if [[ -z ${assume_account_id} ]]; then
+        echo "Can't find aws account id for account $target_account_name" >&2
+        return 1
+    fi
+
+    local var_file="etc/${target_account_name}.tfvars"
+
+    cd $terraform_dir
+    terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
+
+    terraform import \
+        -var "assume_account_id=${assume_account_id}" \
+        -var "tools_account_id=${tools_account_id}" \
+        -var "python_version=${python_version}" \
+        -var-file=$var_file \
+        $address \
+        $id || return 0
+}
+
 function _terraform_apply_app_layer() {
     local workspace="$(_get_workspace_name $1)"
 
@@ -160,6 +232,10 @@ function _terraform_apply_layer() {
     if [[ -z ${workspace} ]]; then
         echo "Workspace is required" >&2
         return 1
+    fi
+
+    if [[ ${layer} == "20-app" ]]; then
+        uhd terraform import:log-groups $workspace
     fi
 
     local terraform_dir=$(_get_terraform_dir $layer)
