@@ -14,6 +14,10 @@ module "iam_green_ops_s3_replication_role" {
   trusted_role_arns = [
     "arn:aws:iam::975276445027:root",
   ]
+
+  trusted_role_services = [
+    "s3.amazonaws.com"
+  ]
 }
 
 module "iam_green_ops_s3_replication_policy" {
