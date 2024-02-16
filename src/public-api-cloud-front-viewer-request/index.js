@@ -6,12 +6,11 @@ function handler(event) {
     : "";
 
   const normalizedAcceptHeader = normalizeAcceptHeader(acceptHeader);
-  const transformedAcceptHeader = getAcceptHeaderForRequestedJSONFormat(normalizedAcceptHeader, request)
 
-  const message = `uri: "${request.uri}" accept_header: "${acceptHeader}" normalized_accept_header: "${transformedAcceptHeader}"`;
+  const message = `uri: "${request.uri}" accept_header: "${acceptHeader}" normalized_accept_header: "${normalizedAcceptHeader}"`;
   console.log(message);
 
-  request.headers["accept"] = { value: transformedAcceptHeader };
+  request.headers["accept"] = { value: normalizedAcceptHeader };
 
   return request;
 }
@@ -27,21 +26,5 @@ function normalizeAcceptHeader(acceptHeader) {
 
   return "";
 }
-
-
-function getAcceptHeaderForRequestedJSONFormat(normalizedAcceptHeader, request) {
-  // When a query param of `format=json` is provided
-  // Then we return "application/json" as the accept header
-  // Otherwise return the originally normalized accept header
-  const formatQueryParam = request.querystring["format"]
-    ? request.querystring["format"].value
-    : "";
-
-  if (formatQueryParam === "json") {
-    return "application/json";
-  }
-  return normalizedAcceptHeader;
-}
-
 
 handler;
