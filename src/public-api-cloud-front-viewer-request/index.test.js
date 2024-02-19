@@ -95,3 +95,18 @@ test("When accept header is missing it defaults to application/json", () => {
 
   expect(result.headers.accept.value).toEqual("application/json");
 });
+
+test("When format=json query param is provided it defaults to application/json", () => {
+  const event = {
+    request: {
+      querystring: {"format": {value: "json"}},
+      headers: {
+        accept: { value: "text/plain" },
+      },
+    },
+  };
+
+  const result = handler(event);
+
+  expect(result.headers.accept.value).toEqual("application/json");
+});
