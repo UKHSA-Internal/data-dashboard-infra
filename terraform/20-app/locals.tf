@@ -27,7 +27,7 @@ locals {
   use_auto_scaling  = local.use_prod_sizing
   use_ip_allow_list = local.environment != "prod"
 
-  ship_cloud_watch_logs_to_splunk = contains(["dev", "test"], var.environment_type)
+  ship_cloud_watch_logs_to_splunk = true
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
