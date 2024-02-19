@@ -16,5 +16,5 @@ locals {
 
 locals {
   ship_cloud_watch_metrics_to_splunk = true
-  ship_cur_to_green_ops_dashboard    = contains(["dev"], local.account)
+  ship_cur_to_green_ops_dashboard    = true
 }
