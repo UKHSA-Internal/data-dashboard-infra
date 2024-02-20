@@ -26,6 +26,8 @@ function _terraform_help() {
     echo
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
     echo
+    echo "  force-unlock <layer> <lock id>                  - releaces the lock on a workspace"
+    echo
     echo "  import:log-groups                               - imports log groups if they exist into your dev workspace"
     echo "  import:log-groups <workspace>                   - imports log groups if they exist into the specified workspace"
     echo
@@ -50,6 +52,7 @@ function _terraform() {
         "output:layer") _terraform_output_layer $args ;;
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
+        "force-unlock") _terraform_force_unlock $args ;;
         "import:log-groups") _terraform_import_log_groups $args ;;
 
         *) _terraform_help ;;
@@ -393,6 +396,28 @@ function _terraform_delete_workspace() {
     echo "Running terraform workspace delete for workspace '$workspace'"
 
     terraform workspace delete "$workspace"
+}
+
+function _terraform_force_unlock() {
+    local layer=$1
+    local lock_id=$2
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+    
+    if [[ -z ${lock_id} ]]; then
+        echo "Lock id is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+
+    echo "Running terraform force unlock for layer '$layer', and lock id '$lock_id'..."
+
+    cd $terraform_dir
+    terraform force-unlock --force $lock_id
 }
 
 function _get_terraform_dir() {
