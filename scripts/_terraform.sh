@@ -26,7 +26,7 @@ function _terraform_help() {
     echo
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
     echo
-    echo "  force-unlock <layer> <lock id>                  - releaces the lock on a workspace"
+    echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
     echo
     echo "  import:log-groups                               - imports log groups if they exist into your dev workspace"
     echo "  import:log-groups <workspace>                   - imports log groups if they exist into the specified workspace"
