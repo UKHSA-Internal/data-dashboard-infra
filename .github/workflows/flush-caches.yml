@@ -1,0 +1,80 @@
+name: Flush Caches Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: choice
+        options:
+          - prod
+          - uat
+          - dev
+          - test
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  flush_caches:
+    name: Flush caches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output:layer 20-app ${{ inputs.environment }}
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for prod account
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ inputs.environment }} == 'prod'
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Configure AWS credentials for dev account
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ inputs.environment }} == 'dev'
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Configure AWS credentials for test account
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ inputs.environment }} == 'test'
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Configure AWS credentials for uat account
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ inputs.environment }} == 'uat'
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Flush caches
+        run: |
+          source uhd.sh
+          uhd cache flush
+        shell: zsh {0}
