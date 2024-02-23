@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -33,13 +35,18 @@ jobs:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: ./.github/actions/setup-zsh
-
       - name: Terraform output
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform output:layer 20-app ${{ inputs.environment }}
+        shell: zsh {0}
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ${{ inputs.environment }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for prod account
