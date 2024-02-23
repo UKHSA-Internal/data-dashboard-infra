@@ -1,7 +1,6 @@
 name: Flush Caches Workflow
 
 on:
-  workflow:
   workflow_dispatch:
     inputs:
       environment:
