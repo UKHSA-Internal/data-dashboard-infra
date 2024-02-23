@@ -6,6 +6,7 @@ on:
       environment:
         required: true
         type: choice
+        description: Select a well known environment to flush all caches for.
         options:
           - prod
           - uat
