@@ -100,3 +100,19 @@ resource "aws_secretsmanager_secret_version" "private_api_email_credentials" {
     feedback_email_recipient_address = ""
   })
 }
+
+################################################################################
+# Google tag manager
+################################################################################
+
+resource "aws_secretsmanager_secret" "google_analytics_credentials" {
+  name        = "${local.prefix}-google-analytics-credentials"
+  description = "These are the credentials associated with the Google Analytics service"
+}
+
+resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
+  secret_id     = aws_secretsmanager_secret.google_analytics_credentials.id
+  secret_string = jsonencode({
+    google_tag_manager_id = ""
+  })
+}
