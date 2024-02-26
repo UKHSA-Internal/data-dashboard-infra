@@ -50,7 +50,8 @@ function _delete_all_secrets() {
                 "uhd-${env}-backend-cryptographic-signing-key"
                 "uhd-${env}-cdn-front-end-secure-header-value"
                 "uhd-${env}-cdn-public-api-secure-header-value"
-                "uhd-${env}-private-api-email-credentials")
+                "uhd-${env}-private-api-email-credentials"
+                "uhd-${env}-google-analytics-credentials")
 
     for ((i=1; i<=${#secret_ids[@]}; ++i)); do
         _delete_secret "${secret_ids[i]}"
