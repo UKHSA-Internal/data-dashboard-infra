@@ -43,20 +43,6 @@ jobs:
           uhd terraform output:layer 20-app ${{ inputs.environment }}
         shell: zsh {0}
 
-      - name: Terraform plan
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform plan:layer 20-app ${{ inputs.environment }}
-        shell: zsh {0}
-
-      - name: Terraform apply
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ${{ inputs.environment }}
-        shell: zsh {0}
-
       - name: Configure AWS credentials for prod account
         uses: aws-actions/configure-aws-credentials@v4
         if: ${{ inputs.environment }} == 'prod'
