@@ -60,6 +60,14 @@ module "route_53_records" {
         name    = module.cms_admin_alb.lb_dns_name
         zone_id = module.cms_admin_alb.lb_zone_id
       }
+    },
+    {
+      name = "${local.environment}-archive"
+      type = "A"
+      alias = {
+        name    = module.cloudfront_archive_web_content.cloudfront_distribution_domain_name
+        zone_id = module.cloudfront_archive_web_content.cloudfront_distribution_hosted_zone_id
+      }
     }
   ]
 }
