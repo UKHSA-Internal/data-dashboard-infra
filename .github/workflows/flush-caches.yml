@@ -12,6 +12,7 @@ on:
           - uat
           - dev
           - test
+          - train
 
 env:
   AWS_REGION: "eu-west-2"
@@ -83,6 +84,14 @@ jobs:
       - name: Configure AWS credentials for uat account
         uses: aws-actions/configure-aws-credentials@v4
         if: ${{ inputs.environment }} == 'uat'
+        with:
+          role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-chaining: true
+
+      - name: Configure AWS credentials for train
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ inputs.environment }} == 'train'
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
           aws-region: ${{ env.AWS_REGION }}
