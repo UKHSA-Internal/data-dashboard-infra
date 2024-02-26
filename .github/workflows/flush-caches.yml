@@ -39,7 +39,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app ${{ inputs.environment }}
+          uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
 
       - name: Terraform plan
