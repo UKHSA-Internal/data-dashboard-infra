@@ -41,16 +41,16 @@ module "ecs_service_front_end" {
         {
           name  = "PUBLIC_API_URL"
           value = local.urls.public_api
-        },
-        {
-          name  = "GOOGLE_TAG_MANAGER_ID"
-          value = "GTM-W39KF5J2"
         }
       ]
       secrets = [
         {
           name      = "API_KEY"
           valueFrom = aws_secretsmanager_secret.private_api_key.arn
+        },
+        {
+          name      = "GOOGLE_TAG_MANAGER_ID",
+          valueFrom = "${aws_secretsmanager_secret.google_analytics_credentials.arn}:google_tag_manager_id::"
         }
       ]
     }
