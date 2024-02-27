@@ -1,6 +1,6 @@
 output "ecs" {
   value = {
-    cluster_name  = module.ecs.cluster_name
+    cluster_name = module.ecs.cluster_name
     service_names = {
       cms_admin    = module.ecs_service_cms_admin.name
       feedback_api = module.ecs_service_feedback_api.name
@@ -22,6 +22,7 @@ output "passwords" {
 
 locals {
   urls = {
+    archive       = "https://${local.dns_names.archive}"
     cms_admin     = "https://${local.dns_names.cms_admin}"
     front_end     = "https://${local.dns_names.front_end}"
     front_end_lb  = "https://${local.dns_names.front_end_lb}"
