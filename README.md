@@ -457,6 +457,44 @@ uhd terraform apply
 
 You can now commence testing the pull request in your dev environment.
 
+
+## Destroy
+
+### Destroy infrastructure
+
+To run `terraform destroy` for the application layer in your dev environment:
+
+```
+uhd terraform destroy
+```
+
+Or to `destroy` for a specific layer and environment:
+
+```
+uhd terraform destroy:layer <layer> <env>
+```
+
+For example:
+
+```
+uhd terraform destroy:layer 20-app foo
+```
+
+### Remove secrets
+
+When you run `uhd terraform destroy` then by default all secrets for that environment will be scheduled for deletion.
+This **does not delete secrets immediately**.
+
+As such, you will need to delete the secrets associated with the environment separately.
+This can be done with the following command:
+
+```
+uhd secrets delete-all-secrets <env>
+```
+
+> **This command must be run from the `dev` account**
+
+
 ## Related repos
 
 These repos contain the app source code:
