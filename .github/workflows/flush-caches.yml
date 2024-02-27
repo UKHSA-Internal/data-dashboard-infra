@@ -45,7 +45,7 @@ jobs:
 
       - name: Configure AWS credentials for prod account
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment }} == 'prod'
+        if: ${{ inputs.environment == 'prod' }}
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_PROD }}
           aws-region: ${{ env.AWS_REGION }}
@@ -53,7 +53,7 @@ jobs:
 
       - name: Configure AWS credentials for dev account
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment }} == 'dev'
+        if: ${{ inputs.environment == 'dev' }}
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_DEV }}
           aws-region: ${{ env.AWS_REGION }}
@@ -61,7 +61,7 @@ jobs:
 
       - name: Configure AWS credentials for test account
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment }} == 'test'
+        if: ${{ inputs.environment == 'test' }}
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
           aws-region: ${{ env.AWS_REGION }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Configure AWS credentials for uat account
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment }} == 'uat'
+        if: ${{ inputs.environment == 'uat' }}
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
           aws-region: ${{ env.AWS_REGION }}
@@ -77,7 +77,7 @@ jobs:
 
       - name: Configure AWS credentials for train
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment }} == 'train'
+        if: ${{ inputs.environment == 'train' }}
         with:
           role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
           aws-region: ${{ env.AWS_REGION }}
