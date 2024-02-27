@@ -30,6 +30,7 @@ locals {
   ship_cloud_watch_logs_to_splunk = true
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
+    archive       = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin     = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
     front_end     = "${local.account_layer.dns.wke_dns_names[local.environment]}"
     front_end_lb  = "lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
@@ -38,6 +39,7 @@ locals {
     public_api    = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     } : {
+    archive       = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin     = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     front_end     = "${local.environment}.${local.account_layer.dns.account.dns_name}"
     front_end_lb  = "${local.environment}-lb.${local.account_layer.dns.account.dns_name}"
