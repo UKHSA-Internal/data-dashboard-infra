@@ -27,10 +27,6 @@ function _terraform_help() {
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
     echo
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
-    echo
-    echo "  import:log-groups                               - imports log groups if they exist into your dev workspace"
-    echo "  import:log-groups <workspace>                   - imports log groups if they exist into the specified workspace"
-    echo
     return 1
 }
 
@@ -53,7 +49,6 @@ function _terraform() {
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
         "force-unlock") _terraform_force_unlock $args ;;
-        "import:log-groups") _terraform_import_log_groups $args ;;
 
         *) _terraform_help ;;
     esac
@@ -151,18 +146,6 @@ function _terraform_plan_layer() {
         -var-file=$var_file || return 1
 }
 
-function _terraform_import_log_groups() {
-    local workspace=$1
-
-    if [[ -z ${workspace} ]]; then
-        workspace="$(_get_workspace_name $1)"
-    fi
-
-    echo "Importing log groups for workspace $workspace"
-
-    uhd terraform import:layer 20-app $workspace aws_cloudwatch_log_group.cloud_front_function_public_api_viewer_request "/aws/cloudfront/function/uhd-$workspace-public-api-viewer-request" || return 0
-}
-
 function _terraform_import_layer() {
     local layer=$1
     local workspace=$2
@@ -235,10 +218,6 @@ function _terraform_apply_layer() {
     if [[ -z ${workspace} ]]; then
         echo "Workspace is required" >&2
         return 1
-    fi
-
-    if [[ ${layer} == "20-app" ]]; then
-        uhd terraform import:log-groups $workspace
     fi
 
     local terraform_dir=$(_get_terraform_dir $layer)
