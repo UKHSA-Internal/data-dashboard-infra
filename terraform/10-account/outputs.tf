@@ -28,22 +28,37 @@ output "dns" {
 output "acm" {
   value = {
     account = {
-      certificate_arn = module.acm_account.acm_certificate_arn
+      certificate_arn             = module.acm_account.acm_certificate_arn
       cloud_front_certificate_arn = module.acm_cloud_front.acm_certificate_arn
     }
     wke = {
       pen = local.account == "test" ? {
-        certificate_arn = module.acm_wke_pen.acm_certificate_arn
+        certificate_arn             = module.acm_wke_pen.acm_certificate_arn
         cloud_front_certificate_arn = module.acm_cloud_front_wke_pen.acm_certificate_arn
       } : null
       perf = local.account == "test" ? {
-        certificate_arn = module.acm_wke_perf.acm_certificate_arn
+        certificate_arn             = module.acm_wke_perf.acm_certificate_arn
         cloud_front_certificate_arn = module.acm_cloud_front_wke_perf.acm_certificate_arn
       } : null
       train = local.account == "uat" ? {
-        certificate_arn = module.acm_wke_train.acm_certificate_arn
+        certificate_arn             = module.acm_wke_train.acm_certificate_arn
         cloud_front_certificate_arn = module.acm_cloud_front_wke_train.acm_certificate_arn
       } : null
+    }
+  }
+}
+
+output "kinesis" {
+  value = {
+    cloud_watch_logs_to_splunk = {
+      eu_west_2 = {
+        destination_arn = module.cloud_watch_logs_to_splunk_eu_west_2.kinesis_firehose_arn
+        role_arn        = module.cloud_watch_logs_to_splunk_eu_west_2.iam_cloud_watch_role_arn
+      }
+      us_east_1 = {
+        destination_arn = module.cloud_watch_logs_to_splunk_us_east_1.kinesis_firehose_arn
+        role_arn        = module.cloud_watch_logs_to_splunk_us_east_1.iam_cloud_watch_role_arn
+      }
     }
   }
 }

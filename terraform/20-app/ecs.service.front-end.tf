@@ -5,9 +5,9 @@ module "ecs_service_front_end" {
   name        = "${local.prefix}-front-end"
   cluster_arn = module.ecs.cluster_arn
 
-  cpu                = local.use_prod_sizing ? 2048 : 512
-  memory             = local.use_prod_sizing ? 4096 : 1024
-  subnet_ids         = module.vpc.private_subnets
+  cpu        = local.use_prod_sizing ? 2048 : 512
+  memory     = local.use_prod_sizing ? 4096 : 1024
+  subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = local.use_auto_scaling
   desired_count            = local.use_auto_scaling ? 3 : 1
@@ -16,12 +16,13 @@ module "ecs_service_front_end" {
 
   container_definitions = {
     front-end = {
-      cpu                      = local.use_prod_sizing ? 2048 : 512
-      memory                   = local.use_prod_sizing ? 4096 : 1024
-      essential                = true
-      readonly_root_filesystem = false
-      image                    = "${module.ecr_front_end.repository_url}:latest"
-      port_mappings = [
+      cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
+      cpu                                    = local.use_prod_sizing ? 2048 : 512
+      memory                                 = local.use_prod_sizing ? 4096 : 1024
+      essential                              = true
+      readonly_root_filesystem               = false
+      image                                  = "${module.ecr_front_end.repository_url}:latest"
+      port_mappings                          = [
         {
           containerPort = 3000
           hostPort      = 3000
@@ -37,21 +38,19 @@ module "ecs_service_front_end" {
           name  = "FEEDBACK_API_URL"
           value = local.urls.feedback_api
         },
-        # Variables intended for the browser require the NEXT_PUBLIC_ prefix
-        # https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#bundling-environment-variables-for-the-browser
         {
-          name  = "NEXT_PUBLIC_PUBLIC_API_URL"
+          name  = "PUBLIC_API_URL"
           value = local.urls.public_api
-        },
-        {
-          name  = "NEXT_REVALIDATE_TIME"
-          value = "360"
         }
       ]
       secrets = [
         {
           name      = "API_KEY"
           valueFrom = aws_secretsmanager_secret.private_api_key.arn
+        },
+        {
+          name      = "GOOGLE_TAG_MANAGER_ID",
+          valueFrom = "${aws_secretsmanager_secret.google_analytics_credentials.arn}:google_tag_manager_id::"
         }
       ]
     }
@@ -95,4 +94,14 @@ module "front_end_tasks_security_group_rules" {
       cidr_blocks = "0.0.0.0/0"
     }
   ]
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "ecs_service_front_end" {
+  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
+
+  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
+  filter_pattern  = ""
+  log_group_name  = module.ecs_service_front_end.container_definitions["front-end"].cloudwatch_log_group_name
+  name            = "splunk"
+  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
 }

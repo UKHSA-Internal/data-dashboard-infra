@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "main"
+  repository_dispatch:
+    types: [trigger-deployments]
 
 env:
   AWS_REGION: "eu-west-2"
@@ -18,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -41,6 +45,7 @@ jobs:
     needs: ["terraform_plan"]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -123,6 +128,18 @@ jobs:
           source uhd.sh
           uhd lambda redeploy-functions
         shell: zsh {0}
+
+  trigger-smoke-tests:
+    name: Trigger smoke tests
+    needs: [restart_services]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/trigger-smoke-tests
+        with:
+          token: ${{ secrets.DEPLOYMENT_TRIGGER_TOKEN }}
 
   fast_forward_env_branches:
     name: Fast forward env branches

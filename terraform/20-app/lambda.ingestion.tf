@@ -8,6 +8,8 @@ module "lambda_ingestion" {
   vpc_security_group_ids = [module.lambda_ingestion_security_group.security_group_id]
   attach_network_policy  = true
 
+  cloudwatch_logs_retention_in_days = local.default_log_retention_in_days
+
   create_package = false
   package_type   = "Image"
   architectures  = ["x86_64"]
@@ -15,7 +17,7 @@ module "lambda_ingestion" {
   depends_on     = [module.ecr_ingestion.repository_arn]
 
   maximum_retry_attempts = 1
-  timeout                = 60         # Timeout after 1 minute
+  timeout                = 60 # Timeout after 1 minute
   memory_size            = 256
 
   event_source_mapping = {
@@ -40,7 +42,7 @@ module "lambda_ingestion" {
   }
 
   attach_policy_statements = true
-  policy_statements        = {
+  policy_statements = {
     move_items_from_in_folder_of_ingest_bucket = {
       actions   = ["s3:GetObject", "s3:DeleteObject"]
       effect    = "Allow"
@@ -62,7 +64,7 @@ module "lambda_ingestion" {
       resources = [aws_secretsmanager_secret.rds_db_creds.arn]
     }
     read_from_kinesis = {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "kinesis:GetRecords",
         "kinesis:GetShardIterator",
@@ -99,4 +101,14 @@ module "lambda_ingestion_security_group" {
       source_security_group_id = module.app_rds_security_group.security_group_id
     }
   ]
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "lambda_ingestion" {
+  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
+
+  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
+  filter_pattern  = ""
+  log_group_name  = module.lambda_ingestion.lambda_cloudwatch_log_group_name
+  name            = "splunk"
+  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
 }

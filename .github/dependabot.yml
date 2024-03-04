@@ -3,19 +3,19 @@ updates:
   - package-ecosystem: "terraform"
     directory: "/terraform/10-account"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "terraform"
     directory: "/terraform/20-app"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/src/lambda-producer-handler"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/src/public-api-cloud-front-viewer-request"
     schedule:
-      interval: "daily"
+      interval: "weekly"

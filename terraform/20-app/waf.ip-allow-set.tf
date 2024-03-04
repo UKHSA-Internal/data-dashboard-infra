@@ -7,7 +7,6 @@ resource "aws_wafv2_ip_set" "ip_allow_list" {
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
-        local.ip_allow_list.user_testing_participants,
         formatlist("%s/32", module.vpc.nat_public_ips)
     )
 }

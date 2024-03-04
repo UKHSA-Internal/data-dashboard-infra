@@ -5,6 +5,7 @@ test("Headers should not be removed", () => {
   const event = {
     request: {
       uri: "https://foo.bar/baz",
+      querystring: {},
       headers: {
         accept: { value: "text/html" },
         "x-bar": { value: "baz" },
@@ -44,6 +45,7 @@ test.each([
   ({ accept, expected }) => {
     const event = {
       request: {
+        querystring: {},
         headers: {
           accept: { value: accept },
         },
@@ -65,6 +67,7 @@ test.each([
   (accept) => {
     const event = {
       request: {
+        querystring: {},
         headers: {
           accept: { value: accept },
         },
@@ -80,9 +83,25 @@ test.each([
 test("When accept header is missing it defaults to application/json", () => {
   const event = {
     request: {
+      querystring: {},
       headers: {
         "x-bar": { value: "baz" },
         "x-foo": { value: "bar" },
+      },
+    },
+  };
+
+  const result = handler(event);
+
+  expect(result.headers.accept.value).toEqual("application/json");
+});
+
+test("When format=json query param is provided it defaults to application/json", () => {
+  const event = {
+    request: {
+      querystring: {"format": {value: "json"}},
+      headers: {
+        accept: { value: "text/plain" },
       },
     },
   };
