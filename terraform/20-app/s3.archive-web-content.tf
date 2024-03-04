@@ -33,15 +33,3 @@ module "s3_archive_web_content" {
     ]
   })
 }
-
-module "s3_archive_web_content_errors_404" {
-  source  = "terraform-aws-modules/s3-bucket/aws//modules/object"
-  version = "3.14.0"
-
-  bucket       = local.s3_archive_web_content_bucket_name
-  content_type = "text/html"
-  file_source  = "../../src/s3.archive-web-content/errors/404.html"
-  key          = "errors/404.html"
-
-  depends_on = [ module.s3_archive_web_content ]
-}
