@@ -1,6 +1,6 @@
 module "iam_cloud_watch_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.33.0"
+  version = "5.37.0"
 
   create_role          = true
   max_session_duration = 3600
@@ -18,7 +18,7 @@ module "iam_cloud_watch_role" {
 
 module "iam_cloud_watch_metrics_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.33.0"
+  version = "5.37.0"
 
   name = "cloud-watch-metrics-logs-policy-${local.region}"
 
