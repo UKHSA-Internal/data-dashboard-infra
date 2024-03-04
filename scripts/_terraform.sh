@@ -26,7 +26,9 @@ function _terraform_help() {
     echo
     echo "  output-file:layer <layer> <workspace> <address> - writes the contents of templated file to disk"
     echo
+    echo "  cleanup                                         - destroys all CI test environments"
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
+    echo 
     return 1
 }
 
@@ -49,6 +51,8 @@ function _terraform() {
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
         "force-unlock") _terraform_force_unlock $args ;;
+
+        "cleanup") _terraform_cleanup $args ;;
 
         *) _terraform_help ;;
     esac
@@ -397,6 +401,24 @@ function _terraform_force_unlock() {
 
     cd $terraform_dir
     terraform force-unlock --force $lock_id
+}
+
+_terraform_cleanup() {
+    
+    local envs=($(terraform -chdir=terraform/20-app workspace list))
+    local files=($(echo \*))
+    
+    for env in ${envs[@]}; do
+        if [[ ! $env == "*" ]] && [[ ! " ${files[@]} " =~ " ${env} " ]]; then
+            if [[ $env == ci-* ]]; then
+                echo "Environment $env is a test environment.  It will be destroyed... "
+                echo
+                uhd terraform destroy:layer 20-app $env
+            else
+                echo "Environment $env is an engineer's dev or well known environment."
+            fi
+        fi
+    done
 }
 
 function _get_terraform_dir() {
