@@ -2,8 +2,9 @@ module "ecs_service_utility_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-utility-worker"
-  cluster_arn = module.ecs.cluster_arn
+  name                   = "${local.prefix}-utility-worker"
+  cluster_arn            = module.ecs.cluster_arn
+  enable_execute_command = true
 
   cpu        = 16384
   memory     = 32768
@@ -69,6 +70,18 @@ module "ecs_service_utility_worker" {
       ]
     }
   }
+
+  tasks_iam_role_statements = [
+    {
+      actions = [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ]
+      resources = ["*"]
+    }
+  ]
 }
 
 module "utility_worker_tasks_security_group_rules" {
