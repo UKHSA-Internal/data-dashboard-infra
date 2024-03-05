@@ -77,7 +77,7 @@ module "public_api_alb" {
 
 module "public_api_alb_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.1"
 
   name   = "${local.prefix}-public-api-alb"
   vpc_id = module.vpc.vpc_id

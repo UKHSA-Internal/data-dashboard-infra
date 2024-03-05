@@ -50,7 +50,7 @@ module "cms_admin_alb" {
 
 module "cms_admin_alb_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.1"
 
   name   = "${local.prefix}-cms-admin-alb"
   vpc_id = module.vpc.vpc_id
