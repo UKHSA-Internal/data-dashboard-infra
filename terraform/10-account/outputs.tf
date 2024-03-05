@@ -5,6 +5,11 @@ output "dns" {
       name_servers = module.route_53_zone_account.route53_zone_name_servers[var.account_dns_name]
       dns_name     = var.account_dns_name
     }
+    legacy = {
+      zone_id      = module.route_53_zone_account.route53_zone_zone_id[var.legacy_account_dns_name]
+      name_servers = module.route_53_zone_account.route53_zone_name_servers[var.legacy_account_dns_name]
+      dns_name     = var.legacy_account_dns_name
+    }
 
     wke = {
       pen = local.account == "test" ? {
