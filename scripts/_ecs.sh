@@ -5,11 +5,13 @@ function _ecs_help() {
     echo "uhd ecs <command> [options]"
     echo
     echo "commands:"
-    echo "  help                 - this help screen"
+    echo "  help                           - this help screen"
     echo 
-    echo "  restart-services     - restart all the ecs services"
-    echo "  run <job name>       - run the specified job"
-    echo "  logs <env> <task id> - tail logs for the specified task"
+    echo "  restart-services               - restart all the ecs services"
+    echo "  run <job name>                 - run the specified job"
+    echo "  logs <env> <task id>           - tail logs for the specified task"
+    echo "  ssh <task id> <container name> - ssh into a container"
+    echo
 
     return 0
 }
@@ -22,6 +24,7 @@ function _ecs() {
         "run") _ecs_run $args ;;
         "restart-services") _ecs_restart_services $args ;;
         "logs") _ecs_logs $args ;;
+        "ssh") _ecs_ssh $args ;;
 
         *) _ecs_help ;;
     esac
@@ -85,4 +88,30 @@ function _ecs_restart_services() {
          $public_api_service_name \
          $feedback_api_service_name \
          $front_end_service_name
+}
+
+function _ecs_ssh() {
+    local task_id=$1
+    local container_name=$2
+
+    if [[ -z ${task_id} ]]; then
+        echo "Task id is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${container_name} ]]; then
+        echo "Container name is required" >&2
+        return 1
+    fi
+
+    local terraform_output_file=terraform/20-app/output.json
+
+    local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
+    
+    aws ecs execute-command \
+    --cluster $cluster_name \
+    --task $task_id \
+    --container $container_name \
+    --interactive \
+    --command "/bin/sh"
 }
