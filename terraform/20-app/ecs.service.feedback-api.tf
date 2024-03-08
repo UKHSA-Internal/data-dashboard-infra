@@ -2,8 +2,9 @@ module "ecs_service_feedback_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-feedback-api"
-  cluster_arn = module.ecs.cluster_arn
+  name                   = "${local.prefix}-feedback-api"
+  cluster_arn            = module.ecs.cluster_arn
+  enable_execute_command = true
 
   cpu        = local.use_prod_sizing ? 2048 : 512
   memory     = local.use_prod_sizing ? 4096 : 1024
@@ -67,6 +68,18 @@ module "ecs_service_feedback_api" {
       container_port   = 80
     }
   }
+
+  tasks_iam_role_statements = [
+    {
+      actions = [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ]
+      resources = ["*"]
+    }
+  ]
 }
 
 module "feedback_api_tasks_security_group_rules" {

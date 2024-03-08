@@ -1,1 +1,2 @@
-account_dns_name = "test.ukhsa-dashboard.data.gov.uk"
+account_dns_name        = "test.ukhsa-dashboard.data.gov.uk"
+legacy_account_dns_name = "test.coronavirus.data.gov.uk"

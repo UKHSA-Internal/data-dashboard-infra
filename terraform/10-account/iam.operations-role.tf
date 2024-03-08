@@ -16,7 +16,7 @@ module "iam_operations_role" {
     local.sso_role_arns.administrator,
     local.sso_role_arns.developer,
     local.sso_role_arns.operations
-  ] : [
+    ] : [
     local.sso_role_arns.administrator,
     local.sso_role_arns.operations
   ]
@@ -30,7 +30,7 @@ module "iam_operations_policy" {
 
   policy = jsonencode(
     {
-      Version   = "2012-10-17",
+      Version = "2012-10-17",
       Statement = [
         {
           Action = [
@@ -48,11 +48,12 @@ module "iam_operations_policy" {
         },
         {
           Action = [
-            "ecs:RunTask",
-            "iam:PassRole",
             "cloudfront:CreateInvalidation",
             "cloudfront:GetInvalidation",
             "ecs:DescribeTasks",
+            "ecs:ExecuteCommand",
+            "ecs:RunTask",
+            "iam:PassRole",
             "logs:StartLiveTail",
             "logs:StopLiveTail"
           ],

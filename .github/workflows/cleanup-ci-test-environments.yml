@@ -30,5 +30,6 @@ jobs:
       - name: Terraform cleanup
         run: |
           source uhd.sh
+          uhd terraform init
           uhd terraform cleanup
         shell: zsh {0}

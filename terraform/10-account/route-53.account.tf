@@ -5,6 +5,7 @@ module "route_53_zone_account" {
   create = true
 
   zones = {
-    (var.account_dns_name) = {}
+    (var.account_dns_name)        = {}
+    (var.legacy_account_dns_name) = {}
   }
 }
