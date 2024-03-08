@@ -7,6 +7,8 @@ variable "assume_role_name" {
   default = "terraform"
 }
 
+variable "legacy_account_dns_name" {}
+
 variable "python_version" {}
 
 variable "tools_account_id" {

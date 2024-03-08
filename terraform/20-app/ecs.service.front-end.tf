@@ -2,8 +2,9 @@ module "ecs_service_front_end" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.2.0"
 
-  name        = "${local.prefix}-front-end"
-  cluster_arn = module.ecs.cluster_arn
+  name                   = "${local.prefix}-front-end"
+  cluster_arn            = module.ecs.cluster_arn
+  enable_execute_command = true
 
   cpu        = local.use_prod_sizing ? 2048 : 512
   memory     = local.use_prod_sizing ? 4096 : 1024
@@ -22,7 +23,7 @@ module "ecs_service_front_end" {
       essential                              = true
       readonly_root_filesystem               = false
       image                                  = "${module.ecr_front_end.repository_url}:latest"
-      port_mappings                          = [
+      port_mappings = [
         {
           containerPort = 3000
           hostPort      = 3000
@@ -63,6 +64,18 @@ module "ecs_service_front_end" {
       container_port   = 3000
     }
   }
+
+  tasks_iam_role_statements = [
+    {
+      actions = [
+        "ssmmessages:CreateControlChannel",
+        "ssmmessages:CreateDataChannel",
+        "ssmmessages:OpenControlChannel",
+        "ssmmessages:OpenDataChannel"
+      ]
+      resources = ["*"]
+    }
+  ]
 }
 
 module "front_end_tasks_security_group_rules" {
