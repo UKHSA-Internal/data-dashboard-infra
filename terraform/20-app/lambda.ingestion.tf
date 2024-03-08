@@ -96,9 +96,9 @@ module "lambda_ingestion_security_group" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "lambda to db"
+      description              = "ingestion lambda to proxy"
       rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
+      source_security_group_id = module.rds_proxy_security_group.security_group_id
     }
   ]
 }
