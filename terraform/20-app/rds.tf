@@ -128,7 +128,7 @@ module "app_rds_security_group" {
       source_security_group_id = module.ecs_service_utility_worker.security_group_id
     },
     {
-      description              = "proxy to db"
+      description              = "rds proxy to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.rds_proxy_security_group.security_group_id
     },
