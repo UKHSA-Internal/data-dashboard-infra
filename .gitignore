@@ -182,3 +182,6 @@ dist
 .pnp.*
 
 junit.xml
+
+# Intelli J IDE project settings directory
+.idea
