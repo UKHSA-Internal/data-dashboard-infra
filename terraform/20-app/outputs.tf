@@ -22,14 +22,15 @@ output "passwords" {
 
 locals {
   urls = {
-    archive       = "https://${local.dns_names.archive}"
-    cms_admin     = "https://${local.dns_names.cms_admin}"
-    front_end     = "https://${local.dns_names.front_end}"
-    front_end_lb  = "https://${local.dns_names.front_end_lb}"
-    feedback_api  = "https://${local.dns_names.feedback_api}"
-    private_api   = "https://${local.dns_names.private_api}"
-    public_api    = "https://${local.dns_names.public_api}"
-    public_api_lb = "https://${local.dns_names.public_api_lb}"
+    archive          = "https://${local.dns_names.archive}"
+    cms_admin        = "https://${local.dns_names.cms_admin}"
+    feedback_api     = "https://${local.dns_names.feedback_api}"
+    front_end        = "https://${local.dns_names.front_end}"
+    front_end_lb     = "https://${local.dns_names.front_end_lb}"
+    legacy_dashboard = "https://${local.dns_names.legacy_dashboard}"
+    private_api      = "https://${local.dns_names.private_api}"
+    public_api       = "https://${local.dns_names.public_api}"
+    public_api_lb    = "https://${local.dns_names.public_api_lb}"
   }
 }
 
