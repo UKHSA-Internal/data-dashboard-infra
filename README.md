@@ -24,8 +24,8 @@ Please follow the instructions here to [setup an SSH key for GitHub](https://doc
 Open a terminal and run the following commands:
 
 ```
-git clone git@github.com:UKHSA-Internal/winter-pressures-infra.git
-cd winter-pressures-infra
+git clone git@github.com:UKHSA-Internal/data-dashboard-infra.git
+cd data-dashboard-infra
 ```
 
 ### Install tools
@@ -427,10 +427,13 @@ And finally restart the ECS services:
 uhd aws use uhd-dev
 uhd ecs restart-services
 ```
+
 Flush the cache to reflect Front-end changes
+
 ```
 uhd cache flush
 ```
+
 ### Apply infra changes (for infra changes)
 
 > Only use this step if you're testing infra changes
@@ -456,7 +459,6 @@ uhd terraform apply
 ### Test it
 
 You can now commence testing the pull request in your dev environment.
-
 
 ## Destroy
 
@@ -494,10 +496,9 @@ uhd secrets delete-all-secrets <env>
 
 > **This command must be run from the `dev` account**
 
-
 ## Related repos
 
 These repos contain the app source code:
 
-- [UKHSA-Internal/winter-pressures-frontend](https://github.com/UKHSA-Internal/winter-pressures-frontend)
-- [UKHSA-Internal/winter-pressures-api](https://github.com/UKHSA-Internal/winter-pressures-api)
+- [UKHSA-Internal/data-dashboard-frontend](https://github.com/UKHSA-Internal/data-dashboard-frontend)
+- [UKHSA-Internal/data-dashboard-api](https://github.com/UKHSA-Internal/data-dashboard-api)
