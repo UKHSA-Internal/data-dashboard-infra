@@ -68,9 +68,9 @@ function _gh_co() {
         return 1
     fi
 
-    echo "Checking out PR #$pr in winter-pressures-$repo"
+    echo "Checking out PR #$pr in data-dashboard-$repo"
 
-    cd $root/../winter-pressures-$repo
+    cd $root/../data-dashboard-$repo
     gh co $pr
 
     cd $root 
@@ -78,9 +78,9 @@ function _gh_co() {
 }
 
 function _gh_get_repos() {
-    local repos=("winter-pressures-api"
-                 "winter-pressures-frontend" 
-                 "winter-pressures-infra")
+    local repos=("data-dashboard-api"
+                 "data-dashboard-frontend" 
+                 "data-dashboard-infra")
     
     echo ${repos[@]}
 }

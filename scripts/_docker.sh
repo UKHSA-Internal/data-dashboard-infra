@@ -45,7 +45,7 @@ function _docker_build() {
     local dev_account_id=$(_get_target_aws_account_id "dev")
     local env=$(_get_env_name)
 
-    cd $root/../winter-pressures-$repo
+    cd $root/../data-dashboard-$repo
 
     local ecr_repo_name=$repo
     [[ "$repo" == "frontend" ]] && ecr_repo_name=("front-end")
