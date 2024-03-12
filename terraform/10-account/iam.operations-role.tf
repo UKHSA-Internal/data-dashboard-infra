@@ -41,13 +41,6 @@ module "iam_operations_policy" {
         },
         {
           Action = [
-            "s3:PutObject",
-          ],
-          Effect   = "Allow",
-          Resource = "arn:aws:s3:::uhd-*-ingest/inbound_job/*"
-        },
-        {
-          Action = [
             "cloudfront:CreateInvalidation",
             "cloudfront:GetInvalidation",
             "ecs:DescribeTasks",
@@ -59,7 +52,16 @@ module "iam_operations_policy" {
           ],
           Effect   = "Allow",
           Resource = "*"
-        }
+        },
+        {
+          Action = [
+            "s3:DeleteObject",
+            "s3:GetObject",
+            "s3:PutObject",
+          ],
+          Effect   = "Allow",
+          Resource = "arn:aws:s3:::uhd-*-archive-web-content/*"
+        },
       ]
     }
   )
