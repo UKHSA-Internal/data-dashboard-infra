@@ -25,9 +25,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -51,9 +51,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -76,9 +76,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
@@ -101,9 +101,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
@@ -117,9 +117,9 @@ jobs:
       - name: Configure AWS credentials for prod account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'prod'
-          aws_region: ${{ env.AWS_REGION }}
-          prod_account_role: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          environment-name: 'prod'
+          aws-region: ${{ env.AWS_REGION }}
+          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
 
       - name: Restart ECS services
         run: |

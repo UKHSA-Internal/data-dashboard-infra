@@ -33,9 +33,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - name: Terraform output
         run: |
@@ -47,12 +47,12 @@ jobs:
       - name: Configure AWS credentials for account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: ${{ inputs.environment }}
-          aws_region: ${{ env.AWS_REGION }}
-          prod_account_role: ${{ secrets.UHD_ECS_ROLE_PROD }}
-          dev_account_role: ${{ secrets.UHD_ECS_ROLE_DEV }}
-          test_account_role: ${{ secrets.UHD_ECS_ROLE_TEST }}
-          uat_account_role: ${{ secrets.UHD_ECS_ROLE_UAT }}
+          environment-name: ${{ inputs.environment }}
+          aws-region: ${{ env.AWS_REGION }}
+          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          dev-account-role: ${{ secrets.UHD_ECS_ROLE_DEV }}
+          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          uat-account-role: ${{ secrets.UHD_ECS_ROLE_UAT }}
 
       - name: Flush caches
         run: |

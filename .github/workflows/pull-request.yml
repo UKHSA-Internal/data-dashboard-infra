@@ -103,9 +103,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -130,9 +130,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -156,9 +156,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -182,9 +182,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -199,9 +199,9 @@ jobs:
       - name: Configure AWS credentials for test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'test'
-          aws_region: ${{ env.AWS_REGION }}
-          test_account_role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          environment-name: 'test'
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
 
       - name: Restart ECS services
         run: |
@@ -227,9 +227,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -253,9 +253,9 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'tools'
-          aws_region: ${{ env.AWS_REGION }}
-          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          environment-name: 'tools'
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -263,9 +263,9 @@ jobs:
       - name: Configure AWS credentials for test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment_name: 'test'
-          aws_region: ${{ env.AWS_REGION }}
-          test_account_role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          environment-name: 'test'
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
 
       - name: Delete secrets
         run: |
