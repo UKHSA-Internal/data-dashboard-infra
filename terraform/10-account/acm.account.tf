@@ -1,6 +1,6 @@
 module "acm_account" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   domain_name = var.account_dns_name
   zone_id     = module.route_53_zone_account.route53_zone_zone_id[var.account_dns_name]
