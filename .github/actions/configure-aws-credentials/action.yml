@@ -9,6 +9,10 @@ inputs:
   aws_region:
     description: "The AWS region to configure credentials in"
     required: true
+
+  # Note that the roles are optional by default.
+  # When using this composite action, you must pass in the role you need
+  # from the `secrets` context.
   tools_account_role:
     description: "The role associated with the tools account"
     required: false
