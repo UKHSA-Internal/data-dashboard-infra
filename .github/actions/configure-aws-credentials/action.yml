@@ -71,10 +71,12 @@ runs:
           aws-region: ${{ inputs.AWS_REGION }}
           role-chaining: true
 
-      - name: Configure AWS credentials for uat account
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ contains(inputs.environment-name, 'train') }}
-        with:
-          role-to-assume: ${{ inputs.uat-account-role }}
-          aws-region: ${{ inputs.AWS_REGION }}
-          role-chaining: true
+    # The `train` environment is in the UAT account
+    # hence the UAT account is configured here
+    - name: Configure AWS credentials for uat account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'train') }}
+      with:
+        role-to-assume: ${{ inputs.uat-account-role }}
+        aws-region: ${{ inputs.AWS_REGION }}
+        role-chaining: true
