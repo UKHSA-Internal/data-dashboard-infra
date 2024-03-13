@@ -1,6 +1,6 @@
 module "acm_cloud_front_wke_pen" {
     source  = "terraform-aws-modules/acm/aws"
-    version = "~> 4.0"
+    version = "~> 5.0"
 
     create_certificate = local.account == "test"
 
@@ -20,7 +20,7 @@ module "acm_cloud_front_wke_pen" {
 
 module "acm_cloud_front_wke_perf" {
     source  = "terraform-aws-modules/acm/aws"
-    version = "~> 4.0"
+    version = "~> 5.0"
 
     create_certificate = local.account == "test"
 
