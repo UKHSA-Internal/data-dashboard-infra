@@ -1,6 +1,6 @@
 module "acm_wke_train" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   create_certificate = local.account == "uat"
 
