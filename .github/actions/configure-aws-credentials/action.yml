@@ -37,14 +37,14 @@ runs:
       if: ${{ contains(inputs.environment-name, 'tools') }}
       with:
         role-to-assume: ${{ inputs.tools-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
 
     - name: Configure AWS credentials for prod account
       uses: aws-actions/configure-aws-credentials@v4
       if: ${{ contains(inputs.environment-name, 'prod') }}
       with:
         role-to-assume: ${{ inputs.prod-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
         role-chaining: true
 
     - name: Configure AWS credentials for dev account
@@ -52,7 +52,7 @@ runs:
       if: ${{ contains(inputs.environment-name, 'dev') }}
       with:
         role-to-assume: ${{ inputs.dev-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
         role-chaining: true
 
     - name: Configure AWS credentials for test account
@@ -60,7 +60,7 @@ runs:
       if: ${{ contains(inputs.environment-name, 'test') }}
       with:
         role-to-assume: ${{ inputs.test-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
         role-chaining: true
 
     - name: Configure AWS credentials for uat account
@@ -68,7 +68,7 @@ runs:
       if: ${{ contains(inputs.environment-name, 'uat') }}
       with:
         role-to-assume: ${{ inputs.uat-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
         role-chaining: true
 
     # The `train` environment is in the UAT account
@@ -78,5 +78,5 @@ runs:
       if: ${{ contains(inputs.environment-name, 'train') }}
       with:
         role-to-assume: ${{ inputs.uat-account-role }}
-        aws-region: ${{ inputs.AWS_REGION }}
+        aws-region: ${{ inputs.aws-region }}
         role-chaining: true
