@@ -6,7 +6,6 @@ inputs:
   environment-name:
     description: "The name of the environment being selected"
     default: "tools"
-    required: true
   aws-region:
     description: "The AWS region to configure credentials in"
     required: true
