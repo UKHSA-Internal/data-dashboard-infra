@@ -24,7 +24,6 @@ jobs:
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment-name: 'tools'
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
