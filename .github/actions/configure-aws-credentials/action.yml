@@ -32,9 +32,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Configure AWS credentials for tools account
         uses: aws-actions/configure-aws-credentials@v4
         if: ${{ contains(inputs.environment_name, 'tools') }}
