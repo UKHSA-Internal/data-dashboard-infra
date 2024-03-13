@@ -21,11 +21,12 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          account_name: 'tools'
+          aws_region: ${{ env.AWS_REGION }}
+          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - name: Terraform cleanup
         run: |
