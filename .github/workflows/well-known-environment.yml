@@ -28,11 +28,12 @@ jobs:
           ref: ${{ env.branch }}
       - uses: actions/setup-python@v5
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          environment_name: 'tools'
+          aws_region: ${{ env.AWS_REGION }}
+          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -60,11 +61,12 @@ jobs:
           ref: ${{ env.branch }}
       - uses: actions/setup-python@v5
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          environment_name: 'tools'
+          aws_region: ${{ env.AWS_REGION }}
+          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -91,11 +93,12 @@ jobs:
         with:
           ref: ${{ env.branch }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          environment_name: 'tools'
+          aws_region: ${{ env.AWS_REGION }}
+          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/well-known-environment-name
@@ -122,11 +125,12 @@ jobs:
         with:
           ref: ${{ env.branch }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          environment_name: 'tools'
+          aws_region: ${{ env.AWS_REGION }}
+          tools_account_role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/well-known-environment-name
@@ -142,29 +146,14 @@ jobs:
           branch: ${{ env.branch }}
         shell: zsh {0}
 
-      - name: Configure AWS credentials for ECS (dev)
-        uses: aws-actions/configure-aws-credentials@v4
-        if: startsWith(env.branch, 'env/dev/')
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_DEV }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for ECS (test)
-        uses: aws-actions/configure-aws-credentials@v4
-        if: startsWith(env.branch, 'env/test/')
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for ECS (uat)
-        uses: aws-actions/configure-aws-credentials@v4
-        if: startsWith(env.branch, 'env/uat/')
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
+          environment_name: ${{ env.branch }}
+          aws_region: ${{ env.AWS_REGION }}
+          dev_account_role: ${{ secrets.UHD_ECS_ROLE_DEV }}
+          test_account_role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          uat_account_role: ${{ secrets.UHD_ECS_ROLE_UAT }}
 
       - name: Restart ECS services
         run: |
