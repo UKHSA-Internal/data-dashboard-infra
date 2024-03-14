@@ -1,4 +1,5 @@
 name: Flush Caches Workflow
+run-name: Flush Caches Workflow for ${{ inputs.environment }} triggered by @${{ github.actor }}
 
 on:
   workflow_dispatch:
