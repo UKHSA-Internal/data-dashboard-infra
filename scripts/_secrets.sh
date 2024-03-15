@@ -51,7 +51,10 @@ function _delete_all_secrets() {
                 "uhd-${env}-cdn-front-end-secure-header-value"
                 "uhd-${env}-cdn-public-api-secure-header-value"
                 "uhd-${env}-private-api-email-credentials"
-                "uhd-${env}-google-analytics-credentials")
+                "uhd-${env}-google-analytics-credentials"
+                "uhd-${env}-aurora-db-feature-flags-credentials"
+                "uhd-${env}-feature-flags-admin-user-credentials"
+                "uhd-${env}-feature-flags-api-keys")
 
     for ((i=1; i<=${#secret_ids[@]}; ++i)); do
         _delete_secret "${secret_ids[i]}"
