@@ -1,5 +1,5 @@
 ################################################################################
-# Database credentials
+# Main database credentials
 ################################################################################
 
 resource "aws_secretsmanager_secret" "rds_db_creds" {
