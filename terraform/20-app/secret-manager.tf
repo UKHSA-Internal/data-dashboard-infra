@@ -15,6 +15,21 @@ resource "aws_secretsmanager_secret_version" "rds_db_creds" {
 }
 
 ################################################################################
+# Feature flags database credentials
+################################################################################
+
+resource "aws_secretsmanager_secret" "aurora_db_feature_flags_credentials" {
+  name = "${local.prefix}-aurora-db-feature-flags-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "aurora_db_feature_flags_credentials" {
+  secret_id     = aws_secretsmanager_secret.aurora_db_feature_flags_credentials.id
+  secret_string = jsonencode({
+    username = "unleash_user"
+    password = random_password.feature_flags_db_password.result
+  })
+}
+################################################################################
 # CMS admin application credentials
 ################################################################################
 
