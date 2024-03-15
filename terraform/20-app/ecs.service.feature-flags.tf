@@ -8,8 +8,12 @@ module "ecs_service_feature_flags" {
 
   create_iam_role = true
 
-  cpu        = 256
-  memory     = 512
+  cpu              = 256
+  memory           = 512
+  runtime_platform = {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = false
