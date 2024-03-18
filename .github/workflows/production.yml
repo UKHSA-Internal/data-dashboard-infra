@@ -1,6 +1,6 @@
 name: Production Workflow
 
-run-name: New deployment from ${{ github.repository }}
+run-name: New deployment from ${{ github.event.client_payload.repository || github.repository }}
 
 on:
   push:
