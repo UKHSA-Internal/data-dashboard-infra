@@ -10,10 +10,12 @@ module "ecs_service_private_api" {
   memory     = local.use_prod_sizing ? 4096 : 1024
   subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = local.use_auto_scaling
+  enable_autoscaling       = true
   desired_count            = local.use_auto_scaling ? 3 : 1
   autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
   autoscaling_max_capacity = local.use_auto_scaling ? 20 : 1
+
+  autoscaling_scheduled_actions = local.is_dev ? local.scheduled_autoscaling_policies_for_dev_environments : {}
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 

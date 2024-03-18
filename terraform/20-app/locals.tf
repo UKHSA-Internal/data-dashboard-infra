@@ -27,6 +27,19 @@ locals {
   use_auto_scaling  = local.use_prod_sizing
   use_ip_allow_list = local.environment != "prod"
 
+  scheduled_autoscaling_policies_for_dev_environments = {
+    start_of_working_day_scale_out = {
+      min_capacity = 1
+      max_capacity = 1
+      schedule     = "cron(0 07 ? * MON-FRI *)"   # Run every weekday at 7am
+    }
+    end_of_working_day_scale_in = {
+      min_capacity = 0
+      max_capacity = 0
+      schedule     = "cron(0 20 ? * MON-FRI *)"   # Run every weekday at 8pm
+    }
+  }
+
   ship_cloud_watch_logs_to_splunk = true
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
@@ -39,7 +52,7 @@ locals {
     private_api      = "private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    } : {
+  } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"
