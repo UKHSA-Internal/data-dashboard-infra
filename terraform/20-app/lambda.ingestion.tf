@@ -12,7 +12,7 @@ module "lambda_ingestion" {
 
   create_package = false
   package_type   = "Image"
-  architectures  = ["x86_64"]
+  architectures  = ["arm64"]
   image_uri      = "${module.ecr_ingestion.repository_url}:latest"
   depends_on     = [module.ecr_ingestion.repository_arn]
 
@@ -42,7 +42,7 @@ module "lambda_ingestion" {
   }
 
   attach_policy_statements = true
-  policy_statements = {
+  policy_statements        = {
     move_items_from_in_folder_of_ingest_bucket = {
       actions   = ["s3:GetObject", "s3:DeleteObject"]
       effect    = "Allow"
@@ -64,7 +64,7 @@ module "lambda_ingestion" {
       resources = [aws_secretsmanager_secret.rds_db_creds.arn]
     }
     read_from_kinesis = {
-      effect = "Allow"
+      effect  = "Allow"
       actions = [
         "kinesis:GetRecords",
         "kinesis:GetShardIterator",
