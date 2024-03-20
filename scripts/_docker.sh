@@ -58,11 +58,11 @@ function _docker_build() {
 }
 
 function _docker_pull() {
-    src_account_id=$(_get_target_aws_account_id "dev")
+    src_account_id=$(_get_tools_account_id)
     
-    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-api:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-ingestion:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-frontend:latest")
+    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/ingestion:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest")
 
     echo $src | xargs -P10 -n1 docker pull
 }
@@ -81,12 +81,12 @@ function _docker_push() {
         return 1
     fi
 
-    src_account_id=$(_get_target_aws_account_id "dev")
+    src_account_id=$(_get_tools_account_id)
     dest_account_id=$(_get_target_aws_account_id $account)
     
-    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-api:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-ingestion:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/wp-frontend:latest")
+    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/ingestion:latest"
+         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest")
 
     dest=("${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-api:latest"
           "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion:latest"
@@ -100,11 +100,11 @@ function _docker_push() {
 }
 
 function _docker_ecr_login() {
-    local account=${1:-dev}
+    local account=${1:-tools}
 
     echo "Logging into ECR in account $account"
 
-    account_id=$(_get_target_aws_account_id $account)
-    
+    account_id=$(_get_tools_account_id)
+
     aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin "${account_id}.dkr.ecr.eu-west-2.amazonaws.com"
 }
