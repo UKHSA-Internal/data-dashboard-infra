@@ -11,12 +11,11 @@ module "ecs_service_front_end" {
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
-  desired_count            = local.use_auto_scaling ? 3 : 1
-  autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
-  autoscaling_max_capacity = local.use_auto_scaling ? 20 : 1
+  desired_count            = local.use_prod_sizing ? 3 : 1
+  autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
+  autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  autoscaling_scheduled_actions = local.is_dev ? local.scheduled_autoscaling_policies_for_dev_environments : {}
-
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {
     front-end = {
@@ -26,7 +25,7 @@ module "ecs_service_front_end" {
       essential                              = true
       readonly_root_filesystem               = false
       image                                  = "${module.ecr_front_end.repository_url}:latest"
-      port_mappings = [
+      port_mappings                          = [
         {
           containerPort = 3000
           hostPort      = 3000

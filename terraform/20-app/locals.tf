@@ -24,13 +24,12 @@ locals {
   enable_public_db            = local.is_dev
   is_dev                      = var.environment_type == "dev"
 
-  use_auto_scaling  = local.use_prod_sizing
-  use_ip_allow_list = local.environment != "prod"
+  use_ip_allow_list             = local.environment != "prod"
 
-  scheduled_autoscaling_policies_for_dev_environments = {
+  scheduled_scaling_policies_for_non_essential_envs = {
     start_of_working_day_scale_out = {
-      min_capacity = 1
-      max_capacity = 1
+      min_capacity = local.use_prod_sizing ? 3 : 1
+      max_capacity = local.use_prod_sizing ? 3 : 1
       schedule     = "cron(0 07 ? * MON-FRI *)"   # Run every weekday at 7am
     }
     end_of_working_day_scale_in = {
