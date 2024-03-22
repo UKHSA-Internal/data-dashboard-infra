@@ -6,8 +6,8 @@ module "ecs_service_feedback_api" {
   cluster_arn            = module.ecs.cluster_arn
   enable_execute_command = true
 
-  cpu        = local.use_prod_sizing ? 2048 : 512
-  memory     = local.use_prod_sizing ? 4096 : 1024
+  cpu        = local.use_prod_sizing ? 1024 : 256
+  memory     = local.use_prod_sizing ? 2048 : 512
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = local.use_auto_scaling
