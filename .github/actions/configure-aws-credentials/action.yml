@@ -1,0 +1,82 @@
+name: "Configure AWS credentials"
+
+description: "Configures credentials for the selected AWS account"
+
+inputs:
+  environment-name:
+    description: "The name of the environment being selected. Defaults to `tools`."
+    default: "tools"
+  aws-region:
+    description: "The AWS region to configure credentials in."
+    required: true
+
+  # Note that the roles are optional by default.
+  # When using this composite action, you must pass in the role you need
+  # from the `secrets` context.
+  tools-account-role:
+    description: "The role associated with the tools account"
+    required: false
+  prod-account-role:
+    description: "The role associated with the prod account"
+    required: false
+  dev-account-role:
+    description: "The role associated with the dev account"
+    required: false
+  test-account-role:
+    description: "The role associated with the test account"
+    required: false
+  uat-account-role:
+    description: "The role associated with the uat account"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials for tools account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'tools') }}
+      with:
+        role-to-assume: ${{ inputs.tools-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Configure AWS credentials for prod account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'prod') }}
+      with:
+        role-to-assume: ${{ inputs.prod-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+
+    - name: Configure AWS credentials for dev account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'dev') }}
+      with:
+        role-to-assume: ${{ inputs.dev-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+
+    - name: Configure AWS credentials for test account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'test') }}
+      with:
+        role-to-assume: ${{ inputs.test-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+
+    - name: Configure AWS credentials for uat account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'uat') }}
+      with:
+        role-to-assume: ${{ inputs.uat-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+
+    # The `train` environment is in the UAT account
+    # hence the UAT account is configured here
+    - name: Configure AWS credentials for uat account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(inputs.environment-name, 'train') }}
+      with:
+        role-to-assume: ${{ inputs.uat-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
