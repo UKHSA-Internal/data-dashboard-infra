@@ -34,14 +34,14 @@ runs:
   steps:
     - name: Configure AWS credentials for tools account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(inputs.environment-name, 'tools') }}
+      if: ${{ inputs.account-name == 'tools' }}
       with:
         role-to-assume: ${{ inputs.tools-account-role }}
         aws-region: ${{ inputs.aws-region }}
 
     - name: Configure AWS credentials for prod account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(inputs.environment-name, 'prod') }}
+      if: ${{ inputs.account-name == 'prod' }}
       with:
         role-to-assume: ${{ inputs.prod-account-role }}
         aws-region: ${{ inputs.aws-region }}
@@ -49,7 +49,7 @@ runs:
 
     - name: Configure AWS credentials for dev account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(inputs.environment-name, 'dev') }}
+      if: ${{ inputs.account-name == 'dev' }}
       with:
         role-to-assume: ${{ inputs.dev-account-role }}
         aws-region: ${{ inputs.aws-region }}
@@ -57,7 +57,7 @@ runs:
 
     - name: Configure AWS credentials for test account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(inputs.environment-name, 'test') }}
+      if: ${{ inputs.account-name == 'test' }}
       with:
         role-to-assume: ${{ inputs.test-account-role }}
         aws-region: ${{ inputs.aws-region }}
@@ -65,7 +65,7 @@ runs:
 
     - name: Configure AWS credentials for uat account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(inputs.environment-name, 'uat') || contains(inputs.environment-name, 'train') }}
+      if: ${{ inputs.account-name == 'uat' }}
       with:
         role-to-assume: ${{ inputs.uat-account-role }}
         aws-region: ${{ inputs.aws-region }}
