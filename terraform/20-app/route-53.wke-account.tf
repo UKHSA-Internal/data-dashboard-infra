@@ -1,6 +1,6 @@
 module "route_53_records_wke_account" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
-  version = "2.10.2"
+  version = "2.11.1"
 
   create  = contains(local.wke.account, local.environment)
   zone_id = local.account_layer.dns.account.zone_id
