@@ -3,8 +3,8 @@ name: "Configure AWS credentials"
 description: "Configures credentials for the selected AWS account"
 
 inputs:
-  environment-name:
-    description: "The name of the environment being selected. Defaults to `tools`."
+  account-name:
+    description: "The name of the AWS account being selected. Defaults to `tools`."
     default: "tools"
   aws-region:
     description: "The AWS region to configure credentials in."

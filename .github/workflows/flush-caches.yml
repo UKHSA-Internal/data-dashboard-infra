@@ -47,7 +47,7 @@ jobs:
       - name: Configure AWS credentials for account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment-name: ${{ inputs.environment }}
+          account-name: ${{ inputs.environment }}
           aws-region: ${{ env.AWS_REGION }}
           prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
           dev-account-role: ${{ secrets.UHD_ECS_ROLE_DEV }}

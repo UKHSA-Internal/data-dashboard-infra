@@ -195,7 +195,7 @@ jobs:
       - name: Configure AWS credentials for test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment-name: 'test'
+          account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
           test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
 
@@ -257,7 +257,7 @@ jobs:
       - name: Configure AWS credentials for test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          environment-name: 'test'
+          account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
           test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
 
