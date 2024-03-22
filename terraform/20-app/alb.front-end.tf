@@ -77,7 +77,7 @@ module "front_end_alb" {
 
 module "front_end_alb_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.2"
 
   name   = "${local.prefix}-front-end-alb"
   vpc_id = module.vpc.vpc_id

@@ -83,7 +83,7 @@ locals {
 
 module "app_rds_security_group_rules" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.2"
 
   count             = local.is_dev ? 1 : 0
   create_sg         = false
@@ -101,7 +101,7 @@ module "app_rds_security_group_rules" {
 
 module "app_rds_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.2"
 
   name   = "${local.prefix}-app-db"
   vpc_id = module.vpc.vpc_id
