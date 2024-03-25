@@ -1,6 +1,6 @@
 module "cloudfront_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.2.0"
+  version = "3.4.0"
 
   comment             = "${local.prefix}-legacy-dashboard-redirect"
   enabled             = true
