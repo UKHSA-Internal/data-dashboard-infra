@@ -52,6 +52,10 @@ module "ecs_service_front_end" {
         {
           name      = "GOOGLE_TAG_MANAGER_ID",
           valueFrom = "${aws_secretsmanager_secret.google_analytics_credentials.arn}:google_tag_manager_id::"
+        },
+        {
+          name      = "FEATURE_FLAGS_API_KEY",
+          valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:client_api_key::"
         }
       ]
     }
