@@ -1,6 +1,6 @@
 module "cloudfront_public_api" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.2.0"
+  version = "3.4.0"
 
   comment             = "${local.prefix}-public-api"
   enabled             = true
@@ -93,9 +93,6 @@ resource "aws_cloudfront_cache_policy" "public_api" {
   default_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
 
   parameters_in_cache_key_and_forwarded_to_origin {
-    enable_accept_encoding_brotli = true
-    enable_accept_encoding_gzip   = true
-
     cookies_config {
       cookie_behavior = "none"
     }
