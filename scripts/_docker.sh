@@ -104,7 +104,11 @@ function _docker_ecr_login() {
 
     echo "Logging into ECR in account $account"
 
-    account_id=$(_get_tools_account_id)
+    if [[ $account = "tools" ]]; then
+      account_id=$(_get_tools_account_id)
+    else
+      account_id=$(_get_target_aws_account_id $account)
+    fi
 
     aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin "${account_id}.dkr.ecr.eu-west-2.amazonaws.com"
 }
