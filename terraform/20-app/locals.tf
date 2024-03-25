@@ -48,4 +48,6 @@ locals {
     public_api       = "${local.environment}-api.${local.account_layer.dns.account.dns_name}"
     public_api_lb    = "${local.environment}-api-lb.${local.account_layer.dns.account.dns_name}"
   }
+
+  thirty_days_in_seconds = 2592000
 }
