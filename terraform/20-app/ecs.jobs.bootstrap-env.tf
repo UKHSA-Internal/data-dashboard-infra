@@ -3,8 +3,8 @@ resource "local_sensitive_file" "ecs_job_bootstrap_env" {
   content = templatefile("ecs-jobs/bootstrap-env.tftpl", {
     cms_admin_user_password = random_password.cms_admin_user_password.result
     cluster_arn             = module.ecs.cluster_arn
-    security_group_id       = module.ecs_service_private_api.security_group_id
+    security_group_id       = module.ecs_service_utility_worker.security_group_id
     subnet_ids              = module.vpc.private_subnets
-    task_arn                = module.ecs_service_private_api.task_definition_arn
+    task_arn                = module.ecs_service_utility_worker.task_definition_arn
   })
 }
