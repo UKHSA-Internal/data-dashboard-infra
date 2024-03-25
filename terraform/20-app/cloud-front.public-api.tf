@@ -50,7 +50,7 @@ module "cloudfront_public_api" {
     target_origin_id           = "alb"
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
-    function_association = {
+    function_association       = {
       viewer-request = {
         function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
@@ -62,6 +62,12 @@ module "cloudfront_public_api" {
     error_code            = 404
     error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
   }]
+  custom_error_response = [
+    {
+      count                 = 0
+      error_code            = 404
+    }
+  ]
 
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name

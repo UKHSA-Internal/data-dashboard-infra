@@ -56,6 +56,11 @@ module "cloudfront_front_end" {
     error_code            = 404
     error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
   }]
+  custom_error_response = [
+    {
+      error_code            = 404
+    }
+  ]
 
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
