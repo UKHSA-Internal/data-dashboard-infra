@@ -106,6 +106,11 @@ module "private_api_tasks_security_group_rules" {
       description              = "lb to tasks"
       rule                     = "http-80-tcp"
       source_security_group_id = module.private_api_alb_security_group.security_group_id
+    },
+    {
+      description              = "bastion to tasks"
+      rule                     = "http-80-tcp"
+      source_security_group_id = module.ecs_service_bastion.security_group_id
     }
   ]
 
