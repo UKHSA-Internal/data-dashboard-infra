@@ -10,8 +10,6 @@ locals {
 
   use_prod_sizing = contains(["perf", "train", "uat", "prod"], local.environment)
 
-  use_prod_cloudfront_ttl = false
-
   wke = {
     account = ["dev", "test", "uat", "prod"]
     other   = ["pen", "perf", "train"]
@@ -52,4 +50,6 @@ locals {
     public_api_lb    = "${local.environment}-api-lb.${local.account_layer.dns.account.dns_name}"
     feature_flags    = "${local.environment}-feature-flags.${local.account_layer.dns.account.dns_name}"
   }
+
+  thirty_days_in_seconds = 2592000
 }

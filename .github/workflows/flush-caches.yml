@@ -31,11 +31,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
 
       - name: Terraform output
         run: |
@@ -44,45 +44,15 @@ jobs:
           uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
 
-      - name: Configure AWS credentials for prod account
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment == 'prod' }}
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          account-name: ${{ inputs.environment }}
           aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for dev account
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment == 'dev' }}
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_DEV }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for test account
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment == 'test' }}
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_TEST }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for uat account
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment == 'uat' }}
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
-
-      - name: Configure AWS credentials for train
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ inputs.environment == 'train' }}
-        with:
-          role-to-assume: ${{ secrets.UHD_ECS_ROLE_UAT }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-chaining: true
+          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          dev-account-role: ${{ secrets.UHD_ECS_ROLE_DEV }}
+          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          uat-account-role: ${{ secrets.UHD_ECS_ROLE_UAT }}
 
       - name: Flush caches
         run: |
