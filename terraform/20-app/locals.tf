@@ -10,8 +10,6 @@ locals {
 
   use_prod_sizing = contains(["perf", "train", "uat", "prod"], local.environment)
 
-  use_prod_cloudfront_ttl = false
-
   wke = {
     account = ["dev", "test", "uat", "prod"]
     other   = ["pen", "perf", "train"]
