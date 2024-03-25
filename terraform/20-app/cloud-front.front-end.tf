@@ -1,6 +1,10 @@
+locals {
+  fifteen_minutes_in_seconds = 86400
+}
+
 module "cloudfront_front_end" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.2.1"
+  version = "3.4.0"
 
   comment             = "${local.prefix}-front-end"
   enabled             = true
@@ -52,10 +56,12 @@ module "cloudfront_front_end" {
     viewer_protocol_policy     = "redirect-to-https"
   }
 
-  custom_error_response = [{
-    error_code            = 404
-    error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  }]
+  custom_error_response = [
+    {
+      error_code            = 404
+      error_caching_min_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+    }
+  ]
 
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
@@ -82,9 +88,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
-  min_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  max_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  default_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true

@@ -1,6 +1,10 @@
+locals {
+  one_day_in_seconds = 86400
+}
+
 module "cloudfront_public_api" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.2.0"
+  version = "3.4.0"
 
   comment             = "${local.prefix}-public-api"
   enabled             = true
@@ -50,18 +54,20 @@ module "cloudfront_public_api" {
     target_origin_id           = "alb"
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
-    function_association = {
+    function_association       = {
       viewer-request = {
         function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
     }
   }
 
-  custom_error_response = [{
-    count                 = 0
-    error_code            = 404
-    error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  }]
+  custom_error_response = [
+    {
+      count                 = 0
+      error_code            = 404
+      error_caching_min_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+    }
+  ]
 
   logging_config = {
     bucket          = data.aws_s3_bucket.cloud_front_logs_eu_west_2.bucket_domain_name
@@ -88,14 +94,11 @@ resource "aws_cloudfront_origin_request_policy" "public_api" {
 resource "aws_cloudfront_cache_policy" "public_api" {
   name = "${local.prefix}-public-api"
 
-  min_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  max_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  default_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
-    enable_accept_encoding_brotli = true
-    enable_accept_encoding_gzip   = true
-
     cookies_config {
       cookie_behavior = "none"
     }
