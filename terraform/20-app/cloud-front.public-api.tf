@@ -1,3 +1,7 @@
+locals {
+  one_day_in_seconds = 86400
+}
+
 module "cloudfront_public_api" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "3.4.0"
@@ -57,15 +61,11 @@ module "cloudfront_public_api" {
     }
   }
 
-  custom_error_response = [{
-    count                 = 0
-    error_code            = 404
-    error_caching_min_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  }]
   custom_error_response = [
     {
       count                 = 0
       error_code            = 404
+      error_caching_min_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
     }
   ]
 
@@ -94,9 +94,9 @@ resource "aws_cloudfront_origin_request_policy" "public_api" {
 resource "aws_cloudfront_cache_policy" "public_api" {
   name = "${local.prefix}-public-api"
 
-  min_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  max_ttl     = local.use_prod_cloudfront_ttl ? 2592000 : 900
-  default_ttl = local.use_prod_cloudfront_ttl ? 2592000 : 900
+  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     cookies_config {
