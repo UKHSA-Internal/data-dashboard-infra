@@ -1,5 +1,5 @@
 ################################################################################
-# Database credentials
+# Main database credentials
 ################################################################################
 
 resource "aws_secretsmanager_secret" "rds_db_creds" {
@@ -11,6 +11,54 @@ resource "aws_secretsmanager_secret_version" "rds_db_creds" {
   secret_string = jsonencode({
     username = "api_user"
     password = random_password.rds_db_password.result
+  })
+}
+
+################################################################################
+# Feature flags database credentials
+################################################################################
+
+resource "aws_secretsmanager_secret" "aurora_db_feature_flags_credentials" {
+  name = "${local.prefix}-aurora-db-feature-flags-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "aurora_db_feature_flags_credentials" {
+  secret_id     = aws_secretsmanager_secret.aurora_db_feature_flags_credentials.id
+  secret_string = jsonencode({
+    username = "unleash_user"
+    password = random_password.feature_flags_db_password.result
+  })
+}
+
+################################################################################
+# Feature flags
+################################################################################
+
+resource "aws_secretsmanager_secret" "feature_flags_api_keys" {
+  name        = "${local.prefix}-feature-flags-api-keys"
+  description = "These are the API key required when interacting with the feature flags service."
+
+}
+
+resource "aws_secretsmanager_secret_version" "feature_flags_api_keys" {
+  secret_id     = aws_secretsmanager_secret.feature_flags_api_keys.id
+  secret_string = jsonencode({
+    client_api_key = local.feature_flags_client_api_key
+  })
+}
+
+
+resource "aws_secretsmanager_secret" "feature_flags_admin_user_credentials" {
+  name        = "${local.prefix}-feature-flags-admin-user-credentials"
+  description = "These are the default admin credentials required to login to the feature flags application."
+
+}
+
+resource "aws_secretsmanager_secret_version" "feature_flags_admin_user_credentials" {
+  secret_id     = aws_secretsmanager_secret.feature_flags_admin_user_credentials.id
+  secret_string = jsonencode({
+    username = "admin"
+    password = random_password.feature_flags_admin_user_password.result
   })
 }
 
