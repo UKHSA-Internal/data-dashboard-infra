@@ -52,7 +52,7 @@ function _docker_build() {
 
     echo "Building docker image for $repo"
 
-    docker buildx build --platform linux/amd64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${ecr_repo_name}:latest --push .
+    docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${ecr_repo_name}:latest-graviton --push .
     
     cd $root
 }
