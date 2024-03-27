@@ -17,6 +17,11 @@ module "ecs_service_private_api" {
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
+  runtime_platform = {
+    cpu_architecture        = "ARM64"
+    operating_system_family = "LINUX"
+  }
+
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
@@ -24,8 +29,8 @@ module "ecs_service_private_api" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      image                                  = "${module.ecr_api.repository_url}:latest-graviton"
+      port_mappings                          = [
         {
           containerPort = 80
           hostPort      = 80
@@ -50,7 +55,7 @@ module "ecs_service_private_api" {
           value = "PROD"
         },
         {
-          name = "REDIS_HOST"
+          name  = "REDIS_HOST"
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
