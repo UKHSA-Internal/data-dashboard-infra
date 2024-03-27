@@ -49,6 +49,7 @@ locals {
     private_api      = "private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
+    feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
   } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
@@ -59,7 +60,9 @@ locals {
     private_api      = "${local.environment}-private-api.${local.account_layer.dns.account.dns_name}"
     public_api       = "${local.environment}-api.${local.account_layer.dns.account.dns_name}"
     public_api_lb    = "${local.environment}-api-lb.${local.account_layer.dns.account.dns_name}"
+    feature_flags    = "${local.environment}-feature-flags.${local.account_layer.dns.account.dns_name}"
   }
 
-  thirty_days_in_seconds = 2592000
+  thirty_days_in_seconds  = 2592000
+  five_minutes_in_seconds = 300
 }
