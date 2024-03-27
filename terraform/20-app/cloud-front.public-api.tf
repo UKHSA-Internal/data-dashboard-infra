@@ -65,7 +65,7 @@ module "cloudfront_public_api" {
     {
       count                 = 0
       error_code            = 404
-      error_caching_min_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.one_day_in_seconds
+      error_caching_min_ttl = local.five_minutes_in_seconds
     }
   ]
 
