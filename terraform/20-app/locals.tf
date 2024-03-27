@@ -51,5 +51,6 @@ locals {
     feature_flags    = "${local.environment}-feature-flags.${local.account_layer.dns.account.dns_name}"
   }
 
-  thirty_days_in_seconds = 2592000
+  thirty_days_in_seconds  = 2592000
+  five_minutes_in_seconds = 300
 }

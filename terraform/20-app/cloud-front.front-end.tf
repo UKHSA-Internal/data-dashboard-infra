@@ -59,7 +59,7 @@ module "cloudfront_front_end" {
   custom_error_response = [
     {
       error_code            = 404
-      error_caching_min_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+      error_caching_min_ttl = local.five_minutes_in_seconds
     }
   ]
 
