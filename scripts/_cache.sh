@@ -50,6 +50,8 @@ function _cache_flush() {
 
     echo "Filling the public api cloud front cache..." 
     uhd cache fill-public-api --wait
+
+    _supress_cache_flush_timeout_exit_code
 }
 
 function _cache_flush_redis() {
@@ -155,4 +157,12 @@ function _get_distribution_id() {
     local distribution_id=$(jq -r --arg distribution "$distribution" '.cloud_front.value[$distribution]' $terraform_output_file)
 
     echo $distribution_id
+}
+
+function _supress_cache_flush_timeout_exit_code() {
+    local exit_code=$?
+    if [[ $exit_code = 255 ]]; then
+      echo "Not waiting for cache fill to complete..."
+      return 0
+    fi
 }
