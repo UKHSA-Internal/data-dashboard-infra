@@ -35,8 +35,8 @@ module "lambda_ingestion" {
     INGESTION_BUCKET_NAME              = module.s3_ingest.s3_bucket_id
     POSTGRES_DB                        = local.rds.app.primary.db_name
     POSTGRES_HOST                      = module.rds_proxy.proxy_endpoint
-    POSTGRES_USER                      = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]
-    SECRETS_MANAGER_DB_CREDENTIALS_ARN = aws_secretsmanager_secret.rds_db_creds.arn
+    POSTGRES_USER                      = aws_db_instance.app_rds_primary.username
+    SECRETS_MANAGER_DB_CREDENTIALS_ARN = aws_db_instance.app_rds_primary.master_user_secret[0].secret_arn
     APIENV                             = "PROD"
     APP_MODE                           = "INGESTION"
   }
@@ -61,7 +61,7 @@ module "lambda_ingestion" {
     get_db_credentials_from_secrets_manager = {
       effect    = "Allow",
       actions   = ["secretsmanager:GetSecretValue"],
-      resources = [aws_secretsmanager_secret.rds_db_creds.arn]
+      resources = [aws_db_instance.app_rds_primary.master_user_secret[0].secret_arn]
     }
     read_from_kinesis = {
       effect  = "Allow"

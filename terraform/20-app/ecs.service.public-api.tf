@@ -57,11 +57,11 @@ module "ecs_service_public_api" {
       secrets = [
         {
           name      = "POSTGRES_USER"
-          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:username::"
+          valueFrom = "${aws_db_instance.app_rds_primary.master_user_secret[0].secret_arn}:username::"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "${aws_secretsmanager_secret.rds_db_creds.arn}:password::"
+          valueFrom = "${aws_db_instance.app_rds_primary.master_user_secret[0].secret_arn}:password::"
         },
         {
           name      = "SECRET_KEY",

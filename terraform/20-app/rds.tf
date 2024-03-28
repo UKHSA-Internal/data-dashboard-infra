@@ -20,12 +20,12 @@ resource "aws_db_instance" "app_rds_primary" {
   instance_class              = local.use_prod_sizing ? "db.t3.medium" : "db.t3.small"
   kms_key_id                  = module.kms_app_rds.key_arn
   multi_az                    = local.use_prod_sizing ? true : false
-  password                    = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["password"]
+  manage_master_user_password = true
+  username                    = "api_user"
   publicly_accessible         = local.enable_public_db
   skip_final_snapshot         = true
   storage_encrypted           = true
   storage_type                = "gp3"
-  username                    = jsondecode(aws_secretsmanager_secret_version.rds_db_creds.secret_string)["username"]
   vpc_security_group_ids      = [module.app_rds_security_group.security_group_id]
 }
 
