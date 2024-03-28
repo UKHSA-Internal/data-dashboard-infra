@@ -17,10 +17,11 @@ locals {
 }
 
 locals {
-  certificate_arn             = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
-  cloud_front_certificate_arn = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
-  enable_public_db            = local.is_dev
-  is_dev                      = var.environment_type == "dev"
+  certificate_arn                              = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
+  cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
+  cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
+  enable_public_db                             = local.is_dev
+  is_dev                                       = var.environment_type == "dev"
 
   use_ip_allow_list             = local.environment != "prod"
 
@@ -50,7 +51,7 @@ locals {
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
-  } : {
+    } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"
