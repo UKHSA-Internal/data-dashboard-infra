@@ -23,18 +23,18 @@ locals {
   enable_public_db                             = local.is_dev
   is_dev                                       = var.environment_type == "dev"
 
-  use_ip_allow_list             = local.environment != "prod"
+  use_ip_allow_list = local.environment != "prod"
 
   scheduled_scaling_policies_for_non_essential_envs = {
     start_of_working_day_scale_out = {
       min_capacity = local.use_prod_sizing ? 3 : 1
       max_capacity = local.use_prod_sizing ? 3 : 1
-      schedule     = "cron(0 07 ? * MON-FRI *)"   # Run every weekday at 7am
+      schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
     }
     end_of_working_day_scale_in = {
       min_capacity = 0
       max_capacity = 0
-      schedule     = "cron(0 20 ? * MON-FRI *)"   # Run every weekday at 8pm
+      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
     }
   }
 
@@ -44,9 +44,9 @@ locals {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin        = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feedback_api     = "feedback-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    front_end        = "${local.account_layer.dns.wke_dns_names[local.environment]}"
+    front_end        = local.account_layer.dns.wke_dns_names[local.environment]
     front_end_lb     = "lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    legacy_dashboard = "${local.environment}.${local.account_layer.dns.legacy.dns_name}"
+    legacy_dashboard = local.account_layer.dns.legacy.dns_name
     private_api      = "private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
