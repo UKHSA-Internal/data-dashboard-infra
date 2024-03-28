@@ -10,10 +10,12 @@ module "ecs_service_cms_admin" {
   memory     = local.use_prod_sizing ? 4096 : 1024
   subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = local.use_auto_scaling
-  desired_count            = local.use_auto_scaling ? 3 : 1
-  autoscaling_min_capacity = local.use_auto_scaling ? 3 : 1
-  autoscaling_max_capacity = local.use_auto_scaling ? 5 : 1
+  enable_autoscaling       = true
+  desired_count            = local.use_prod_sizing ? 3 : 1
+  autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
+  autoscaling_max_capacity = local.use_prod_sizing ? 5 : 1
+
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {
     api = {
@@ -23,7 +25,7 @@ module "ecs_service_cms_admin" {
       essential                              = true
       readonly_root_filesystem               = false
       image                                  = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      port_mappings                          = [
         {
           containerPort = 80
           hostPort      = 80

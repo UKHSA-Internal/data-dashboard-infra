@@ -2,6 +2,7 @@ module "cloudfront_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "3.4.0"
 
+  aliases             = [local.dns_names.legacy_dashboard]
   comment             = "${local.prefix}-legacy-dashboard-redirect"
   enabled             = true
   wait_for_deployment = true
@@ -29,7 +30,7 @@ module "cloudfront_legacy_dashboard_redirect" {
     response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
     target_origin_id           = "front_end"
     use_forwarded_values       = false
-    viewer_protocol_policy     = "allow-all"
+    viewer_protocol_policy     = "redirect-to-https"
     function_association = {
       viewer-request = {
         function_arn = aws_cloudfront_function.legacy_dashboard_redirect_viewer_request.arn
@@ -42,6 +43,12 @@ module "cloudfront_legacy_dashboard_redirect" {
     enabled         = true
     include_cookies = false
     prefix          = "${local.prefix}-legacy-dashboard-redirect"
+  }
+
+  viewer_certificate = {
+    acm_certificate_arn      = local.cloud_front_legacy_dashboard_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 

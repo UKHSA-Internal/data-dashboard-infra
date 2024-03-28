@@ -16,10 +16,12 @@ module "ecs_service_feature_flags" {
   }
   subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = false
+  enable_autoscaling       = true
   desired_count            = 1
   autoscaling_min_capacity = 1
   autoscaling_max_capacity = 1
+
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {
     api = {
