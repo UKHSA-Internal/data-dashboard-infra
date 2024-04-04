@@ -2,6 +2,8 @@ module "cloudfront_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "3.4.0"
 
+  create_distribution = local.environment != "train"
+
   aliases             = [local.dns_names.legacy_dashboard]
   comment             = "${local.prefix}-legacy-dashboard-redirect"
   enabled             = true
