@@ -102,6 +102,8 @@ function _docker_push() {
         docker tag "${src[i]}" "${dest[i]}"
     done
 
+    _docker_ecr_login "dev"
+
     echo $dest | xargs -P10 -n1 docker push
 }
 
