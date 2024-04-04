@@ -36,6 +36,9 @@ output "acm" {
       certificate_arn             = module.acm_account.acm_certificate_arn
       cloud_front_certificate_arn = module.acm_cloud_front.acm_certificate_arn
     }
+    legacy = {
+      cloud_front_certificate_arn = module.acm_cloud_front_legacy_dashboard.acm_certificate_arn
+    }
     wke = {
       pen = local.account == "test" ? {
         certificate_arn             = module.acm_wke_pen.acm_certificate_arn

@@ -12,7 +12,7 @@ module "ecs_service_feature_flags" {
   memory     = 512
   subnet_ids = module.vpc.private_subnets
 
-  enable_autoscaling       = false
+  enable_autoscaling       = true
   desired_count            = 1
   autoscaling_min_capacity = 1
   autoscaling_max_capacity = 1
@@ -21,6 +21,7 @@ module "ecs_service_feature_flags" {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
   }
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {
     api = {
