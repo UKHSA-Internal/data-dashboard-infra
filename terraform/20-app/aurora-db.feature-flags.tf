@@ -24,8 +24,8 @@ module "aurora_db_feature_flags" {
     max_capacity = 10
   }
   instances = {
-    reader = {}
-    writer = {}
+    1 = {}
+    2 = {}
   }
 
   vpc_id               = module.vpc.vpc_id
