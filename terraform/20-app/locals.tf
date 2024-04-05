@@ -17,13 +17,26 @@ locals {
 }
 
 locals {
-  certificate_arn             = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
-  cloud_front_certificate_arn = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
-  enable_public_db            = local.is_dev
-  is_dev                      = var.environment_type == "dev"
+  certificate_arn                              = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
+  cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
+  cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
+  enable_public_db                             = local.is_dev
+  is_dev                                       = var.environment_type == "dev"
 
-  use_auto_scaling  = local.use_prod_sizing
   use_ip_allow_list = local.environment != "prod"
+
+  scheduled_scaling_policies_for_non_essential_envs = {
+    start_of_working_day_scale_out = {
+      min_capacity = local.use_prod_sizing ? 3 : 1
+      max_capacity = local.use_prod_sizing ? 3 : 1
+      schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
+    }
+    end_of_working_day_scale_in = {
+      min_capacity = 0
+      max_capacity = 0
+      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+    }
+  }
 
   ship_cloud_watch_logs_to_splunk = true
 
@@ -31,14 +44,14 @@ locals {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin        = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feedback_api     = "feedback-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    front_end        = "${local.account_layer.dns.wke_dns_names[local.environment]}"
+    front_end        = local.account_layer.dns.wke_dns_names[local.environment]
     front_end_lb     = "lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    legacy_dashboard = "${local.environment}.${local.account_layer.dns.legacy.dns_name}"
+    legacy_dashboard = local.account_layer.dns.legacy.dns_name
     private_api      = "private-api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
-  } : {
+    } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"
