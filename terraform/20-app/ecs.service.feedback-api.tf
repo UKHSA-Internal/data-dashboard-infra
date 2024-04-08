@@ -17,6 +17,11 @@ module "ecs_service_feedback_api" {
 
   autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
+  runtime_platform = {
+    cpu_architecture        = "ARM64"
+    operating_system_family = "LINUX"
+  }
+
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
@@ -24,8 +29,8 @@ module "ecs_service_feedback_api" {
       memory                                 = local.use_prod_sizing ? 2048 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_api.repository_url}:latest"
-      port_mappings = [
+      image                                  = "${module.ecr_api.repository_url}:latest-graviton"
+      port_mappings                          = [
         {
           containerPort = 80
           hostPort      = 80

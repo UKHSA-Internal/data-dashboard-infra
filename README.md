@@ -108,7 +108,8 @@ gh auth login
 
 ### Enable multi-platform Docker builds
 
-We use `docker buildx` to enable us to produce `amd64` images on Apple Silicon. You'll need to enable it if you haven't already:
+We use `docker buildx` to enable us to produce `arm64` images from `x86_64` platforms.
+You'll need to enable it if you haven't already:
 
 ```
 docker buildx create --use
