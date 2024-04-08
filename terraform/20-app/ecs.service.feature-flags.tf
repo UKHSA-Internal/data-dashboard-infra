@@ -8,12 +8,8 @@ module "ecs_service_feature_flags" {
 
   create_iam_role = true
 
-  cpu              = 256
-  memory           = 512
-  runtime_platform = {
-    operating_system_family = "LINUX"
-    cpu_architecture        = "ARM64"
-  }
+  cpu        = 256
+  memory     = 512
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
@@ -21,6 +17,10 @@ module "ecs_service_feature_flags" {
   autoscaling_min_capacity = 1
   autoscaling_max_capacity = 1
 
+  runtime_platform = {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
   autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {

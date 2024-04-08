@@ -17,6 +17,11 @@ module "ecs_service_front_end" {
 
   autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
+  runtime_platform = {
+    cpu_architecture        = "ARM64"
+    operating_system_family = "LINUX"
+  }
+
   container_definitions = {
     front-end = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
@@ -24,7 +29,7 @@ module "ecs_service_front_end" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_front_end.repository_url}:latest"
+      image                                  = "${module.ecr_front_end.repository_url}:latest-graviton"
       port_mappings                          = [
         {
           containerPort = 3000
