@@ -8,7 +8,7 @@ module "rds_proxy" {
   auth = {
     api_user = {
       iam_auth   = "DISABLED"
-      secret_arn = aws_db_instance.app_rds_primary.master_user_secret[0].secret_arn
+      secret_arn = local.main_db_password_secret_arn
     }
   }
 
