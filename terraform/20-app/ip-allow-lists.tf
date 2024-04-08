@@ -1,7 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "185.241.166.214/32", # Afaan
+      "171.22.106.214/32",  # Afaan
       "82.132.233.98/32",   # Afaan's phone
       "80.7.230.87/32",     # Amita
       "154.51.68.102/32",   # Burendo
