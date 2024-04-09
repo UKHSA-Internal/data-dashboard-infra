@@ -60,10 +60,8 @@ function _docker_build() {
 function _docker_pull() {
     src_account_id=$(_get_tools_account_id)
     
-    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest-graviton"
+    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest-graviton"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/ingestion:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest-graviton")
 
     echo $src | xargs -P10 -n1 docker pull
@@ -86,16 +84,12 @@ function _docker_push() {
     src_account_id=$(_get_tools_account_id)
     dest_account_id=$(_get_target_aws_account_id $account)
     
-    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest-graviton"
+    src=("${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/api:latest-graviton"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/ingestion:latest"
-         "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest"
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest-graviton")
 
-    dest=("${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-api:latest"
-          "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-api:latest-graviton"
+    dest=("${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-api:latest-graviton"
           "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion:latest"
-          "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end:latest"
           "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end:latest-graviton")
 
     for ((i=1; i<=${#src[@]}; ++i)); do
