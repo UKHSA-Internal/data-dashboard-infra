@@ -16,6 +16,8 @@ locals {
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
+      "81.108.89.51/32",    # Krishna
+      "80.7.227.61/32",     # Kiran
     ],
     project_team = [
       "78.105.5.74/32",     # Debbie
