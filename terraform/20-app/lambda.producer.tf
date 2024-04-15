@@ -14,6 +14,8 @@ module "lambda_producer" {
   maximum_retry_attempts = 1
   timeout                = 60 # Timeout after 1 minute
 
+  architectures = ["arm64"]
+
   environment_variables = {
     KINESIS_DATA_STREAM_NAME = aws_kinesis_stream.kinesis_data_stream_ingestion.name
   }
