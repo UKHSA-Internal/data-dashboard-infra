@@ -1,6 +1,6 @@
 module "ecs_service_utility_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.0"
+  version = "5.11.1"
 
   name                   = "${local.prefix}-utility-worker"
   cluster_arn            = module.ecs.cluster_arn
