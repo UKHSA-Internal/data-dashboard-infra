@@ -1,6 +1,6 @@
 module "lambda_producer" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.2.5"
+  version       = "7.2.6"
   function_name = "${local.prefix}-producer"
   description   = "Acts as the conduit between the S3 ingest bucket and the Kinesis data stream."
 
