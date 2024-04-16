@@ -26,7 +26,7 @@ resource "aws_wafv2_web_acl" "front_end" {
       priority = rule.value.priority
 
       override_action {
-        count {}
+        block {}
       }
 
       statement {
