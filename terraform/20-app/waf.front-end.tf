@@ -81,20 +81,20 @@ locals {
       },
       {
         priority = 2
-        name     = "AWSManagedRulesLinuxRuleSet"
+        name     = "AWSManagedRulesKnownBadInputsRuleSet"
       },
       {
         priority = 3
-        name     = "AWSManagedRulesUnixRuleSet"
-      },
-      {
-        priority = 4
         name     = "AWSManagedRulesAmazonIpReputationList"
       },
       {
-        priority = 5
-        name     = "AWSManagedRulesKnownBadInputsRuleSet"
+        priority = 4
+        name     = "AWSManagedRulesLinuxRuleSet"
       },
+      {
+        priority = 5
+        name     = "AWSManagedRulesUnixRuleSet"
+      }
     ]
   }
 }
