@@ -1,6 +1,6 @@
 module "lambda_producer" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.2.5"
+  version       = "7.2.6"
   function_name = "${local.prefix}-producer"
   description   = "Acts as the conduit between the S3 ingest bucket and the Kinesis data stream."
 
@@ -13,6 +13,8 @@ module "lambda_producer" {
 
   maximum_retry_attempts = 1
   timeout                = 60 # Timeout after 1 minute
+
+  architectures = ["arm64"]
 
   environment_variables = {
     KINESIS_DATA_STREAM_NAME = aws_kinesis_stream.kinesis_data_stream_ingestion.name

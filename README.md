@@ -208,7 +208,7 @@ uhd terraform apply:layer 20-app foo
 
 Until we finalize our strategy for ECR, you'll need to pull the latest container images and push them to your ECR:
 
-First login to ECR:
+First login to ECR in the **tools** account:
 
 ```
 uhd docker ecr:login
@@ -230,6 +230,20 @@ For example:
 
 ```
 uhd docker push dev 12345678
+```
+
+Note that when pushing to the ECR in the next account, you will be logged into the ECR for that account
+automatically as part of the `uhd docker push <account> <env>` step.
+
+Otherwise, should you wish to log in to the ECR within a specific account which is not the tools account:
+
+```
+uhd docker ecr:login <account>
+```
+
+For example:
+```
+uhd docker ecr:login dev
 ```
 
 ## Bootstrap your environment

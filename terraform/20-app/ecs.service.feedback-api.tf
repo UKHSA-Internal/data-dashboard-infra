@@ -1,6 +1,6 @@
 module "ecs_service_feedback_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.9.3"
+  version = "5.11.1"
 
   name                   = "${local.prefix}-feedback-api"
   cluster_arn            = module.ecs.cluster_arn
