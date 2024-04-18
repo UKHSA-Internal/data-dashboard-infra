@@ -18,7 +18,7 @@ module "lambda_ingestion" {
 
   maximum_retry_attempts = 1
   timeout                = 60 # Timeout after 1 minute
-  memory_size            = 256
+  memory_size            = 320
 
   event_source_mapping = {
     kinesis = {
