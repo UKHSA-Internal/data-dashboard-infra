@@ -45,7 +45,7 @@ resource "aws_wafv2_web_acl" "public_api" {
 
   rule {
     name     = "ip-allow-list"
-    priority = 4
+    priority = 6
 
     action {
       allow {}
@@ -86,6 +86,14 @@ locals {
         priority = 3
         name     = "AWSManagedRulesAmazonIpReputationList"
       },
+      {
+        priority = 4
+        name     = "AWSManagedRulesLinuxRuleSet"
+      },
+      {
+        priority = 5
+        name     = "AWSManagedRulesUnixRuleSet"
+      }
     ]
   }
 }
