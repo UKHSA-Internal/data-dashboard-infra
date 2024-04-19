@@ -3,8 +3,8 @@ module "eventbridge" {
   create_bus = false
 
   rules = {
-    main_db_password_rotation = {
-      description   = "Capture main db password rotation"
+    "${local.prefix}-db-password-rotation" = {
+      description   = "Capture db password rotation event"
       event_pattern = jsonencode({
         source : ["aws.secretsmanager"]
         detail : {
@@ -16,7 +16,7 @@ module "eventbridge" {
   }
 
   targets = {
-    main_db_password_rotation = [
+    "${local.prefix}-db-password-rotation" = [
       {
         name = module.lambda_db_password_rotation.lambda_function_name
         arn  = module.lambda_db_password_rotation.lambda_function_arn
