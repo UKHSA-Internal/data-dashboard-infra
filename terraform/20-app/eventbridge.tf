@@ -1,6 +1,7 @@
 module "eventbridge" {
   source     = "terraform-aws-modules/eventbridge/aws"
   create_bus = false
+  role_name = "${local.prefix}-eventbridge-role"
 
   rules = {
     "${local.prefix}-db-password-rotation" = {
