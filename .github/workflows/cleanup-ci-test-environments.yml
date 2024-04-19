@@ -3,7 +3,7 @@ name: Cleanup CI test environments
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 7 * * 1"
+    - cron: "0 0 * * 1-5"
 
 env:
   AWS_REGION: "eu-west-2"
