@@ -10,6 +10,9 @@ module "eventbridge" {
         detail : {
           eventSource : ["secretsmanager.amazonaws.com"],
           eventName : ["RotationSucceeded"]
+          additionalEventData : {
+            SecretId : [local.main_db_password_secret_arn]
+          }
         }
       })
     }
