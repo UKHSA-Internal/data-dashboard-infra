@@ -67,5 +67,5 @@ locals {
   thirty_days_in_seconds  = 2592000
   five_minutes_in_seconds = 300
 
-  main_db_password_secret_arn = join("", aws_db_instance.app_rds_primary.master_user_secret.*.secret_arn)
+  main_db_password_secret_arn = aws_secretsmanager_secret.temporary_main_db_credentials.arn
 }

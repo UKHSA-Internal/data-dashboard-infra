@@ -20,7 +20,7 @@ resource "aws_db_instance" "app_rds_primary" {
   instance_class              = local.use_prod_sizing ? "db.t3.medium" : "db.t3.small"
   kms_key_id                  = module.kms_app_rds.key_arn
   multi_az                    = local.use_prod_sizing ? true : false
-  manage_master_user_password = true
+  password                    = jsondecode(aws_secretsmanager_secret_version.temporary_main_db_credentials.secret_string)["password"]
   username                    = "api_user"
   publicly_accessible         = local.enable_public_db
   skip_final_snapshot         = true
@@ -69,12 +69,16 @@ locals {
         address = aws_db_instance.app_rds_primary.address
       }
       public_api_replica = {
-        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].db_name : aws_db_instance.app_rds_primary.db_name
-        address = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].address : aws_db_instance.app_rds_primary.address
+        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].db_name :
+          aws_db_instance.app_rds_primary.db_name
+        address = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].address :
+          aws_db_instance.app_rds_primary.address
       }
       private_api_replica = {
-        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].db_name : aws_db_instance.app_rds_primary.db_name
-        address = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].address : aws_db_instance.app_rds_primary.address
+        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].db_name :
+          aws_db_instance.app_rds_primary.db_name
+        address = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].address :
+          aws_db_instance.app_rds_primary.address
       }
     }
   }
