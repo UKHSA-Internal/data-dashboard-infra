@@ -34,10 +34,4 @@ module "lambda_db_password_rotation" {
   }
 
   create_current_version_allowed_triggers = false
-  allowed_triggers                        = {
-    allow_eventbridge_trigger = {
-      principal  = "events.amazonaws.com"
-      source_arn = module.eventbridge.eventbridge_rule_arns["${local.prefix}-db-password-rotation"]
-    }
-  }
 }
