@@ -15,7 +15,6 @@
     "sinon": "^17.0.1"
   },
   "dependencies": {
-    "@aws-sdk/client-ecs": "^3.535.0",
-    "@aws-sdk/client-rds": "^3.489.0"
+    "@aws-sdk/client-ecs": "^3.535.0"
   }
 }
