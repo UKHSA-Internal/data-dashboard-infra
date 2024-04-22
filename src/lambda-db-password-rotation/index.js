@@ -1,5 +1,4 @@
 const {ECSClient, UpdateServiceCommand} = require("@aws-sdk/client-ecs");
-const {RDSClient, ModifyDBProxyCommand} = require("@aws-sdk/client-rds");
 
 /**
  * Restart the tasks associated with the given ECS service
@@ -37,23 +36,6 @@ async function restartRequiredECSServices(ecsClient = new ECSClient(), overriden
 };
 
 /**
- * Restart the RDS proxy associated with the main RDS instance
- *
- * @param {RDSClient} rdsClient - An optional instance of the RDSClient to use for sending the command.
- * @returns {Promise} A promise that resolves once the modify db proxy command has been issued.
- */
-async function restartRDSProxy(rdsClient = new RDSClient()) {
-    const input = {
-        DBProxyName: process.env.RDS_PROXY_NAME,
-        Auth: [{SecretArn: process.env.DB_PASSWORD_SECRET_ARN}],
-    }
-    const command = new ModifyDBProxyCommand(input);
-    await rdsClient.send(command);
-
-    console.log(`Restarted '${process.env.RDS_PROXY_NAME}'`)
-};
-
-/**
  * Lambda handler function for restarting client services after the main RDS password has been rotated
  *
  * @param {Object} event - The event object triggered by the Lambda invocation.
@@ -62,18 +44,15 @@ async function restartRDSProxy(rdsClient = new RDSClient()) {
  */
 async function handler(event, context, overridenDependencies = {}) {
     const defaultDependencies = {
-        restartRDSProxy,
         restartRequiredECSServices,
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
     await dependencies.restartRequiredECSServices()
-    await dependencies.restartRDSProxy()
 }
 
 module.exports = {
     handler,
-    restartRDSProxy,
     restartECSService,
     restartRequiredECSServices,
 }
