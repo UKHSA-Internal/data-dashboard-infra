@@ -85,9 +85,9 @@ module "app_rds_security_group_rules" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
-  count             = local.is_dev ? 1 : 0
-  create_sg         = false
-  security_group_id = module.app_rds_security_group.security_group_id
+  count                    = local.is_dev ? 1 : 0
+  create_sg                = false
+  security_group_id        = module.app_rds_security_group.security_group_id
   ingress_with_cidr_blocks = [
     {
       from_port   = 5432
