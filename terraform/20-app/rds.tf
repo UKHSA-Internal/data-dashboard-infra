@@ -69,16 +69,12 @@ locals {
         address = aws_db_instance.app_rds_primary.address
       }
       public_api_replica = {
-        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].db_name :
-          aws_db_instance.app_rds_primary.db_name
-        address = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].address :
-          aws_db_instance.app_rds_primary.address
+        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].db_name : aws_db_instance.app_rds_primary.db_name
+        address = local.use_prod_sizing ? aws_db_instance.app_rds_public_api_read_replica[0].address : aws_db_instance.app_rds_primary.address
       }
       private_api_replica = {
-        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].db_name :
-          aws_db_instance.app_rds_primary.db_name
-        address = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].address :
-          aws_db_instance.app_rds_primary.address
+        db_name = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].db_name : aws_db_instance.app_rds_primary.db_name
+        address = local.use_prod_sizing ? aws_db_instance.app_rds_private_api_read_replica[0].address : aws_db_instance.app_rds_primary.address
       }
     }
   }
