@@ -45,16 +45,16 @@ module "cloudfront_public_api" {
   }
 
   default_cache_behavior = {
-    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-    cache_policy_id            = aws_cloudfront_cache_policy.public_api.id
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
-    origin_request_policy_id   = aws_cloudfront_origin_request_policy.public_api.id
+    allowed_methods          = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id          = aws_cloudfront_cache_policy.public_api.id
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.public_api.id
     response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
-    target_origin_id           = "alb"
-    use_forwarded_values       = false
-    viewer_protocol_policy     = "redirect-to-https"
-    function_association       = {
+    target_origin_id         = "alb"
+    use_forwarded_values     = false
+    viewer_protocol_policy   = "redirect-to-https"
+    function_association = {
       viewer-request = {
         function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
