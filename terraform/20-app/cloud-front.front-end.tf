@@ -56,6 +56,23 @@ module "cloudfront_front_end" {
     viewer_protocol_policy   = "redirect-to-https"
   }
 
+  ordered_cache_behavior = [
+    # Behaviour to bypass cloudfront for health check
+    {
+      path_pattern               = "api/health"
+      allowed_methods            = ["GET", "HEAD", "OPTIONS"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_health_check.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+      query_string               = false
+    }
+  ]
+
   custom_error_response = [
     {
       error_code            = 404
@@ -71,6 +88,10 @@ module "cloudfront_front_end" {
   }
 }
 
+################################################################################
+# Request policies
+################################################################################
+
 resource "aws_cloudfront_origin_request_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
@@ -84,6 +105,24 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
     query_string_behavior = "all"
   }
 }
+
+resource "aws_cloudfront_origin_request_policy" "front_end_health_check" {
+  name = "${local.prefix}-front-end-health-check"
+
+  cookies_config {
+    cookie_behavior = "none"
+  }
+  headers_config {
+    header_behavior = "none"
+  }
+  query_strings_config {
+    query_string_behavior = "none"
+  }
+}
+
+################################################################################
+# Cache policies
+################################################################################
 
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
@@ -114,6 +153,27 @@ resource "aws_cloudfront_cache_policy" "front_end" {
           "search",
         ]
       }
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "front_end_health_check" {
+  name = "${local.prefix}-front-end-health-check"
+
+  min_ttl     = 0
+  max_ttl     = 0
+  default_ttl = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
     }
   }
 }
