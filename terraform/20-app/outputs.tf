@@ -13,7 +13,6 @@ output "ecs" {
 
 output "passwords" {
   value = {
-    rds_db_password         = random_password.rds_db_password.result
     private_api_key         = local.private_api_key
     cms_admin_user_password = random_password.cms_admin_user_password.result
   }
