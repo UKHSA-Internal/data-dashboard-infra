@@ -64,7 +64,7 @@ module "cloudfront_public_api" {
   ordered_cache_behavior = [
     # Behaviour to bypass cloudfront for health check
     {
-      path_pattern               = ".well-known/health-check"
+      path_pattern               = ".well-known/health-check/"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
       cache_policy_id            = aws_cloudfront_cache_policy.public_api_health_check.id
       cached_methods             = ["GET", "HEAD"]
