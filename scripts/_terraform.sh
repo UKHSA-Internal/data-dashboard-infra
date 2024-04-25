@@ -28,7 +28,8 @@ function _terraform_help() {
     echo
     echo "  cleanup                                         - destroys all CI test environments"
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
-    echo 
+    echo "  workspace-list                                  - lists all terraform workspaces"
+    echo
     return 1
 }
 
@@ -51,6 +52,7 @@ function _terraform() {
         "output-file:layer") _terraform_output_layer_file $args ;;
         "destroy:layer") _terraform_destroy_layer $args ;;
         "force-unlock") _terraform_force_unlock $args ;;
+        "workspace-list") _terraform_workspace_list $args ;;
 
         "cleanup") _terraform_cleanup $args ;;
 
@@ -403,8 +405,17 @@ function _terraform_force_unlock() {
     terraform force-unlock --force $lock_id
 }
 
-_terraform_cleanup() {
-    
+function _terraform_workspace_list() {
+  local envs=($(terraform -chdir=terraform/20-app workspace list))
+
+  for env in ${envs[@]}; do
+    if [[ ! $env == "*" ]] && [[ ! " ${files[@]} " =~ " ${env} " ]]; then
+      echo "-> ${env}"
+    fi
+  done
+}
+
+function _terraform_cleanup() {
     local envs=($(terraform -chdir=terraform/20-app workspace list))
     local files=($(echo \*))
     
