@@ -405,6 +405,7 @@ function _terraform_force_unlock() {
 
 _terraform_cleanup() {
     
+function _terraform_cleanup() {
     local envs=($(terraform -chdir=terraform/20-app workspace list))
     local files=($(echo \*))
     
