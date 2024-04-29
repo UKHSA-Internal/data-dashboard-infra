@@ -18,13 +18,14 @@ module "feature_flags_alb" {
     prefix  = "feature-flags-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-feature-flags"
-      backend_protocol = "HTTP"
-      backend_port     = 4242
-      target_type      = "ip"
-      health_check     = {
+  target_groups = {
+    "${local.prefix}-feature-flags" = {
+      name              = "${local.prefix}-feature-flags"
+      backend_protocol  = "HTTP"
+      backend_port      = 4242
+      target_type       = "ip"
+      create_attachment = false
+      health_check = {
         enabled             = true
         interval            = 30
         path                = "/health/"
@@ -36,17 +37,20 @@ module "feature_flags_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
-      port               = 443
-      protocol           = "HTTPS"
-      certificate_arn    = local.certificate_arn
-      target_group_index = 0
-      ssl_policy         = local.alb_security_policy
+  listeners = {
+    "${local.prefix}-feature-flags-alb-listener" = {
+      name            = "${local.prefix}-feature-flags-alb-listener"
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = local.certificate_arn
+      ssl_policy      = local.alb_security_policy
+      forward = {
+        target_group_key = "${local.prefix}-feature-flags"
+      }
     }
-  ]
+  }
 }
 
 module "feature_flags_alb_security_group" {

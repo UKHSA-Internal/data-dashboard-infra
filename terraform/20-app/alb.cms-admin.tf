@@ -18,12 +18,13 @@ module "cms_admin_alb" {
     prefix  = "cms-admin-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-cms-admin"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "ip"
+  target_groups = {
+    "${local.prefix}-cms-admin" = {
+      name              = "${local.prefix}-cms-admin"
+      backend_protocol  = "HTTP"
+      backend_port      = 80
+      target_type       = "ip"
+      create_attachment = false
       health_check = {
         enabled             = true
         interval            = 30
@@ -36,17 +37,21 @@ module "cms_admin_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
+  listeners = {
+    "${local.prefix}-cms-admin-alb-listener" = {
+      name               = "${local.prefix}-cms-admin-alb-listener"
       port               = 443
       protocol           = "HTTPS"
       certificate_arn    = local.certificate_arn
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
+      forward = {
+        target_group_key = "${local.prefix}-cms-admin"
+      }
     }
-  ]
+  }
 }
 
 module "cms_admin_alb_security_group" {

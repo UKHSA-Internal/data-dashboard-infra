@@ -83,7 +83,7 @@ module "ecs_service_feature_flags" {
 
   load_balancer = {
     service = {
-      target_group_arn = element(module.feature_flags_alb.target_group_arns, 0)
+      target_group_arn = module.feature_flags_alb.target_groups["${local.prefix}-feature-flags"].arn
       container_name   = "api"
       container_port   = 4242
     }

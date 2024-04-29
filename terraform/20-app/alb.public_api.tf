@@ -18,12 +18,13 @@ module "public_api_alb" {
     prefix  = "public-api-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-public-api"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "ip"
+  target_groups = {
+    "${local.prefix}-public-api" = {
+      name              = "${local.prefix}-public-api"
+      backend_protocol  = "HTTP"
+      backend_port      = 80
+      target_type       = "ip"
+      create_attachment = false
       health_check = {
         enabled             = true
         interval            = 30
@@ -36,44 +37,44 @@ module "public_api_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
-      port               = 443
-      protocol           = "HTTPS"
-      certificate_arn    = local.certificate_arn
-      target_group_index = 0
-      ssl_policy         = local.alb_security_policy
-      action_type        = "fixed-response"
+  listeners = {
+    "${local.prefix}-public-api-alb-listener" = {
+      name            = "${local.prefix}-public-api-alb-listener"
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = local.certificate_arn
+      ssl_policy      = local.alb_security_policy
       fixed_response = {
         content_type = "text/plain"
         message_body = "403 Forbidden"
         status_code  = "403"
       }
-    }
-  ]
-
-  https_listener_rules = [
-    {
-      https_listener_index = 0
-      priority             = 1
-      actions = [
-        {
-          type               = "forward"
-          target_group_index = 0
+      rules = {
+        enforce-header-value = {
+          listener_key = "${local.prefix}-public-api-alb-listener"
+          priority     = 1
+          actions      = [
+            {
+              type             = "forward"
+              target_group_key = "${local.prefix}-public-api"
+            }
+          ]
+          conditions = [
+            {
+              http_header = {
+                http_header_name = "x-cdn-auth"
+                values           = [
+                  jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)
+                ]
+              }
+            }
+          ]
         }
-      ]
-      conditions = [
-        {
-          http_headers = [{
-            http_header_name = "x-cdn-auth"
-            values           = [jsonencode(aws_secretsmanager_secret_version.cdn_public_api_secure_header_value.secret_string)]
-          }]
-        }
-      ]
+      }
     }
-  ]
+  }
 }
 
 module "public_api_alb_security_group" {
