@@ -10,6 +10,7 @@ module "feedback_api_alb" {
   subnets                    = module.vpc.public_subnets
   security_groups            = [module.feedback_api_alb_security_group.security_group_id]
   drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
   access_logs = {
     bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
