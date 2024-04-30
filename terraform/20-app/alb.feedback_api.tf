@@ -19,8 +19,8 @@ module "feedback_api_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-feedback-api" = {
-      name              = "${local.prefix}-feedback-api"
+    "${local.prefix}-feedback-api-tg" = {
+      name              = "${local.prefix}-feedback-api-tg"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -47,7 +47,7 @@ module "feedback_api_alb" {
       certificate_arn = local.certificate_arn
       ssl_policy      = local.alb_security_policy
       forward = {
-        target_group_key = "${local.prefix}-feedback-api"
+        target_group_key = "${local.prefix}-feedback-api-tg"
       }
       rules = {
         enforce-api-key = {

@@ -19,8 +19,8 @@ module "feature_flags_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-feature-flags" = {
-      name              = "${local.prefix}-feature-flags"
+    "${local.prefix}-feature-flags-tg" = {
+      name              = "${local.prefix}-feature-flags-tg"
       backend_protocol  = "HTTP"
       backend_port      = 4242
       target_type       = "ip"
@@ -47,7 +47,7 @@ module "feature_flags_alb" {
       certificate_arn = local.certificate_arn
       ssl_policy      = local.alb_security_policy
       forward = {
-        target_group_key = "${local.prefix}-feature-flags"
+        target_group_key = "${local.prefix}-feature-flags-tg"
       }
     }
   }

@@ -19,8 +19,8 @@ module "front_end_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-front-end" = {
-      name              = "${local.prefix}-front-end"
+    "${local.prefix}-front-end-tg" = {
+      name              = "${local.prefix}-front-end-tg"
       backend_protocol  = "HTTP"
       backend_port      = 3000
       target_type       = "ip"
@@ -58,7 +58,7 @@ module "front_end_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-front-end"
+              target_group_key = "${local.prefix}-front-end-tg"
             }
           ]
           conditions = [

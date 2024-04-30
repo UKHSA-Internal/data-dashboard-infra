@@ -82,7 +82,7 @@ module "ecs_service_private_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api"].arn
+      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api-tg"].arn
       container_name   = "api"
       container_port   = 80
     }
