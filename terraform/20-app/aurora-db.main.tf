@@ -6,6 +6,7 @@ module "aurora_db_main" {
   engine_mode       = "provisioned"
   engine_version    = "15.5"
   storage_encrypted = true
+  kms_key_id        = module.kms_app_rds.key_arn
 
   replication_source_identifier = aws_db_instance.app_rds_primary.arn
   manage_master_user_password   = false
