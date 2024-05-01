@@ -70,7 +70,7 @@ resource "aws_wafv2_web_acl" "cms_admin" {
 }
 
 resource "aws_wafv2_web_acl_association" "cms_admin" {
-  resource_arn = module.cms_admin_alb.lb_arn
+  resource_arn = module.cms_admin_alb.arn
   web_acl_arn  = aws_wafv2_web_acl.cms_admin.arn
 }
 
