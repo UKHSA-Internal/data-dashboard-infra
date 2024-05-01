@@ -46,8 +46,12 @@ module "feedback_api_alb" {
       protocol        = "HTTPS"
       certificate_arn = local.certificate_arn
       ssl_policy      = local.alb_security_policy
-      forward = {
-        target_group_key = "${local.prefix}-feedback-api-tg"
+      fixed_response = {
+        content_type = "application/json"
+        message_body = jsonencode({
+          message = "Authentication credentials were not provided."
+        })
+        status_code = "401"
       }
       rules = {
         enforce-api-key = {
@@ -55,12 +59,8 @@ module "feedback_api_alb" {
           priority     = 1
           actions      = [
             {
-              type         = "fixed-response"
-              content_type = "application/json"
-              message_body = jsonencode({
-                message = "Authentication credentials were not provided."
-              })
-              status_code = "401"
+              type             = "forward"
+              target_group_key = "${local.prefix}-feedback-api-tg"
             }
           ]
           conditions = [
