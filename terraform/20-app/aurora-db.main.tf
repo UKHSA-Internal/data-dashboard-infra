@@ -8,6 +8,7 @@ module "aurora_db_main" {
   storage_encrypted = true
   kms_key_id        = module.kms_app_rds.key_arn
 
+  is_primary_cluster            = false
   replication_source_identifier = aws_db_instance.app_rds_primary.arn
   manage_master_user_password   = false
 
