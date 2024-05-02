@@ -43,6 +43,10 @@ module "ecs_service_front_end" {
           value = local.urls.private_api
         },
         {
+          name  = "UNLEASH_URL"
+          value = local.urls.feature_flags
+        },
+        {
           name  = "FEEDBACK_API_URL"
           value = local.urls.feedback_api
         },
