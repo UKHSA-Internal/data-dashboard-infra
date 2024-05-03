@@ -1,6 +1,6 @@
 module "feedback_api_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "8.7.0"
+  version = "9.9.0"
 
   name = "${local.prefix}-feedback-api"
 
@@ -10,6 +10,7 @@ module "feedback_api_alb" {
   subnets                    = module.vpc.public_subnets
   security_groups            = [module.feedback_api_alb_security_group.security_group_id]
   drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
   access_logs = {
     bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
@@ -17,13 +18,14 @@ module "feedback_api_alb" {
     prefix  = "feedback-api-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-feedback-api"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "ip"
-      health_check     = {
+  target_groups = {
+    "${local.prefix}-feedback-api-tg" = {
+      name              = "${local.prefix}-feedback-api-tg"
+      backend_protocol  = "HTTP"
+      backend_port      = 80
+      target_type       = "ip"
+      create_attachment = false
+      health_check = {
         enabled             = true
         interval            = 30
         path                = "/health/"
@@ -35,16 +37,15 @@ module "feedback_api_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
-      port               = 443
-      protocol           = "HTTPS"
-      certificate_arn    = local.certificate_arn
-      target_group_index = 0
-      ssl_policy         = local.alb_security_policy
-      action_type        = "fixed-response"
+  listeners = {
+    "${local.prefix}-feedback-api-alb-listener" = {
+      name            = "${local.prefix}-feedback-api-alb-listener"
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = local.certificate_arn
+      ssl_policy      = local.alb_security_policy
       fixed_response = {
         content_type = "application/json"
         message_body = jsonencode({
@@ -52,29 +53,28 @@ module "feedback_api_alb" {
         })
         status_code = "401"
       }
-    }
-  ]
-
-  https_listener_rules = [
-    {
-      https_listener_index = 0
-      priority             = 1
-      actions = [
-        {
-          type               = "forward"
-          target_group_index = 0
+      rules = {
+        enforce-api-key = {
+          listener_key = "${local.prefix}-feedback-api-alb-listener"
+          priority     = 1
+          actions      = [
+            {
+              type             = "forward"
+              target_group_key = "${local.prefix}-feedback-api-tg"
+            }
+          ]
+          conditions = [
+            {
+              http_header = {
+                http_header_name = "Authorization"
+                values           = [aws_secretsmanager_secret_version.private_api_key.secret_string]
+              }
+            }
+          ]
         }
-      ]
-      conditions = [
-        {
-          http_headers = [{
-            http_header_name = "Authorization"
-            values           = [aws_secretsmanager_secret_version.private_api_key.secret_string]
-          }]
-        }
-      ]
+      }
     }
-  ]
+  }
 }
 
 module "feedback_api_alb_security_group" {

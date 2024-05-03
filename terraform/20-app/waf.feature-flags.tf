@@ -70,7 +70,7 @@ resource "aws_wafv2_web_acl" "feature_flags" {
 }
 
 resource "aws_wafv2_web_acl_association" "feature-flags" {
-  resource_arn = module.feature_flags_alb.lb_arn
+  resource_arn = module.feature_flags_alb.arn
   web_acl_arn  = aws_wafv2_web_acl.feature_flags.arn
 }
 

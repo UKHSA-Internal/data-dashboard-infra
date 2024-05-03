@@ -43,6 +43,10 @@ module "ecs_service_front_end" {
           value = local.urls.private_api
         },
         {
+          name  = "UNLEASH_SERVER_API_URL"
+          value = "${local.urls.feature_flags}/api"
+        },
+        {
           name  = "FEEDBACK_API_URL"
           value = local.urls.feedback_api
         },
@@ -61,7 +65,7 @@ module "ecs_service_front_end" {
           valueFrom = "${aws_secretsmanager_secret.google_analytics_credentials.arn}:google_tag_manager_id::"
         },
         {
-          name      = "FEATURE_FLAGS_API_KEY",
+          name      = "UNLEASH_SERVER_API_TOKEN",
           valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:client_api_key::"
         }
       ]
@@ -70,7 +74,7 @@ module "ecs_service_front_end" {
 
   load_balancer = {
     service = {
-      target_group_arn = element(module.front_end_alb.target_group_arns, 0)
+      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end-tg"].arn
       container_name   = "front-end"
       container_port   = 3000
     }
