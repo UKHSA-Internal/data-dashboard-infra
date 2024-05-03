@@ -34,7 +34,7 @@ module "lambda_ingestion" {
   environment_variables = {
     INGESTION_BUCKET_NAME              = module.s3_ingest.s3_bucket_id
     POSTGRES_DB                        = local.rds.app.primary.db_name
-    POSTGRES_HOST                      = module.rds_proxy.proxy_endpoint
+    POSTGRES_HOST                      = aws_db_instance.app_rds_primary.address
     POSTGRES_USER                      = aws_db_instance.app_rds_primary.username
     SECRETS_MANAGER_DB_CREDENTIALS_ARN = local.main_db_password_secret_arn
     APIENV                             = "PROD"
@@ -96,9 +96,9 @@ module "lambda_ingestion_security_group" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "ingestion lambda to proxy"
+      description              = "ingestion lambda to db"
       rule                     = "postgresql-tcp"
-      source_security_group_id = module.rds_proxy_security_group.security_group_id
+      source_security_group_id = module.app_rds_security_group.security_group_id
     }
   ]
 }

@@ -1,11 +1,9 @@
 const {
-    restartRDSProxy,
     restartECSService,
     restartRequiredECSServices,
     handler
 } = require('./index.js')
 const {UpdateServiceCommand} = require("@aws-sdk/client-ecs");
-const {ModifyDBProxyCommand} = require("@aws-sdk/client-rds");
 
 const sinon = require('sinon');
 
@@ -92,47 +90,6 @@ describe('restartRequiredECSServices', () => {
 });
 
 
-describe('restartRDSProxy', () => {
-    /**
-     * Given the RDS proxy name and a DB password secret ARN
-     * When `restartRDSProxy()` is called
-     * Then the correct command is used when
-     *  the `send` method is called from the `RDSClient`
-     */
-    test('Calls the RDS client with the correct command object', async () => {
-        // Given
-        const fakeRDSProxyName = 'fake-rds-proxy-name';
-        const fakeDbPasswordSecretARN = 'fake-db-password-secret-arn';
-        const mockedEnvVar = sinon.stub(process, 'env').value(
-            {
-                RDS_PROXY_NAME: fakeRDSProxyName,
-                DB_PASSWORD_SECRET_ARN: fakeDbPasswordSecretARN,
-            }
-        );
-        const rdsClientSpy = {
-            send: sinon.stub().resolves({}),
-        };
-
-        // When
-        await restartRDSProxy(rdsClientSpy);
-
-        // Then
-        // The `send()` method should only be called once
-        expect(rdsClientSpy.send.calledOnce).toBeTruthy()
-
-        // The `ModifyDBProxyCommand` should have been passed to the call to the `send()` method
-        expect(rdsClientSpy.send.calledWith(sinon.match.instanceOf(ModifyDBProxyCommand))).toBeTruthy();
-        const argsCalledWithSpy = rdsClientSpy.send.firstCall.args[0].input;
-        expect(argsCalledWithSpy.DBProxyName).toEqual(fakeRDSProxyName);
-        const expectedAuthPayload = [{SecretArn: fakeDbPasswordSecretARN}]
-        expect(argsCalledWithSpy.Auth).toEqual(expectedAuthPayload);
-
-        // Restore the environment variable
-        mockedEnvVar.restore();
-    });
-});
-
-
 describe('handler', () => {
     /**
      * Given no input
@@ -144,11 +101,9 @@ describe('handler', () => {
     test('Orchestrates calls correctly', async () => {
         // Given
         // Injected dependencies to perform spy operations
-        const restartRDSProxySpy = sinon.stub();
         const restartRequiredECSServicesSpy = sinon.stub();
 
         const spyDependencies = {
-            restartRDSProxy: restartRDSProxySpy,
             restartRequiredECSServices: restartRequiredECSServicesSpy,
         }
 
@@ -156,7 +111,6 @@ describe('handler', () => {
         await handler(sinon.stub(), sinon.stub(), spyDependencies)
 
         // Then
-        expect(restartRDSProxySpy.calledOnce).toBeTruthy();
         expect(restartRequiredECSServicesSpy.calledOnce).toBeTruthy();
     })
 
