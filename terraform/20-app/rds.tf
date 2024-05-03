@@ -19,8 +19,8 @@ resource "aws_db_instance" "app_rds_primary" {
   identifier                  = "${local.prefix}-db"
   instance_class              = local.use_prod_sizing ? "db.t3.medium" : "db.t3.small"
   kms_key_id                  = module.kms_app_rds.key_arn
-  multi_az                    = local.use_prod_sizing ? true : false
-  manage_master_user_password = true
+  multi_az                    = false
+  password                    = jsondecode(aws_secretsmanager_secret_version.temporary_main_db_credentials.secret_string)["password"]
   username                    = "api_user"
   publicly_accessible         = local.enable_public_db
   skip_final_snapshot         = true
