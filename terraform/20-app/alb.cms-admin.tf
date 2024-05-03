@@ -1,6 +1,6 @@
 module "cms_admin_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "8.7.0"
+  version = "9.9.0"
 
   name = "${local.prefix}-cms-admin"
 
@@ -10,6 +10,7 @@ module "cms_admin_alb" {
   subnets                    = module.vpc.public_subnets
   security_groups            = [module.cms_admin_alb_security_group.security_group_id]
   drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
   access_logs = {
     bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
@@ -17,12 +18,13 @@ module "cms_admin_alb" {
     prefix  = "cms-admin-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-cms-admin"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "ip"
+  target_groups = {
+    "${local.prefix}-cms-admin-tg" = {
+      name              = "${local.prefix}-cms-admin-tg"
+      backend_protocol  = "HTTP"
+      backend_port      = 80
+      target_type       = "ip"
+      create_attachment = false
       health_check = {
         enabled             = true
         interval            = 30
@@ -35,17 +37,21 @@ module "cms_admin_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
+  listeners = {
+    "${local.prefix}-cms-admin-alb-listener" = {
+      name               = "${local.prefix}-cms-admin-alb-listener"
       port               = 443
       protocol           = "HTTPS"
       certificate_arn    = local.certificate_arn
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
+      forward = {
+        target_group_key = "${local.prefix}-cms-admin-tg"
+      }
     }
-  ]
+  }
 }
 
 module "cms_admin_alb_security_group" {

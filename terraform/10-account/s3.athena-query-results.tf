@@ -1,6 +1,6 @@
 module "s3_athena_query_results" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.1.1"
+  version = "4.1.2"
 
   bucket = "athena-query-results-${local.account_id}"
 
