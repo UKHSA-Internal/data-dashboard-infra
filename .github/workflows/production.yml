@@ -55,6 +55,7 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          role-duration-seconds: "7200"
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
