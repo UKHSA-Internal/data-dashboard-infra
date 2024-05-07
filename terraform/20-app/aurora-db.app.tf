@@ -9,9 +9,7 @@ module "aurora_db_app" {
   backup_retention_period = 35
   kms_key_id              = module.kms_app_rds.key_arn
 
-  is_primary_cluster            = false
-  replication_source_identifier = aws_db_instance.app_rds_primary.arn
-  manage_master_user_password   = false
+  manage_master_user_password   = true
   database_name                 = "cms"
 
   monitoring_interval = 0
