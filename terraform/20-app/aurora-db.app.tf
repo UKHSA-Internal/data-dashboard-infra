@@ -9,8 +9,9 @@ module "aurora_db_app" {
   backup_retention_period = 35
   kms_key_id              = module.kms_app_rds.key_arn
 
-  manage_master_user_password   = true
-  database_name                 = "cms"
+  manage_master_user_password = true
+  database_name               = "cms"
+  master_username             = "api_user"
 
   monitoring_interval = 0
   apply_immediately   = true
