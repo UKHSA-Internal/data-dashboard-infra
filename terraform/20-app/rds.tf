@@ -70,11 +70,11 @@ locals {
       }
       public_api_replica = {
         db_name = module.aurora_db_app.cluster_database_name
-        address = local.use_prod_sizing ? module.aurora_db_app.cluster_reader_endpoint : module.aurora_db_app.cluster_endpoint
+        address = module.aurora_db_app.cluster_reader_endpoint
       }
       private_api_replica = {
         db_name = module.aurora_db_app.cluster_database_name
-        address = local.use_prod_sizing ? module.aurora_db_app.cluster_reader_endpoint : module.aurora_db_app.cluster_endpoint
+        address = module.aurora_db_app.cluster_reader_endpoint
       }
     }
   }
