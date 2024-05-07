@@ -67,5 +67,6 @@ locals {
   thirty_days_in_seconds  = 2592000
   five_minutes_in_seconds = 300
 
-  main_db_password_secret_arn = aws_secretsmanager_secret.temporary_main_db_credentials.arn
+  main_db_aurora_password_secret_arn = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
+  main_db_password_secret_arn        = aws_secretsmanager_secret.temporary_main_db_credentials.arn
 }
