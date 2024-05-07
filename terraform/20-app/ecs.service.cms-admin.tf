@@ -44,11 +44,11 @@ module "ecs_service_cms_admin" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.rds.app.primary.db_name
+          value = module.aurora_db_app.cluster_database_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.rds.app.primary.address
+          value = module.aurora_db_app.cluster_endpoint
         },
         {
           name  = "APIENV"
@@ -58,11 +58,11 @@ module "ecs_service_cms_admin" {
       secrets = [
         {
           name      = "POSTGRES_USER"
-          valueFrom = "${local.main_db_password_secret_arn}:username::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "${local.main_db_password_secret_arn}:password::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
         },
         {
           name      = "SECRET_KEY",
