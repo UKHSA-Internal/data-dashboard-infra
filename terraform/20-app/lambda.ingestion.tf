@@ -33,10 +33,10 @@ module "lambda_ingestion" {
 
   environment_variables = {
     INGESTION_BUCKET_NAME              = module.s3_ingest.s3_bucket_id
-    POSTGRES_DB                        = local.rds.app.primary.db_name
-    POSTGRES_HOST                      = aws_db_instance.app_rds_primary.address
-    POSTGRES_USER                      = aws_db_instance.app_rds_primary.username
-    SECRETS_MANAGER_DB_CREDENTIALS_ARN = local.main_db_password_secret_arn
+    POSTGRES_DB                        = module.aurora_db_app.cluster_database_name
+    POSTGRES_HOST                      = module.aurora_db_app.cluster_endpoint
+    POSTGRES_USER                      = module.aurora_db_app.cluster_master_username
+    SECRETS_MANAGER_DB_CREDENTIALS_ARN = local.main_db_aurora_password_secret_arn
     APIENV                             = "PROD"
     APP_MODE                           = "INGESTION"
   }
@@ -61,7 +61,7 @@ module "lambda_ingestion" {
     get_db_credentials_from_secrets_manager = {
       effect    = "Allow",
       actions   = ["secretsmanager:GetSecretValue"],
-      resources = [local.main_db_password_secret_arn]
+      resources = [local.main_db_aurora_password_secret_arn]
     }
     read_from_kinesis = {
       effect  = "Allow"
