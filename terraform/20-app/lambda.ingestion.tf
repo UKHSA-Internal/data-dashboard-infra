@@ -96,11 +96,6 @@ module "lambda_ingestion_security_group" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "ingestion lambda to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
-    },
-    {
       description              = "ingestion lambda to aurora db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.aurora_db_app.security_group_id
