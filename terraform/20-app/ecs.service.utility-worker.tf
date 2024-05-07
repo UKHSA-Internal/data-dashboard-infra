@@ -122,6 +122,11 @@ module "utility_worker_tasks_security_group_rules" {
       description              = "utility worker tasks to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id
+    },
+    {
+      description              = "utility worker tasks to aurora db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
     }
   ]
 }

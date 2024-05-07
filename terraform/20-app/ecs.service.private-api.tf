@@ -136,6 +136,11 @@ module "private_api_tasks_security_group_rules" {
       source_security_group_id = module.app_rds_security_group.security_group_id
     },
     {
+      description              = "lb to aurora db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
+    },
+    {
       description              = "lb to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id

@@ -125,6 +125,11 @@ module "public_api_tasks_security_group_rules" {
       description              = "lb to db"
       rule                     = "postgresql-tcp"
       source_security_group_id = module.app_rds_security_group.security_group_id
+    },
+    {
+      description              = "lb to aurora db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
     }
   ]
 }
