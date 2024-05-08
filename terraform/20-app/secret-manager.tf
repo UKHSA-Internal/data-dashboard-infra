@@ -1,20 +1,4 @@
 ################################################################################
-# Temporary main database credentials
-################################################################################
-
-resource "aws_secretsmanager_secret" "temporary_main_db_credentials" {
-  name = "${local.prefix}-temporary-main-db-credentials"
-}
-
-resource "aws_secretsmanager_secret_version" "temporary_main_db_credentials" {
-  secret_id     = aws_secretsmanager_secret.temporary_main_db_credentials.id
-  secret_string = jsonencode({
-    username = "api_user"
-    password = random_password.temporary_main_db_credentials.result
-  })
-}
-
-################################################################################
 # Feature flags database credentials
 ################################################################################
 
