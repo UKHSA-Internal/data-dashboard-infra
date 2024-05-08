@@ -62,11 +62,11 @@ module "ecs_service_public_api" {
       secrets = [
         {
           name      = "POSTGRES_USER"
-          valueFrom = "${local.main_db_password_secret_arn}:username::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "${local.main_db_password_secret_arn}:password::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
         },
         {
           name      = "SECRET_KEY",
