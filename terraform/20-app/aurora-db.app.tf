@@ -23,9 +23,7 @@ module "aurora_db_app" {
     min_capacity = 1
     max_capacity = 10
   }
-  instances = {
-    1 = {}
-  }
+  instances = local.use_prod_sizing ? {1: {}, 2: {}} : {1: {}}
 
   vpc_id               = module.vpc.vpc_id
   db_subnet_group_name = module.vpc.database_subnet_group_name
@@ -62,5 +60,24 @@ module "aurora_db_app" {
       protocol                 = "tcp"
       source_security_group_id = module.lambda_ingestion_security_group.security_group_id
     },
+  }
+}
+
+locals {
+  aurora = {
+    app = {
+      primary = {
+        db_name = module.aurora_db_app.cluster_database_name
+        address = module.aurora_db_app.cluster_endpoint
+      }
+      public_api_replica = {
+        db_name = module.aurora_db_app.cluster_database_name
+        address = module.aurora_db_app.cluster_reader_endpoint
+      }
+      private_api_replica = {
+        db_name = module.aurora_db_app.cluster_database_name
+        address = module.aurora_db_app.cluster_reader_endpoint
+      }
+    }
   }
 }

@@ -48,11 +48,11 @@ module "ecs_service_public_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.rds.app.public_api_replica.db_name
+          value = local.aurora.app.public_api_replica.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.rds.app.public_api_replica.address
+          value = local.aurora.app.public_api_replica.address
         },
         {
           name  = "APIENV"
@@ -121,11 +121,6 @@ module "public_api_tasks_security_group_rules" {
   ]
 
   egress_with_source_security_group_id = [
-    {
-      description              = "lb to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
-    },
     {
       description              = "lb to aurora db"
       rule                     = "postgresql-tcp"

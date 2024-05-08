@@ -44,8 +44,7 @@ function _delete_all_secrets() {
         return 1
     fi
 
-    secret_ids=("uhd-${env}-rds-db-creds"
-                "uhd-${env}-private-api-key"
+    secret_ids=("uhd-${env}-private-api-key"
                 "uhd-${env}-cms-admin-user-credentials"
                 "uhd-${env}-backend-cryptographic-signing-key"
                 "uhd-${env}-cdn-front-end-secure-header-value"
