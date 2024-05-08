@@ -7,7 +7,7 @@ module "aurora_db_app" {
   engine_version          = "15.5"
   storage_encrypted       = true
   backup_retention_period = 35
-  kms_key_id              = module.kms_app_aurora.key_arn
+  kms_key_id              = module.kms_app_rds.key_arn
 
   manage_master_user_password = true
   database_name               = "cms"
