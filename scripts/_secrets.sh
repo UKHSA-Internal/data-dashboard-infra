@@ -53,7 +53,8 @@ function _delete_all_secrets() {
                 "uhd-${env}-google-analytics-credentials"
                 "uhd-${env}-aurora-db-feature-flags-credentials"
                 "uhd-${env}-feature-flags-admin-user-credentials"
-                "uhd-${env}-feature-flags-api-keys")
+                "uhd-${env}-feature-flags-api-keys"
+                "uhd-${env}-temporary-main-db-credentials")
 
     for ((i=1; i<=${#secret_ids[@]}; ++i)); do
         _delete_secret "${secret_ids[i]}"
