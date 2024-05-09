@@ -67,6 +67,10 @@ module "ecs_service_front_end" {
         {
           name      = "UNLEASH_SERVER_API_TOKEN",
           valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:client_api_key::"
+        },
+        {
+          name      = "FEATURE_FLAGS_AUTH_KEY",
+          valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:x_auth::"
         }
       ]
     }
