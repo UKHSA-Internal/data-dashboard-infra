@@ -31,6 +31,15 @@ resource "random_password" "feature_flags_client_api_key" {
   upper       = false
 }
 
+resource "random_password" "feature_flags_x_auth" {
+  length      = 30
+  min_numeric = 1
+  min_lower   = 1
+  min_upper   = 1
+  special     = false
+  upper       = false
+}
+
 resource "random_password" "feature_flags_admin_user_password" {
   length      = 20
   min_numeric = 1
@@ -41,6 +50,7 @@ resource "random_password" "feature_flags_admin_user_password" {
 }
 
 locals {
+  feature_flags_x_auth         = random_password.feature_flags_x_auth.result
   feature_flags_client_api_key = "*:production.${random_password.feature_flags_client_api_key.result}"
   private_api_key              = "${random_password.private_api_key_prefix.result}.${random_password.private_api_key_suffix.result}"
 }
