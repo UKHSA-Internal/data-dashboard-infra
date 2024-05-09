@@ -64,11 +64,7 @@ module "feature_flags_alb_security_group" {
     {
       description = "https from internet"
       rule        = "https-443-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders
-      )
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 
