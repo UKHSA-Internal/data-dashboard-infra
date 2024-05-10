@@ -1,5 +1,6 @@
 locals {
-  fifteen_minutes_in_seconds = 86400
+  fifteen_minutes_in_seconds = 54000
+  ten_minutes_in_seconds     = 36000
 }
 
 module "cloudfront_front_end" {
@@ -70,7 +71,32 @@ module "cloudfront_front_end" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
-    }
+    },
+    # Behaviour to re fetch from origin for paths which have dynamic alerts
+    {
+      path_pattern               = "/"
+      allowed_methods            = ["HEAD", "POST", "GET", "OPTIONS"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_dynamic_alerts.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "adverse-weather/*"
+      allowed_methods            = ["HEAD", "POST", "GET", "OPTIONS"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_dynamic_alerts.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
   ]
 
   custom_error_response = [
@@ -130,6 +156,39 @@ resource "aws_cloudfront_cache_policy" "front_end" {
   min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
   max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
   default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "_rsc",
+          "areaName",
+          "areaType",
+          "page",
+          "search",
+        ]
+      }
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
+  name = "${local.prefix}-front-end-dynamic-alerts"
+
+  min_ttl     = local.ten_minutes_in_seconds
+  max_ttl     = local.ten_minutes_in_seconds
+  default_ttl = local.ten_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
