@@ -15,7 +15,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "81.108.89.51/32",    # Krishna
       "80.7.227.61/32",     # Kiran
-      "94.173.91.216",      # Zesh
+      "94.173.91.216/32",   # Zesh
     ],
     project_team = [
       "78.105.5.74/32", # Debbie
