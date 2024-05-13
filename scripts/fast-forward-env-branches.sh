@@ -3,6 +3,7 @@
 env_branches=("env/uat/train"
               "env/uat/uat"
               "env/test/test"
+              "env/test/perf"
               "env/dev/dev")
 
 for branch in ${env_branches[@]}; do 
