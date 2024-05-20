@@ -1,6 +1,6 @@
 module "iam_developer_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.37.1"
+  version = "5.39.1"
 
   create_role          = local.account == "dev"
   max_session_duration = 43200
