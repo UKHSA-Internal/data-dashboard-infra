@@ -54,6 +54,11 @@ function _docker_build() {
 
     docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${ecr_repo_name}:latest-graviton --push .
     
+    if [[ "$repo" == "api" ]]; then
+        echo "building docker image for ingestion lambda"
+        docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion:latest --push .
+    fi
+
     cd $root
 }
 
