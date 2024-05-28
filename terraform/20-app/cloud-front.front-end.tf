@@ -1,6 +1,6 @@
 locals {
   fifteen_minutes_in_seconds = 900
-  nine_minutes_in_seconds    = 540
+  eight_minutes_in_seconds   = 480
 }
 
 module "cloudfront_front_end" {
@@ -187,9 +187,9 @@ resource "aws_cloudfront_cache_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
   name = "${local.prefix}-front-end-dynamic-alerts"
 
-  min_ttl     = local.nine_minutes_in_seconds
-  max_ttl     = local.nine_minutes_in_seconds
-  default_ttl = local.nine_minutes_in_seconds
+  min_ttl     = local.eight_minutes_in_seconds
+  max_ttl     = local.eight_minutes_in_seconds
+  default_ttl = local.eight_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
