@@ -1,6 +1,6 @@
 locals {
-  fifteen_minutes_in_seconds = 54000
-  ten_minutes_in_seconds     = 36000
+  fifteen_minutes_in_seconds = 900
+  nine_minutes_in_seconds    = 540
 }
 
 module "cloudfront_front_end" {
@@ -72,10 +72,10 @@ module "cloudfront_front_end" {
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
     },
-    # Behaviour to re fetch from origin for paths which have dynamic alerts
+    # Behaviour to re fetch from origin for the home page which holds dynamic alerts content
     {
       path_pattern               = "/"
-      allowed_methods            = ["HEAD", "POST", "GET", "OPTIONS"]
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_id            = aws_cloudfront_cache_policy.front_end_dynamic_alerts.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
@@ -85,9 +85,10 @@ module "cloudfront_front_end" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
     },
+    # Behaviour to re fetch from origin for the detailed dynamic alert pages
     {
-      path_pattern               = "adverse-weather/*"
-      allowed_methods            = ["HEAD", "POST", "GET", "OPTIONS"]
+      path_pattern               = "/adverse-weather/*"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_id            = aws_cloudfront_cache_policy.front_end_dynamic_alerts.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
@@ -186,9 +187,9 @@ resource "aws_cloudfront_cache_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
   name = "${local.prefix}-front-end-dynamic-alerts"
 
-  min_ttl     = local.ten_minutes_in_seconds
-  max_ttl     = local.ten_minutes_in_seconds
-  default_ttl = local.ten_minutes_in_seconds
+  min_ttl     = local.nine_minutes_in_seconds
+  max_ttl     = local.nine_minutes_in_seconds
+  default_ttl = local.nine_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
