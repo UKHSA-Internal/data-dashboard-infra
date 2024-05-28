@@ -160,5 +160,7 @@ resource "aws_secretsmanager_secret" "esri_api_key" {
 
 resource "aws_secretsmanager_secret_version" "esri_api_key" {
   secret_id     = aws_secretsmanager_secret.esri_api_key.id
-  secret_string = ""
+  secret_string = jsonencode({
+    esri_api_key = ""
+  })
 }

@@ -70,7 +70,7 @@ module "ecs_service_front_end" {
         },
         {
           name      = "ESRI_API_KEY"
-          valueFrom = aws_secretsmanager_secret.esri_api_key.arn
+          valueFrom = "${aws_secretsmanager_secret.esri_api_key.arn}:esri_api_key::"
         },
       ]
     }
