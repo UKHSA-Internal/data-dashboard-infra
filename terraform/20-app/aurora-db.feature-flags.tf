@@ -25,7 +25,6 @@ module "aurora_db_feature_flags" {
   }
   instances = {
     1 = {}
-    2 = {}
   }
 
   vpc_id               = module.vpc.vpc_id

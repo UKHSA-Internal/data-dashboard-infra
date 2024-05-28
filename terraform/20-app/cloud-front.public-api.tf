@@ -45,21 +45,38 @@ module "cloudfront_public_api" {
   }
 
   default_cache_behavior = {
-    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-    cache_policy_id            = aws_cloudfront_cache_policy.public_api.id
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
-    origin_request_policy_id   = aws_cloudfront_origin_request_policy.public_api.id
+    allowed_methods          = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id          = aws_cloudfront_cache_policy.public_api.id
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.public_api.id
     response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
-    target_origin_id           = "alb"
-    use_forwarded_values       = false
-    viewer_protocol_policy     = "redirect-to-https"
-    function_association       = {
+    target_origin_id         = "alb"
+    use_forwarded_values     = false
+    viewer_protocol_policy   = "redirect-to-https"
+    function_association = {
       viewer-request = {
         function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
     }
   }
+
+  ordered_cache_behavior = [
+    # Behaviour to bypass cloudfront for health check
+    {
+      path_pattern               = ".well-known/health-check/"
+      allowed_methods            = ["GET", "HEAD", "OPTIONS"]
+      cache_policy_id            = aws_cloudfront_cache_policy.public_api_health_check.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.public_api_health_check.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+      query_string               = false
+    }
+  ]
 
   custom_error_response = [
     {
@@ -77,6 +94,10 @@ module "cloudfront_public_api" {
   }
 }
 
+################################################################################
+# Request policies
+################################################################################
+
 resource "aws_cloudfront_origin_request_policy" "public_api" {
   name = "${local.prefix}-public-api"
 
@@ -90,6 +111,24 @@ resource "aws_cloudfront_origin_request_policy" "public_api" {
     query_string_behavior = "all"
   }
 }
+
+resource "aws_cloudfront_origin_request_policy" "public_api_health_check" {
+  name = "${local.prefix}-public-api-health-check"
+
+  cookies_config {
+    cookie_behavior = "none"
+  }
+  headers_config {
+    header_behavior = "none"
+  }
+  query_strings_config {
+    query_string_behavior = "none"
+  }
+}
+
+################################################################################
+# Cache policies
+################################################################################
 
 resource "aws_cloudfront_cache_policy" "public_api" {
   name = "${local.prefix}-public-api"
@@ -125,6 +164,31 @@ resource "aws_cloudfront_cache_policy" "public_api" {
     }
   }
 }
+
+resource "aws_cloudfront_cache_policy" "public_api_health_check" {
+  name = "${local.prefix}-public-api-health-check"
+
+  min_ttl     = 0
+  max_ttl     = 0
+  default_ttl = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
+}
+
+################################################################################
+# Viewer function
+################################################################################
 
 resource "aws_cloudfront_function" "public_api_viewer_request" {
   name    = "${local.prefix}-public-api-viewer-request"

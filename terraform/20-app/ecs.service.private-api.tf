@@ -46,11 +46,11 @@ module "ecs_service_private_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.rds.app.private_api_replica.db_name
+          value = local.aurora.app.private_api_replica.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.rds.app.private_api_replica.address
+          value = local.aurora.app.private_api_replica.address
         },
         {
           name  = "APIENV"
@@ -66,11 +66,11 @@ module "ecs_service_private_api" {
       secrets = [
         {
           name      = "POSTGRES_USER"
-          valueFrom = "${local.main_db_password_secret_arn}:username::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "${local.main_db_password_secret_arn}:password::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
         },
         {
           name      = "SECRET_KEY",
@@ -82,7 +82,7 @@ module "ecs_service_private_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = element(module.private_api_alb.target_group_arns, 0)
+      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api-tg"].arn
       container_name   = "api"
       container_port   = 80
     }
@@ -131,9 +131,9 @@ module "private_api_tasks_security_group_rules" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "lb to db"
+      description              = "lb to aurora db"
       rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
+      source_security_group_id = module.aurora_db_app.security_group_id
     },
     {
       description              = "lb to cache"

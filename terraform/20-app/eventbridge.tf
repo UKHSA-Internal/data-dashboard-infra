@@ -1,7 +1,7 @@
 module "eventbridge" {
   source     = "terraform-aws-modules/eventbridge/aws"
   create_bus = false
-  role_name = "${local.prefix}-eventbridge-role"
+  role_name  = "${local.prefix}-eventbridge-role"
 
   rules = {
     "${local.prefix}-db-password-rotation" = {
@@ -12,7 +12,7 @@ module "eventbridge" {
           eventSource : ["secretsmanager.amazonaws.com"],
           eventName : ["RotationSucceeded"]
           additionalEventData : {
-            SecretId : [local.main_db_password_secret_arn]
+            SecretId : [local.main_db_aurora_password_secret_arn]
           }
         }
       })

@@ -55,6 +55,7 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          role-duration-seconds: "7200"
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -152,6 +153,7 @@ jobs:
     outputs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
+      deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
       deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
       deploy_train: ${{ steps.fast_forward_merge.outputs.deploy_train }}
     steps:
@@ -183,6 +185,14 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/test
+    secrets: inherit
+
+  deploy_perf:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_perf}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/test/perf
     secrets: inherit
 
   deploy_uat:

@@ -1,6 +1,6 @@
 module "feature_flags_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "8.7.0"
+  version = "9.9.0"
 
   name = "${local.prefix}-feature-flags"
 
@@ -10,6 +10,7 @@ module "feature_flags_alb" {
   subnets                    = module.vpc.public_subnets
   security_groups            = [module.feature_flags_alb_security_group.security_group_id]
   drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
   access_logs = {
     bucket  = data.aws_s3_bucket.elb_logs_eu_west_2.id
@@ -17,13 +18,14 @@ module "feature_flags_alb" {
     prefix  = "feature-flags-alb"
   }
 
-  target_groups = [
-    {
-      name             = "${local.prefix}-feature-flags"
-      backend_protocol = "HTTP"
-      backend_port     = 4242
-      target_type      = "ip"
-      health_check     = {
+  target_groups = {
+    "${local.prefix}-feature-flags-tg" = {
+      name              = "${local.prefix}-feature-flags-tg"
+      backend_protocol  = "HTTP"
+      backend_port      = 4242
+      target_type       = "ip"
+      create_attachment = false
+      health_check = {
         enabled             = true
         interval            = 30
         path                = "/health/"
@@ -35,17 +37,20 @@ module "feature_flags_alb" {
         matcher             = "200"
       }
     }
-  ]
+  }
 
-  https_listeners = [
-    {
-      port               = 443
-      protocol           = "HTTPS"
-      certificate_arn    = local.certificate_arn
-      target_group_index = 0
-      ssl_policy         = local.alb_security_policy
+  listeners = {
+    "${local.prefix}-feature-flags-alb-listener" = {
+      name            = "${local.prefix}-feature-flags-alb-listener"
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = local.certificate_arn
+      ssl_policy      = local.alb_security_policy
+      forward = {
+        target_group_key = "${local.prefix}-feature-flags-tg"
+      }
     }
-  ]
+  }
 }
 
 module "feature_flags_alb_security_group" {
@@ -59,11 +64,7 @@ module "feature_flags_alb_security_group" {
     {
       description = "https from internet"
       rule        = "https-443-tcp"
-      cidr_blocks = join(",",
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders
-      )
+      cidr_blocks = "0.0.0.0/0"
     }
   ]
 

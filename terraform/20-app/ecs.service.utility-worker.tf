@@ -42,11 +42,11 @@ module "ecs_service_utility_worker" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.rds.app.private_api_replica.db_name
+          value = local.aurora.app.private_api_replica.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.rds.app.private_api_replica.address
+          value = local.aurora.app.private_api_replica.address
         },
         {
           name  = "APIENV"
@@ -62,11 +62,11 @@ module "ecs_service_utility_worker" {
       secrets = [
         {
           name      = "POSTGRES_USER"
-          valueFrom = "${local.main_db_password_secret_arn}:username::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "${local.main_db_password_secret_arn}:password::"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
         },
         {
           name      = "SECRET_KEY",
@@ -114,14 +114,14 @@ module "utility_worker_tasks_security_group_rules" {
 
   egress_with_source_security_group_id = [
     {
-      description              = "utility worker tasks to db"
-      rule                     = "postgresql-tcp"
-      source_security_group_id = module.app_rds_security_group.security_group_id
-    },
-    {
       description              = "utility worker tasks to cache"
       rule                     = "redis-tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id
+    },
+    {
+      description              = "utility worker tasks to aurora db"
+      rule                     = "postgresql-tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
     }
   ]
 }
