@@ -148,3 +148,19 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
     google_tag_manager_id = ""
   })
 }
+
+################################################################################
+# ESRI API key
+################################################################################
+
+resource "aws_secretsmanager_secret" "esri_api_key" {
+  name        = "${local.prefix}-esri-api-key"
+  description = "This is the API key required for the ESRI maps service."
+}
+
+resource "aws_secretsmanager_secret_version" "esri_api_key" {
+  secret_id     = aws_secretsmanager_secret.esri_api_key.id
+  secret_string = jsonencode({
+    esri_api_key = ""
+  })
+}
