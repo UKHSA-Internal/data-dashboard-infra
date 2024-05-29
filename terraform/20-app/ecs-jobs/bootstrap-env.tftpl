@@ -17,9 +17,15 @@
         "command": [
           "scripts/boot.sh",
           "${cms_admin_user_password}"
-        ]
-      }
-    ]
-  },
+        ],
+        "environment": [
+        {
+          "name": "POSTGRES_HOST",
+          "value": "${aurora_writer_endpoint}"
+        }
+      ]
+     }
+   ]
+ },
   "taskDefinition": "${task_arn}"
 }

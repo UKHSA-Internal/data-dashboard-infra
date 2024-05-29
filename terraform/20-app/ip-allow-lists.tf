@@ -2,7 +2,6 @@ locals {
   ip_allow_list = {
     engineers = [
       "185.241.164.214/32", # Afaan
-      "82.132.233.64/32",   # Afaan's phone
       "154.51.68.102/32",   # Burendo
       "82.2.4.244/32",      # Kev
       "78.147.110.81/32",   # Kev 2
@@ -16,9 +15,10 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "81.108.89.51/32",    # Krishna
       "80.7.227.61/32",     # Kiran
+      "94.173.91.216/32",   # Zesh
     ],
     project_team = [
-      "78.105.5.74/32", # Debbie
+      "51.198.160.222/32", # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # Georgina
