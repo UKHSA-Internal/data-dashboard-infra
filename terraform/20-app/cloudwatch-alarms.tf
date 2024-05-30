@@ -1,4 +1,4 @@
-module "cloudwatch_alarm_cloudfront_frontend_400_errors" {
+module "cloudwatch_alarm_cloudfront_frontend_500_errors" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "5.3.1"
 
@@ -18,7 +18,7 @@ module "cloudwatch_alarm_cloudfront_frontend_400_errors" {
   statistic   = "Average"
 }
 
-module "cloudwatch_alarm_cloudfront_frontend_500_errors" {
+module "cloudwatch_alarm_cloudfront_frontend_400_errors" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "5.3.1"
 
