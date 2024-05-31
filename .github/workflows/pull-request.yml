@@ -54,6 +54,11 @@ jobs:
         with:
           function-name: lambda-producer-handler
 
+      - name: Test lambda-db-password-rotation
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-db-password-rotation
+
       - name: Test legacy-dashboard-redirect-viewer-request
         uses: ./.github/actions/npm-test
         with:
@@ -84,10 +89,12 @@ jobs:
         with:
           multiple-files: |
             lambda-producer-handler, ./reports/lambda-producer-handler-coverage-summary/coverage-summary.json
+            lambda-db-password-rotation, ./reports/lambda-db-password-rotation-coverage-summary/coverage-summary.json
             legacy-dashboard-redirect-viewer-request, ./reports/legacy-dashboard-redirect-viewer-request-coverage-summary/coverage-summary.json
             public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-summary/coverage-summary.json
           multiple-junitxml-files: |
             lambda-producer-handler, ./reports/lambda-producer-handler-coverage-report/junit.xml
+            lambda-db-password-rotation, ./reports/lambda-db-password-rotation-coverage-report/junit.xml
             legacy-dashboard-redirect-viewer-request, ./reports/legacy-dashboard-redirect-viewer-request-coverage-report/junit.xml
             public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-report/junit.xml
           title: unit test coverage report
