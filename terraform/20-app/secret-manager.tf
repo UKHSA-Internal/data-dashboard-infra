@@ -164,3 +164,20 @@ resource "aws_secretsmanager_secret_version" "esri_api_key" {
     esri_api_key = ""
   })
 }
+
+
+################################################################################
+# Slack webhook URL
+################################################################################
+
+resource "aws_secretsmanager_secret" "slack_webhook_url" {
+  name        = "${local.prefix}-slack-webhook-url"
+  description = "The Slack webhook URL to be used to post notifications to."
+}
+
+resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
+  secret_id     = aws_secretsmanager_secret.slack_webhook_url.id
+  secret_string = jsonencode({
+    slack_webhook_url = ""
+  })
+}
