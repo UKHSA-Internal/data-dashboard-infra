@@ -186,23 +186,37 @@ describe('buildSlackPostFromSNSMessage', () => {
         // Then
         const message = JSON.parse(fakeEvent.Records[0].Sns.Message)
         const expectedMessage = {
-            text: ':alert: Alarm triggered',
             channel: '#ukhsa-data-dashboard-alerts',
-            attachments: [
+            blocks: [
                 {
-                    'title': 'Alarm type',
-                    'value': `${message.AlarmName}`,
-                    'short': true,
+                    'type': 'header',
+                    'text': {
+                        'type': 'plain_text',
+                        'text': ':alert: Alarm triggered',
+                        'emoji': true
+                    }
                 },
                 {
-                    'title': 'Alarm description',
-                    'value': `${message.AlarmDescription}`,
-                    'short': true,
+                    'type': 'section',
+                    'fields': [
+                        {
+                            'type': 'mrkdwn',
+                            'text': `*Alarm type:*\n${message.AlarmName}`
+                        },
+                        {
+                            'type': 'mrkdwn',
+                            'text': `*Alarm description:*\n${message.AlarmDescription}`
+                        }
+                    ]
                 },
                 {
-                    'title': 'Subject',
-                    'value': `${fakeEvent.Records[0].Sns.Subject}`,
-                    'short': false,
+                    'type': 'section',
+                    'fields': [
+                        {
+                            'type': 'mrkdwn',
+                            'text': `*Subject:*\n${fakeEvent.Records[0].Sns.Subject}`
+                        }
+                    ]
                 }
             ]
         }
