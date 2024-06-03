@@ -40,39 +40,21 @@ async function getSlackWebhookURLFromSecretsManager(overridenDependencies = {}) 
 function buildSlackPostFromSNSMessage(event) {
     const message = JSON.parse(event.Records[0].Sns.Message);
     return {
-        channel: '#ukhsa-data-dashboard-alerts',
-        blocks: [
-            {
-                'type': 'header',
-                'text': {
-                    'type': 'plain_text',
-                    'text': ':alert: Alarm triggered',
-                    'emoji': true
-                }
-            },
-            {
-                'type': 'section',
-                'fields': [
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Alarm type:*\n${message.AlarmName}`
-                    },
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Alarm description:*\n${message.AlarmDescription}`
-                    }
-                ]
-            },
-            {
-                'type': 'section',
-                'fields': [
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Subject:*\n${event.Records[0].Sns.Subject}`
-                    }
-                ]
+        blocks: [{
+            'type': 'header', 'text': {
+                'type': 'plain_text', 'text': ':alert: Alarm triggered', 'emoji': true
             }
-        ]
+        }, {
+            'type': 'section', 'fields': [{
+                'type': 'mrkdwn', 'text': `*Alarm type:*\n${message.AlarmName}`
+            }, {
+                'type': 'mrkdwn', 'text': `*Alarm description:*\n${message.AlarmDescription}`
+            }]
+        }, {
+            'type': 'section', 'fields': [{
+                'type': 'mrkdwn', 'text': `*Subject:*\n${event.Records[0].Sns.Subject}`
+            }]
+        }]
     };
 }
 
@@ -83,7 +65,9 @@ function buildSlackPostFromSNSMessage(event) {
  * @param {string} webhookURL - The Slack webhook URL to send the message to
  */
 async function submitMessageToSlack(slackMessage, webhookURL) {
-    const webhook = new IncomingWebhook(webhookURL, {icon_emoji: ':alert:'});
+    const webhook = new IncomingWebhook(webhookURL, {
+        icon_emoji: ':alert:', channel: '#ukhsa-data-dashboard-alerts'
+    });
     await webhook.send(slackMessage)
 }
 
@@ -95,9 +79,7 @@ async function submitMessageToSlack(slackMessage, webhookURL) {
  */
 async function handler(event, overridenDependencies = {}) {
     const defaultDependencies = {
-        buildSlackPostFromSNSMessage,
-        submitMessageToSlack,
-        getSlackWebhookURLFromSecretsManager,
+        buildSlackPostFromSNSMessage, submitMessageToSlack, getSlackWebhookURLFromSecretsManager,
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies}
 
@@ -107,9 +89,5 @@ async function handler(event, overridenDependencies = {}) {
 }
 
 module.exports = {
-    handler,
-    getSecret,
-    getSlackWebhookURLFromSecretsManager,
-    submitMessageToSlack,
-    buildSlackPostFromSNSMessage
+    handler, getSecret, getSlackWebhookURLFromSecretsManager, submitMessageToSlack, buildSlackPostFromSNSMessage
 }

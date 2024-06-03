@@ -92,7 +92,11 @@ describe('submitMessageToSlack', () => {
         await expect(submitMessageToSlack(fakeSlackMessage, fakeSlackWebhookURL)).resolves.not.toThrow();
 
         // Then
-        expect(IncomingWebhook).toHaveBeenCalledWith(fakeSlackWebhookURL, {icon_emoji: ':alert:'});
+        const expectedDefaultConstructorArgs = {
+            icon_emoji: ':alert:',
+            channel: '#ukhsa-data-dashboard-alerts'
+        }
+        expect(IncomingWebhook).toHaveBeenCalledWith(fakeSlackWebhookURL, expectedDefaultConstructorArgs);
         expect(sendMock).toHaveBeenCalledWith(fakeSlackMessage);
     });
 });
@@ -131,7 +135,6 @@ describe('buildSlackPostFromSNSMessage', () => {
         // Then
         const message = JSON.parse(fakeEvent.Records[0].Sns.Message)
         const expectedMessage = {
-            channel: '#ukhsa-data-dashboard-alerts',
             blocks: [
                 {
                     'type': 'header',
