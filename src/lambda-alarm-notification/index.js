@@ -41,8 +41,25 @@ async function getSlackWebhookURLFromSecretsManager(overridenDependencies = {}) 
 function buildSlackPostFromSNSMessage(event) {
     const message = JSON.parse(event.Records[0].Sns.Message);
     return {
-        text: `:alert: Alarm triggered: ${message.AlarmName}\nDescription: ${message.AlarmDescription}\nNew State: ${message.NewStateValue}\nSubject: ${event.Records[0].Sns.Subject}`,
-        channel: '#ukhsa-data-dashboard-alerts'
+        text: ':alert: Alarm triggered',
+        channel: '#ukhsa-data-dashboard-alerts',
+        attachments: [
+            {
+                'title': 'Alarm type',
+                'value': `${message.AlarmName}`,
+                'short': true,
+            },
+            {
+                'title': 'Alarm description',
+                'value': `${message.AlarmDescription}`,
+                'short': true,
+            },
+            {
+                'title': 'Subject',
+                'value': `${event.Records[0].Sns.Subject}`,
+                'short': false,
+            }
+        ]
     };
 }
 
