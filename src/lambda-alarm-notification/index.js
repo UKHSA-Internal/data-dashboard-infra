@@ -99,7 +99,7 @@ async function handler(event, overridenDependencies = {}) {
     const dependencies = {...defaultDependencies, ...overridenDependencies}
 
     const slackMessage = dependencies.buildSlackPostFromSNSMessage(event)
-    const requestOptions = dependencies.buildRequestOptions()
+    const requestOptions = await dependencies.buildRequestOptions()
     await dependencies.submitMessageToSlack(requestOptions, slackMessage)
 }
 
