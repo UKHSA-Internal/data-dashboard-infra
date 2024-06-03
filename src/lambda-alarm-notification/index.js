@@ -1,6 +1,5 @@
 const {SecretsManagerClient, GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
-const https = require('https');
-
+const {IncomingWebhook} = require('@slack/webhook');
 
 /**
  * Gets the secret for the Slack webhook URL from secrets Manager
@@ -78,41 +77,14 @@ function buildSlackPostFromSNSMessage(event) {
 }
 
 /**
- * Constructs the payload to be used in the request made to the Slack webhook URL
- *
- * @param overridenDependencies - Object used to override the default dependencies.
- * @returns {object} An enriched object to be used as the payload to the Slack webhook URL
- */
-async function buildRequestOptions(overridenDependencies = {}) {
-    const defaultDependencies = {getSlackWebhookURLFromSecretsManager};
-    const dependencies = {...defaultDependencies, ...overridenDependencies}
-
-    const webhookUrl = await dependencies.getSlackWebhookURLFromSecretsManager()
-    return {
-        method: 'POST',
-        hostname: 'hooks.slack.com',
-        path: new URL(webhookUrl).pathname,
-    };
-}
-
-/**
  * Sends the given `requestOptions` and `slackMessage` to the Slack webhook URL
  *
- * @returns {object} An enriched object to be used as the payload to the Slack webhook URL
+ * @param {Object} slackMessage - The object to be included in the Slack message payload
+ * @param {string} webhookURL - The Slack webhook URL to send the message to
  */
-async function submitMessageToSlack(requestOptions, slackMessage) {
-    const request = https.request(requestOptions, (response) => {
-        response.on('data', (data) => {
-            process.stdout.write(data);
-        });
-    });
-
-    request.on('error', (error) => {
-        console.error(error);
-    });
-
-    request.write(JSON.stringify(slackMessage));
-    request.end();
+async function submitMessageToSlack(slackMessage, webhookURL) {
+    const webhook = new IncomingWebhook(webhookURL, {icon_emoji: ':alert:'});
+    await webhook.send(slackMessage)
 }
 
 /**
@@ -124,14 +96,14 @@ async function submitMessageToSlack(requestOptions, slackMessage) {
 async function handler(event, overridenDependencies = {}) {
     const defaultDependencies = {
         buildSlackPostFromSNSMessage,
-        buildRequestOptions,
         submitMessageToSlack,
+        getSlackWebhookURLFromSecretsManager,
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies}
 
+    const webhookURL = await dependencies.getSlackWebhookURLFromSecretsManager()
     const slackMessage = dependencies.buildSlackPostFromSNSMessage(event)
-    const requestOptions = await dependencies.buildRequestOptions()
-    await dependencies.submitMessageToSlack(requestOptions, slackMessage)
+    await dependencies.submitMessageToSlack(slackMessage, webhookURL)
 }
 
 module.exports = {
@@ -139,6 +111,5 @@ module.exports = {
     getSecret,
     getSlackWebhookURLFromSecretsManager,
     submitMessageToSlack,
-    buildRequestOptions,
     buildSlackPostFromSNSMessage
 }

@@ -1,5 +1,4 @@
 const {
-    buildRequestOptions,
     buildSlackPostFromSNSMessage,
     getSecret,
     getSlackWebhookURLFromSecretsManager,
@@ -7,11 +6,12 @@ const {
     handler,
 } = require('./index.js')
 
+const {IncomingWebhook} = require('@slack/webhook');
 const sinon = require('sinon');
-const https = require('https');
+
 const {GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
 
-jest.mock('https');
+jest.mock('@slack/webhook');
 
 const fakeSlackBaseURL = 'https://hooks.slack.com'
 const fakeSlackWebhookURLPath = '/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
@@ -65,90 +65,35 @@ describe('getSlackWebhookURLFromSecretsManager', () => {
 });
 
 describe('submitMessageToSlack', () => {
-    let mockRequest;
-    let mockResponse;
+    const fakeSlackMessage = {text: 'fake-slack-message'};
+    const sendMock = jest.fn();
 
     beforeEach(() => {
-        mockResponse = {
-            on: jest.fn((event, callback) => {
-                if (event === 'data') {
-                    callback('mocked response data');
-                }
-            }),
-        };
-        mockRequest = {
-            on: jest.fn(), write: jest.fn(), end: jest.fn(),
-        };
-        https.request.mockImplementation((options, callback) => {
-            callback(mockResponse);
-            return mockRequest;
-        });
+        IncomingWebhook.mockImplementation(() => ({
+            send: sendMock
+        }));
     });
-
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    const fakeRequestOptions = {
-        method: 'POST', hostname: 'hooks.slack.com', path: fakeSlackWebhookURLPath,
-    };
-    const fakeSlackMessage = {text: 'This is a test message for Slack'};
-
     /**
-     * Given request options and a message to send to Slack
-     * When `submitMessageToSlack()` is called
-     * Then the correct data is written to the request
+     * Given a payload containing the Slack message
+     * And a webhook URL
+     * When the main `submitMessageToSlack()` is called
+     * Then the call is delegated to the
+     *  `IncomingWebhook` object from the `slack/webhook` library
      */
-    test('should write the message to the request', async () => {
-        // Given / When
-        await submitMessageToSlack(fakeRequestOptions, fakeSlackMessage);
-
-        // Then
-        expect(mockRequest.write).toHaveBeenCalledWith(JSON.stringify(fakeSlackMessage));
-        expect(mockRequest.end).toHaveBeenCalled();
-    });
-
-    /**
-     * Given request options and a message to send to Slack
-     * And an error is expected to be thrown
-     * When `submitMessageToSlack()` is called
-     * Then the error is logged
-     */
-    test('should log an error if the request fails', async () => {
+    test('should send a message to Slack', async () => {
         // Given
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
-        });
-        const error = new Error('Request failed');
-        mockRequest.on.mockImplementationOnce((event, callback) => {
-            if (event === 'error') {
-                callback(error);
-            }
-        });
+        sendMock.mockResolvedValue('Message sent');
 
         // When
-        await submitMessageToSlack(fakeRequestOptions, fakeSlackMessage);
+        await expect(submitMessageToSlack(fakeSlackMessage, fakeSlackWebhookURL)).resolves.not.toThrow();
 
         // Then
-        expect(consoleErrorSpy).toHaveBeenCalledWith(error);
-        consoleErrorSpy.mockRestore();
-    });
-
-    /**
-     * Given request options and a message to send to Slack
-     * When `submitMessageToSlack()` is called
-     * Then the correct data is written to std out
-     */
-    test('should write the response data to stdout', async () => {
-        // Given
-        const processStdoutWriteSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => {
-        });
-
-        // When
-        await submitMessageToSlack(fakeRequestOptions, fakeSlackMessage);
-
-        // Then
-        expect(processStdoutWriteSpy).toHaveBeenCalledWith('mocked response data');
-        processStdoutWriteSpy.mockRestore();
+        expect(IncomingWebhook).toHaveBeenCalledWith(fakeSlackWebhookURL, {icon_emoji: ':alert:'});
+        expect(sendMock).toHaveBeenCalledWith(fakeSlackMessage);
     });
 });
 
@@ -226,29 +171,6 @@ describe('buildSlackPostFromSNSMessage', () => {
 
 });
 
-describe('buildRequestOptions', () => {
-    /**
-     * Given the `getSlackWebhookURLFromSecretsManager()` function
-     *     which is mocked to retrieve the secret
-     *     associated with the webhook URL
-     * When `buildRequestOptions()` is called
-     * Then the correct object is built and returned
-     */
-    test('Returns the correct object shape', async () => {
-        // Given
-        const mockedGetSlackWebHookURLFromSecretsManager = sinon.stub().resolves(fakeSlackWebhookURL)
-        const injectedDependencies = {getSlackWebhookURLFromSecretsManager: mockedGetSlackWebHookURLFromSecretsManager}
-
-        // When
-        const requestOptions = await buildRequestOptions(injectedDependencies);
-
-        // Then
-        expect(requestOptions.method).toBe('POST');
-        expect(requestOptions.hostname).toBe('hooks.slack.com');
-        expect(requestOptions.path).toBe(fakeSlackWebhookURLPath);
-    });
-});
-
 describe('handler', () => {
     /**
      * Given no input
@@ -262,14 +184,14 @@ describe('handler', () => {
         // Injected dependencies to perform spy operations
         const expectedSlackMessage = sinon.stub()
         const buildSlackPostFromSNSMessageSpy = sinon.stub().returns(expectedSlackMessage);
-        const expectedRequestOptions = sinon.stub()
-        const buildRequestOptionsSpy = sinon.stub().returns(expectedRequestOptions);
+        const expectedSlackWebhookUrl = sinon.stub()
+        const getSlackWebhookURLFromSecretsManagerSpy = sinon.stub().returns(expectedSlackWebhookUrl);
         const submitMessageToSlackSpy = sinon.stub();
         const mockedEvent = sinon.stub()
 
         const spyDependencies = {
             buildSlackPostFromSNSMessage: buildSlackPostFromSNSMessageSpy,
-            buildRequestOptions: buildRequestOptionsSpy,
+            getSlackWebhookURLFromSecretsManager: getSlackWebhookURLFromSecretsManagerSpy,
             submitMessageToSlack: submitMessageToSlackSpy,
         }
 
@@ -277,8 +199,8 @@ describe('handler', () => {
         await handler(mockedEvent, spyDependencies)
 
         // Then
+        expect(getSlackWebhookURLFromSecretsManagerSpy.calledOnce).toBeTruthy();
         expect(buildSlackPostFromSNSMessageSpy.calledWith(mockedEvent)).toBeTruthy()
-        expect(buildRequestOptionsSpy.calledOnce).toBeTruthy();
-        expect(submitMessageToSlackSpy.calledWith(expectedRequestOptions, expectedSlackMessage)).toBeTruthy();
+        expect(submitMessageToSlackSpy.calledWith(expectedSlackMessage, expectedSlackWebhookUrl)).toBeTruthy();
     })
 })
