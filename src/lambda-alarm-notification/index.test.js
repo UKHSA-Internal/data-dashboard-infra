@@ -110,7 +110,7 @@ describe('buildSlackPostFromSNSMessage', () => {
             "Sns": {
                 "Type": "Notification",
                 "MessageId": "message-id",
-                "TopicArn": "arn:aws:sns:region:account-id:topicname",
+                "TopicArn": "arn:aws:sns:region:account-id:fake-topic-name",
                 "Subject": "ALARM: \"4xxErrorRateHigh\" in AWS/CloudFront",
                 "Message": "{\"AlarmName\":\"4xxErrorRateHigh\",\"AlarmDescription\":\"Alarm when 4xxErrorRate exceeds 1%\",\"AWSAccountId\":\"account-id\",\"NewStateValue\":\"ALARM\",\"NewStateReason\":\"Threshold Crossed: 1 datapoint [1.2345 (minimum)] was greater than or equal to the threshold (1.0).\",\"StateChangeTime\":\"2023-05-31T12:34:56.789Z\",\"Region\":\"US-East-1\",\"AlarmArn\":\"arn:aws:cloudwatch:region:account-id:alarm:4xxErrorRateHigh\",\"OldStateValue\":\"OK\",\"Trigger\":{\"MetricName\":\"4xxErrorRate\",\"Namespace\":\"AWS/CloudFront\",\"StatisticType\":\"Statistic\",\"Statistic\":\"MINIMUM\",\"Unit\":null,\"Dimensions\":[{\"name\":\"DistributionId\",\"value\":\"distribution-id\"}],\"Period\":300,\"EvaluationPeriods\":1,\"ComparisonOperator\":\"GreaterThanOrEqualToThreshold\",\"Threshold\":1.0,\"TreatMissingData\":\"- TreatMissingData: missing\",\"EvaluateLowSampleCountPercentile\":\"\"}}",
                 "Timestamp": "2023-05-31T12:34:56.789Z",
@@ -162,7 +162,11 @@ describe('buildSlackPostFromSNSMessage', () => {
                     'fields': [
                         {
                             'type': 'mrkdwn',
-                            'text': `*Subject:*\n${fakeEvent.Records[0].Sns.Subject}`
+                            'text': '*Subject:*\nALARM: "4xxErrorRateHigh" in AWS/CloudFront'
+                        },
+                        {
+                            'type': 'mrkdwn',
+                            'text': '*Source:*\nfake-topic-name'
                         }
                     ]
                 }

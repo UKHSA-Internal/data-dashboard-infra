@@ -38,7 +38,11 @@ async function getSlackWebhookURLFromSecretsManager(overridenDependencies = {}) 
  * @returns {object} An enriched object to be used as the payload to the slack webhook URL
  */
 function buildSlackPostFromSNSMessage(event) {
-    const message = JSON.parse(event.Records[0].Sns.Message);
+    const inboundSNSMessage = event.Records[0].Sns
+    const topicARNParts = inboundSNSMessage.TopicArn.split(':');
+    const topicName = topicARNParts[topicARNParts.length - 1];
+    const message = JSON.parse(inboundSNSMessage.Message);
+
     return {
         blocks: [
             {
@@ -67,7 +71,11 @@ function buildSlackPostFromSNSMessage(event) {
                 'fields': [
                     {
                         'type': 'mrkdwn',
-                        'text': `*Subject:*\n${event.Records[0].Sns.Subject}`
+                        'text': `*Subject:*\n${inboundSNSMessage.Subject}`
+                    },
+                    {
+                        'type': 'mrkdwn',
+                        'text': `*Source:*\n${topicName}`
                     }
                 ]
             }
