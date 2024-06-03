@@ -186,7 +186,7 @@ describe('buildSlackPostFromSNSMessage', () => {
         // Then
         const message = JSON.parse(fakeEvent.Records[0].Sns.Message)
         const expectedMessage = {
-            text: `Alarm triggered: ${message.AlarmName}\nDescription: ${message.AlarmDescription}\nNew State: ${message.NewStateValue}\nSubject: ${fakeEvent.Records[0].Sns.Subject}`,
+            text: `:alert: Alarm triggered: ${message.AlarmName}\nDescription: ${message.AlarmDescription}\nNew State: ${message.NewStateValue}\nSubject: ${fakeEvent.Records[0].Sns.Subject}`,
             channel: '#ukhsa-data-dashboard-alerts'
         }
         expect(extractedMessage).toEqual(expectedMessage)
