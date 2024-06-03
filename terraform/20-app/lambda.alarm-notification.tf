@@ -38,3 +38,19 @@ module "lambda_alarm_notification" {
     }
   }
 }
+
+module "lambda_alarm_notification_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.1.0"
+
+  name   = "${local.prefix}-lambda-alarm-notification"
+  vpc_id = module.vpc.vpc_id
+
+  egress_with_cidr_blocks = [
+    {
+      description = "https to internet"
+      rule        = "https-443-tcp"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+}
