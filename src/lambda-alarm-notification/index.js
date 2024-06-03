@@ -39,8 +39,8 @@ async function getSlackWebhookURLFromSecretsManager(overridenDependencies = {}) 
  */
 function buildSlackPostFromSNSMessage(event) {
     const inboundSNSMessage = event.Records[0].Sns
-    const topicARNParts = inboundSNSMessage.TopicArn.split(':');
-    const topicName = topicARNParts[topicARNParts.length - 1];
+    const lastColonIndex = inboundSNSMessage.TopicArn.lastIndexOf(':');
+    const topicName = inboundSNSMessage.TopicArn.substring(lastColonIndex + 1);
     const message = JSON.parse(inboundSNSMessage.Message);
 
     return {
