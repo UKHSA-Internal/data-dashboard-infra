@@ -96,7 +96,9 @@ async function submitMessageToSlack(slackMessage, webhookURL) {
  */
 async function handler(event, overridenDependencies = {}) {
     const defaultDependencies = {
-        buildSlackPostFromSNSMessage, submitMessageToSlack, getSlackWebhookURLFromSecretsManager,
+        buildSlackPostFromSNSMessage,
+        submitMessageToSlack,
+        getSlackWebhookURLFromSecretsManager,
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies}
 
