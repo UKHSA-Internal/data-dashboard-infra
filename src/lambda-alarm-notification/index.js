@@ -40,21 +40,38 @@ async function getSlackWebhookURLFromSecretsManager(overridenDependencies = {}) 
 function buildSlackPostFromSNSMessage(event) {
     const message = JSON.parse(event.Records[0].Sns.Message);
     return {
-        blocks: [{
-            'type': 'header', 'text': {
-                'type': 'plain_text', 'text': ':alert: Alarm triggered', 'emoji': true
+        blocks: [
+            {
+                'type': 'header',
+                'text': {
+                    'type': 'plain_text',
+                    'text': ':alert: Alarm triggered',
+                    'emoji': true
+                }
+            },
+            {
+                'type': 'section',
+                'fields': [
+                    {
+                        'type': 'mrkdwn',
+                        'text': `*Alarm type:*\n${message.AlarmName}`
+                    },
+                    {
+                        'type': 'mrkdwn',
+                        'text': `*Alarm description:*\n${message.AlarmDescription}`
+                    }
+                ]
+            },
+            {
+                'type': 'section',
+                'fields': [
+                    {
+                        'type': 'mrkdwn',
+                        'text': `*Subject:*\n${event.Records[0].Sns.Subject}`
+                    }
+                ]
             }
-        }, {
-            'type': 'section', 'fields': [{
-                'type': 'mrkdwn', 'text': `*Alarm type:*\n${message.AlarmName}`
-            }, {
-                'type': 'mrkdwn', 'text': `*Alarm description:*\n${message.AlarmDescription}`
-            }]
-        }, {
-            'type': 'section', 'fields': [{
-                'type': 'mrkdwn', 'text': `*Subject:*\n${event.Records[0].Sns.Subject}`
-            }]
-        }]
+        ]
     };
 }
 
