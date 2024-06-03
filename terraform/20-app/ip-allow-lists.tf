@@ -36,7 +36,6 @@ locals {
       "172.29.176.6/32",    # Splunk synthetic monitioring - Azure UK South
       "81.105.235.133/32",  # Tom H
       "51.149.2.8/32",      # Agostinho Sousa
-      "62.253.228.56/32",   # Agostinho Sousa 2
       "86.29.186.201/32",   # Charlotte Brace
     ]
   }
