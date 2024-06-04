@@ -497,6 +497,12 @@ For example:
 uhd terraform destroy:layer 20-app foo
 ```
 
+> Note that production-grade environments, which are set via the `use_prod_sizing` variable,
+have deletion protection enabled on the main db cluster. 
+
+To destroy the infra for these environments, you must switch `use_prod_sizing` off 
+for that environment prior to running the above.
+
 ### Remove secrets
 
 When you run `uhd terraform destroy` then by default all secrets for that environment will be scheduled for deletion.

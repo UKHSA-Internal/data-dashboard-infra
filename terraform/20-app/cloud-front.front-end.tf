@@ -211,6 +211,9 @@ resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
           "areaType",
           "page",
           "search",
+          "v",
+          "type",
+          "fid",
         ]
       }
     }
