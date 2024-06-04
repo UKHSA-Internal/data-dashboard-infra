@@ -4,6 +4,7 @@ module "cloudwatch_alarm_cloudfront_frontend_500_errors" {
 
   alarm_name          = "${local.prefix}-cloudfront-frontend-5xx-alarm"
   alarm_description   = "HTTP 5xx errors in the frontend Cloudfront distribution."
+  alarm_actions       = [module.sns_topic_alarms.topic_arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 1
@@ -24,6 +25,7 @@ module "cloudwatch_alarm_cloudfront_frontend_400_errors" {
 
   alarm_name          = "${local.prefix}-cloudfront-frontend-4xx-alarm"
   alarm_description   = "HTTP 4xx errors in the frontend Cloudfront distribution."
+  alarm_actions       = [module.sns_topic_alarms.topic_arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 1
@@ -44,6 +46,7 @@ module "cloudwatch_alarm_aurora_db_app" {
 
   alarm_name          = "${local.prefix}-aurora-db-app"
   alarm_description   = "CPU utilization of aurora db application cluster"
+  alarm_actions       = [module.sns_topic_alarms.topic_arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 90
