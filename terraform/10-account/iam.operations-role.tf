@@ -43,6 +43,11 @@ module "iam_operations_policy" {
           Resource = "arn:aws:s3:::uhd-*-ingest/failed/*"
         },
         {
+          Action   = ["s3:DeleteObject"],
+          Effect   = "Allow",
+          Resource = "arn:aws:s3:::uhd-*-ingest/processed/*"
+        },
+        {
           Action = [
             "cloudfront:CreateInvalidation",
             "cloudfront:GetInvalidation",
@@ -64,7 +69,7 @@ module "iam_operations_policy" {
           ],
           Effect   = "Allow",
           Resource = "arn:aws:s3:::uhd-*-archive-web-content/*"
-        },
+        }
       ]
     }
   )
