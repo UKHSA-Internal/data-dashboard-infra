@@ -1,6 +1,6 @@
 module "ecs_service_public_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.1"
+  version = "5.11.2"
 
   name                   = "${local.prefix}-public-api"
   cluster_arn            = module.ecs.cluster_arn
