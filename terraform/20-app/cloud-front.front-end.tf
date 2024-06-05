@@ -83,7 +83,7 @@ module "cloudfront_front_end" {
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
-    },
+    }
   ]
 
   custom_error_response = [
