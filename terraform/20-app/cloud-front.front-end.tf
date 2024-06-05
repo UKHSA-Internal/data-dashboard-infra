@@ -61,7 +61,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "api/health"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_health_check.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -188,6 +188,27 @@ resource "aws_cloudfront_cache_policy" "front_end" {
           "search",
         ]
       }
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "front_end_health_check" {
+  name = "${local.prefix}-front-end-health-check"
+
+  min_ttl     = 0
+  max_ttl     = 0
+  default_ttl = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
     }
   }
 }
