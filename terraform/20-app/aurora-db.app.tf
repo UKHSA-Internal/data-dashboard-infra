@@ -17,6 +17,7 @@ module "aurora_db_app" {
   apply_immediately   = true
   skip_final_snapshot = true
   publicly_accessible = local.enable_public_db
+  deletion_protection = local.use_prod_sizing
 
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {

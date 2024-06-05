@@ -1,5 +1,6 @@
 locals {
-  fifteen_minutes_in_seconds = 86400
+  fifteen_minutes_in_seconds = 900
+  eight_minutes_in_seconds   = 480
 }
 
 module "cloudfront_front_end" {
@@ -151,6 +152,42 @@ resource "aws_cloudfront_cache_policy" "front_end" {
           "areaType",
           "page",
           "search",
+        ]
+      }
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
+  name = "${local.prefix}-front-end-dynamic-alerts"
+
+  min_ttl     = local.eight_minutes_in_seconds
+  max_ttl     = local.eight_minutes_in_seconds
+  default_ttl = local.eight_minutes_in_seconds
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "_rsc",
+          "areaName",
+          "areaType",
+          "page",
+          "search",
+          "v",
+          "type",
+          "fid",
         ]
       }
     }

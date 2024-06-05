@@ -1,6 +1,6 @@
 module "ecs_service_front_end" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.1"
+  version = "5.11.2"
 
   name                   = "${local.prefix}-front-end"
   cluster_arn            = module.ecs.cluster_arn
@@ -67,7 +67,11 @@ module "ecs_service_front_end" {
         {
           name      = "UNLEASH_SERVER_API_TOKEN",
           valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:client_api_key::"
-        }
+        },
+        {
+          name      = "ESRI_API_KEY"
+          valueFrom = "${aws_secretsmanager_secret.esri_api_key.arn}:esri_api_key::"
+        },
       ]
     }
   }
