@@ -1,6 +1,5 @@
 locals {
   fifteen_minutes_in_seconds = 900
-  eight_minutes_in_seconds   = 480
 }
 
 module "cloudfront_front_end" {
@@ -71,7 +70,56 @@ module "cloudfront_front_end" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
-    }
+    },
+    # Behaviour to bypass CDN for the dynamic alert pages
+    {
+      path_pattern               = "/adverse-weather"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/adverse-weather/*"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/weather-health-alerts"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/weather-health-alerts/*"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
   ]
 
   custom_error_response = [
@@ -104,20 +152,6 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   }
   query_strings_config {
     query_string_behavior = "all"
-  }
-}
-
-resource "aws_cloudfront_origin_request_policy" "front_end_health_check" {
-  name = "${local.prefix}-front-end-health-check"
-
-  cookies_config {
-    cookie_behavior = "none"
-  }
-  headers_config {
-    header_behavior = "none"
-  }
-  query_strings_config {
-    query_string_behavior = "none"
   }
 }
 
@@ -158,17 +192,14 @@ resource "aws_cloudfront_cache_policy" "front_end" {
   }
 }
 
-resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
-  name = "${local.prefix}-front-end-dynamic-alerts"
+resource "aws_cloudfront_cache_policy" "front_end_health_check" {
+  name = "${local.prefix}-front-end-health-check"
 
-  min_ttl     = local.eight_minutes_in_seconds
-  max_ttl     = local.eight_minutes_in_seconds
-  default_ttl = local.eight_minutes_in_seconds
+  min_ttl     = 0
+  max_ttl     = 0
+  default_ttl = 0
 
   parameters_in_cache_key_and_forwarded_to_origin {
-    enable_accept_encoding_brotli = true
-    enable_accept_encoding_gzip   = true
-
     cookies_config {
       cookie_behavior = "none"
     }
@@ -177,25 +208,13 @@ resource "aws_cloudfront_cache_policy" "front_end_dynamic_alerts" {
     }
 
     query_strings_config {
-      query_string_behavior = "whitelist"
-      query_strings {
-        items = [
-          "_rsc",
-          "areaName",
-          "areaType",
-          "page",
-          "search",
-          "v",
-          "type",
-          "fid",
-        ]
-      }
+      query_string_behavior = "none"
     }
   }
 }
 
-resource "aws_cloudfront_cache_policy" "front_end_health_check" {
-  name = "${local.prefix}-front-end-health-check"
+resource "aws_cloudfront_cache_policy" "front_end_bypass_cdn" {
+  name = "${local.prefix}-front-end-bypass-cdn"
 
   min_ttl     = 0
   max_ttl     = 0
