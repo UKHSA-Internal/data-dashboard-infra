@@ -61,7 +61,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "api/health"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_health_check.id
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
