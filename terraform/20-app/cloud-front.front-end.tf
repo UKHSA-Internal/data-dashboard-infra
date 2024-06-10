@@ -61,7 +61,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "api/health"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_health_check.id
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -72,30 +72,6 @@ module "cloudfront_front_end" {
       query_string               = false
     },
     # Behaviour to bypass CDN for the dynamic alert pages
-    {
-      path_pattern               = "/adverse-weather"
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
-      cached_methods             = ["GET", "HEAD"]
-      compress                   = true
-      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
-      target_origin_id           = "alb"
-      use_forwarded_values       = false
-      viewer_protocol_policy     = "redirect-to-https"
-    },
-    {
-      path_pattern               = "/adverse-weather/*"
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_bypass_cdn.id
-      cached_methods             = ["GET", "HEAD"]
-      compress                   = true
-      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
-      target_origin_id           = "alb"
-      use_forwarded_values       = false
-      viewer_protocol_policy     = "redirect-to-https"
-    },
     {
       path_pattern               = "/weather-health-alerts"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
