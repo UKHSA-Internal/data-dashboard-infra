@@ -22,6 +22,7 @@ locals {
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
   is_dev                                       = var.environment_type == "dev"
+  is_prod                                      = local.environment == "prod"
 
   use_ip_allow_list = local.environment != "prod"
 
