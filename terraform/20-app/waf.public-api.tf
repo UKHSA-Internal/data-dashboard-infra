@@ -24,8 +24,8 @@ resource "aws_wafv2_web_acl" "public_api" {
       name     = rule.value.name
       priority = rule.value.priority
 
-      action {
-        block {}
+      override_action {
+        none {}
       }
 
       statement {
