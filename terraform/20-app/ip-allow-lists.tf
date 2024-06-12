@@ -37,6 +37,7 @@ locals {
       "81.105.235.133/32",  # Tom H
       "51.149.2.8/32",      # Agostinho Sousa
       "86.29.186.201/32",   # Charlotte Brace
+      "2.221.74.175/32",    # Gareth
     ]
   }
 }
