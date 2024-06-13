@@ -72,7 +72,7 @@ resource "aws_wafv2_web_acl" "public_api" {
 
   rule {
     name     = "rate-limiting"
-    priority = 6
+    priority = 7
 
     action {
       block {}
