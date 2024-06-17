@@ -39,6 +39,7 @@ locals {
       "51.149.2.8/32",      # Agostinho Sousa
       "86.29.186.201/32",   # Charlotte Brace
       "2.221.74.175/32",    # Gareth
+      "81.108.143.100/32",  # Ruairidh Villar
     ]
   }
 }
