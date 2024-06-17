@@ -1,6 +1,6 @@
 module "lambda_processor" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.5.0"
+  version       = "7.6.0"
   function_name = "cloud-watch-streaming-logs-processor-${local.region}"
 
   create_package = true
