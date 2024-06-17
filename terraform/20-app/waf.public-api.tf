@@ -25,7 +25,7 @@ resource "aws_wafv2_web_acl" "public_api" {
       priority = rule.value.priority
 
       override_action {
-        count {}
+        none {}
       }
 
       statement {

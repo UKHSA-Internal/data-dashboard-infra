@@ -14,3 +14,5 @@ variable "python_version" {}
 variable "tools_account_id" {
   sensitive = true
 }
+
+variable "halo_account_type" {}
