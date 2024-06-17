@@ -44,6 +44,12 @@ resource "aws_wafv2_web_acl" "legacy_dashboard_redirect" {
     }
   }
 
+  visibility_config {
+    metric_name                = "${local.prefix}-legacy-dashboard-redirect"
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
+  }
+
   rule {
     name     = "ip-allow-list"
     priority = 100
@@ -65,11 +71,26 @@ resource "aws_wafv2_web_acl" "legacy_dashboard_redirect" {
     }
   }
 
-  visibility_config {
-    metric_name                = "${local.prefix}-legacy-dashboard-redirect"
-    cloudwatch_metrics_enabled = true
-    sampled_requests_enabled   = true
+  rule {
+    name     = "rate-limiting"
+    priority = 6
+
+    action {
+      block {}
+    }
+    statement {
+      rate_based_statement {
+        limit              = 1000
+        aggregate_key_type = "IP"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "RateLimitRule"
+      sampled_requests_enabled   = true
+    }
   }
+
 }
 
 locals {
