@@ -43,6 +43,12 @@ resource "aws_wafv2_web_acl" "public_api" {
     }
   }
 
+  visibility_config {
+    metric_name                = "${local.prefix}-public-api"
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
+  }
+
   rule {
     name     = "ip-allow-list"
     priority = 6
@@ -64,10 +70,24 @@ resource "aws_wafv2_web_acl" "public_api" {
     }
   }
 
-  visibility_config {
-    metric_name                = "${local.prefix}-public-api"
-    cloudwatch_metrics_enabled = true
-    sampled_requests_enabled   = true
+  rule {
+    name     = "rate-limiting"
+    priority = 7
+
+    action {
+      block {}
+    }
+    statement {
+      rate_based_statement {
+        limit              = 2000
+        aggregate_key_type = "IP"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "RateLimitRule"
+      sampled_requests_enabled   = true
+    }
   }
 }
 
