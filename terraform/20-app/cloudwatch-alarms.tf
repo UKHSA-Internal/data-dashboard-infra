@@ -54,7 +54,6 @@ module "cloudwatch_alarm_aurora_db_app" {
   unit                = "None"
   dimensions = {
     DBClusterIdentifier = module.aurora_db_app.cluster_id
-    SourceRegion        = local.region
   }
   namespace   = "AWS/RDS"
   metric_name = "CPUUtilization"
