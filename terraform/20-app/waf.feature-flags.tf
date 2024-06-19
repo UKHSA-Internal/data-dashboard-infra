@@ -7,35 +7,6 @@ resource "aws_wafv2_web_acl" "feature_flags" {
     allow {}
   }
 
-  rule {
-    name     = "AWSManagedRulesCommonRuleSet"
-    priority = 1
-
-    override_action {
-      none {}
-    }
-
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesCommonRuleSet"
-        vendor_name = "AWS"
-
-        rule_action_override {
-          action_to_use {
-            allow {}
-          }
-          name = "SizeRestrictions_BODY"
-        }
-      }
-    }
-
-    visibility_config {
-      metric_name                = "AWSManagedRulesCommonRuleSet"
-      cloudwatch_metrics_enabled = true
-      sampled_requests_enabled   = true
-    }
-  }
-
   dynamic "rule" {
     for_each = local.waf_feature_flags.rules
 
@@ -66,6 +37,55 @@ resource "aws_wafv2_web_acl" "feature_flags" {
     metric_name                = "${local.prefix}-feature-flags"
     cloudwatch_metrics_enabled = true
     sampled_requests_enabled   = true
+  }
+
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+
+        rule_action_override {
+          action_to_use {
+            allow {}
+          }
+          name = "SizeRestrictions_BODY"
+        }
+      }
+    }
+
+    visibility_config {
+      metric_name                = "AWSManagedRulesCommonRuleSet"
+      cloudwatch_metrics_enabled = true
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "rate-limiting"
+    priority = 6
+
+    action {
+      block {}
+    }
+    statement {
+      rate_based_statement {
+        limit              = 1000
+        aggregate_key_type = "IP"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "RateLimitRule"
+      sampled_requests_enabled   = true
+    }
   }
 }
 

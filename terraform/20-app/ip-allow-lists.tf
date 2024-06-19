@@ -1,7 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "185.241.164.214/32", # Afaan
+      "89.36.121.186/32",   # Afaan
       "154.51.68.102/32",   # Burendo
       "82.2.4.244/32",      # Kev
       "78.147.110.81/32",   # Kev 2
@@ -34,9 +34,12 @@ locals {
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
       "172.29.176.6/32",    # Splunk synthetic monitioring - Azure UK South
-      "81.105.235.133/32",  # Tom H
+      "167.98.243.140/32",  # Tom H
+      "81.105.235.133/32",  # Tom H 2
       "51.149.2.8/32",      # Agostinho Sousa
       "86.29.186.201/32",   # Charlotte Brace
+      "2.221.74.175/32",    # Gareth
+      "81.108.143.100/32",  # Ruairidh Villar
     ]
   }
 }

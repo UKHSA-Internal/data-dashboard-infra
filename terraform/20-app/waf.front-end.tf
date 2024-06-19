@@ -17,7 +17,6 @@ resource "aws_wafv2_web_acl" "front_end" {
     }
   }
 
-
   dynamic "rule" {
     for_each = local.waf_front_end.rules
 
@@ -26,7 +25,7 @@ resource "aws_wafv2_web_acl" "front_end" {
       priority = rule.value.priority
 
       override_action {
-        count {}
+        none {}
       }
 
       statement {
@@ -42,6 +41,12 @@ resource "aws_wafv2_web_acl" "front_end" {
         sampled_requests_enabled   = true
       }
     }
+  }
+
+  visibility_config {
+    metric_name                = "${local.prefix}-front-end"
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
   }
 
   rule {
@@ -63,12 +68,6 @@ resource "aws_wafv2_web_acl" "front_end" {
       metric_name                = "AllowListIP"
       sampled_requests_enabled   = true
     }
-  }
-
-  visibility_config {
-    metric_name                = "${local.prefix}-front-end"
-    cloudwatch_metrics_enabled = true
-    sampled_requests_enabled   = true
   }
 }
 

@@ -12,8 +12,13 @@ module "s3_archive_web_content" {
   attach_policy                         = true
   force_destroy                         = true
 
+  logging = {
+    target_bucket = data.aws_s3_bucket.s3_access_logs.id
+    target_prefix = "${local.s3_archive_web_content_bucket_name}/"
+  }
+
   policy = jsonencode({
-    Version = "2012-10-17",
+    Version   = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",

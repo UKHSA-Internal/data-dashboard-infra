@@ -29,6 +29,7 @@ function _terraform_help() {
     echo "  cleanup                                         - destroys all CI test environments"
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
     echo "  workspace-list                                  - lists all terraform workspaces"
+    echo "  state-rm                                        - Removes the given item from the Terraform state"
     echo
     return 1
 }
@@ -53,6 +54,7 @@ function _terraform() {
         "destroy:layer") _terraform_destroy_layer $args ;;
         "force-unlock") _terraform_force_unlock $args ;;
         "workspace-list") _terraform_workspace_list $args ;;
+        "state-rm") _terraform_state_rm $args ;;
 
         "cleanup") _terraform_cleanup $args ;;
 
@@ -403,6 +405,34 @@ function _terraform_force_unlock() {
 
     cd $terraform_dir
     terraform force-unlock --force $lock_id
+}
+
+function _terraform_state_rm() {
+    local layer=$1
+    local workspace=$2
+    local address=$3
+
+    if [[ -z ${layer} ]]; then
+        echo "Layer is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${workspace} ]]; then
+        echo "Workspace is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${address} ]]; then
+        echo "Address is required" >&2
+        return 1
+    fi
+
+    local terraform_dir=$(_get_terraform_dir $layer)
+    echo "Running terraform state rm for layer '$layer', workspace '$workspace' & address '$address'..."
+
+    cd $terraform_dir
+    terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
+    terraform state rm $address || return 1
 }
 
 function _terraform_workspace_list() {
