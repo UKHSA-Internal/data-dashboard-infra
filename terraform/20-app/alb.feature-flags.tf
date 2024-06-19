@@ -46,8 +46,32 @@ module "feature_flags_alb" {
       protocol        = "HTTPS"
       certificate_arn = local.certificate_arn
       ssl_policy      = local.alb_security_policy
-      forward = {
-        target_group_key = "${local.prefix}-feature-flags-tg"
+      fixed_response = {
+        content_type = "text/plain"
+        message_body = "403 Forbidden"
+        status_code  = "403"
+      }
+      rules = {
+        enforce-header-value = {
+          listener_key = "${local.prefix}-feature-flags-alb-listener"
+          priority     = 1
+          actions      = [
+            {
+              type             = "forward"
+              target_group_key = "${local.prefix}-feature-flags-tg"
+            }
+          ]
+          conditions = [
+            {
+              http_header = {
+                http_header_name = "x-auth"
+                values           = [
+                  jsondecode(aws_secretsmanager_secret_version.feature_flags_api_keys.secret_string)["x_auth"]
+                ]
+              }
+            }
+          ]
+        }
       }
     }
   }

@@ -28,6 +28,7 @@ resource "aws_secretsmanager_secret_version" "feature_flags_api_keys" {
   secret_id     = aws_secretsmanager_secret.feature_flags_api_keys.id
   secret_string = jsonencode({
     client_api_key = local.feature_flags_client_api_key
+    x_auth         = local.feature_flags_x_auth
   })
 }
 

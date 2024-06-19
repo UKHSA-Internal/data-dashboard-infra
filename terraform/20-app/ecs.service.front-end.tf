@@ -69,9 +69,13 @@ module "ecs_service_front_end" {
           valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:client_api_key::"
         },
         {
+          name      = "FEATURE_FLAGS_AUTH_KEY",
+          valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:x_auth::"
+        },
+        {
           name      = "ESRI_API_KEY"
           valueFrom = "${aws_secretsmanager_secret.esri_api_key.arn}:esri_api_key::"
-        },
+        }
       ]
     }
   }
