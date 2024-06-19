@@ -12,7 +12,7 @@ module "cloudwatch_alarm_cloudfront_frontend_500_errors" {
   unit                = "None"
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
-    Region         = "Global"
+    Region         = "us-east-1"
   }
   namespace   = "AWS/CloudFront"
   metric_name = "5xxErrorRate"
@@ -33,7 +33,7 @@ module "cloudwatch_alarm_cloudfront_frontend_400_errors" {
   unit                = "None"
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
-    Region         = "Global"
+    Region         = "us-east-1"
   }
   namespace   = "AWS/CloudFront"
   metric_name = "4xxErrorRate"
@@ -54,7 +54,6 @@ module "cloudwatch_alarm_aurora_db_app" {
   unit                = "None"
   dimensions = {
     DBClusterIdentifier = module.aurora_db_app.cluster_id
-    SourceRegion        = local.region
   }
   namespace   = "AWS/RDS"
   metric_name = "CPUUtilization"
