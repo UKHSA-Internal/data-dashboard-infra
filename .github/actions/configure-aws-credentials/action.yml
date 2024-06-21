@@ -72,7 +72,7 @@ runs:
 
     - name: Configure AWS credentials for uat account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ inputs.account-name == 'uat' || inputs.account-name == 'train' }}
+      if: ${{ inputs.account-name == 'uat' || inputs.account-name == 'train' || inputs.account-name == 'staging' }}
       with:
         role-to-assume: ${{ inputs.uat-account-role }}
         aws-region: ${{ inputs.aws-region }}
