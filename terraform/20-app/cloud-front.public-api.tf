@@ -216,6 +216,6 @@ resource "aws_cloudwatch_log_subscription_filter" "cloud_front_function_public_a
 
 module "cloudfront_password_protection_public_api" {
   source = "../modules/cloud-front-basic-password-protection"
-  create = true
+  create = local.add_password_protection
   name = "${local.prefix}-public-api-password-protection"
 }

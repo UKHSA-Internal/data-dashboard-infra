@@ -247,6 +247,6 @@ resource "aws_cloudfront_cache_policy" "front_end_bypass_cdn" {
 
 module "cloudfront_password_protection_frontend" {
   source = "../modules/cloud-front-basic-password-protection"
-  create = true
+  create = local.add_password_protection
   name = "${local.prefix}-front-end-password-protection"
 }
