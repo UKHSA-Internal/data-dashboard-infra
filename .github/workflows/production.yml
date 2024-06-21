@@ -216,5 +216,5 @@ jobs:
     if: ${{needs.fast_forward_env_branches.outputs.deploy_staging}}
     uses: ./.github/workflows/well-known-environment.yml
     with:
-      branch: env/uat/uat
+      branch: env/uat/staging
     secrets: inherit
