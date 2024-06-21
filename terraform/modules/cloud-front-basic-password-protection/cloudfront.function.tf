@@ -1,16 +1,13 @@
-resource "aws_cloudfront_key_value_store" "password_protection" {
-  count = local.add_password_protection ? 1 : 0
-  name  = "${local.prefix}-password-protection"
-}
-
 resource "aws_cloudfront_function" "password_protection" {
-  count                        = local.add_password_protection ? 1 : 0
-  name                         = "${local.prefix}-password-protection"
+  count = var.create ? 1 : 0
+
+  name                         = var.name
   runtime                      = "cloudfront-js-2.0"
   publish                      = true
   key_value_store_associations = [
     aws_cloudfront_key_value_store.password_protection[0].arn
   ]
+
   code = <<-EOF
   const cf = require('cloudfront')
 

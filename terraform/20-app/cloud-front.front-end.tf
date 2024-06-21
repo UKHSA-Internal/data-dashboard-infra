@@ -56,7 +56,7 @@ module "cloudfront_front_end" {
     viewer_protocol_policy   = "redirect-to-https"
     function_association     = local.add_password_protection ? {
       viewer-request = {
-        function_arn = aws_cloudfront_function.password_protection[0].arn
+        function_arn = module.cloudfront_password_protection_frontend.arn
       }
     } : {}
   }
@@ -239,4 +239,14 @@ resource "aws_cloudfront_cache_policy" "front_end_bypass_cdn" {
       query_string_behavior = "none"
     }
   }
+}
+
+################################################################################
+# Request viewer
+################################################################################
+
+module "cloudfront_password_protection_frontend" {
+  source = "../modules/cloud-front-basic-password-protection"
+  create = true
+  name = "${local.prefix}-front-end-password-protection"
 }
