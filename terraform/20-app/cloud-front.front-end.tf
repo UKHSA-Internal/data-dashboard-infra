@@ -56,7 +56,7 @@ module "cloudfront_front_end" {
     viewer_protocol_policy   = "redirect-to-https"
     function_association     = local.add_password_protection ? {
       viewer-request = {
-        function_arn = aws_cloudfront_function.password_protection.arn
+        function_arn = aws_cloudfront_function.password_protection[0].arn
       }
     } : {}
   }

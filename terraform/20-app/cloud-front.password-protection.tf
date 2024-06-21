@@ -9,7 +9,7 @@ resource "aws_cloudfront_function" "password_protection" {
   runtime                      = "cloudfront-js-2.0"
   publish                      = true
   key_value_store_associations = [
-    aws_cloudfront_key_value_store.password_protection.arn
+    aws_cloudfront_key_value_store.password_protection[0].arn
   ]
   code = <<-EOF
   const cf = require('cloudfront')
@@ -36,9 +36,7 @@ resource "aws_cloudfront_function" "password_protection" {
 
   async function handler(event) {
       const authorizationHeaders = event.request.headers.authorization;
-      const kvStoreArn = "${aws_cloudfront_key_value_store.password_protection.arn}"
-      console.log('arn')
-      console.log(kvStoreArn)
+      const kvStoreArn = "${aws_cloudfront_key_value_store.password_protection[0].arn}"
       const KvStoreId = extractFinalSection(kvStoreArn)
 
       const credentials = await getCredentials(KvStoreId)

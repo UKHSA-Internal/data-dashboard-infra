@@ -59,7 +59,7 @@ module "cloudfront_public_api" {
         function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
       viewer-request = local.add_password_protection ? {
-        function_arn = aws_cloudfront_function.password_protection.arn
+        function_arn = aws_cloudfront_function.password_protection[0].arn
       } : {}
     }
   }
