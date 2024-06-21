@@ -1,8 +1,10 @@
 resource "aws_cloudfront_key_value_store" "password_protection" {
-  name = "${local.prefix}-password-protection"
+  count = local.add_password_protection ? 1 : 0
+  name  = "${local.prefix}-password-protection"
 }
 
 resource "aws_cloudfront_function" "password_protection" {
+  count                        = local.add_password_protection ? 1 : 0
   name                         = "${local.prefix}-password-protection"
   runtime                      = "cloudfront-js-2.0"
   publish                      = true
