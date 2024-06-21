@@ -54,6 +54,11 @@ module "cloudfront_front_end" {
     target_origin_id         = "alb"
     use_forwarded_values     = false
     viewer_protocol_policy   = "redirect-to-https"
+    function_association     = local.add_password_protection ? {
+      viewer-request = {
+        function_arn = aws_cloudfront_function.password_protection.arn
+      }
+    } : {}
   }
 
   ordered_cache_behavior = [
