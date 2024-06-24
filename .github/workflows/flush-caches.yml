@@ -14,6 +14,7 @@ on:
           - dev
           - test
           - train
+          - staging
 
 env:
   AWS_REGION: "eu-west-2"
