@@ -56,7 +56,7 @@ module "cloudfront_public_api" {
     viewer_protocol_policy   = "redirect-to-https"
     function_association = {
       viewer-request = {
-        function_arn = aws_cloudfront_function.public_api_viewer_request.arn
+        function_arn = local.add_password_protection ? module.cloudfront_password_protection_public_api.arn : aws_cloudfront_function.public_api_viewer_request.arn
       }
     }
   }
@@ -187,7 +187,7 @@ resource "aws_cloudfront_cache_policy" "public_api_health_check" {
 }
 
 ################################################################################
-# Viewer function
+# Viewer functions
 ################################################################################
 
 resource "aws_cloudfront_function" "public_api_viewer_request" {
@@ -212,4 +212,10 @@ resource "aws_cloudwatch_log_subscription_filter" "cloud_front_function_public_a
   name            = "splunk"
   provider        = aws.us_east_1
   role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.us_east_1.role_arn
+}
+
+module "cloudfront_password_protection_public_api" {
+  source = "../modules/cloud-front-basic-password-protection"
+  create = local.add_password_protection
+  name = "${local.prefix}-public-api-password-protection"
 }

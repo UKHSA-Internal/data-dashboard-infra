@@ -54,6 +54,11 @@ module "cloudfront_front_end" {
     target_origin_id         = "alb"
     use_forwarded_values     = false
     viewer_protocol_policy   = "redirect-to-https"
+    function_association     = local.add_password_protection ? {
+      viewer-request = {
+        function_arn = module.cloudfront_password_protection_frontend.arn
+      }
+    } : {}
   }
 
   ordered_cache_behavior = [
@@ -234,4 +239,14 @@ resource "aws_cloudfront_cache_policy" "front_end_bypass_cdn" {
       query_string_behavior = "none"
     }
   }
+}
+
+################################################################################
+# Request viewer
+################################################################################
+
+module "cloudfront_password_protection_frontend" {
+  source = "../modules/cloud-front-basic-password-protection"
+  create = local.add_password_protection
+  name   = "${local.prefix}-front-end-password-protection"
 }
