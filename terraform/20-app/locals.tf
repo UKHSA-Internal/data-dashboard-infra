@@ -9,7 +9,7 @@ locals {
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   use_prod_sizing         = contains(["perf", "train", "uat", "prod"], local.environment)
-  add_password_protection = false
+  add_password_protection = local.environment == "staging"
 
   wke = {
     account = ["dev", "test", "uat", "prod"]
