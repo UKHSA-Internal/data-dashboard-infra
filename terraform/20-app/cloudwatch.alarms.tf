@@ -3,7 +3,7 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_500_errors {
 
   alarm_name          = "${local.prefix}-cloudfront-frontend-5xx-alarm"
   alarm_description   = "HTTP 5xx errors in the frontend Cloudfront distribution."
-  alarm_actions       = [aws_sns_topic.sns_topic_alarms.arn]
+  alarm_actions       = [aws_sns_topic.cloudfront_alarms.arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 1
@@ -23,7 +23,7 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_400_errors {
 
   alarm_name          = "${local.prefix}-cloudfront-frontend-4xx-alarm"
   alarm_description   = "HTTP 4xx errors in the frontend Cloudfront distribution."
-  alarm_actions       = [aws_sns_topic.sns_topic_alarms.arn]
+  alarm_actions       = [aws_sns_topic.cloudfront_alarms.arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 1
