@@ -1,3 +1,5 @@
+# This SNS topic has to be placed in `us-east-1`
+# since Cloudwatch alarm are delivered there and not `eu-west-2`
 resource "aws_sns_topic" "cloudfront_alarms" {
   provider = aws.us_east_1
   name   = "${local.prefix}-cloudfront-alarms"
