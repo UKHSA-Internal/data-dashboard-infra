@@ -37,23 +37,3 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_400_errors {
   metric_name = "4xxErrorRate"
   statistic   = "Average"
 }
-
-module "cloudwatch_alarm_aurora_db_app" {
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "5.3.1"
-
-  alarm_name          = "${local.prefix}-aurora-db-app"
-  alarm_description   = "CPU utilization of aurora db application cluster"
-  alarm_actions       = [aws_sns_topic.sns_topic_alarms.arn]
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = 1
-  threshold           = 90
-  period              = 60
-  unit                = "None"
-  dimensions = {
-    DBClusterIdentifier = module.aurora_db_app.cluster_id
-  }
-  namespace   = "AWS/RDS"
-  metric_name = "CPUUtilization"
-  statistic   = "Average"
-}
