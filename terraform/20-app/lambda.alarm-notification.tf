@@ -21,7 +21,10 @@ module "lambda_alarm_notification" {
     subscribe_to_sns_for_alarms = {
       actions   = ["sns:Subscribe", "sns:Receive"]
       effect    = "Allow"
-      resources = [module.sns_topic_alarms.topic_arn]
+      resources = [
+        aws_sns_topic.cloudfront_alarms.arn,
+        module.sns_topic_alarms.topic_arn,
+      ]
     }
     get_slack_webhook_url_from_secrets_manager = {
       effect    = "Allow",
@@ -32,7 +35,11 @@ module "lambda_alarm_notification" {
 
   create_current_version_allowed_triggers = false
   allowed_triggers = {
-    sns = {
+    sns_cloudfront_alarms = {
+      principal  = "sns.amazonaws.com"
+      source_arn = aws_sns_topic.cloudfront_alarms.arn
+    }
+    sns_aurora_db_alarms = {
       principal  = "sns.amazonaws.com"
       source_arn = module.sns_topic_alarms.topic_arn
     }
