@@ -21,7 +21,7 @@ locals {
       "51.198.160.222/32", # Debbie
     ],
     other_stakeholders = [
-      "62.253.228.56/32",   # Georgina
+      "62.253.228.56/32",   # UKHSA gateway 
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
       "217.155.89.135/32",  # Zoe Brass
