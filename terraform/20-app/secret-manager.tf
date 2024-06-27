@@ -175,7 +175,6 @@ resource "aws_secretsmanager_secret" "esri_maps_service_credentials" {
 resource "aws_secretsmanager_secret_version" "esri_maps_service_credentials" {
   secret_id     = aws_secretsmanager_secret.esri_maps_service_credentials.id
   secret_string = jsonencode({
-    api_key = ""
     client_url = ""
     client_id = ""
     client_secret = ""
