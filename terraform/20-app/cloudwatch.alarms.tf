@@ -8,7 +8,6 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_500_errors {
   evaluation_periods  = 1
   threshold           = 1
   period              = 60
-  unit                = "None"
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
     Region         = "us-east-1"
@@ -28,7 +27,6 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_400_errors {
   evaluation_periods  = 1
   threshold           = 1
   period              = 60
-  unit                = "None"
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
     Region         = "us-east-1"
