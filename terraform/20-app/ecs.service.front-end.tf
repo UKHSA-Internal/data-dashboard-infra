@@ -75,6 +75,18 @@ module "ecs_service_front_end" {
         {
           name      = "ESRI_API_KEY"
           valueFrom = "${aws_secretsmanager_secret.esri_api_key.arn}:esri_api_key::"
+        },
+        {
+          name      = "ESRI_CLIENT_URL"
+          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_url::"
+        },
+        {
+          name      = "ESRI_CLIENT_ID"
+          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_id::"
+        },
+        {
+          name      = "ESRI_CLIENT_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_secret::"
         }
       ]
     }
