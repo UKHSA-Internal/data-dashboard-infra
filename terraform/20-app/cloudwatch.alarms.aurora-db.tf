@@ -9,7 +9,6 @@ module "cloudwatch_alarm_aurora_db_app" {
   evaluation_periods  = 1
   threshold           = 90
   period              = 60
-  unit                = "None"
   dimensions = {
     DBClusterIdentifier = module.aurora_db_app.cluster_id
   }
