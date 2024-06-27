@@ -10,7 +10,7 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_500_errors {
   period              = 60
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
-    Region         = "us-east-1"
+    Region         = "Global"
   }
   namespace   = "AWS/CloudFront"
   metric_name = "5xxErrorRate"
@@ -29,7 +29,7 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_400_errors {
   period              = 60
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
-    Region         = "us-east-1"
+    Region         = "Global"
   }
   namespace   = "AWS/CloudFront"
   metric_name = "4xxErrorRate"
