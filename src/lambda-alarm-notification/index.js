@@ -49,7 +49,7 @@ function buildSlackPostFromSNSMessage(event) {
                 'type': 'header',
                 'text': {
                     'type': 'plain_text',
-                    'text': ':alert: Alarm triggered',
+                    'text': ':alert: Alarm triggered @channel',
                     'emoji': true
                 }
             },
