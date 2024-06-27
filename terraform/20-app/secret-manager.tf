@@ -151,9 +151,10 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
 }
 
 ################################################################################
-# ESRI API key
+# ESRI maps credentials
 ################################################################################
 
+# Deprecated secret
 resource "aws_secretsmanager_secret" "esri_api_key" {
   name        = "${local.prefix}-esri-api-key"
   description = "This is the API key required for the ESRI maps service."
@@ -163,6 +164,21 @@ resource "aws_secretsmanager_secret_version" "esri_api_key" {
   secret_id     = aws_secretsmanager_secret.esri_api_key.id
   secret_string = jsonencode({
     esri_api_key = ""
+  })
+}
+
+resource "aws_secretsmanager_secret" "esri_maps_service_credentials" {
+  name        = "${local.prefix}-esri-maps-service-credentials"
+  description = "These are the credentials required for the ESRI maps service."
+}
+
+resource "aws_secretsmanager_secret_version" "esri_maps_service_credentials" {
+  secret_id     = aws_secretsmanager_secret.esri_maps_service_credentials.id
+  secret_string = jsonencode({
+    api_key = ""
+    client_url = ""
+    client_id = ""
+    client_secret = ""
   })
 }
 
