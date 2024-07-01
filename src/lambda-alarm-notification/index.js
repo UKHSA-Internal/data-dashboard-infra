@@ -44,43 +44,50 @@ function buildSlackPostFromSNSMessage(event) {
     const message = JSON.parse(inboundSNSMessage.Message);
 
     return {
-        blocks: [
+        "blocks": [
             {
-                'type': 'header',
-                'text': {
-                    'type': 'plain_text',
-                    'text': ':alert: Alarm triggered @channel',
-                    'emoji': true
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": ":alert: Alarm triggered",
+                    "emoji": true
                 }
             },
             {
-                'type': 'section',
-                'fields': [
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Alarm type:*\n${message.AlarmName}`
-                    },
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Alarm description:*\n${message.AlarmDescription}`
-                    }
-                ]
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "@here"
+                }
             },
             {
-                'type': 'section',
-                'fields': [
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `*Alarm type:* ${message.AlarmName}`
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `*Alarm description:* ${message.AlarmDescription}`
+                }
+            },
+            {
+                "type": "context",
+                "elements": [
                     {
-                        'type': 'mrkdwn',
-                        'text': `*Subject:*\n${inboundSNSMessage.Subject}`
-                    },
-                    {
-                        'type': 'mrkdwn',
-                        'text': `*Source:*\n${topicName}`
+                        "type": "plain_text",
+                        "text": `State change reason: ${message.NewStateReason}`
                     }
                 ]
             }
         ]
-    };
+    }
 }
 
 /**

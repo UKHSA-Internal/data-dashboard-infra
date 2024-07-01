@@ -140,33 +140,40 @@ describe('buildSlackPostFromSNSMessage', () => {
                     'type': 'header',
                     'text': {
                         'type': 'plain_text',
-                        'text': ':alert: Alarm triggered @channel',
+                        'text': ':alert: Alarm triggered',
                         'emoji': true
                     }
                 },
                 {
                     'type': 'section',
-                    'fields': [
-                        {
-                            'type': 'mrkdwn',
-                            'text': `*Alarm type:*\n${message.AlarmName}`
-                        },
-                        {
-                            'type': 'mrkdwn',
-                            'text': `*Alarm description:*\n${message.AlarmDescription}`
-                        }
-                    ]
+                    'text': {
+                        'type': 'mrkdwn',
+                        'text': '@here'
+                    }
+                },
+                {
+                    'type': 'divider'
                 },
                 {
                     'type': 'section',
-                    'fields': [
+                    'text': {
+                        'type': 'mrkdwn',
+                        'text': `*Alarm type:* ${message.AlarmName}`
+                    }
+                },
+                {
+                    'type': 'section',
+                    'text': {
+                        'type': 'mrkdwn',
+                        'text': `*Alarm description:* ${message.AlarmDescription}`
+                    }
+                },
+                {
+                    'type': 'context',
+                    'elements': [
                         {
-                            'type': 'mrkdwn',
-                            'text': '*Subject:*\nALARM: "4xxErrorRateHigh" in AWS/CloudFront'
-                        },
-                        {
-                            'type': 'mrkdwn',
-                            'text': '*Source:*\nfake-topic-name'
+                            'type': 'plain_text',
+                            'text': `State change reason: ${message.NewStateReason}`
                         }
                     ]
                 }
