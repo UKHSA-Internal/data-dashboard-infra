@@ -24,8 +24,8 @@ resource "aws_cloudwatch_metric_alarm" cloudfront_frontend_400_errors {
   alarm_description   = "HTTP 4xx errors in the frontend Cloudfront distribution."
   alarm_actions       = [aws_sns_topic.cloudfront_alarms.arn]
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = 1
-  threshold           = 80
+  evaluation_periods  = 5
+  threshold           = 95
   period              = 60
   dimensions = {
     DistributionId = module.cloudfront_front_end.cloudfront_distribution_id
