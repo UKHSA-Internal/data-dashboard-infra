@@ -42,4 +42,21 @@ locals {
       "81.108.143.100/32",  # Ruairidh Villar
     ]
   }
+  complete_ip_allow_list = tolist(
+    # Cast back to a list for portability
+    toset(
+      # Cast the whole list to a set
+      # to deduplicate any IP addresses
+      # This should prevent duplicated IP addresses
+      # from being included.
+      # Which breaks the load balancers on deployments
+      concat(
+        # Combine all the sublists since the whole
+        # list is used for access to the WAFs
+        local.ip_allow_list.engineers,
+        local.ip_allow_list.project_team,
+        local.ip_allow_list.other_stakeholders
+      )
+    )
+  )
 }
