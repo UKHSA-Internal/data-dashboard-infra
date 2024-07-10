@@ -4,9 +4,7 @@ resource "aws_wafv2_ip_set" "ip_allow_list" {
     provider           = aws.us_east_1
     ip_address_version = "IPV4"
     addresses          = concat(
-        local.ip_allow_list.engineers,
-        local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders,
+        local.complete_ip_allow_list,
         formatlist("%s/32", module.vpc.nat_public_ips)
     )
 }
