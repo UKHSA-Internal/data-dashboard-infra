@@ -2,11 +2,8 @@ locals {
   ip_allow_list = {
     engineers = [
       "89.36.121.186/32",   # Afaan
-      "154.51.68.102/32",   # Burendo
-      "82.2.4.244/32",      # Kev
-      "78.147.110.81/32",   # Kev 2
-      "31.94.59.185/32",    # Kev's phone
-      "188.220.4.44/32",    # Phil
+      "154.51.68.102/32",   # Burendo Leeds
+      "94.8.196.5/32",      # Phil
       "93.96.77.57/32",     # Rhys
       "86.6.247.91/32",     # Tom
       "35.176.13.254/32",   # UKHSA test EC2
@@ -18,7 +15,7 @@ locals {
       "94.173.91.216/32",   # Zesh
     ],
     project_team = [
-      "51.198.160.222/32", # Debbie
+      "51.198.160.222/32",  # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway 
