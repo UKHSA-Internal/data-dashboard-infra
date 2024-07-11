@@ -138,7 +138,10 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
   cookies_config {
-    cookie_behavior = "none"
+    cookie_behavior = "whitelist"
+    cookies {
+      items = ["UKHSAConsentGDPR"]
+    }
   }
   headers_config {
     header_behavior = "allViewer"
@@ -164,7 +167,10 @@ resource "aws_cloudfront_cache_policy" "front_end" {
     enable_accept_encoding_gzip   = true
 
     cookies_config {
-      cookie_behavior = "none"
+      cookie_behavior = "whitelist"
+      cookies {
+        items = ["UKHSAConsentGDPR"]
+      }
     }
     headers_config {
       header_behavior = "none"
