@@ -8,23 +8,15 @@ runs:
     - id: install-tfenv
       run: |
         git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-        echo $HOME/.tfenv/bin >> $GITHUB_PATH
+        echo $HOME/.tfenv/bin >> $GITHUB_PAT
+        rm -rf ./terraform/20-app/.terraform
+        rm -rf ./terraform/10-app/.terraform
       shell: bash
-
-    - name: clear terraform cache in app layer
-      run: |
-        rm -rf .terraform
-      shell: bash
-      working-directory: ./terraform/20-app
-
-    - name: clear terraform cache in account layer
-      run: |
-        rm -rf .terraform
-      shell: bash
-      working-directory: ./terraform/10-account
 
     - id: install-terraform
       run: |
+        rm -rf ./terraform/20-app/.terraform
+        rm -rf ./terraform/10-app/.terraform
         tfenv install
         terraform --version
       shell: bash
