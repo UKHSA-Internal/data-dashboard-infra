@@ -19,6 +19,8 @@ runs:
 
     - id: install-terraform
       run: |
+        rm -rf .terraform
+        rm -f .terraform.lock.hcl
         tfenv install
         terraform --version
       shell: bash
