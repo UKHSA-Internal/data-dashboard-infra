@@ -1,6 +1,6 @@
 module "iam_report_viewer_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.40.0"
+  version = "5.41.0"
 
   create_role          = true
   max_session_duration = 43200
