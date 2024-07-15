@@ -7,10 +7,10 @@ runs:
   steps:
     - id: install-tfenv
       run: |
-        git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-        echo $HOME/.tfenv/bin >> $GITHUB_PAT
         rm -rf ./terraform/20-app/.terraform
         rm -rf ./terraform/10-app/.terraform
+        git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+        echo $HOME/.tfenv/bin >> $GITHUB_PAT
       shell: bash
 
     - id: install-terraform
