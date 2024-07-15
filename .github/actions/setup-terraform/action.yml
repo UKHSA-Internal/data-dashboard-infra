@@ -11,16 +11,20 @@ runs:
         echo $HOME/.tfenv/bin >> $GITHUB_PATH
       shell: bash
 
-    - id: clear-terraform-cache
+    - name: clear terraform cache in app layer
       run: |
         rm -rf .terraform
-        rm -f .terraform.lock.hcl
       shell: bash
+      working-directory: ./terraform/20-app
+
+    - name: clear terraform cache in account layer
+      run: |
+        rm -rf .terraform
+      shell: bash
+      working-directory: ./terraform/10-account
 
     - id: install-terraform
       run: |
-        rm -rf .terraform
-        rm -f .terraform.lock.hcl
         tfenv install
         terraform --version
       shell: bash
