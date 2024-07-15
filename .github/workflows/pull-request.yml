@@ -33,6 +33,8 @@ jobs:
 
       - name: Build base env
         run: |
+          rm -rf ./terraform/20-app/.terraform
+          rm -rf ./terraform/10-app/.terraform
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
