@@ -152,6 +152,7 @@ jobs:
       contents: write
     outputs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
+      deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
       deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
       deploy_train: ${{ steps.fast_forward_merge.outputs.deploy_train }}
@@ -177,6 +178,14 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/dev/dev
+    secrets: inherit
+
+  deploy_dpd:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_dpd}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/dev/dpd
     secrets: inherit
 
   deploy_test:
