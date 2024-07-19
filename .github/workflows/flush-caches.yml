@@ -12,6 +12,7 @@ on:
           - prod
           - uat
           - dev
+          - dpd
           - test
           - train
           - staging
