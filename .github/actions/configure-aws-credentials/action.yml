@@ -54,7 +54,7 @@ runs:
 
     - name: Configure AWS credentials for dev account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ inputs.account-name == 'dev' }}
+      if: ${{ inputs.account-name == 'dev' || inputs.account-name == 'dpd' }}
       with:
         role-to-assume: ${{ inputs.dev-account-role }}
         aws-region: ${{ inputs.aws-region }}
