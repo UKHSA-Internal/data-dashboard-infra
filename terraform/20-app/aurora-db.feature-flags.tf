@@ -1,5 +1,6 @@
 module "aurora_db_feature_flags" {
-  source = "terraform-aws-modules/rds-aurora/aws"
+  source  = "terraform-aws-modules/rds-aurora/aws"
+  version = "9.5.0"
 
   name              = "${local.prefix}-aurora-db-feature-flags"
   engine            = "aurora-postgresql"
@@ -18,7 +19,7 @@ module "aurora_db_feature_flags" {
   apply_immediately   = true
   skip_final_snapshot = true
 
-  instance_class                     = "db.serverless"
+  instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {
     min_capacity = 1
     max_capacity = 10
