@@ -15,6 +15,8 @@ locals {
     account = ["dev", "test", "uat", "prod"]
     other   = ["pen", "perf", "train"]
   }
+
+  needs_alarms = contains(["dev", "uat", "prod"], local.environment)
 }
 
 locals {
