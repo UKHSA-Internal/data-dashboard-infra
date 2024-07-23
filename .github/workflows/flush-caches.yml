@@ -14,7 +14,6 @@ on:
           - dev
           - dpd
           - test
-          - train
           - staging
 
 env:
