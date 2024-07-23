@@ -80,7 +80,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_name          = "Managed-CachingDisabled"
+      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -92,7 +92,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_name          = "Managed-CachingDisabled"
+      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -104,7 +104,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/api/proxy/alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_name          = "Managed-CachingDisabled"
+      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
