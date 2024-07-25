@@ -21,6 +21,8 @@ locals {
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway 
+      "80.5.156.26/32",     # Khawar
+      "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
       "217.155.89.135/32",  # Zoe Brass
