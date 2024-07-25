@@ -17,7 +17,7 @@ locals {
       "94.173.91.216/32",   # Zesh
     ],
     project_team = [
-      "51.198.160.222/32",  # Debbie
+      "5.71.157.91/32",  # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway 
