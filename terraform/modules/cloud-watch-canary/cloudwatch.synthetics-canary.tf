@@ -6,6 +6,7 @@ resource "aws_synthetics_canary" "this" {
   handler              = "index.handler"
   runtime_version      = "syn-nodejs-puppeteer-8.0"
   start_canary         = true
+  delete_lambda        = true
 
   schedule {
     expression = var.schedule_expression
