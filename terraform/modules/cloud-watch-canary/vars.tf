@@ -1,7 +1,7 @@
 variable "create" {
   description = "Whether to create the synthetic canary and its associated components"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "name" {
