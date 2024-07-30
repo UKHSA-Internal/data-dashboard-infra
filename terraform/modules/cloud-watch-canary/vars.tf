@@ -38,3 +38,9 @@ variable "script_path" {
   description = "The file path of the script to attach to the canary"
   type        = string
 }
+
+variable "environment_variables" {
+  description = "Map of environment variables to provide to the canary runtime."
+  type        = map(string)
+  default = {}
+}

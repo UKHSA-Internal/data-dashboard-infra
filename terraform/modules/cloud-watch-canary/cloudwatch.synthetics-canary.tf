@@ -16,4 +16,8 @@ resource "aws_synthetics_canary" "this" {
     subnet_ids         = var.subnet_ids
     security_group_ids = [module.canary_security_group.security_group_id]
   }
+
+  run_config {
+    environment_variables = var.environment_variables
+  }
 }
