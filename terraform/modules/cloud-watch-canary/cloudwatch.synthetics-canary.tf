@@ -21,4 +21,7 @@ resource "aws_synthetics_canary" "this" {
     timeout_in_seconds    = var.timeout_in_seconds
     environment_variables = var.environment_variables
   }
+
+  success_retention_period = 7
+  failure_retention_period = 31
 }
