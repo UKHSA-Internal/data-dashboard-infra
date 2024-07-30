@@ -1,7 +1,7 @@
 module "cloudwatch_canary_front_end_screenshots" {
   source            = "../modules/cloud-watch-canary"
   create            = true
-  name              = "${local.prefix}-display"
+  name              = "${local.prefix}-fe"
   s3_access_logs_id = data.aws_s3_bucket.s3_access_logs.id
   s3_logs_destination = {
     bucket_id  = module.s3_canary_logs.s3_bucket_id
