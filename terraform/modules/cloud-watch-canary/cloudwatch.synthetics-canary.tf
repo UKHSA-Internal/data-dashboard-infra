@@ -18,6 +18,7 @@ resource "aws_synthetics_canary" "this" {
   }
 
   run_config {
+    timeout_in_seconds    = var.timeout_in_seconds
     environment_variables = var.environment_variables
   }
 }
