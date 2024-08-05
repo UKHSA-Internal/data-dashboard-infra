@@ -235,7 +235,7 @@ async function getRelevantPrefix(target, s3Client = new S3Client()) {
  * @param {array} keys - Array of objects representing each of the keys in the s3 folder/prefix
  * @returns {array} - Arrays of strings representing the keys of the failed page snapshots.
  */
-function extractScreenshotKeys(keys) {
+function extractFailedScreenshotKeys(keys) {
     return keys
         .filter(item => item.Key.includes('-succeeded') && item.Key.endsWith('.png'))
         .map(item => item.Key);
@@ -404,7 +404,7 @@ async function handler(event) {
     const slackPayload = buildSlackPostPayload(report.canaryName, report.startTime, report.endTime,)
     const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id,)
 
-    const extractedSnapshotKeys = extractScreenshotKeys(folderContents)
+    const extractedSnapshotKeys = extractFailedScreenshotKeys(folderContents)
 
     const downloadResponses = await downloadAllFiles(extractedSnapshotKeys, S3_CANARY_LOGS_BUCKET_NAME)
     await uploadAllScreenshotsToSlackThread(downloadResponses, slackClient, slackSecret.slack_channel_id, slackPostResponse.ts)
