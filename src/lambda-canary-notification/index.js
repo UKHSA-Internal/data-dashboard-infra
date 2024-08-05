@@ -237,7 +237,7 @@ async function getRelevantPrefix(target, s3Client = new S3Client()) {
  */
 function extractFailedScreenshotKeys(keys) {
     return keys
-        .filter(item => item.Key.includes('-succeeded') && item.Key.endsWith('.png'))
+        .filter(item => item.Key.includes('-failed') && item.Key.endsWith('.png'))
         .map(item => item.Key);
 }
 
