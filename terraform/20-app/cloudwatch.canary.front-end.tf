@@ -13,7 +13,7 @@ module "cloudwatch_canary_front_end_screenshots" {
 
   schedule_expression = "rate(10 minutes)"
   timeout_in_seconds  = 600
-  script_path         = "../../src/canary-front-end-screenshots"
+  script_path                       = "../../src/canary-front-end-broken-links"
 
   environment_variables = {
     SITEMAP_URL = "${local.urls.front_end}/sitemap.xml"
