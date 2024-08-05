@@ -49,3 +49,8 @@ variable "environment_variables" {
   type        = map(string)
   default = {}
 }
+
+variable "lambda_function_notification_arn" {
+  description = "The ARN associated with Lambda function used to perform the notification trigger"
+  type = string
+}
