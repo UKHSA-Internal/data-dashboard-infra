@@ -210,9 +210,9 @@ function getCurrentDate() {
  */
 async function getRelevantPrefix(target, s3Client = new S3Client()) {
     const {year, month, day, hour} = getCurrentDate()
-    const key = `canary/eu-west-2/${target}/${year}/${month}/${day}/${hour}`
+    const prefix = `canary/eu-west-2/${target}/${year}/${month}/${day}/${hour}`
     try {
-        const data = await listFiles(S3_CANARY_LOGS_BUCKET_NAME, key)
+        const data = await listFiles(S3_CANARY_LOGS_BUCKET_NAME, prefix, s3Client)
 
         const folders = new Set(data.Contents.map(item => {
             const parts = item.Key.split('/');
@@ -308,7 +308,7 @@ function buildSlackPostPayload(target, startTime, endTime) {
 async function uploadScreenshotToSlackThread(downloadedFileResponse, slackClient, channelId, threadTs) {
     const fileBufferStream = await streamToBuffer(downloadedFileResponse.content.Body);
     const fileName = getFilename(downloadedFileResponse.key);
-    const fileUploadURLResponse = await getFileUploadURLToSlack(slackClient, fileName, fileBuffer.length)
+    const fileUploadURLResponse = await getFileUploadURLToSlack(slackClient, fileName, fileBufferStream.length)
 
     const uploadURL = fileUploadURLResponse.upload_url
     const fileID = fileUploadURLResponse.file_id
@@ -329,7 +329,7 @@ async function uploadScreenshotToSlackThread(downloadedFileResponse, slackClient
  * @returns {Promise} - The promise from the function call
  */
 async function uploadAllScreenshotsToSlackThread(downloadedFileResponses, slackClient, channelId, threadTs) {
-    for (const downloadedFileResponse of downloadedFileResponses) {
+    for (let downloadedFileResponse of downloadedFileResponses) {
         await uploadScreenshotToSlackThread(downloadedFileResponse, slackClient, channelId, threadTs)
     }
 }
@@ -383,9 +383,8 @@ function extractTargetFromEvent(event) {
  */
 async function determineRelevantFolderInS3(event) {
     const target = extractTargetFromEvent(event)
-    return getRelevantPrefix(target)
+    return await getRelevantPrefix(target)
 }
-
 
 /**
  * Main handler entrypoint for the Lambda runtime execution.
@@ -393,7 +392,7 @@ async function determineRelevantFolderInS3(event) {
  * @param {object} event - The object passed down to the Lambda runtime on initialization.
  */
 async function handler(event) {
-    const relevantFolder = determineRelevantFolderInS3(event)
+    const relevantFolder = await determineRelevantFolderInS3(event)
     const slackSecret = await getSlackSecret()
 
     const slackClient = await buildSlackClient(slackSecret.slack_token)
@@ -406,8 +405,8 @@ async function handler(event) {
     const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id,)
 
     const extractedSnapshotKeys = extractScreenshotKeys(folderContents)
-    const downloadResponses = downloadAllFiles(extractedSnapshotKeys, S3_CANARY_LOGS_BUCKET_NAME)
 
+    const downloadResponses = await downloadAllFiles(extractedSnapshotKeys, S3_CANARY_LOGS_BUCKET_NAME)
     await uploadAllScreenshotsToSlackThread(downloadResponses, slackClient, slackSecret.slack_channel_id, slackPostResponse.ts)
 }
 
