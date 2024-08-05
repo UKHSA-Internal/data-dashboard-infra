@@ -11,8 +11,8 @@ module "cloudwatch_canary_front_end_screenshots" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  schedule_expression = "rate(10 minutes)"
-  timeout_in_seconds  = 600
+  schedule_expression               = "rate(10 minutes)"
+  timeout_in_seconds                = 600
   script_path                       = "../../src/canary-front-end-broken-links"
 
   environment_variables = {
