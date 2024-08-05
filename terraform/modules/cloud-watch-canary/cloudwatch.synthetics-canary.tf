@@ -22,6 +22,6 @@ resource "aws_synthetics_canary" "this" {
     environment_variables = var.environment_variables
   }
 
-  success_retention_period = 7
+  success_retention_period = 1
   failure_retention_period = 31
 }
