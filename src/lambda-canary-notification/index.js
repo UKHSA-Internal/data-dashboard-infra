@@ -452,9 +452,6 @@ async function handler(event) {
     const listedFiles = await listFiles(S3_CANARY_LOGS_BUCKET_NAME, relevantFolder)
     const folderContents = listedFiles.Contents
 
-    const report = await extractReport(folderContents)
-    const slackPayload = buildSlackPostPayload(report.canaryName, report.startTime, report.endTime,)
-    const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id,)
     const syntheticsReport = await extractReport(folderContents, 'SyntheticsReport')
     const brokenLinksReport = await extractReport(folderContents, 'BrokenLinkCheckerReport')
 
