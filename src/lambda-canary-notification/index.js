@@ -5,7 +5,7 @@ const {
     ListObjectsV2CommandOutput,
     GetObjectCommandOutput
 } = require("@aws-sdk/client-s3");
-const {SecretsManagerClient, GetSecretValueCommand, GetSecretValueCommandOutput} = require("@aws-sdk/client-secrets-manager");
+const {SecretsManagerClient, GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
 const {WebClient} = require("@slack/web-api")
 const axios = require('axios');
 const FormData = require('form-data');
