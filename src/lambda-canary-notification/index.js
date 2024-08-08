@@ -245,6 +245,8 @@ function extractFailedScreenshotKeys(keys) {
  * Extracts the file associated with the given key from the given keys
  *
  * @param {array} keys - Array of objects representing each of the keys in the s3 folder/prefix
+ * @param {string} keyToSearchFor - The key to filter for in the given `keys`
+ *
  * @returns {string} - The key associated with the given `keyToSearchFor`
  */
 function extractReportKey(keys, keyToSearchFor) {
@@ -397,10 +399,12 @@ async function sendSlackPost(slackClient, payload, channelId) {
 }
 
 /**
- * Extracts the contents of the `SyntheticsReport` file from the given `folderContents`
+ * Extracts the contents of the report file from the given `folderContents`
  *
  * @param {array} folderContents - Array of objects representing the listed folder contents
- * @returns {object} - The JSON representation of the contents of the `SyntheticReports` file.
+ * @param {string} keyToSearchFor - The key to filter for in the given `keys`
+ *
+ * @returns {object} - The JSON representation of the contents of the report file.
  */
 async function extractReport(folderContents) {
     const downloadedReportKey = extractReportKey(folderContents)
