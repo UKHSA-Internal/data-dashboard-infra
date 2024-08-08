@@ -242,14 +242,14 @@ function extractFailedScreenshotKeys(keys) {
 }
 
 /**
- * Extracts the key associated with the `SyntheticsReport` file from the given keys
+ * Extracts the file associated with the given key from the given keys
  *
  * @param {array} keys - Array of objects representing each of the keys in the s3 folder/prefix
- * @returns {string} - The key associated with the `SyntheticsReport` file
+ * @returns {string} - The key associated with the given `keyToSearchFor`
  */
-function extractReportKey(keys) {
+function extractReportKey(keys, keyToSearchFor) {
     const reportKeys = keys
-        .filter(item => item.Key.includes('SyntheticsReport'))
+        .filter(item => item.Key.includes(keyToSearchFor))
         .map(item => item.Key);
     return reportKeys[0]
 }
@@ -451,6 +451,8 @@ async function handler(event) {
     const report = await extractReport(folderContents)
     const slackPayload = buildSlackPostPayload(report.canaryName, report.startTime, report.endTime,)
     const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id,)
+    const syntheticsReport = await extractReport(folderContents, 'SyntheticsReport')
+    const brokenLinksReport = await extractReport(folderContents, 'BrokenLinkCheckerReport')
 
     const extractedSnapshotKeys = extractFailedScreenshotKeys(folderContents)
 
