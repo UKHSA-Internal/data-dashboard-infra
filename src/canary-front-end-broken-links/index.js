@@ -44,7 +44,7 @@ const captureDestinationPageScreenshotOnFailure = true;
 
 // Close and Re-launch browser after checking these many links. This clears up /tmp disk storage occupied by chromium and launches a new browser for next set of links.
 // Increase or decrease based on complexity of your website.
-const numOfLinksToReLaunchBrowser = 20;
+const numOfLinksToReLaunchBrowser = 50;
 
 // async function used to grab urls from page
 // fetch hrefs from DOM
