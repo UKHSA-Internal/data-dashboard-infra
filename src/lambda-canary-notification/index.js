@@ -406,9 +406,9 @@ async function sendSlackPost(slackClient, payload, channelId) {
  *
  * @returns {object} - The JSON representation of the contents of the report file.
  */
-async function extractReport(folderContents) {
-    const downloadedReportKey = extractReportKey(folderContents)
-    const downloadedReportResponse = await downloadFile(S3_CANARY_LOGS_BUCKET_NAME, downloadedReportKey,)
+async function extractReport(folderContents, keyToSearchFor) {
+    const downloadedReportKey = extractReportKey(folderContents, keyToSearchFor)
+    const downloadedReportResponse = await downloadFile(S3_CANARY_LOGS_BUCKET_NAME, downloadedReportKey)
 
     const reportFileBuffer = await streamToBuffer(downloadedReportResponse.Body);
 
