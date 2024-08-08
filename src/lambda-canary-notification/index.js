@@ -283,6 +283,7 @@ function buildSlackPostPayload(target, startTime, endTime) {
                 "text": `*Alarm name:*\n${target}`
             }
         },
+        buildBrokenLinksList(brokenLinks),
         {
             "type": "context",
             "elements": [
@@ -291,8 +292,54 @@ function buildSlackPostPayload(target, startTime, endTime) {
                     "text": `Canary started at ${startTime} and failed at ${endTime}`
                 }
             ]
-        }
+        },
     ]
+}
+
+/**
+ * Builds the `blocks` to be sent to the Slack API for the broken links bullet point list
+ *
+ * @param {array} brokenLinks - Array of strings, each of which represents a broken link
+ *
+ * @returns {object} - JSON object which can be used to post to the Slack channel with.
+ */
+function buildBrokenLinksList(brokenLinks) {
+    const blocks = {
+        "type": "rich_text",
+        "elements": [
+            {
+                "type": "rich_text_section",
+                "elements": [
+                    {
+                        "type": "text",
+                        "text": "Detected broken link(s):\n"
+                    },
+                ]
+            },
+            {
+                "type": "rich_text_list",
+                "style": "bullet",
+                "indent": 0,
+                "border": 0,
+                "elements": []
+            }
+        ]
+    }
+    brokenLinks.forEach(brokenLink => {
+        blocks.elements[1].elements.push(
+            {
+                "type": "rich_text_section",
+                "elements": [
+                    {
+                        "type": "link",
+                        "url": brokenLink
+                    }
+                ]
+            },
+        );
+    });
+
+    return blocks
 }
 
 /**
