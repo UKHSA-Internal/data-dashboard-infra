@@ -260,10 +260,11 @@ function extractReportKey(keys) {
  * @param {string} target - The name of the canary from which the alarm was raised.
  * @param {string} startTime - The time which the canary started its run.
  * @param {string} endTime - The time which the canary completed its run.
+ * @param {array} brokenLinks - Array of strings, each of which represents a broken link
  *
  * @returns {array} - An array of JSON objects which can be used to post to the Slack channel with.
  */
-function buildSlackPostPayload(target, startTime, endTime) {
+function buildSlackPostPayload(target, startTime, endTime, brokenLinks) {
     return [
         {
             "type": "header",
