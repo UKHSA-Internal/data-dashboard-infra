@@ -455,6 +455,14 @@ async function handler(event) {
     const syntheticsReport = await extractReport(folderContents, 'SyntheticsReport')
     const brokenLinksReport = await extractReport(folderContents, 'BrokenLinkCheckerReport')
 
+    const slackPayload = buildSlackPostPayload(
+        syntheticsReport.canaryName,
+        syntheticsReport.startTime,
+        syntheticsReport.endTime,
+        brokenLinksReport.brokenLinks
+    )
+    const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id)
+
     const extractedSnapshotKeys = extractFailedScreenshotKeys(folderContents)
 
     const downloadResponses = await downloadAllFiles(extractedSnapshotKeys, S3_CANARY_LOGS_BUCKET_NAME)
