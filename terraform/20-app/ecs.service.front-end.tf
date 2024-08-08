@@ -43,6 +43,10 @@ module "ecs_service_front_end" {
           value = local.urls.private_api
         },
         {
+          name  = "BASE_URL"
+          value = local.urls.front_end
+        },
+        {
           name  = "UNLEASH_SERVER_API_URL"
           value = "${local.urls.feature_flags}/api"
         },
