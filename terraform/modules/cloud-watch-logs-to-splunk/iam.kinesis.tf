@@ -1,6 +1,6 @@
 module "iam_kinesis_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.42.0"
+  version = "5.43.0"
 
   create_role          = true
   max_session_duration = 3600
@@ -18,7 +18,7 @@ module "iam_kinesis_role" {
 
 module "iam_kinesis_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.42.0"
+  version = "5.43.0"
 
   name = "kinesis-splunk-cloud-watch-logs-policy-${local.region}"
 
