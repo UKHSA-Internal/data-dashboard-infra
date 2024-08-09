@@ -117,11 +117,11 @@ async function downloadAllFiles(keys, bucket, s3Client = new S3Client()) {
 /**
  * Sets up the `WebClient` object used to interact with Slack.
  *
- * @param {string} slack_token - The token associated with the Slack bot.
+ * @param {string} token - The token associated with the Slack bot.
  * @returns {WebClient} - An instantiated `WebClient` instance used to interact with Slack.
  */
-function buildSlackClient(slack_token) {
-    return new WebClient(slack_token);
+function buildSlackClient(token) {
+    return new WebClient(token);
 }
 
 /**
