@@ -352,20 +352,50 @@ function buildBrokenLinksList(brokenLinks) {
  * @param {WebClient} slackClient - The `WebClient` instance used to interact with Slack.
  * @param {string} channelId - The ID associated with the channel which the image is being sent to.
  * @param {string} threadTs - The ID of the parent thread to attach this image as a reply to.
+ * @param overriddenDependencies - Object used to override the default dependencies.
  *
  * @returns {Promise} - The promise from the function call
  */
-async function uploadScreenshotToSlackThread(downloadedFileResponse, slackClient, channelId, threadTs) {
-    const fileBufferStream = await streamToBuffer(downloadedFileResponse.content.Body);
-    const fileName = getFilename(downloadedFileResponse.key);
-    const fileUploadURLResponse = await getFileUploadURLToSlack(slackClient, fileName, fileBufferStream.length)
+async function uploadScreenshotToSlackThread(
+    downloadedFileResponse,
+    slackClient,
+    channelId,
+    threadTs,
+    overriddenDependencies = {}
+) {
+
+    const defaultDependencies = {
+        streamToBuffer,
+        getFilename,
+        getFileUploadURLToSlack,
+        sendPostRequest,
+        completeFileUploadToSlack
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
+
+    const fileBufferStream = await dependencies.streamToBuffer(downloadedFileResponse.content.Body);
+    const fileName = dependencies.getFilename(downloadedFileResponse.key);
+    const fileUploadURLResponse = await dependencies.getFileUploadURLToSlack(
+        slackClient,
+        fileName,
+        fileBufferStream.length
+    )
 
     const uploadURL = fileUploadURLResponse.upload_url
     const fileID = fileUploadURLResponse.file_id
 
-    await sendPostRequest(uploadURL, fileName, fileBufferStream)
+    await dependencies.sendPostRequest(
+        uploadURL,
+        fileName,
+        fileBufferStream
+    )
     const files = [{"id": fileID, "title": fileName}]
-    await completeFileUploadToSlack(slackClient, files, channelId, threadTs)
+    await dependencies.completeFileUploadToSlack(
+        slackClient,
+        files,
+        channelId,
+        threadTs
+    )
 }
 
 /**
@@ -375,12 +405,24 @@ async function uploadScreenshotToSlackThread(downloadedFileResponse, slackClient
  * @param {WebClient} slackClient - The `WebClient` instance used to interact with Slack.
  * @param {string} channelId - The ID associated with the channel which the image is being sent to.
  * @param {string} threadTs - The ID of the parent thread to attach this image as a reply to.
+ * @param overriddenDependencies - Object used to override the default dependencies.
  *
  * @returns {Promise} - The promise from the function call
  */
-async function uploadAllScreenshotsToSlackThread(downloadedFileResponses, slackClient, channelId, threadTs) {
+async function uploadAllScreenshotsToSlackThread(
+    downloadedFileResponses,
+    slackClient,
+    channelId,
+    threadTs,
+    overriddenDependencies = {}
+) {
+    const defaultDependencies = {
+        uploadScreenshotToSlackThread,
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
+
     for (let downloadedFileResponse of downloadedFileResponses) {
-        await uploadScreenshotToSlackThread(downloadedFileResponse, slackClient, channelId, threadTs)
+        await dependencies.uploadScreenshotToSlackThread(downloadedFileResponse, slackClient, channelId, threadTs)
     }
 }
 
@@ -403,14 +445,31 @@ async function sendSlackPost(slackClient, payload, channelId) {
  *
  * @param {array} folderContents - Array of objects representing the listed folder contents
  * @param {string} keyToSearchFor - The key to filter for in the given `keys`
+ * @param {string} bucketName - The name of the S3 bucket to search in.
+ *  Defaults to the env var `S3_CANARY_LOGS_BUCKET_NAME`
+ * @param {S3Client} s3Client - An optional instance of the S3Client to use for downloading the file.
+ * @param overriddenDependencies - Object used to override the default dependencies.
  *
  * @returns {object} - The JSON representation of the contents of the report file.
  */
-async function extractReport(folderContents, keyToSearchFor) {
-    const downloadedReportKey = extractReportKey(folderContents, keyToSearchFor)
-    const downloadedReportResponse = await downloadFile(S3_CANARY_LOGS_BUCKET_NAME, downloadedReportKey)
+async function extractReport(
+    folderContents,
+    keyToSearchFor,
+    bucketName = S3_CANARY_LOGS_BUCKET_NAME,
+    s3Client = new S3Client(),
+    overriddenDependencies = {}
+) {
+    const defaultDependencies = {
+        extractReportKey,
+        downloadFile,
+        streamToBuffer,
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
 
-    const reportFileBuffer = await streamToBuffer(downloadedReportResponse.Body);
+    const downloadedReportKey = dependencies.extractReportKey(folderContents, keyToSearchFor)
+    const downloadedReportResponse = await dependencies.downloadFile(bucketName, downloadedReportKey, s3Client)
+
+    const reportFileBuffer = await dependencies.streamToBuffer(downloadedReportResponse.Body);
 
     const jsonString = reportFileBuffer.toString('utf8');
     return JSON.parse(jsonString);
@@ -431,44 +490,94 @@ function extractTargetFromEvent(event) {
  * Calculates the relevant folder in s3 relating to the triggered Canary results.
  *
  * @param {object} event - The object passed down to the Lambda runtime on initialization.
+ * @param overriddenDependencies - Object used to override the default dependencies.
+ *
  * @returns {string} - The prefix associated with the 'folder' of the triggered Canary results.
  */
-async function determineRelevantFolderInS3(event) {
-    const target = extractTargetFromEvent(event)
-    return await getRelevantPrefix(target)
+async function determineRelevantFolderInS3(event, overriddenDependencies = {}) {
+    const defaultDependencies = {
+        extractTargetFromEvent,
+        getRelevantPrefix,
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
+
+    const target = dependencies.extractTargetFromEvent(event)
+    return await dependencies.getRelevantPrefix(target)
 }
 
 /**
  * Main handler entrypoint for the Lambda runtime execution.
  *
  * @param {object} event - The object passed down to the Lambda runtime on initialization.
+ * @param {string} bucketName - The name of the S3 bucket to search in.
+ *  Defaults to the env var `S3_CANARY_LOGS_BUCKET_NAME`
+ * @param overriddenDependencies - Object used to override the default dependencies.
+ *
  */
-async function handler(event) {
-    const relevantFolder = await determineRelevantFolderInS3(event)
-    const slackSecret = await getSlackSecret()
+async function handler(event, bucketName = S3_CANARY_LOGS_BUCKET_NAME, overriddenDependencies = {}) {
+    const defaultDependencies = {
+        determineRelevantFolderInS3,
+        getSlackSecret,
+        buildSlackClient,
+        listFiles,
+        extractReport,
+        buildSlackPostPayload,
+        sendSlackPost,
+        extractFailedScreenshotKeys,
+        downloadAllFiles,
+        uploadAllScreenshotsToSlackThread
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
 
-    const slackClient = await buildSlackClient(slackSecret.slack_token)
+    const slackSecret = await dependencies.getSlackSecret()
+    const slackClient = await dependencies.buildSlackClient(slackSecret.slack_token)
 
-    const listedFiles = await listFiles(S3_CANARY_LOGS_BUCKET_NAME, relevantFolder)
+    const relevantFolder = await dependencies.determineRelevantFolderInS3(event)
+
+    const listedFiles = await dependencies.listFiles(bucketName, relevantFolder)
     const folderContents = listedFiles.Contents
 
-    const syntheticsReport = await extractReport(folderContents, 'SyntheticsReport')
-    const brokenLinksReport = await extractReport(folderContents, 'BrokenLinkCheckerReport')
+    const syntheticsReport = await dependencies.extractReport(folderContents, 'SyntheticsReport')
+    const brokenLinksReport = await dependencies.extractReport(folderContents, 'BrokenLinkCheckerReport')
 
-    const slackPayload = buildSlackPostPayload(
+    const slackPayload = dependencies.buildSlackPostPayload(
         syntheticsReport.canaryName,
         syntheticsReport.startTime,
         syntheticsReport.endTime,
         brokenLinksReport.brokenLinks
     )
-    const slackPostResponse = await sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id)
+    const slackPostResponse = await dependencies.sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id)
 
-    const extractedSnapshotKeys = extractFailedScreenshotKeys(folderContents)
+    const extractedSnapshotKeys = dependencies.extractFailedScreenshotKeys(folderContents)
+    const downloadResponses = await dependencies.downloadAllFiles(extractedSnapshotKeys, bucketName)
 
-    const downloadResponses = await downloadAllFiles(extractedSnapshotKeys, S3_CANARY_LOGS_BUCKET_NAME)
-    await uploadAllScreenshotsToSlackThread(downloadResponses, slackClient, slackSecret.slack_channel_id, slackPostResponse.ts)
+    await dependencies.uploadAllScreenshotsToSlackThread(downloadResponses, slackClient, slackSecret.slack_channel_id, slackPostResponse.ts)
 }
 
 module.exports = {
-    handler
+    handler,
+    getFilename,
+    getSecret,
+    getSlackSecret,
+    listFiles,
+    streamToBuffer,
+    downloadFile,
+    downloadAllFiles,
+    buildSlackClient,
+    getFileUploadURLToSlack,
+    sendPostRequest,
+    completeFileUploadToSlack,
+    getDirectoryPath,
+    getCurrentDate,
+    getRelevantPrefix,
+    extractFailedScreenshotKeys,
+    extractReportKey,
+    buildSlackPostPayload,
+    buildBrokenLinksList,
+    uploadScreenshotToSlackThread,
+    uploadAllScreenshotsToSlackThread,
+    sendSlackPost,
+    extractReport,
+    extractTargetFromEvent,
+    determineRelevantFolderInS3,
 }
