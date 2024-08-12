@@ -11,8 +11,6 @@ const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
 
-const S3_CANARY_LOGS_BUCKET_NAME = process.env.S3_CANARY_LOGS_BUCKET_NAME;
-
 /**
  * Gets the filename associated with the s3 key / file path
  *
@@ -212,7 +210,7 @@ async function getRelevantPrefix(target, s3Client = new S3Client()) {
     const {year, month, day, hour} = getCurrentDate()
     const prefix = `canary/eu-west-2/${target}/${year}/${month}/${day}/${hour}`
     try {
-        const data = await listFiles(S3_CANARY_LOGS_BUCKET_NAME, prefix, s3Client)
+        const data = await listFiles(process.env.S3_CANARY_LOGS_BUCKET_NAME, prefix, s3Client)
 
         const folders = new Set(data.Contents.map(item => {
             const parts = item.Key.split('/');
@@ -446,7 +444,6 @@ async function sendSlackPost(slackClient, payload, channelId) {
  * @param {array} folderContents - Array of objects representing the listed folder contents
  * @param {string} keyToSearchFor - The key to filter for in the given `keys`
  * @param {string} bucketName - The name of the S3 bucket to search in.
- *  Defaults to the env var `S3_CANARY_LOGS_BUCKET_NAME`
  * @param {S3Client} s3Client - An optional instance of the S3Client to use for downloading the file.
  * @param overriddenDependencies - Object used to override the default dependencies.
  *
@@ -455,7 +452,7 @@ async function sendSlackPost(slackClient, payload, channelId) {
 async function extractReport(
     folderContents,
     keyToSearchFor,
-    bucketName = S3_CANARY_LOGS_BUCKET_NAME,
+    bucketName,
     s3Client = new S3Client(),
     overriddenDependencies = {}
 ) {
@@ -527,6 +524,7 @@ async function handler(event, context, overriddenDependencies = {}) {
         uploadAllScreenshotsToSlackThread
     };
     const dependencies = {...defaultDependencies, ...overriddenDependencies}
+    const bucketName = process.env.S3_CANARY_LOGS_BUCKET_NAME
 
     const slackSecret = await dependencies.getSlackSecret()
     const slackClient = await dependencies.buildSlackClient(slackSecret.slack_token)
@@ -536,8 +534,8 @@ async function handler(event, context, overriddenDependencies = {}) {
     const listedFiles = await dependencies.listFiles(bucketName, relevantFolder)
     const folderContents = listedFiles.Contents
 
-    const syntheticsReport = await dependencies.extractReport(folderContents, 'SyntheticsReport')
-    const brokenLinksReport = await dependencies.extractReport(folderContents, 'BrokenLinkCheckerReport')
+    const syntheticsReport = await dependencies.extractReport(folderContents, 'SyntheticsReport', bucketName)
+    const brokenLinksReport = await dependencies.extractReport(folderContents, 'BrokenLinkCheckerReport', bucketName)
 
     const slackPayload = dependencies.buildSlackPostPayload(
         syntheticsReport.canaryName,
