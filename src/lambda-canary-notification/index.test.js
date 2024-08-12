@@ -722,15 +722,17 @@ describe('handler', () => {
         // Given
         const relevantFolder = 'abc/relevant-folder/'
         const fakeBucketName = 'fake-bucket-name-value'
+        const mockedEnvVar = sinon.stub(process, 'env').value({S3_CANARY_LOGS_BUCKET_NAME: fakeBucketName});
         const mockedEvent = sinon.stub()
         spyDetermineRelevantFolderInS3.returns(relevantFolder)
 
         // When
-        await index.handler(mockedEvent, fakeBucketName, injectedDependencies);
+        await index.handler(mockedEvent, sinon.stub(), injectedDependencies);
 
         // Then
         expect(spyDetermineRelevantFolderInS3.calledOnceWithExactly(mockedEvent)).toBeTruthy()
         expect(spyListFiles.calledOnceWithExactly(fakeBucketName, relevantFolder)).toBeTruthy()
+        mockedEnvVar.restore();
     });
 
     /**
@@ -746,6 +748,8 @@ describe('handler', () => {
         const folderContents = [{Key: failedScreenshotKey}, {Key: BrokenKeyLinksReportKey},];
         spyListFiles.returns({Contents: folderContents})
         spyExtractReport.returns({canaryName: "abc", startTime: "def", endTime: "xyz", brokenLinks: []})
+        const fakeBucketName = 'fake-bucket-name-value'
+        const mockedEnvVar = sinon.stub(process, 'env').value({S3_CANARY_LOGS_BUCKET_NAME: fakeBucketName});
 
         // When
         await index.handler(sinon.stub(), sinon.stub(), injectedDependencies);
@@ -753,10 +757,11 @@ describe('handler', () => {
         // Then
         expect(spyExtractReport.calledTwice).toBeTruthy()
         const expectedArgs = [
-            [folderContents, 'SyntheticsReport'],
-            [folderContents, 'BrokenLinkCheckerReport'],
+            [folderContents, 'SyntheticsReport', fakeBucketName],
+            [folderContents, 'BrokenLinkCheckerReport', fakeBucketName],
         ]
         expect(spyExtractReport.args).toStrictEqual(expectedArgs)
+        mockedEnvVar.restore();
     });
 
     /**
