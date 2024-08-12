@@ -509,12 +509,11 @@ async function determineRelevantFolderInS3(event, overriddenDependencies = {}) {
  * Main handler entrypoint for the Lambda runtime execution.
  *
  * @param {object} event - The object passed down to the Lambda runtime on initialization.
- * @param {string} bucketName - The name of the S3 bucket to search in.
- *  Defaults to the env var `S3_CANARY_LOGS_BUCKET_NAME`
+ * @param {Object} context - The Lambda execution context.
  * @param overriddenDependencies - Object used to override the default dependencies.
  *
  */
-async function handler(event, bucketName = S3_CANARY_LOGS_BUCKET_NAME, overriddenDependencies = {}) {
+async function handler(event, context, overriddenDependencies = {}) {
     const defaultDependencies = {
         determineRelevantFolderInS3,
         getSlackSecret,
