@@ -39,8 +39,8 @@ variable "timeout_in_seconds" {
   type        = number
 }
 
-variable "script_path" {
-  description = "The file path of the script to attach to the canary"
+variable "src_script_path" {
+  description = "The src file path of the script to attach to the canary"
   type        = string
 }
 
