@@ -1,6 +1,6 @@
 module "ecs_service_front_end" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.3"
+  version = "5.11.4"
 
   name                   = "${local.prefix}-front-end"
   cluster_arn            = module.ecs.cluster_arn
@@ -41,6 +41,10 @@ module "ecs_service_front_end" {
         {
           name  = "API_URL"
           value = local.urls.private_api
+        },
+        {
+          name  = "BASE_URL"
+          value = local.urls.front_end
         },
         {
           name  = "UNLEASH_SERVER_API_URL"
