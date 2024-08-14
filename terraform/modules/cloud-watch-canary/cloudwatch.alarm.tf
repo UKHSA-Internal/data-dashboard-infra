@@ -13,7 +13,7 @@ module "cloudwatch_alarm" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   threshold           = 1
-  period              = 60
+  period              = var.timeout_in_seconds
   dimensions = {
     CanaryName = aws_synthetics_canary.this.name
   }
