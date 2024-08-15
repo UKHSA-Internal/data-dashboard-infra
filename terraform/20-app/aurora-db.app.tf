@@ -25,7 +25,7 @@ module "aurora_db_app" {
     min_capacity = 1
     max_capacity = 10
   }
-  instances = local.use_prod_sizing ? { 1 : {}, 2 : {} } : { 1 : {} }
+  instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3: {} } : { 1 : {} }
 
   vpc_id               = module.vpc.vpc_id
   db_subnet_group_name = module.vpc.database_subnet_group_name
