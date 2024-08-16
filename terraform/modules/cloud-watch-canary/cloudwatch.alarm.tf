@@ -10,14 +10,14 @@ module "cloudwatch_alarm" {
     }
   )
   alarm_actions       = [module.sns_topic_alarm.topic_arn]
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+  comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = 1
-  threshold           = 1
+  threshold           = 99
   period              = var.timeout_in_seconds
   dimensions = {
     CanaryName = aws_synthetics_canary.this.name
   }
   namespace   = "CloudWatchSynthetics"
-  metric_name = "Failed requests"
+  metric_name = "SuccessPercent"
   statistic   = "Sum"
 }
