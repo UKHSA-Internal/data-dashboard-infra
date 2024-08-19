@@ -4,7 +4,7 @@ module "eventbridge" {
   role_name  = "${var.name}-eventbridge-role"
 
   rules = {
-    "${var.name}" = {
+    (var.name) = {
       description   = "Capture canary run fail"
       event_pattern = jsonencode({
         source: ["aws.synthetics"],
@@ -17,7 +17,7 @@ module "eventbridge" {
   }
 
   targets = {
-    "${var.name}" = [
+    (var.name) = [
       {
         name = var.lambda_function_notification_name
         arn  = var.lambda_function_notification_arn
