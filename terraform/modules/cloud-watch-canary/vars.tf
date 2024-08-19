@@ -54,3 +54,8 @@ variable "lambda_function_notification_arn" {
   description = "The ARN associated with Lambda function used to perform the notification trigger"
   type = string
 }
+
+variable "lambda_function_notification_name" {
+  description = "The name associated with Lambda function used to perform the notification trigger"
+  type = string
+}

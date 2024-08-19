@@ -300,36 +300,6 @@ describe('getCurrentDate', () => {
     });
 });
 
-describe('getRelevantPrefix', () => {
-    /**
-     * Given a failed screenshot keys array and prefix
-     * When `getRelevantPrefix()` is called
-     * Then it should return the relevant prefix
-     */
-    test('Returns the relevant prefix based on failed screenshot keys', async () => {
-        // Given
-        const frozenDate = new Date('2023-12-25T00:00:00Z');
-        jest.spyOn(global, 'Date').mockImplementation(() => frozenDate);
-        const fakeTarget = 'uhd-fake-target';
-        const fakeDataFromS3 = {
-            Contents: [
-                {Key: `canary/eu-west-2/${fakeTarget}/2023/12/07/08/item.png`},
-                {Key: `canary/eu-west-2/${fakeTarget}/2023/12/19/14/report.json`},
-                {Key: `canary/eu-west-2/${fakeTarget}/2023/12/25/00/another-item.png`},
-            ]
-        }
-        const mockedS3Client = {
-            send: sinon.stub().resolves(fakeDataFromS3),
-        };
-
-        // When
-        const result = await index.getRelevantPrefix(fakeTarget, mockedS3Client);
-
-        // Then
-        expect(result).toStrictEqual(`canary/eu-west-2/${fakeTarget}/2023/12/25/00`);
-    });
-});
-
 describe('extractFailedScreenshotKeys', () => {
     /**
      * Given an S3 file list
@@ -579,68 +549,7 @@ describe('extractReport', () => {
     });
 });
 
-describe('extractTargetFromEvent', () => {
-    /**
-     * Given an event object
-     * When `extractTargetFromEvent()` is called
-     * Then it should return the target property from the event
-     */
-    test('Extracts the target property from the event', () => {
-        // Given
-        const fakeTarget = 'this-is-the-target'
-        const fakeEvent = {
-            'Records': [{
-                'Sns': {
-                    'Message': JSON.stringify({
-                        Trigger: {Dimensions: [{value: fakeTarget}]}
-                    })
-                }
-            }]
-        }
-
-        // When
-        const result = index.extractTargetFromEvent(fakeEvent);
-
-        // Then
-        expect(result).toBe(fakeTarget);
-    });
-});
-
-describe('determineRelevantFolderInS3', () => {
-    /**
-     * Given an S3 client and prefix
-     * When `determineRelevantFolderInS3()` is called
-     * Then it should return the most relevant folder in S3
-     */
-    test('Determines the relevant folder in S3 based on prefix', async () => {
-        // Given
-        const fakeTarget = 'this-is-the-target'
-        const fakeEvent = {
-            'Records': [{
-                'Sns': {
-                    'Message': JSON.stringify({
-                        Trigger: {Dimensions: [{value: fakeTarget}]}
-                    })
-                }
-            }]
-        }
-        const expectedPrefix = "abc/xyz"
-        const spyGetRelevantPrefix = sinon.stub().returns(expectedPrefix)
-        const injectedDependencies = {
-            getRelevantPrefix: spyGetRelevantPrefix
-        }
-
-        // When
-        const result = await index.determineRelevantFolderInS3(fakeEvent, injectedDependencies);
-
-        // Then
-        expect(spyGetRelevantPrefix.calledOnceWithExactly(fakeTarget))
-        expect(result).toStrictEqual(expectedPrefix);
-    });
-});
-
 describe('handler', () => {
-    let spyDetermineRelevantFolderInS3;
     let spyGetSlackSecret;
     let spyBuildSlackClient;
     let spyListFiles;
@@ -652,7 +561,24 @@ describe('handler', () => {
     let spyUploadAllScreenshotsToSlackThread;
     let injectedDependencies;
 
-    const event = {someKey: 'someValue'};
+    const event = {
+        "detail-type": "Synthetics Canary TestRun Successful",
+        "source": "aws.synthetics",
+        "time": "2024-08-19T08:35:40Z",
+        "region": "eu-west-2",
+        "resources": [],
+        "detail": {
+            "canary-name": "uhd-fake-env-display",
+            "artifact-location": "uhd-fake-env-canary-logs/canary/eu-west-2/uhd-fake-env-display/2024/08/19/08/32-09-739",
+            "test-run-status": "PASSED",
+            "state-reason": "null",
+            "canary-run-timeline": {
+                "started": 1724056329.74,
+                "completed": 1724056539.871
+            },
+            "message": "Test run result is generated successfully"
+        }
+    };
     const slackSecret = {slack_token: 'test-token', slack_channel_id: 'channel-id'};
     const slackClient = {someClientProperty: 'value'};
     const listedFiles = {Contents: ['file1', 'file2']};
@@ -664,7 +590,6 @@ describe('handler', () => {
     const downloadResponses = ['response1', 'response2'];
 
     beforeEach(() => {
-        spyDetermineRelevantFolderInS3 = sinon.stub().resolves('relevant-folder');
         spyGetSlackSecret = sinon.stub().resolves(slackSecret);
         spyBuildSlackClient = sinon.stub().resolves(slackClient);
         spyListFiles = sinon.stub().resolves(listedFiles);
@@ -678,7 +603,6 @@ describe('handler', () => {
         spyUploadAllScreenshotsToSlackThread = sinon.stub().resolves();
 
         injectedDependencies = {
-            determineRelevantFolderInS3: spyDetermineRelevantFolderInS3,
             getSlackSecret: spyGetSlackSecret,
             buildSlackClient: spyBuildSlackClient,
             listFiles: spyListFiles,
@@ -720,17 +644,14 @@ describe('handler', () => {
      */
     test('should extract the relevant folder contents', async () => {
         // Given
-        const relevantFolder = 'abc/relevant-folder/'
+        const relevantFolder = 'canary/eu-west-2/uhd-fake-env-display/2024/08/19/08/32-09-739'
         const fakeBucketName = 'fake-bucket-name-value'
         const mockedEnvVar = sinon.stub(process, 'env').value({S3_CANARY_LOGS_BUCKET_NAME: fakeBucketName});
-        const mockedEvent = sinon.stub()
-        spyDetermineRelevantFolderInS3.returns(relevantFolder)
 
         // When
-        await index.handler(mockedEvent, sinon.stub(), injectedDependencies);
+        await index.handler(event, sinon.stub(), injectedDependencies);
 
         // Then
-        expect(spyDetermineRelevantFolderInS3.calledOnceWithExactly(mockedEvent)).toBeTruthy()
         expect(spyListFiles.calledOnceWithExactly(fakeBucketName, relevantFolder)).toBeTruthy()
         mockedEnvVar.restore();
     });
@@ -752,7 +673,7 @@ describe('handler', () => {
         const mockedEnvVar = sinon.stub(process, 'env').value({S3_CANARY_LOGS_BUCKET_NAME: fakeBucketName});
 
         // When
-        await index.handler(sinon.stub(), sinon.stub(), injectedDependencies);
+        await index.handler(event, sinon.stub(), injectedDependencies);
 
         // Then
         expect(spyExtractReport.calledTwice).toBeTruthy()
@@ -779,7 +700,7 @@ describe('handler', () => {
         spyGetSlackSecret.returns({slack_channel_id: fakeSlackChannelId});
 
         // When
-        await index.handler(sinon.stub(), sinon.stub(), injectedDependencies);
+        await index.handler(event, sinon.stub(), injectedDependencies);
 
         // Then
         expect(spyBuildSlackPostPayload.calledOnceWithExactly(infoExtractedFromReports))
@@ -810,7 +731,7 @@ describe('handler', () => {
         spySendSlackPost.returns(slackPostResponse)
 
         // When
-        await index.handler(sinon.stub(), bucketName, injectedDependencies);
+        await index.handler(event, bucketName, injectedDependencies);
 
         // Then
         expect(spyExtractFailedScreenshotKeys.calledOnceWithExactly(mockedFolderContents))

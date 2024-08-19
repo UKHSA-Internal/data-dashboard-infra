@@ -40,12 +40,13 @@ module "lambda_canary_notification" {
 
   create_current_version_allowed_triggers = false
   allowed_triggers = {
-    sns_cloudfront_alarms = {
-      principal  = "sns.amazonaws.com"
-      source_arn = module.cloudwatch_canary_front_end_screenshots.sns_topic_arn
+    eventbridge = {
+      principal  = "events.amazonaws.com"
+      source_arn = module.cloudwatch_canary_front_end_screenshots.eventbridge_rule_arn
     }
   }
 }
+
 
 module "lambda_canary_notification_security_group" {
   source  = "terraform-aws-modules/security-group/aws"

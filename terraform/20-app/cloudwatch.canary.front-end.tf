@@ -15,6 +15,7 @@ module "cloudwatch_canary_front_end_screenshots" {
   timeout_in_seconds               = 600
   src_script_path                  = "canary-front-end-broken-links"
   lambda_function_notification_arn = module.lambda_canary_notification.lambda_function_arn
+  lambda_function_notification_name = module.lambda_canary_notification.lambda_function_name
 
   environment_variables = {
     SITEMAP_URL = "${local.urls.front_end}/sitemap.xml"
