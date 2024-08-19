@@ -9,3 +9,7 @@ output "artifact_s3_location" {
 output "eventbridge_rule_arn" {
   value = module.eventbridge.eventbridge_rule_arns["${var.name}"]
 }
+
+output "canary_arn" {
+  value = aws_synthetics_canary.this.arn
+}

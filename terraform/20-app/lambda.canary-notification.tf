@@ -36,6 +36,11 @@ module "lambda_canary_notification" {
       actions   = ["secretsmanager:GetSecretValue"],
       resources = [aws_secretsmanager_secret.slack_webhook_url.arn]
     }
+    get_recent_canary_runs = {
+      effect    = "Allow",
+      actions   = ["synthetics:GetCanaryRuns"],
+      resources = [module.cloudwatch_canary_front_end_screenshots.canary_arn]
+    }
   }
 
   create_current_version_allowed_triggers = false
