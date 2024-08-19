@@ -7,7 +7,11 @@ module "eventbridge" {
     "${var.name}" = {
       description   = "Capture canary run fail"
       event_pattern = jsonencode({
-        source : ["aws.synthetics"]
+        source: ["aws.synthetics"],
+        detail: {
+          "canary-name": [aws_synthetics_canary.this.name]
+          "test-run-status": ["FAILED"]
+        }
       })
     }
   }
