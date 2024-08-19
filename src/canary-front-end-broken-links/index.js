@@ -5,6 +5,9 @@ const SyntheticsLink = require('SyntheticsLink');
 const syntheticsLogHelper = require('SyntheticsLogHelper');
 const syntheticsConfiguration = synthetics.getConfiguration();
 
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 function extractUrlsFromSitemap(xml) {
     const urlRegex = /<loc>(.*?)<\/loc>/g;
     const urls = [];
@@ -161,6 +164,7 @@ const webCrawlerBlueprint = async function () {
     });
 
     while (synLinks.length > 0) {
+        await delay(500)
         let link = synLinks.shift();
         let nav_url = link.getUrl();
         let sanitized_url = syntheticsLogHelper.getSanitizedUrl(nav_url);
