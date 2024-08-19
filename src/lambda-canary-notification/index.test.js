@@ -5,6 +5,7 @@ const path = require('path');
 const sinon = require("sinon");
 const {GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
 const index = require("./index");
+const {GetCanaryRunsCommand} = require("@aws-sdk/client-synthetics");
 
 // Mock dependencies
 jest.mock('axios');
@@ -513,6 +514,123 @@ describe('sendSlackPost', () => {
     });
 });
 
+
+describe('getPreviousCanaryRun', () => {
+    /**
+     * Given the name of the synthetics canary
+     * When `getPreviousCanaryRun()` is called
+     * Then the correct command is used when
+     *  the `send` method is called from the `SyntheticsClient`
+     */
+    test('Gets the recent canary run from Synthetics', async () => {
+        // Given
+        const fakeCanaryName = 'fake-canary-name'
+        const spySyntheticsClient = {
+            send: sinon.stub().resolves({}),
+        }
+
+        // When
+        await index.getPreviousCanaryRun(fakeCanaryName, spySyntheticsClient);
+
+        // Then
+        expect(spySyntheticsClient.send.calledWith(sinon.match.instanceOf(GetCanaryRunsCommand))).toBeTruthy()
+        const argsCalledWithSpy = spySyntheticsClient.send.firstCall.args[0].input;
+        expect(argsCalledWithSpy.Name).toEqual(fakeCanaryName);
+        expect(argsCalledWithSpy.MaxResults).toEqual(1);
+    });
+})
+
+describe('getRunStateOfPreviousRun', () => {
+    /**
+     * Given the recent canary runs
+     * When `getRunStateOfPreviousRun()` is called
+     * Then the correct state is returned
+     */
+    test('Extracts the state associated with the most recent canary run', async () => {
+        // Given
+        const recentRuns = {
+            "CanaryRuns": [
+                {
+                    "Name": "uhd-fake-env-display",
+                    "Status": {
+                        "State": "FAILED",
+                        "StateReason": "",
+                        "StateReasonCode": ""
+                    },
+                }
+            ],
+        }
+
+        // When
+        const extractedStatus = index.getRunStateOfPreviousRun(recentRuns);
+
+        // Then
+        expect(extractedStatus).toStrictEqual("FAILED")
+    });
+})
+
+describe('determineIfNotificationIsRequired', () => {
+    const failedEvent = {
+        "detail-type": "Synthetics Canary TestRun Failure",
+        "source": "aws.synthetics",
+        "account": "123456789012",
+        "detail": {
+            "account-id": "123456789012",
+            "test-run-status": "FAILED",
+        }
+    };
+    const passedEvent = {
+        "detail-type": "Synthetics Canary TestRun Failure",
+        "source": "aws.synthetics",
+        "account": "123456789012",
+        "detail": {
+            "account-id": "123456789012",
+            "test-run-status": "PASSED",
+        }
+    };
+
+    test.each([
+        {
+            description: 'Returns true when run changed from PASSED to FAILED',
+            event: failedEvent,
+            previousRunStatus: 'PASSED',
+            expectedResult: true
+        },
+        {
+            description: 'Returns false when run remained as FAILED between runs',
+            event: failedEvent,
+            previousRunStatus: 'FAILED',
+            expectedResult: false
+        },
+        {
+            description: 'Returns false when run changed from FAILED to PASSED',
+            event: passedEvent,
+            previousRunStatus: 'FAILED',
+            expectedResult: false
+        },
+        {
+            description: 'Returns false when run changed from PASSED to PASSED',
+            event: passedEvent,
+            previousRunStatus: 'PASSED',
+            expectedResult: false
+        }
+    ])('$description', async ({event, previousRunStatus, expectedResult}) => {
+        // Given
+        const mockedGetPreviousCanaryRun = sinon.stub();
+        const mockedGetRunStateOfPreviousRun = sinon.stub().returns(previousRunStatus);
+        const injectedDependencies = {
+            getPreviousCanaryRun: mockedGetPreviousCanaryRun,
+            getRunStateOfPreviousRun: mockedGetRunStateOfPreviousRun
+        };
+
+        // When
+        const extractedBoolean = await index.determineIfNotificationRequired(event, injectedDependencies);
+
+        // Then
+        expect(extractedBoolean).toBe(expectedResult);
+    });
+});
+
 describe('extractReport', () => {
     /**
      * Given a report key and an S3 client
@@ -550,6 +668,7 @@ describe('extractReport', () => {
 });
 
 describe('handler', () => {
+    let spyDetermineIfNotificationRequired
     let spyGetSlackSecret;
     let spyBuildSlackClient;
     let spyListFiles;
@@ -560,6 +679,25 @@ describe('handler', () => {
     let spyDownloadAllFiles;
     let spyUploadAllScreenshotsToSlackThread;
     let injectedDependencies;
+
+    const previousRun = {
+        "CanaryRuns": [
+            {
+                "ArtifactS3Location": "uhd-fake-env-canary-logs/canary/eu-west-2/uhd-fake-env-display/2024/08/19/14/05-39-555",
+                "Name": "uhd-fake-env-display",
+                "Status": {
+                    "State": "PASSED",
+                    "StateReason": "",
+                    "StateReasonCode": ""
+                },
+                "Timeline": {
+                    "Completed": "2024-08-19T14:10:28.342Z",
+                    "Started": "2024-08-19T14:05:39.555Z"
+                }
+            }
+        ],
+        "NextToken": "2024-08-19T14:05:39.555Z"
+    }
 
     const event = {
         "detail-type": "Synthetics Canary TestRun Successful",
@@ -590,6 +728,7 @@ describe('handler', () => {
     const downloadResponses = ['response1', 'response2'];
 
     beforeEach(() => {
+        spyDetermineIfNotificationRequired = sinon.stub().resolves(true)
         spyGetSlackSecret = sinon.stub().resolves(slackSecret);
         spyBuildSlackClient = sinon.stub().resolves(slackClient);
         spyListFiles = sinon.stub().resolves(listedFiles);
@@ -603,6 +742,7 @@ describe('handler', () => {
         spyUploadAllScreenshotsToSlackThread = sinon.stub().resolves();
 
         injectedDependencies = {
+            determineIfNotificationRequired: spyDetermineIfNotificationRequired,
             getSlackSecret: spyGetSlackSecret,
             buildSlackClient: spyBuildSlackClient,
             listFiles: spyListFiles,

@@ -6,6 +6,7 @@ const {WebClient} = require("@slack/web-api")
 const axios = require('axios');
 const FormData = require('form-data');
 const path = require('path');
+const {GetCanaryRunsCommand, SyntheticsClient} = require("@aws-sdk/client-synthetics");
 
 /**
  * Gets the filename associated with the s3 key / file path
@@ -15,6 +16,38 @@ const path = require('path');
  */
 function getFilename(filePath) {
     return path.basename(filePath);
+}
+
+
+/**
+ * Gets the recent canary runs
+ *
+ * @param {SyntheticsClient} syntheticsClient - An instance of the SyntheticsClient
+ *      to use for sending the command.
+ * @param {string} canaryName - The name of the synthetics canary resource
+ *
+ * @returns {object} - The response from the synthetics service
+ */
+async function getPreviousCanaryRun(canaryName, syntheticsClient = new SyntheticsClient()) {
+    const input = {
+        "Name": canaryName,
+        "MaxResults": 1,
+    };
+    const command = new GetCanaryRunsCommand(input);
+    return syntheticsClient.send(command);
+}
+
+
+/**
+ * Gets the state of the previous canary run from the `recentRuns`
+ *
+ * @param {object} recentRuns - Array of recent runs from the synthetics API
+ *
+ * @returns {object} - The state of the previous canary run.
+ *   Can be "PASSED" or "FAILED"
+ */
+function getRunStateOfPreviousRun(recentRuns) {
+    return recentRuns.CanaryRuns[0].Status.State
 }
 
 /**
@@ -377,6 +410,30 @@ async function extractReport(folderContents, keyToSearchFor, bucketName, s3Clien
 }
 
 /**
+ * Compares the previous canary run to see if the notification is required and the status has changed from pass to fail.
+ *
+ * @param {object} event - The object passed down to the Lambda runtime on initialization.
+ * @param overriddenDependencies - Object used to override the default dependencies.
+ *
+ * @return {boolean} - true if the notification is required, false otherwise.
+ */
+async function determineIfNotificationRequired(event, overriddenDependencies = {}) {
+    const defaultDependencies = {
+        getPreviousCanaryRun,
+        getRunStateOfPreviousRun,
+    };
+    const dependencies = {...defaultDependencies, ...overriddenDependencies}
+
+    const canaryName = event.detail["canary-name"]
+    const recentRun = await dependencies.getPreviousCanaryRun(canaryName)
+
+    const recentRunStatus = dependencies.getRunStateOfPreviousRun(recentRun)
+    const currentRunStatus = event.detail["test-run-status"]
+
+    return (currentRunStatus === "FAILED" && recentRunStatus === "PASSED");
+}
+
+/**
  * Main handler entrypoint for the Lambda runtime execution.
  *
  * @param {object} event - The object passed down to the Lambda runtime on initialization.
@@ -386,6 +443,7 @@ async function extractReport(folderContents, keyToSearchFor, bucketName, s3Clien
  */
 async function handler(event, context, overriddenDependencies = {}) {
     const defaultDependencies = {
+        determineIfNotificationRequired,
         getSlackSecret,
         buildSlackClient,
         listFiles,
@@ -399,13 +457,13 @@ async function handler(event, context, overriddenDependencies = {}) {
     const dependencies = {...defaultDependencies, ...overriddenDependencies}
     const bucketName = process.env.S3_CANARY_LOGS_BUCKET_NAME
 
-    const relevantFolder = getPathFromArtifactLocation(event.detail["artifact-location"])
-    const runStatus = event.detail["test-run-status"]
-    if (runStatus === "PASSED") {
-        console.log('Canary run passed')
+    const isNotificationRequired = dependencies.determineIfNotificationRequired(event)
+    if (!isNotificationRequired) {
+        console.log('Notification not required')
         return
     }
 
+    const relevantFolder = getPathFromArtifactLocation(event.detail["artifact-location"])
     const slackSecret = await dependencies.getSlackSecret()
     const slackClient = await dependencies.buildSlackClient(slackSecret.slack_token)
 
@@ -427,6 +485,9 @@ async function handler(event, context, overriddenDependencies = {}) {
 module.exports = {
     handler,
     getFilename,
+    getPreviousCanaryRun,
+    getRunStateOfPreviousRun,
+    determineIfNotificationRequired,
     getSecret,
     getSlackSecret,
     listFiles,
