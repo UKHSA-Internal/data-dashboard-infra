@@ -1,6 +1,6 @@
 module "feedback_api_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.9.0"
+  version = "9.11.0"
 
   name = "${local.prefix}-feedback-api"
 
