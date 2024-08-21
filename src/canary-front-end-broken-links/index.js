@@ -49,63 +49,6 @@ const captureDestinationPageScreenshotOnFailure = true;
 // Increase or decrease based on complexity of your website.
 const numOfLinksToReLaunchBrowser = 50;
 
-// async function used to grab urls from page
-// fetch hrefs from DOM
-const grabLinks = async function (page, sourceUrl, exploredUrls) {
-    let grabbedLinks = [];
-
-    const jsHandle = await page.evaluateHandle(() => {
-        return document.getElementsByTagName('a');
-    });
-
-    const numberOfLinks = await page.evaluate(e => e.length, jsHandle);
-
-    for (let i = 0; i < numberOfLinks; i++) {
-        let element = await page.evaluate((jsHandle, i, captureSourcePageScreenshot, exploredUrls) => {
-            let element = jsHandle[i];
-            let url = String(element.href).trim();
-            // Condition for grabbing a link
-            if (url != null && url.length > 0 && !exploredUrls.includes(url) && (url.startsWith('http') || url.startsWith('https'))) {
-                let text = element.text ? element.text.trim() : '';
-                let originalBorderProp = element.style.border;
-                // Annotate this anchor element for source page screenshot.
-                if (captureSourcePageScreenshot) {
-                    // Use color of your choosing for annotation.
-                    element.style.border = '3px solid #e67e22';
-                    element.scrollIntoViewIfNeeded();
-                }
-                return {text, url, originalBorderProp};
-            }
-        }, jsHandle, i, captureSourcePageScreenshot, exploredUrls);
-
-        if (element) {
-            let url = element.url;
-            let originalBorderProp = element.originalBorderProp;
-            exploredUrls.push(url);
-
-            let sourcePageScreenshotResult;
-            if (captureSourcePageScreenshot) {
-                sourcePageScreenshotResult = await takeScreenshot(getFileName(url), "sourcePage");
-
-                // Reset css to original
-                await page.evaluate((jsHandle, i, originalBorderProp) => {
-                    let element = jsHandle[i];
-                    element.style.border = originalBorderProp;
-                }, jsHandle, i, originalBorderProp);
-            }
-
-            let link = new SyntheticsLink(url).withParentUrl(sourceUrl).withText(element.text);
-            link.addScreenshotResult(sourcePageScreenshotResult);
-            grabbedLinks.push(link);
-
-            if (exploredUrls.length >= limit) {
-                break;
-            }
-        }
-    }
-    return grabbedLinks;
-}
-
 // Take synthetics screenshot
 const takeScreenshot = async function (fileName, suffix) {
     try {
