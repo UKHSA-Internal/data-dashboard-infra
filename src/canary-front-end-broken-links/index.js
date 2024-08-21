@@ -234,19 +234,6 @@ const webCrawlerBlueprint = async function () {
         } catch (e) {
             synthetics.addExecutionError('Unable to add link to broken link checker report.', e);
         }
-
-        // If current link was successfully loaded, grab more hyperlinks from this page.
-        if (response && response.status() && response.status() < 400 && exploredUrls.length < limit) {
-            try {
-                let moreLinks = await grabLinks(page, sanitized_url, exploredUrls);
-                if (moreLinks && moreLinks.length > 0) {
-                    synLinks = synLinks.concat(moreLinks);
-                }
-            } catch (e) {
-                canaryError = "Unable to grab urls on page: " + sanitized_url + ". " + e;
-                log.error(canaryError);
-            }
-        }
     }
 
     try {
