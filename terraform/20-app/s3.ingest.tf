@@ -20,13 +20,31 @@ module "s3_ingest" {
     {
       id      = "processed"
       enabled = true
-
       filter = {
         prefix = "processed/"
       }
-
       expiration = {
         days = 30
+      }
+    },
+    {
+      id      = "failed"
+      enabled = true
+      filter = {
+        prefix = "failed/"
+      }
+      expiration = {
+        days = 14
+      }
+    },
+    {
+      id      = "stale"
+      enabled = true
+      filter = {
+        prefix = "in/"
+      }
+      expiration = {
+        days = 2
       }
     }
   ]
