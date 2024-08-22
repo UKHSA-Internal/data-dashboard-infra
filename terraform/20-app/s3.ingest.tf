@@ -36,6 +36,16 @@ module "s3_ingest" {
       expiration = {
         days = 14
       }
+    },
+    {
+      id      = "stale"
+      enabled = true
+      filter = {
+        prefix = "in/"
+      }
+      expiration = {
+        days = 2
+      }
     }
   ]
 }
