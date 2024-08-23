@@ -42,8 +42,6 @@ locals {
     }
   }
 
-  ship_cloud_watch_logs_to_splunk = true
-
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin        = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"

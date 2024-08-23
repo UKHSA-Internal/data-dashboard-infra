@@ -66,14 +66,3 @@ resource "aws_cloudwatch_log_group" "cloud_front_function_legacy_dashboard_redir
   provider          = aws.us_east_1
   retention_in_days = local.default_log_retention_in_days
 }
-
-resource "aws_cloudwatch_log_subscription_filter" "cloud_front_function_legacy_dashboard_redirect_viewer_request" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.us_east_1.destination_arn
-  filter_pattern  = ""
-  log_group_name  = aws_cloudwatch_log_group.cloud_front_function_legacy_dashboard_redirect_viewer_request.name
-  name            = "splunk"
-  provider        = aws.us_east_1
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.us_east_1.role_arn
-}
