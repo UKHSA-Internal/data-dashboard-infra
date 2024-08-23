@@ -63,13 +63,3 @@ module "bastion_service_security_group_rules" {
     }
   ]
 }
-
-resource "aws_cloudwatch_log_subscription_filter" "ecs_service_bastion" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
-  filter_pattern  = ""
-  log_group_name  = module.ecs_service_bastion.container_definitions["bastion"].cloudwatch_log_group_name
-  name            = "splunk"
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
-}
