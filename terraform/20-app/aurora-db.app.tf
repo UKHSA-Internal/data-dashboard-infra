@@ -23,7 +23,7 @@ module "aurora_db_app" {
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {
     min_capacity = 1
-    max_capacity = 10
+    max_capacity = 50
   }
   instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3: {} } : { 1 : {} }
 
