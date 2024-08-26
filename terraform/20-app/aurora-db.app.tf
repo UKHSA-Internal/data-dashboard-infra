@@ -1,6 +1,6 @@
 module "aurora_db_app" {
   source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "9.5.0"
+  version = "9.9.1"
 
   name                    = "${local.prefix}-aurora-db-app"
   engine                  = "aurora-postgresql"
