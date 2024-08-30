@@ -86,8 +86,8 @@ module "front_end_alb" {
   security_group_egress_rules = {
     egress_to_tasks = {
       ip_protocol                  = "tcp"
-      from_port                    = 80
-      to_port                      = 80
+      from_port                    = 3000
+      to_port                      = 3000
       referenced_security_group_id = module.ecs_service_front_end.security_group_id
     }
   }
