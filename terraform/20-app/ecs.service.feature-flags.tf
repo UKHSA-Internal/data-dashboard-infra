@@ -88,39 +88,32 @@ module "ecs_service_feature_flags" {
       container_port   = 4242
     }
   }
-}
 
-
-module "feature_flags_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_feature_flags.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
-      description              = "lb to tasks"
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
       from_port                = 4242
       to_port                  = 4242
       protocol                 = "tcp"
+      description              = "lb to tasks"
       source_security_group_id = module.feature_flags_alb_security_group.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    }
-  ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "lb to feature flags db"
-      rule                     = "postgresql-tcp"
+    # egress rules
+    db_egress = {
+      type                     = "egress"
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
       source_security_group_id = module.aurora_db_feature_flags.security_group_id
     }
-  ]
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "https to internet"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }
