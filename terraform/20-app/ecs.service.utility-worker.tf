@@ -94,7 +94,7 @@ module "ecs_service_utility_worker" {
       from_port                = 80
       to_port                  = 80
       protocol                 = "tcp"
-      source_security_group_id = module.private_api_alb_security_group.security_group_id
+      source_security_group_id = module.private_api_alb.security_group_id
     }
     # egress rules
     db_egress = {

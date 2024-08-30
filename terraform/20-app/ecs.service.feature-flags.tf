@@ -97,7 +97,7 @@ module "ecs_service_feature_flags" {
       to_port                  = 4242
       protocol                 = "tcp"
       description              = "lb to tasks"
-      source_security_group_id = module.feature_flags_alb_security_group.security_group_id
+      source_security_group_id = module.feature_flags_alb.security_group_id
     }
     # egress rules
     db_egress = {
