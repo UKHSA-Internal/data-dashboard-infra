@@ -99,7 +99,7 @@ module "ecs_service_public_api" {
 
 module "public_api_tasks_security_group_rules" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.2.0"
 
   create_sg         = false
   security_group_id = module.ecs_service_public_api.security_group_id

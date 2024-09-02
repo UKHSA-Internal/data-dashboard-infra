@@ -79,7 +79,7 @@ module "private_api_alb" {
 
 module "private_api_alb_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.2.0"
 
   name   = "${local.prefix}-private-api-alb"
   vpc_id = module.vpc.vpc_id

@@ -1,6 +1,6 @@
 module "app_elasticache_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.2.0"
 
   name   = "${local.prefix}-app-elasticache"
   vpc_id = module.vpc.vpc_id
