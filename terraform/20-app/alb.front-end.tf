@@ -8,7 +8,6 @@ module "front_end_alb" {
 
   vpc_id                     = module.vpc.vpc_id
   subnets                    = module.vpc.public_subnets
-  security_groups            = [module.front_end_alb_security_group.security_group_id]
   drop_invalid_header_fields = true
   enable_deletion_protection = false
 
@@ -75,30 +74,21 @@ module "front_end_alb" {
       }
     }
   }
-}
 
-module "front_end_alb_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  name   = "${local.prefix}-front-end-alb"
-  vpc_id = module.vpc.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      description = "https from allowed ips"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
+  security_group_ingress_rules = {
+    ingress_from_internet = {
+      from_port   = 443
+      to_port     = 443
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
     }
-  ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "lb to tasks"
-      from_port                = 3000
-      to_port                  = 3000
-      protocol                 = "TCP"
-      source_security_group_id = module.ecs_service_front_end.security_group_id
+  }
+  security_group_egress_rules = {
+    egress_to_tasks = {
+      ip_protocol                  = "tcp"
+      from_port                    = 3000
+      to_port                      = 3000
+      referenced_security_group_id = module.ecs_service_front_end.security_group_id
     }
-  ]
+  }
 }
