@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: ./.github/actions/setup-terraform
@@ -118,7 +118,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -144,7 +144,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -169,7 +169,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -194,7 +194,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -238,7 +238,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -263,7 +263,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha

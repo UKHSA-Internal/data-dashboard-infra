@@ -36,7 +36,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - name: Terraform output
         run: |
