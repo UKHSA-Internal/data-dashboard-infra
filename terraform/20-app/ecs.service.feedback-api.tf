@@ -87,35 +87,32 @@ module "ecs_service_feedback_api" {
       resources = ["*"]
     }
   ]
-}
 
-module "feedback_api_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_feedback_api.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
+      from_port                = 80
+      to_port                  = 80
+      protocol                 = "tcp"
       description              = "lb to tasks"
-      rule                     = "http-80-tcp"
       source_security_group_id = module.feedback_api_alb_security_group.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
+    # egress rules
+    smtp_egress = {
+      type        = "egress"
       from_port   = 587
       to_port     = 587
       protocol    = "tcp"
-      description = "Allow SMTP traffic from egress"
-      cidr_blocks = "0.0.0.0/0"
-    },
-  ]
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "https to internet"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }
