@@ -123,35 +123,32 @@ module "ecs_service_front_end" {
       resources = ["*"]
     }
   ]
-}
 
-module "front_end_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_front_end.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
-      description              = "lb to tasks"
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
       from_port                = 3000
       to_port                  = 3000
-      protocol                 = "TCP"
-      source_security_group_id = module.front_end_alb_security_group.security_group_id
+      protocol                 = "tcp"
+      description              = "lb to tasks"
+      source_security_group_id = module.front_end_alb.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
+    # egress rules
+    private_api_egress = {
+      type        = "egress"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
       description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      description = "to api"
-      rule        = "http-80-tcp"
-      cidr_blocks = "0.0.0.0/0"
+      cidr_blocks = ["0.0.0.0/0"]
     }
-  ]
+  }
 }

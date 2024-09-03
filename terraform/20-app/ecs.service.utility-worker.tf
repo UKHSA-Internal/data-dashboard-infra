@@ -87,41 +87,37 @@ module "ecs_service_utility_worker" {
       resources = ["*"]
     }
   ]
-}
-
-module "utility_worker_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_utility_worker.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
-      description              = "utility worker tasks to tasks"
-      rule                     = "http-80-tcp"
-      source_security_group_id = module.private_api_alb_security_group.security_group_id
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
+      from_port                = 80
+      to_port                  = 80
+      protocol                 = "tcp"
+      source_security_group_id = module.private_api_alb.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    }
-  ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "utility worker tasks to cache"
-      rule                     = "redis-tcp"
-      source_security_group_id = module.app_elasticache_security_group.security_group_id
-    },
-    {
-      description              = "utility worker tasks to aurora db"
-      rule                     = "postgresql-tcp"
+    # egress rules
+    db_egress = {
+      type                     = "egress"
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
       source_security_group_id = module.aurora_db_app.security_group_id
     }
-  ]
+    cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.app_elasticache_security_group.security_group_id
+    }
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "https to internet"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }
