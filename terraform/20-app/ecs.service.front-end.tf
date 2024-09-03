@@ -132,7 +132,7 @@ module "ecs_service_front_end" {
       to_port                  = 3000
       protocol                 = "tcp"
       description              = "lb to tasks"
-      source_security_group_id = module.front_end_alb_security_group.security_group_id
+      source_security_group_id = module.front_end_alb.security_group_id
     }
     # egress rules
     private_api_egress = {

@@ -108,7 +108,7 @@ module "ecs_service_private_api" {
       to_port                  = 80
       protocol                 = "tcp"
       description              = "lb to tasks"
-      source_security_group_id = module.private_api_alb_security_group.security_group_id
+      source_security_group_id = module.private_api_alb.security_group_id
     }
     bastion_ingress = {
       type                     = "ingress"

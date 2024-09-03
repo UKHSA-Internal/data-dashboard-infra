@@ -103,7 +103,7 @@ module "ecs_service_public_api" {
       to_port                  = 80
       protocol                 = "tcp"
       description              = "lb to tasks"
-      source_security_group_id = module.public_api_alb_security_group.security_group_id
+      source_security_group_id = module.public_api_alb.security_group_id
     }
     # egress rules
     db_egress = {
