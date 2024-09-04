@@ -124,11 +124,21 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Terraform plan
+      - name: Terraform init
         run: |
           source uhd.sh
           uhd terraform init
+        shell: zsh {0}
+        
+      - name: Terraform plan test account layer
+        run: |
+          source uhd.sh
           uhd terraform plan:layer 10-account test
+        shell: zsh {0}
+        
+      - name: Terraform plan CI deployment app layer
+        run: |
+          source uhd.sh
           uhd terraform plan:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
@@ -150,11 +160,21 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Terraform apply
+      - name: Terraform init
         run: |
           source uhd.sh
           uhd terraform init
+        shell: zsh {0}
+
+      - name: Terraform apply test account layer
+        run: |
+          source uhd.sh
           uhd terraform apply:layer 10-account test
+        shell: zsh {0}
+
+      - name: Terraform apply CI deployment app layer
+        run: |
+          source uhd.sh
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
