@@ -29,7 +29,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -54,7 +54,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           role-duration-seconds: "7200"
 
       - uses: ./.github/actions/setup-terraform
@@ -79,7 +79,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
@@ -103,7 +103,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
