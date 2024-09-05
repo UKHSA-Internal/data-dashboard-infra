@@ -19,24 +19,40 @@ async function restartECSService(ecsClient = new ECSClient(), serviceName) {
 }
 
 /**
- * Restarts tasks in all ECS services which depend on the RDS instance
+ * Restarts tasks in all ECS services which depend on the main primary aurora db
  *
  * @param {ECSClient} ecsClient - An optional instance of the ECSClient to use for sending the command.
  * @param {Object} overridenDependencies - Object used to override the default dependencies.
  * @returns {Promise} A promise that resolves once the update service commands have been issued for each ECS service.
  */
-async function restartRequiredECSServices(ecsClient = new ECSClient(), overridenDependencies = {}) {
+async function restartMainDbECSServices(ecsClient = new ECSClient(), overridenDependencies = {}) {
     const defaultDependencies = {restartECSService};
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
     await dependencies.restartECSService(ecsClient, process.env.CMS_ADMIN_ECS_SERVICE_NAME)
     await dependencies.restartECSService(ecsClient, process.env.PRIVATE_API_ECS_SERVICE_NAME)
     await dependencies.restartECSService(ecsClient, process.env.PUBLIC_API_ECS_SERVICE_NAME)
-    console.log(`All required ECS tasks have been restarted`);
+    console.log(`All required ECS tasks have been restarted for main DB`);
+};
+
+
+/**
+ * Restarts tasks in all ECS services which depend on the feature flags aurora db
+ *
+ * @param {ECSClient} ecsClient - An optional instance of the ECSClient to use for sending the command.
+ * @param {Object} overridenDependencies - Object used to override the default dependencies.
+ * @returns {Promise} A promise that resolves once the update service commands have been issued for each ECS service.
+ */
+async function restartFeatureFlagsDbECSServices(ecsClient = new ECSClient(), overridenDependencies = {}) {
+    const defaultDependencies = {restartECSService};
+    const dependencies = {...defaultDependencies, ...overridenDependencies};
+
+    await dependencies.restartECSService(ecsClient, process.env.FEATURE_FLAGS_ECS_SERVICE_NAME)
+    console.log(`All required ECS tasks have been restarted for feature flags DB`);
 };
 
 /**
- * Lambda handler function for restarting client services after the main RDS password has been rotated
+ * Lambda handler function for restarting client services after an aurora db password has been rotated
  *
  * @param {Object} event - The event object triggered by the Lambda invocation.
  * @param {Object} context - The Lambda execution context.
@@ -44,15 +60,26 @@ async function restartRequiredECSServices(ecsClient = new ECSClient(), overriden
  */
 async function handler(event, context, overridenDependencies = {}) {
     const defaultDependencies = {
-        restartRequiredECSServices,
+        restartMainDbECSServices,
+        restartFeatureFlagsDbECSServices,
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
-    await dependencies.restartRequiredECSServices()
+    const rotatedSecretARN = event.detail.additionalEventData.SecretId
+    if (rotatedSecretARN === process.env.MAIN_DB_PASSWORD_SECRET_ARN) {
+        console.log('Restarting main db dependant services')
+        await dependencies.restartMainDbECSServices()
+    }
+
+    if (rotatedSecretARN === process.env.FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN) {
+        console.log('Restarting feature flags db dependant services')
+        await dependencies.restartFeatureFlagsDbECSServices()
+    }
 }
 
 module.exports = {
     handler,
     restartECSService,
-    restartRequiredECSServices,
+    restartMainDbECSServices,
+    restartFeatureFlagsDbECSServices,
 }

@@ -13,11 +13,12 @@ module "lambda_db_password_rotation" {
   maximum_retry_attempts = 1
 
   environment_variables = {
-    ECS_CLUSTER_ARN              = module.ecs.cluster_arn
-    DB_PASSWORD_SECRET_ARN       = local.main_db_aurora_password_secret_arn
-    CMS_ADMIN_ECS_SERVICE_NAME   = module.ecs_service_cms_admin.name
-    PRIVATE_API_ECS_SERVICE_NAME = module.ecs_service_private_api.name
-    PUBLIC_API_ECS_SERVICE_NAME  = module.ecs_service_public_api.name
+    ECS_CLUSTER_ARN                      = module.ecs.cluster_arn
+    MAIN_DB_PASSWORD_SECRET_ARN          = local.main_db_aurora_password_secret_arn
+    FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN = local.feature_flags_db_aurora_password_secret_arn
+    CMS_ADMIN_ECS_SERVICE_NAME           = module.ecs_service_cms_admin.name
+    PRIVATE_API_ECS_SERVICE_NAME         = module.ecs_service_private_api.name
+    PUBLIC_API_ECS_SERVICE_NAME          = module.ecs_service_public_api.name
   }
 
   attach_policy_statements = true
