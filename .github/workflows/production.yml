@@ -34,21 +34,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Terraform init
+      - name: Terraform plan
         run: |
           source uhd.sh
           uhd terraform init
-        shell: zsh {0}
-
-      - name: Terraform plan prod account layer
-        run: |
-          source uhd.sh
           uhd terraform plan:layer 10-account prod
-        shell: zsh {0}
-
-      - name: Terraform plan prod app layer
-        run: |
-          source uhd.sh
           uhd terraform plan:layer 20-app prod
         shell: zsh {0}
 
@@ -70,21 +60,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Terraform init
+      - name: Terraform apply
         run: |
           source uhd.sh
           uhd terraform init
-        shell: zsh {0}
-
-      - name: Terraform apply prod account layer
-        run: |
-          source uhd.sh
           uhd terraform apply:layer 10-account prod
-        shell: zsh {0}
-
-      - name: Terraform apply prod app layer
-        run: |
-          source uhd.sh
           uhd terraform apply:layer 20-app prod
         shell: zsh {0}
 
