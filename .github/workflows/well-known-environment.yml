@@ -40,11 +40,33 @@ jobs:
         with:
           branch: ${{ env.branch }}
 
-      - name: Terraform plan
+      - name: Terraform init account layer
         run: |
           source uhd.sh
-          uhd terraform init
+          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform init:layer 10-account $TARGET_ACCOUNT_NAME
+        env:
+          branch: ${{ env.branch }}
+        shell: zsh {0}
+
+      - name: Terraform init app layer
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app $ENVIRONMENT_NAME
+        env:
+          branch: ${{ env.branch }}
+        shell: zsh {0}
+
+      - name: Terraform plan account layer
+        run: |
+          source uhd.sh
           [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
+        env:
+          branch: ${{ env.branch }}
+        shell: zsh {0}
+
+      - name: Terraform plan app layer
+        run: |
+          source uhd.sh
           uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
@@ -73,11 +95,33 @@ jobs:
         with:
           branch: ${{ env.branch }}
 
-      - name: Terraform apply
+      - name: Terraform init account layer
         run: |
           source uhd.sh
-          uhd terraform init
+          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform init:layer 10-account $TARGET_ACCOUNT_NAME
+        env:
+          branch: ${{ env.branch }}
+        shell: zsh {0}
+
+      - name: Terraform init app layer
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app $ENVIRONMENT_NAME
+        env:
+          branch: ${{ env.branch }}
+        shell: zsh {0}
+
+      - name: Terraform apply account layer
+        run: |
+          source uhd.sh
           [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
+        env:
+          branch: ${{ env.branch }}
+          shell: zsh {0}
+
+      - name: Terraform apply app layer
+        run: |
+          source uhd.sh
           uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
