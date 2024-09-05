@@ -30,6 +30,7 @@ module "lambda_db_password_rotation" {
         module.ecs_service_private_api.id,
         module.ecs_service_public_api.id,
         module.ecs_service_cms_admin.id,
+        module.ecs_service_feature_flags.id,
       ]
     }
   }
