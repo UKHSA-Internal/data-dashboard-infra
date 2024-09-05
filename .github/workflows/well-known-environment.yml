@@ -95,18 +95,10 @@ jobs:
         with:
           branch: ${{ env.branch }}
 
-      - name: Terraform init account layer
+      - name: Terraform init
         run: |
           source uhd.sh
-          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform init:layer 10-account $TARGET_ACCOUNT_NAME
-        env:
-          branch: ${{ env.branch }}
-        shell: zsh {0}
-
-      - name: Terraform init app layer
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform init
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
