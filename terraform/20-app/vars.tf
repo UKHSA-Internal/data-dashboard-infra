@@ -3,7 +3,7 @@ variable "assume_account_id" {
 }
 
 variable "assume_role_name" {
-  default = "terraform"
+  default = "TerraformOperator"
 }
 
 variable "azs" {
