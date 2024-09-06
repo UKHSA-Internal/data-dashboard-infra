@@ -119,7 +119,7 @@ jobs:
         with:
           account-name: 'prod'
           aws-region: ${{ env.AWS_REGION }}
-          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          prod-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_PROD }}
 
       - name: Restart ECS services
         run: |
