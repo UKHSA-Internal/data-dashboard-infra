@@ -71,11 +71,11 @@ module "ecs_service_feature_flags" {
         },
         {
           name      = "DATABASE_USERNAME"
-          valueFrom = "${aws_secretsmanager_secret.aurora_db_feature_flags_credentials.arn}:username::"
+          valueFrom = "${local.feature_flags_db_aurora_password_secret_arn}:username::"
         },
         {
           name      = "DATABASE_PASSWORD"
-          valueFrom = "${aws_secretsmanager_secret.aurora_db_feature_flags_credentials.arn}:password::"
+          valueFrom = "${local.feature_flags_db_aurora_password_secret_arn}:password::"
         },
       ]
     }
