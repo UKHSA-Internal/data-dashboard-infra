@@ -156,6 +156,7 @@ jobs:
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
       deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
+      deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
     steps:
       - uses: actions/checkout@v4
         with:
