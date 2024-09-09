@@ -1,6 +1,7 @@
 const {
     restartECSService,
-    restartRequiredECSServices,
+    restartMainDbECSServices,
+    restartFeatureFlagsDbECSServices,
     handler
 } = require('./index.js')
 const {UpdateServiceCommand} = require("@aws-sdk/client-ecs");
@@ -45,10 +46,10 @@ describe('restartECSService', () => {
 });
 
 
-describe('restartRequiredECSServices', () => {
+describe('restartMainDbECSServices', () => {
     /**
      * Given environment variables set for the ECS service names
-     * When `restartRequiredECSServices()` is called
+     * When `restartMainDbECSServices()` is called
      * Then the call is delegated to the `restartECSService()`
      *  function for each of the ECS service names
      */
@@ -74,7 +75,7 @@ describe('restartRequiredECSServices', () => {
         }
 
         // When
-        await restartRequiredECSServices(mockedECSClient, spyDependencies);
+        await restartMainDbECSServices(mockedECSClient, spyDependencies);
 
         // Then
         // The function should have been called 3 times, 1 for each ECS service
@@ -90,28 +91,109 @@ describe('restartRequiredECSServices', () => {
 });
 
 
-describe('handler', () => {
+describe('restartFeatureFlagsDbECSServices', () => {
     /**
-     * Given no input
-     * When the main `handler()` is called
-     * Then the call is delegated to the
-     *  `restartRequiredECSServices()`
-     *   and `restartRDSProxy()` functions
+     * Given environment variables set for the ECS service names
+     * When `restartFeatureFlagsDbECSServices()` is called
+     * Then the call is delegated to the `restartECSService()`
+     *  function for each of the ECS service names
      */
-    test('Orchestrates calls correctly', async () => {
+    test('Calls the `restartECSService()` for each ECS service name', async () => {
         // Given
-        // Injected dependencies to perform spy operations
-        const restartRequiredECSServicesSpy = sinon.stub();
+        const fakeFeatureFlagsAppECSServiceName = 'fake-feature-flags-ecs-service-name'
+        const mockedEnvVar = sinon.stub(process, 'env').value(
+            {
+                FEATURE_FLAGS_ECS_SERVICE_NAME: fakeFeatureFlagsAppECSServiceName,
+            }
+        );
 
+        // Injected dependencies to perform spy operations
+        const mockedECSClient = sinon.stub()
+        const restartECSServiceSpy = sinon.stub();
         const spyDependencies = {
-            restartRequiredECSServices: restartRequiredECSServicesSpy,
+            restartECSService: restartECSServiceSpy,
         }
 
         // When
-        await handler(sinon.stub(), sinon.stub(), spyDependencies)
+        await restartFeatureFlagsDbECSServices(mockedECSClient, spyDependencies);
 
         // Then
-        expect(restartRequiredECSServicesSpy.calledOnce).toBeTruthy();
+        // The function should have been called 3 times, 1 for each ECS service
+        expect(restartECSServiceSpy.calledOnce).toBeTruthy();
+        // The function should have been called with each ECS service name
+        expect(restartECSServiceSpy.firstCall.lastArg).toEqual(fakeFeatureFlagsAppECSServiceName)
+        mockedEnvVar.restore();
+    });
+});
+
+
+describe('handler', () => {
+    /**
+     * Given an event object which matches
+     *   the `MAIN_DB_PASSWORD_SECRET_ARN` env var
+     * When the main `handler()` is called
+     * Then the call is delegated to
+     *  `restartMainDbECSServices()`
+     */
+    test('Orchestrates calls correctly for main db secret rotation', async () => {
+        // Given
+        // Injected dependencies to perform spy operations
+        const fakeMatchingSecretARN = 'fake-main-db-secret-arn'
+        const mockedEnvVar = sinon.stub(process, 'env').value(
+            {
+                MAIN_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
+            }
+        );
+        const fakeEvent = {"detail": {"additionalEventData": {"SecretId": fakeMatchingSecretARN}}}
+
+        const restartMainDbECSServicesSpy = sinon.stub();
+        const restartFeatureFlagsDbECSServicesSpy = sinon.stub();
+        const spyDependencies = {
+            restartMainDbECSServices: restartMainDbECSServicesSpy,
+            restartFeatureFlagsDbECSServices: restartFeatureFlagsDbECSServicesSpy,
+        }
+
+        // When
+        await handler(fakeEvent, sinon.stub(), spyDependencies)
+
+        // Then
+        expect(restartMainDbECSServicesSpy.calledOnce).toBeTruthy();
+        expect(restartFeatureFlagsDbECSServicesSpy.notCalled).toBeTruthy();
+        mockedEnvVar.restore();
+    })
+
+    /**
+     * Given an event object which matches
+     *   the `FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN` env var
+     * When the main `handler()` is called
+     * Then the call is delegated to
+     *  `restartFeatureFlagsDbECSServices()`
+     */
+    test('Orchestrates calls correctly for feature flags db secret rotation', async () => {
+        // Given
+        // Injected dependencies to perform spy operations
+        const fakeMatchingSecretARN = 'fake-feature-flags-db-secret-arn'
+        const mockedEnvVar = sinon.stub(process, 'env').value(
+            {
+                FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
+            }
+        );
+        const fakeEvent = {"detail": {"additionalEventData": {"SecretId": fakeMatchingSecretARN}}}
+
+        const restartMainDbECSServicesSpy = sinon.stub();
+        const restartFeatureFlagsDbECSServicesSpy = sinon.stub();
+        const spyDependencies = {
+            restartMainDbECSServices: restartMainDbECSServicesSpy,
+            restartFeatureFlagsDbECSServices: restartFeatureFlagsDbECSServicesSpy,
+        }
+
+        // When
+        await handler(fakeEvent, sinon.stub(), spyDependencies)
+
+        // Then
+        expect(restartMainDbECSServicesSpy.notCalled).toBeTruthy();
+        expect(restartFeatureFlagsDbECSServicesSpy.calledOnce).toBeTruthy();
+        mockedEnvVar.restore();
     })
 
 })
