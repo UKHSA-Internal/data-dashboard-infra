@@ -50,10 +50,10 @@ jobs:
         with:
           account-name: ${{ inputs.environment }}
           aws-region: ${{ env.AWS_REGION }}
-          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
-          dev-account-role: ${{ secrets.UHD_ECS_ROLE_DEV }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
-          uat-account-role: ${{ secrets.UHD_ECS_ROLE_UAT }}
+          prod-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_PROD }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
 
       - name: Flush caches
         run: |

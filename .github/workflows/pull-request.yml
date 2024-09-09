@@ -211,7 +211,7 @@ jobs:
         with:
           account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
 
       - name: Restart ECS services
         run: |
@@ -273,7 +273,7 @@ jobs:
         with:
           account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
 
       - name: Delete secrets
         run: |
