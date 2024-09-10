@@ -18,6 +18,7 @@ locals {
     ],
     project_team = [
       "90.221.143.3/32",    # Debbie
+      "86.19.42.86/32",     # Debbie 2
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway 
