@@ -29,7 +29,7 @@ module "ecs_service_front_end" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_front_end.repository_url}:latest-graviton"
+      image                                  = data.aws_ecr_image.front_end.image_uri
       port_mappings                          = [
         {
           containerPort = 3000

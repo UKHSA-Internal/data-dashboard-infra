@@ -41,6 +41,11 @@ module "ecr_front_end" {
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
 }
 
+data "aws_ecr_image" "front_end" {
+  repository_name = module.ecr_front_end.repository_name
+  most_recent     = true
+}
+
 module "ecr_api" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "2.2.0"
@@ -53,6 +58,11 @@ module "ecr_api" {
 
   create_lifecycle_policy     = true
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
+}
+
+data "aws_ecr_image" "api" {
+  repository_name = module.ecr_api.repository_name
+  most_recent     = true
 }
 
 
@@ -84,4 +94,9 @@ module "ecr_ingestion" {
 
   create_lifecycle_policy     = true
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
+}
+
+data "aws_ecr_image" "ingestion" {
+  repository_name = module.ecr_ingestion.repository_name
+  most_recent     = true
 }

@@ -13,7 +13,7 @@ module "lambda_ingestion" {
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${module.ecr_ingestion.repository_url}:latest"
+  image_uri      = data.aws_ecr_image.ingestion.image_uri
   depends_on     = [module.ecr_ingestion.repository_arn]
 
   maximum_retry_attempts = 1
