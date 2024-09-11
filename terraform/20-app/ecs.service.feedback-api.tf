@@ -29,7 +29,7 @@ module "ecs_service_feedback_api" {
       memory                                 = local.use_prod_sizing ? 2048 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = data.aws_ecr_image.api.image_uri
+      image                                  = module.ecr_api.image_uri
       port_mappings                          = [
         {
           containerPort = 80

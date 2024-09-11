@@ -27,7 +27,7 @@ module "ecs_service_utility_worker" {
       memory                                 = 32768
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = data.aws_ecr_image.api.image_uri
+      image                                  = module.ecr_api.image_uri
       port_mappings                          = [
         {
           containerPort = 80

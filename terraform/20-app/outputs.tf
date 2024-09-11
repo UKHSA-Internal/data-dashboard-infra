@@ -57,7 +57,7 @@ output "s3" {
 
 output "ecr" {
   value = {
-    ingestion_image_uri = "${module.ecr_ingestion.repository_url}:latest"
+    ingestion_image_uri = module.ecr_ingestion.image_uri
   }
 }
 
