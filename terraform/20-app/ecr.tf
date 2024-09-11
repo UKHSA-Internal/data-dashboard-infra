@@ -41,7 +41,20 @@ module "ecr_front_end" {
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
 }
 
+resource "terraform_data" "dummy_front_end_image_provisioner" {
+  depends_on = [module.ecr_front_end]
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com
+      docker pull alpine
+      docker tag alpine ${module.ecr_front_end.repository_url}:null
+      docker push ${module.ecr_front_end.repository_url}:null
+    EOF
+  }
+}
+
 data "aws_ecr_image" "front_end" {
+  depends_on = [terraform_data.dummy_front_end_image_provisioner]
   repository_name = module.ecr_front_end.repository_name
   most_recent     = true
 }
@@ -60,23 +73,32 @@ module "ecr_api" {
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
 }
 
+resource "terraform_data" "dummy_api_image_provisioner" {
+  depends_on = [module.ecr_api]
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com
+      docker pull alpine
+      docker tag alpine ${module.ecr_api.repository_url}:null
+      docker push ${module.ecr_api.repository_url}:null
+    EOF
+  }
+}
+
 data "aws_ecr_image" "api" {
+  depends_on = [terraform_data.dummy_api_image_provisioner]
   repository_name = module.ecr_api.repository_name
   most_recent     = true
 }
 
-
-# This puts a dummy image into the ingestion ECR repo.
-# So that when the ingestion lambda function is provisioned by terraform,
-# there will be an image available to pull
 resource "terraform_data" "dummy_ingestion_image_provisioner" {
   depends_on = [module.ecr_ingestion]
   provisioner "local-exec" {
     command = <<EOF
       aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com
       docker pull alpine
-      docker tag alpine ${module.ecr_ingestion.repository_url}:latest
-      docker push ${module.ecr_ingestion.repository_url}:latest
+      docker tag alpine ${module.ecr_ingestion.repository_url}:null
+      docker push ${module.ecr_ingestion.repository_url}:null
     EOF
   }
 }
@@ -97,6 +119,7 @@ module "ecr_ingestion" {
 }
 
 data "aws_ecr_image" "ingestion" {
+  depends_on = [terraform_data.dummy_ingestion_image_provisioner]
   repository_name = module.ecr_ingestion.repository_name
   most_recent     = true
 }
