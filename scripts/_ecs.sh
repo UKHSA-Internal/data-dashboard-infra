@@ -68,6 +68,7 @@ function _ecs_restart_services() {
     local private_api_service_name=$(jq -r '.ecs.value.service_names.private_api'  $terraform_output_file)
     local public_api_service_name=$(jq -r '.ecs.value.service_names.public_api'  $terraform_output_file)
     local feedback_api_service_name=$(jq -r '.ecs.value.service_names.feedback_api'  $terraform_output_file)
+    local feature_flags_service_name=$(jq -r '.ecs.value.service_names.feature_flags'  $terraform_output_file)
 
     local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  $terraform_output_file)
 
@@ -77,6 +78,7 @@ function _ecs_restart_services() {
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $private_api_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $public_api_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $feedback_api_service_name
+    aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $feature_flags_service_name
     aws ecs update-service --force-new-deployment --query service.serviceName --cluster $cluster_name --service $front_end_service_name
 
     echo "Waiting for services to reach a steady state..."
@@ -87,6 +89,7 @@ function _ecs_restart_services() {
          $private_api_service_name \
          $public_api_service_name \
          $feedback_api_service_name \
+         $feature_flags_service_name \
          $front_end_service_name
 }
 
