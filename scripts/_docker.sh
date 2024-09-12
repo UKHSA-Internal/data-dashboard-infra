@@ -13,8 +13,8 @@ function _docker_help() {
     echo "  push                 - push images to your dev ECR"
     echo "  push <account> <env> - tag and push images"
     echo
-    echo "  ecr:login            - login to ECR in the dev account"
-    echo "  ecr:login <account>  - login to ECR in the specified account"
+    echo "  ecr:login              - login to ECR in the tools account"
+    echo "  ecr:login <account>    - login to ECR in the specified account"
     echo
 
     return 0
