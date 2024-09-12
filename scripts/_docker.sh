@@ -62,6 +62,35 @@ function _docker_build() {
     cd $root
 }
 
+function _docker_build_with_custom_tag() {
+    local repo=$1
+
+    if [[ -z ${repo} ]]; then
+        echo "Repo is required" >&2
+        return 1
+    fi
+
+    local dev_account_id=$(_get_target_aws_account_id "dev")
+    local env=$(_get_env_name)
+
+    cd $root/../data-dashboard-$repo
+
+    local ecr_repo_name=$repo
+    [[ "$repo" == "frontend" ]] && ecr_repo_name=("front-end")
+
+    echo "Building docker image for $repo"
+
+    local commit_hash=$(git rev-parse --short HEAD)
+    docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${ecr_repo_name}:custom-${commit_hash} --push .
+
+    if [[ "$repo" == "api" ]]; then
+        echo "building docker image for ingestion lambda"
+        docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion:custom-${commit_hash} --push .
+    fi
+
+    cd $root
+}
+
 function _docker_pull() {
     src_account_id=$(_get_tools_account_id)
     
