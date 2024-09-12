@@ -119,3 +119,41 @@ function _docker_ecr_login() {
 
     aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin "${account_id}.dkr.ecr.eu-west-2.amazonaws.com"
 }
+
+function _docker_get_most_recent_front_end_image_tag() {
+    src_account_id=$(_get_tools_account_id)
+    echo $(_docker_get_most_recent_image_tag_from_repo ukhsa-data-dashboard/front-end ${src_account_id})
+}
+
+function _docker_get_most_recent_back_end_image_tag() {
+    src_account_id=$(_get_tools_account_id)
+    echo $(_docker_get_most_recent_image_tag_from_repo ukhsa-data-dashboard/back-end ${src_account_id})
+}
+
+function _docker_get_most_recent_ingestion_image_tag() {
+    src_account_id=$(_get_tools_account_id)
+    echo $(_docker_get_most_recent_image_tag_from_repo ukhsa-data-dashboard/ingestion ${src_account_id})
+}
+
+function _docker_get_most_recent_image_tag_from_repo() {
+    local ecr_repo_name=$1
+    local account_id=$2
+
+    if [[ -z ${ecr_repo_name} ]]; then
+      echo "ECR repo name is required" >&2
+      return 1
+    fi
+
+    if [[ -z ${account_id} ]]; then
+      echo "Account ID is required" >&2
+      return 1
+    fi
+
+    echo $(
+      aws ecr describe-images \
+        --repository-name ${ecr_repo_name} \
+        --registry-id ${account_id} \
+        --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+        --output text
+      )
+}
