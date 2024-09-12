@@ -5,9 +5,9 @@ function _docker_help() {
     echo "uhd docker <command> [options]"
     echo
     echo "commands:"
-    echo "  help                 - this help screen"
+    echo "  help                   - this help screen"
     echo
-    echo "  build [repo]         - build a docker image for the specified repo"
+    echo "  build [repo]           - build a docker image for the specified repo"
     echo
     echo "  pull                 - pull the latest source images from the dev account"
     echo "  push                 - push images to your dev ECR"
