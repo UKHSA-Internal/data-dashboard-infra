@@ -5,16 +5,17 @@ function _docker_help() {
     echo "uhd docker <command> [options]"
     echo
     echo "commands:"
-    echo "  help                 - this help screen"
+    echo "  help                   - this help screen"
     echo
-    echo "  build [repo]         - build a docker image for the specified repo"
+    echo "  build [repo]           - build a docker image for the specified repo"
     echo
-    echo "  pull                 - pull the latest source images from the dev account"
-    echo "  push                 - push images to your dev ECR"
-    echo "  push <account> <env> - tag and push images"
+    echo "  pull                   - *DEPRECATED pull the latest source images from the tools account"
+    echo "  push                   - *DEPRECATED push images to your dev ECR"
+    echo "  push <account> <env>   - *DEPRECATED tag and push images"
+    echo "  update <account> <env> - pull the latest source images and push to the specified environment"
     echo
-    echo "  ecr:login            - login to ECR in the dev account"
-    echo "  ecr:login <account>  - login to ECR in the specified account"
+    echo "  ecr:login              - login to ECR in the tools account"
+    echo "  ecr:login <account>    - login to ECR in the specified account"
     echo
 
     return 0
@@ -26,6 +27,7 @@ function _docker() {
 
     case $verb in
         "build") _docker_build $args ;;
+        "update") _docker_update $args ;;
         "pull") _docker_pull $args ;;
         "push") _docker_push $args ;;
         "ecr:login") _docker_ecr_login $args ;;
@@ -62,6 +64,35 @@ function _docker_build() {
     cd $root
 }
 
+function _docker_build_with_custom_tag() {
+    local repo=$1
+
+    if [[ -z ${repo} ]]; then
+        echo "Repo is required" >&2
+        return 1
+    fi
+
+    local dev_account_id=$(_get_target_aws_account_id "dev")
+    local env=$(_get_env_name)
+
+    cd $root/../data-dashboard-$repo
+
+    local ecr_repo_name=$repo
+    [[ "$repo" == "frontend" ]] && ecr_repo_name=("front-end")
+
+    echo "Building docker image for $repo"
+
+    local commit_hash=$(git rev-parse --short HEAD)
+    docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${ecr_repo_name}:custom-${commit_hash} --push .
+
+    if [[ "$repo" == "api" ]]; then
+        echo "building docker image for ingestion lambda"
+        docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion:custom-${commit_hash} --push .
+    fi
+
+    cd $root
+}
+
 function _docker_pull() {
     src_account_id=$(_get_tools_account_id)
     
@@ -70,6 +101,54 @@ function _docker_pull() {
          "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/data-dashboard/front-end:latest-graviton")
 
     echo $src | xargs -P10 -n1 docker pull
+}
+
+function _docker_update() {
+    local account=$1
+    local env=$2
+
+    if [[ -z ${account} ]]; then
+        echo "Account is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${env} ]]; then
+        echo "Env is required" >&2
+        return 1
+    fi
+
+    uhd docker ecr:login tools
+    latest_back_end_image_tag=$(_docker_get_most_recent_back_end_image_tag)
+    latest_ingestion_image_tag=$(_docker_get_most_recent_ingestion_image_tag)
+    latest_front_end_image_tag=$(_docker_get_most_recent_front_end_image_tag)
+
+    src_account_id=$(_get_tools_account_id)
+    dest_account_id=$(_get_target_aws_account_id $account)
+
+    # Pull images from central ECRs
+    src=(
+      "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/ukhsa-data-dashboard/back-end:${latest_back_end_image_tag}"
+      "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/ukhsa-data-dashboard/ingestion:${latest_ingestion_image_tag}"
+      "${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/ukhsa-data-dashboard/front-end:${latest_front_end_image_tag}"
+    )
+
+    echo $src | xargs -P10 -n1 docker pull
+
+    # Push images to deployment ECRs
+    uhd docker ecr:login $account
+    dest=(
+      "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-back-end-ecs:${latest_back_end_image_tag}"
+      "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion-lambda:${latest_ingestion_image_tag}"
+      "${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end-ecs:${latest_front_end_image_tag}"
+    )
+
+    for ((i=1; i<=${#src[@]}; ++i)); do
+        docker tag "${src[i]}" "${dest[i]}"
+    done
+
+    _docker_ecr_login "tools"
+
+    echo $dest | xargs -P10 -n1 docker push
 }
 
 function _docker_push() {
