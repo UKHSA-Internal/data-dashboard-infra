@@ -5,17 +5,23 @@ function _docker_help() {
     echo "uhd docker <command> [options]"
     echo
     echo "commands:"
-    echo "  help                   - this help screen"
+    echo "  help                                 - this help screen"
     echo
-    echo "  build [repo]           - build a docker image for the specified repo"
+    echo "  build [repo]                         - build a docker image for the specified repo"
     echo
     echo "  pull                   - *DEPRECATED pull the latest source images from the tools account"
     echo "  push                   - *DEPRECATED push images to your dev ECR"
     echo "  push <account> <env>   - *DEPRECATED tag and push images"
     echo "  update <account> <env> - pull the latest source images and push to the specified environment"
+    echo "  pull                                 - *DEPRECATED pull the latest source images from the tools account"
+    echo "  push                                 - *DEPRECATED push images to your dev ECR"
+    echo "  push <account> <env>                 - *DEPRECATED tag and push images"
     echo
-    echo "  ecr:login              - login to ECR in the tools account"
-    echo "  ecr:login <account>    - login to ECR in the specified account"
+    echo "  update <account> <env>               - pull the latest source images and push to the specified environment"
+    echo
+    echo
+    echo "  ecr:login                            - login to ECR in the tools account"
+    echo "  ecr:login <account>                  - login to ECR in the specified account"
     echo
 
     return 0
