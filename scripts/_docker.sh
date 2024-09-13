@@ -9,16 +9,13 @@ function _docker_help() {
     echo
     echo "  build [repo]                         - build a docker image for the specified repo"
     echo
-    echo "  pull                   - *DEPRECATED pull the latest source images from the tools account"
-    echo "  push                   - *DEPRECATED push images to your dev ECR"
-    echo "  push <account> <env>   - *DEPRECATED tag and push images"
-    echo "  update <account> <env> - pull the latest source images and push to the specified environment"
     echo "  pull                                 - *DEPRECATED pull the latest source images from the tools account"
     echo "  push                                 - *DEPRECATED push images to your dev ECR"
     echo "  push <account> <env>                 - *DEPRECATED tag and push images"
     echo
     echo "  update <account> <env>               - pull the latest source images and push to the specified environment"
     echo
+    echo "  get-recent-tag <ecr-repo> <!account> - Gets the latest image tag from the given repo in the current account"
     echo
     echo "  ecr:login                            - login to ECR in the tools account"
     echo "  ecr:login <account>                  - login to ECR in the specified account"
@@ -36,6 +33,7 @@ function _docker() {
         "update") _docker_update $args ;;
         "pull") _docker_pull $args ;;
         "push") _docker_push $args ;;
+        "get-recent-tag") _docker_get_most_recent_image_tag_from_repo $args ;;
         "ecr:login") _docker_ecr_login $args ;;
 
         *) _docker_help ;;
@@ -230,15 +228,36 @@ function _docker_get_most_recent_image_tag_from_repo() {
     fi
 
     if [[ -z ${account_id} ]]; then
-      echo "Account ID is required" >&2
-      return 1
+      echo "Account ID not provided, referencing current account"
     fi
 
-    echo $(
+    if [[ -z ${account_id} ]]; then
+      echo $(_get_latest_image_in_default_account ${ecr_repo_name})
+    else
+      echo $(_get_latest_image_in_target_account ${ecr_repo_name} ${account_id})
+    fi
+}
+
+function _get_latest_image_in_default_account() {
+  local ecr_repo_name=$1
+
+  echo $(
       aws ecr describe-images \
         --repository-name ${ecr_repo_name} \
-        --registry-id ${account_id} \
         --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
         --output text
-      )
+  )
+}
+
+function _get_latest_image_in_target_account() {
+  local ecr_repo_name=$1
+  local account_id=$2
+
+  echo $(
+    aws ecr describe-images \
+      --repository-name ${ecr_repo_name} \
+      --registry-id ${account_id} \
+      --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+      --output text
+  )
 }
