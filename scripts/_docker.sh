@@ -228,10 +228,6 @@ function _docker_get_most_recent_image_tag_from_repo() {
     fi
 
     if [[ -z ${account_id} ]]; then
-      echo "Account ID not provided, referencing current account"
-    fi
-
-    if [[ -z ${account_id} ]]; then
       echo $(_get_latest_image_in_default_account ${ecr_repo_name})
     else
       echo $(_get_latest_image_in_target_account ${ecr_repo_name} ${account_id})
