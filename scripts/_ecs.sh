@@ -7,7 +7,8 @@ function _ecs_help() {
     echo "commands:"
     echo "  help                           - this help screen"
     echo 
-    echo "  restart-services               - restart all the ecs services"
+    echo "  restart-services               - *DEPRECATED restart all the ecs services"
+    echo "  restart-services-v2            - restarts all the ecs services after deploying the most recent images"
     echo "  run <job name>                 - run the specified job"
     echo "  logs <env> <task id>           - tail logs for the specified task"
     echo "  ssh <task id> <container name> - ssh into a container"
