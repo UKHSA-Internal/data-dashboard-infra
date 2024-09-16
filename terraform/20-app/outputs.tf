@@ -9,6 +9,13 @@ output "ecs" {
       front_end     = module.ecs_service_front_end.name
       feature_flags = module.ecs_service_feature_flags.name
     }
+    task_definitions = {
+      cms_admin     = module.ecs_service_cms_admin.task_definition_family
+      feedback_api  = module.ecs_service_feedback_api.task_definition_family
+      private_api   = module.ecs_service_private_api.task_definition_family
+      public_api    = module.ecs_service_public_api.task_definition_family
+      front_end     = module.ecs_service_front_end.task_definition_family
+    }
   }
 }
 
@@ -61,9 +68,14 @@ output "ecr" {
     ingestion_image_uri = "${module.ecr_ingestion.repository_url}:latest"
     repo_names = {
       ingestion = module.ecr_ingestion_lambda.repo_name
+      back_end  = module.ecr_back_end_ecs.repo_name
+      front_end = module.ecr_front_end_ecs.repo_name
+
     }
     repo_urls = {
       ingestion = module.ecr_ingestion_lambda.repo_url
+      back_end  = module.ecr_back_end_ecs.repo_url
+      front_end = module.ecr_front_end_ecs.repo_url
     }
   }
 }
