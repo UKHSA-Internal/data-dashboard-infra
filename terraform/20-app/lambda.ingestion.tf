@@ -13,8 +13,8 @@ module "lambda_ingestion" {
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${module.ecr_ingestion.repository_url}:latest"
-  depends_on     = [module.ecr_ingestion.repository_arn]
+  image_uri      = module.ecr_ingestion_lambda.image_uri
+  depends_on     = [module.ecr_ingestion_lambda.repo_arn]
 
   maximum_retry_attempts = 1
   timeout                = 60 # Timeout after 1 minute
