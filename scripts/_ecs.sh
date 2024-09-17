@@ -129,7 +129,6 @@ function _ecs_restart_services_v2() {
     echo "feature_flags_service_name ${feature_flags_service_name}"
     echo "front_end_service_name ${front_end_service_name}"
 
-
     local cms_admin_task_definition_arn=$(jq -r '.ecs.value.task_definitions.cms_admin'  $terraform_output_file)
     local private_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.private_api'  $terraform_output_file)
     local public_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.public_api'  $terraform_output_file)
@@ -142,7 +141,7 @@ function _ecs_restart_services_v2() {
     echo "feedback_api_task_definition_arn ${feedback_api_task_definition_arn}"
     echo "front_end_task_definition_arn ${front_end_task_definition_arn}"
 
-    back_end_image=$(_get_most_recent_back_end_image
+    back_end_image=$(_get_most_recent_back_end_image)
     echo "back_end_image ${back_end_image}"
 
     front_end_image=$(_get_most_recent_front_end_image)
