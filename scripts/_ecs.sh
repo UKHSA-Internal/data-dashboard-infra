@@ -122,31 +122,17 @@ function _ecs_restart_services_v2() {
     local front_end_service_name=$(jq -r '.ecs.value.service_names.front_end'  $terraform_output_file)
     local feature_flags_service_name=$(jq -r '.ecs.value.service_names.feature_flags'  $terraform_output_file)
 
-    echo "cms_admin_service_name ${cms_admin_service_name}"
-    echo "private_api_service_name ${private_api_service_name}"
-    echo "public_api_service_name ${public_api_service_name}"
-    echo "feedback_api_service_name ${feedback_api_service_name}"
-    echo "feature_flags_service_name ${feature_flags_service_name}"
-    echo "front_end_service_name ${front_end_service_name}"
-
     local cms_admin_task_definition_arn=$(jq -r '.ecs.value.task_definitions.cms_admin'  $terraform_output_file)
     local private_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.private_api'  $terraform_output_file)
     local public_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.public_api'  $terraform_output_file)
     local feedback_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.feedback_api'  $terraform_output_file)
     local front_end_task_definition_arn=$(jq -r '.ecs.value.task_definitions.front_end'  $terraform_output_file)
 
-    echo "cms_admin_task_definition_arn ${cms_admin_task_definition_arn}"
-    echo "private_api_task_definition_arn ${private_api_task_definition_arn}"
-    echo "public_api_task_definition_arn ${public_api_task_definition_arn}"
-    echo "feedback_api_task_definition_arn ${feedback_api_task_definition_arn}"
-    echo "front_end_task_definition_arn ${front_end_task_definition_arn}"
-
     back_end_image=$(_get_most_recent_back_end_image)
-    echo "back_end_image ${back_end_image}"
+    echo "back_end_image = ${back_end_image}"
 
     front_end_image=$(_get_most_recent_front_end_image)
-    echo "front_end_image ${front_end_image}"
-
+    echo "front_end_image = ${front_end_image}"
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
@@ -183,21 +169,22 @@ function _ecs_register_new_image_for_service() {
   local service_name=$1
   local task_definition_arn=$2
   local new_image_tag=$3
-
-  echo "Updating ${service_name} for task ${task_definition_arn} with image tag of ${new_image_tag}"
+  echo "-------"
+  echo "Updating service: ${service_name} for task definition arn: ${task_definition_arn} with image tag of: ${new_image_tag}"
 
   local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
-  echo "cluster name ${cluster_name}"
 
   original_task_definition=$(aws ecs describe-task-definition --task-definition ${task_definition_arn} --region eu-west-2)
   new_task_definition=$(echo ${original_task_definition} | jq --arg IMAGE ${new_image_tag} '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) |  del(.registeredAt)  | del(.registeredBy)')
 
   new_task_info=$(aws ecs register-task-definition --region eu-west-2 --cli-input-json ${new_task_definition})
   new_revision=$(echo ${new_task_info} | jq '.taskDefinition.revision')
-  echo "new revision: ${new_revision}"
+  echo "new revision:"
+  echo ${new_revision}
 
   new_task_definition_arn="${task_definition_arn}:${new_revision}"
-  echo "new_task_definition_arn ${new_task_definition_arn}"
+  echo "new_task_definition_arn:"
+  echo ${new_task_definition_arn}
 
   aws ecs update-service \
     --cluster ${cluster_name} \
