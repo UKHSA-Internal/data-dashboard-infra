@@ -29,7 +29,7 @@ locals {
 
 module "ecr_front_end" {
   source  = "terraform-aws-modules/ecr/aws"
-  version = "2.2.0"
+  version = "2.3.0"
 
   repository_force_delete           = true
   repository_image_tag_mutability   = "MUTABLE"
@@ -43,7 +43,7 @@ module "ecr_front_end" {
 
 module "ecr_api" {
   source  = "terraform-aws-modules/ecr/aws"
-  version = "2.2.0"
+  version = "2.3.0"
 
   repository_force_delete           = true
   repository_image_tag_mutability   = "MUTABLE"
@@ -73,7 +73,7 @@ resource "terraform_data" "dummy_ingestion_image_provisioner" {
 
 module "ecr_ingestion" {
   source  = "terraform-aws-modules/ecr/aws"
-  version = "2.2.0"
+  version = "2.3.0"
 
   repository_force_delete            = true
   repository_image_tag_mutability    = "MUTABLE"
