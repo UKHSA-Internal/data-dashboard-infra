@@ -97,16 +97,28 @@ function _ecs_restart_services() {
 
 function _get_most_recent_back_end_image() {
     local back_end_ecr_url=$(jq -r '.ecr.value.repo_urls.back_end'  $terraform_output_file)
-    echo "back_end_ecr_url ${back_end_ecr_url}"
+    echo "back_end_ecr_url"
+    echo ${back_end_ecr_url}
+
     local back_end_ecr_name=$(jq -r '.ecr.value.repo_names.back_end'  $terraform_output_file)
-    echo "back_end_ecr_name ${back_end_ecr_name}"
+    echo "back_end_ecr_name"
+    echo ${back_end_ecr_name}
+    echo
+
     most_recent_back_end_image_tag=$(uhd docker get-recent-tag $back_end_ecr_name)
     echo "${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 }
 
 function _get_most_recent_front_end_image() {
     local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
+    echo "front_end_ecr_url"
+    echo ${front_end_ecr_url}
+
     local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
+    echo "front_end_ecr_name"
+    echo ${front_end_ecr_name}
+    echo
+
     most_recent_front_end_image_tag=$(uhd docker get-recent-tag $front_end_ecr_name)
     echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 }
@@ -130,9 +142,11 @@ function _ecs_restart_services_v2() {
 
     back_end_image=$(_get_most_recent_back_end_image)
     echo "back_end_image = ${back_end_image}"
+    echo
 
     front_end_image=$(_get_most_recent_front_end_image)
     echo "front_end_image = ${front_end_image}"
+    echo
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
