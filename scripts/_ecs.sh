@@ -133,7 +133,13 @@ function _ecs_restart_services_v2() {
     local front_end_task_definition_arn=$(jq -r '.ecs.value.task_definitions.front_end'  $terraform_output_file)
 
     back_end_image=$(_get_most_recent_back_end_image)
+    echo "back end image"
+    echo $back_end_image
+    echo "-"
     front_end_image=$(_get_most_recent_front_end_image)
+    echo "front end image"
+    echo $front_end_image
+    echo "-"
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
