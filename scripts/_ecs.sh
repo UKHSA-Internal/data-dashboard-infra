@@ -97,30 +97,14 @@ function _ecs_restart_services() {
 
 function _get_most_recent_back_end_image() {
     local back_end_ecr_url=$(jq -r '.ecr.value.repo_urls.back_end'  $terraform_output_file)
-    echo "back_end_ecr_url:"
-    echo ${back_end_ecr_url}
-    echo "-"
-
     local back_end_ecr_name=$(jq -r '.ecr.value.repo_names.back_end'  $terraform_output_file)
-    echo "back_end_ecr_name:"
-    echo ${back_end_ecr_name}
-    echo "-"
-
     most_recent_back_end_image_tag=$(uhd docker get-recent-tag $back_end_ecr_name)
     echo "${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 }
 
 function _get_most_recent_front_end_image() {
     local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
-    echo "front_end_ecr_url"
-    echo ${front_end_ecr_url}
-    echo "-"
-
     local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
-    echo "front_end_ecr_name"
-    echo ${front_end_ecr_name}
-    echo "-"
-
     most_recent_front_end_image_tag=$(uhd docker get-recent-tag $front_end_ecr_name)
     echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 }
@@ -143,12 +127,7 @@ function _ecs_restart_services_v2() {
     local front_end_task_definition_arn=$(jq -r '.ecs.value.task_definitions.front_end'  $terraform_output_file)
 
     back_end_image=$(_get_most_recent_back_end_image)
-    echo "back_end_image = ${back_end_image}"
-    echo "--"
-
     front_end_image=$(_get_most_recent_front_end_image)
-    echo "front_end_image = ${front_end_image}"
-    echo "--"
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
@@ -185,9 +164,6 @@ function _ecs_register_new_image_for_service() {
   local service_name=$1
   local task_definition_arn=$2
   local new_image_tag=$3
-  echo "-------"
-  echo "Updating service: ${service_name} for task definition arn: ${task_definition_arn} with image tag of: ${new_image_tag}"
-  echo
   local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
 
   original_task_definition=$(aws ecs describe-task-definition --task-definition ${task_definition_arn} --region eu-west-2)
@@ -195,12 +171,7 @@ function _ecs_register_new_image_for_service() {
 
   new_task_info=$(aws ecs register-task-definition --region eu-west-2 --cli-input-json ${new_task_definition})
   new_revision=$(echo ${new_task_info} | jq '.taskDefinition.revision')
-  echo "new revision:"
-  echo ${new_revision}
-
   new_task_definition_arn="${task_definition_arn}:${new_revision}"
-  echo "new_task_definition_arn:"
-  echo ${new_task_definition_arn}
 
   aws ecs update-service \
     --cluster ${cluster_name} \
