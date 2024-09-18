@@ -142,11 +142,11 @@ function _ecs_restart_services_v2() {
 
     back_end_image=$(_get_most_recent_back_end_image)
     echo "back_end_image = ${back_end_image}"
-    echo
+    echo "--"
 
     front_end_image=$(_get_most_recent_front_end_image)
     echo "front_end_image = ${front_end_image}"
-    echo
+    echo "--"
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
