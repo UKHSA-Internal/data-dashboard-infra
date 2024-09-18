@@ -185,7 +185,7 @@ function _ecs_register_new_image_for_service() {
   local new_image_tag=$3
   echo "-------"
   echo "Updating service: ${service_name} for task definition arn: ${task_definition_arn} with image tag of: ${new_image_tag}"
-
+  echo
   local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
 
   original_task_definition=$(aws ecs describe-task-definition --task-definition ${task_definition_arn} --region eu-west-2)
