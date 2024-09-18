@@ -145,7 +145,7 @@ jobs:
   restart_services:
     name: Restart services
     runs-on: ubuntu-latest
-    needs: ["push_docker_images"]
+    needs: ["push_docker_images", "push_docker_images_immutable"]
     steps:
       - uses: actions/checkout@v4
         with:
