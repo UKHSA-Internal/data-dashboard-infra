@@ -119,43 +119,29 @@ function _ecs_restart_services_v2() {
     local most_recent_back_end_image_tag=$(_docker_get_most_recent_image_tag_from_repo $back_end_ecr_name)
     local back_end_image="${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 
-    echo "most_recent_back_end_image_tag:"
-    echo ${most_recent_back_end_image_tag}
-
-    echo "back_end_image:"
-    echo ${back_end_image}
-
     local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
     local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
-    local most_recent_front_end_image_tag=$(uhd docker get-recent-tag $front_end_ecr_name 2>/dev/null)
+    local most_recent_front_end_image_tag=$(_docker_get_most_recent_image_tag_from_repo $front_end_ecr_name)
     local front_end_image="${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 
-    echo "most_recent_front_end_image_tag:"
-    echo ${most_recent_front_end_image_tag}
-
-    echo "front_end_image:"
-    echo ${front_end_image}
-
-
     echo "Updating services..."
-#    _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
-#    _ecs_register_new_image_for_service ${private_api_service_name} ${private_api_task_definition_arn} ${back_end_image}
-#    _ecs_register_new_image_for_service ${public_api_service_name} ${public_api_task_definition_arn} ${back_end_image}
-#    _ecs_register_new_image_for_service ${feedback_api_service_name} ${feedback_api_task_definition_arn} ${back_end_image}
-#    _ecs_register_new_image_for_service ${front_end_service_name} ${front_end_task_definition_arn} ${front_end_image}
-#    _ecs_force_new_deployment_for_service ${cluster_name} ${feature_flags_service_name}
+    _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
+    _ecs_register_new_image_for_service ${private_api_service_name} ${private_api_task_definition_arn} ${back_end_image}
+    _ecs_register_new_image_for_service ${public_api_service_name} ${public_api_task_definition_arn} ${back_end_image}
+    _ecs_register_new_image_for_service ${feedback_api_service_name} ${feedback_api_task_definition_arn} ${back_end_image}
+    _ecs_register_new_image_for_service ${front_end_service_name} ${front_end_task_definition_arn} ${front_end_image}
+    _ecs_force_new_deployment_for_service ${cluster_name} ${feature_flags_service_name}
 
     echo "Waiting for services to reach a steady state..."
-#    aws ecs wait services-stable \
-#      --cluster $cluster_name \
-#      --services \
-#        $cms_admin_service_name \
-#        $private_api_service_name \
-#        $public_api_service_name \
-#        $feedback_api_service_name \
-#        $front_end_service_name \
-#        $feature_flags_service_name
-    set -x
+    aws ecs wait services-stable \
+      --cluster $cluster_name \
+      --services \
+        $cms_admin_service_name \
+        $private_api_service_name \
+        $public_api_service_name \
+        $feedback_api_service_name \
+        $front_end_service_name \
+        $feature_flags_service_name
 }
 
 function _ecs_force_new_deployment_for_service() {
