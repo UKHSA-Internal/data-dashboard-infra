@@ -95,20 +95,6 @@ function _ecs_restart_services() {
          $front_end_service_name
 }
 
-function _get_most_recent_back_end_image() {
-    local back_end_ecr_url=$(jq -r '.ecr.value.repo_urls.back_end'  $terraform_output_file)
-    local back_end_ecr_name=$(jq -r '.ecr.value.repo_names.back_end'  $terraform_output_file)
-    most_recent_back_end_image_tag=$(uhd docker get-recent-tag "$back_end_ecr_name")
-    echo "${back_end_ecr_url}:${most_recent_back_end_image_tag}"
-}
-
-function _get_most_recent_front_end_image() {
-    local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
-    local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
-    most_recent_front_end_image_tag=$(uhd docker get-recent-tag "$front_end_ecr_name")
-    echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
-}
-
 function _ecs_restart_services_v2() {
     local terraform_output_file=terraform/20-app/output.json
     local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
@@ -126,33 +112,15 @@ function _ecs_restart_services_v2() {
     local feedback_api_task_definition_arn=$(jq -r '.ecs.value.task_definitions.feedback_api'  $terraform_output_file)
     local front_end_task_definition_arn=$(jq -r '.ecs.value.task_definitions.front_end'  $terraform_output_file)
 
-    back_end_image=$(_get_most_recent_back_end_image)
-    echo "back end image"
-    echo ${back_end_image}
-    echo "-"
+    local back_end_ecr_url=$(jq -r '.ecr.value.repo_urls.back_end'  $terraform_output_file)
+    local back_end_ecr_name=$(jq -r '.ecr.value.repo_names.back_end'  $terraform_output_file)
+    most_recent_back_end_image_tag=$(uhd docker get-recent-tag "$back_end_ecr_name")
+    local back_end_image="${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 
-
-    echo "Method 1: Original"
-    method_one=$(uhd docker get-recent-tag $back_end_ecr_name)
-    echo "Output 1: $method_one"
-
-    echo "Method 2: Using eval"
-    method_two=$(eval uhd docker get-recent-tag $back_end_ecr_name)
-    echo "Output 2: $method_two"
-
-    echo "Method 3: Using function directly"
-    method_three=$(_get_most_recent_back_end_image)
-    echo "Output 3: $method_three"
-
-    echo "Method 4: Using bash -c"
-    method_four=$(bash -c 'uhd docker get-recent-tag "$0"' "$back_end_ecr_name")
-    echo "Output 4: $method_four"
-
-
-    front_end_image=$(_get_most_recent_front_end_image)
-    echo "front end image"
-    echo ${front_end_image}
-    echo "-"
+    local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
+    local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
+    most_recent_front_end_image_tag=$(uhd docker get-recent-tag "$front_end_ecr_name")
+    local front_end_image="${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 
     echo "Updating services..."
     _ecs_register_new_image_for_service ${cms_admin_service_name} ${cms_admin_task_definition_arn} ${back_end_image}
