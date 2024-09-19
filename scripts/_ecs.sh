@@ -98,18 +98,19 @@ function _ecs_restart_services() {
 function _get_most_recent_back_end_image() {
     local back_end_ecr_url=$(jq -r '.ecr.value.repo_urls.back_end'  $terraform_output_file)
     local back_end_ecr_name=$(jq -r '.ecr.value.repo_names.back_end'  $terraform_output_file)
-    most_recent_back_end_image_tag=$(uhd docker get-recent-tag $back_end_ecr_name)
+    local most_recent_back_end_image_tag=$(_docker_get_most_recent_image_tag_from_repo $back_end_ecr_name)
     echo "${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 }
 
 function _get_most_recent_front_end_image() {
     local front_end_ecr_url=$(jq -r '.ecr.value.repo_urls.front_end'  $terraform_output_file)
     local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
-    most_recent_front_end_image_tag=$(uhd docker get-recent-tag $front_end_ecr_name)
+    local most_recent_front_end_image_tag=$(_docker_get_most_recent_image_tag_from_repo $front_end_ecr_name)
     echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 }
 
 function _ecs_restart_services_v2() {
+    source scripts/_docker.sh
     local terraform_output_file=terraform/20-app/output.json
     local cluster_name=$(jq -r '.ecs.value.cluster_name'  $terraform_output_file)
 
