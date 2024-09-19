@@ -101,7 +101,7 @@ function _get_most_recent_back_end_image() {
     most_recent_back_end_image_tag=$(uhd docker get-recent-tag $back_end_ecr_name)
     echo "most_recent_back_end_image_tag:"
     echo ${most_recent_back_end_image_tag}
-    echo "-"
+    echo "---"
     echo "${back_end_ecr_url}:${most_recent_back_end_image_tag}"
 }
 
@@ -111,7 +111,7 @@ function _get_most_recent_front_end_image() {
     most_recent_front_end_image_tag=$(uhd docker get-recent-tag $front_end_ecr_name)
     echo "most_recent_front_end_image_tag:"
     echo ${most_recent_front_end_image_tag}
-    echo "-"
+    echo "---"
     echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
 }
 
