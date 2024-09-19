@@ -180,7 +180,28 @@ function _ecs_register_new_image_for_service() {
     --service ${service_name} \
     --task-definition ${new_task_definition_arn} > /dev/null
 
+  _ecs_deregister_stale_task_definitions
+
   echo "${service_name}"
+}
+
+function _ecs_deregister_stale_task_definitions() {
+  local service_name=$1
+  for stale_task_definition_arn in $(_ecs_get_stale_task_definition_arns $service_name); do
+    aws ecs deregister-task-definition --task-definition ${stale_task_definition_arn} --region eu-west-2  > /dev/null
+  done
+}
+
+function _ecs_get_stale_task_definition_arns() {
+  local service_name=$1
+  local stale_arns=$(
+    aws ecs list-task-definitions \
+      --family-prefix ${service_name} \
+      --sort ASC \
+      --status ACTIVE
+  )
+
+  echo ${stale_arns} | jq -M -r '.taskDefinitionArns | .[0:-10][]'
 }
 
 function _ecs_ssh() {
