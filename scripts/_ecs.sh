@@ -130,6 +130,25 @@ function _ecs_restart_services_v2() {
     echo "back end image"
     echo ${back_end_image}
     echo "-"
+
+
+    echo "Method 1: Original"
+    method_one=$(uhd docker get-recent-tag $back_end_ecr_name)
+    echo "Output 1: $method_one"
+
+    echo "Method 2: Using eval"
+    method_two=$(eval uhd docker get-recent-tag $back_end_ecr_name)
+    echo "Output 2: $method_two"
+
+    echo "Method 3: Using function directly"
+    method_three=$(_get_most_recent_back_end_image)
+    echo "Output 3: $method_three"
+
+    echo "Method 4: Using bash -c"
+    method_four=$(bash -c 'uhd docker get-recent-tag "$0"' "$back_end_ecr_name")
+    echo "Output 4: $method_four"
+
+
     front_end_image=$(_get_most_recent_front_end_image)
     echo "front end image"
     echo ${front_end_image}
