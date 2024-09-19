@@ -237,6 +237,7 @@ jobs:
 
       - name: Restart ECS services
         run: |
+          set +x
           source uhd.sh
           uhd ecs restart-services-v2
         shell: zsh {0}
