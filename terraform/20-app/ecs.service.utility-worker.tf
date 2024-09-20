@@ -27,7 +27,7 @@ module "ecs_service_utility_worker" {
       memory                                 = 32768
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_api.repository_url}:latest-graviton"
+      image                                  = module.ecr_back_end_ecs.image_uri
       port_mappings                          = [
         {
           containerPort = 80

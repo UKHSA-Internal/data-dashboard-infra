@@ -31,7 +31,7 @@ module "ecs_service_private_api" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_api.repository_url}:latest-graviton"
+      image                                  = module.ecr_back_end_ecs.image_uri
       port_mappings                          = [
         {
           containerPort = 80
