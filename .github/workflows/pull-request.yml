@@ -213,7 +213,7 @@ jobs:
       - name: Restart ECS services
         run: |
           source uhd.sh
-          uhd ecs restart-services-v2
+          uhd ecs restart-services
         shell: zsh {0}
 
       - name: Redeploy lambda functions
