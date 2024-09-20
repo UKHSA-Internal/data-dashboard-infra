@@ -78,12 +78,14 @@ function _lambda_restart_functions() {
 }
 
 function _get_most_recent_ingestion_image_uri() {
+    source scripts/_docker.sh
+
     local terraform_output_file=terraform/20-app/output.json
     local ingestion_ecr_name=$(jq -r '.ecr.value.repo_names.ingestion'  $terraform_output_file)
     local ingestion_ecr_url=$(jq -r '.ecr.value.repo_urls.ingestion'  $terraform_output_file)
 
-    most_recent_ingestion_image_tag=$(uhd docker get-recent-tag ${ingestion_ecr_name})
-    ingestion_image_uri="${ingestion_ecr_url}:${most_recent_ingestion_image_tag}"
+    local most_recent_ingestion_image_tag=$(_docker_get_most_recent_image_tag_from_repo ${ingestion_ecr_name})
+    local ingestion_image_uri="${ingestion_ecr_url}:${most_recent_ingestion_image_tag}"
     echo ${ingestion_image_uri}
 }
 
