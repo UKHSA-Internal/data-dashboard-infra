@@ -58,7 +58,7 @@ function _docker_build_with_custom_tag() {
       docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion-lambda:custom-${commit_hash} --push .
     fi
 
-    if [[ ${repo} == "api" ]]; then
+    if [[ ${repo} == "api" || ${repo} == "back-end" || ${repo} == "backend" ]]; then
       cd $root/../data-dashboard-api
       echo "building docker image for back end"
       local commit_hash=$(git rev-parse --short HEAD)
