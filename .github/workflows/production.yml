@@ -151,7 +151,7 @@ jobs:
       - name: Redeploy lambda functions
         run: |
           source uhd.sh
-          uhd lambda redeploy-functions
+          uhd lambda restart-functions
         shell: zsh {0}
 
   trigger-smoke-tests:
