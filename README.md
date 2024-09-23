@@ -208,32 +208,18 @@ uhd terraform apply:layer 20-app foo
 
 Until we finalize our strategy for ECR, you'll need to pull the latest container images and push them to your ECR:
 
-First login to ECR in the **tools** account:
-
 ```
-uhd docker ecr:login
-```
-
-Then to pull the latest images:
-
-```
-uhd docker pull
-```
-
-And to push them to your ECR:
-
-```
-uhd docker push <account> <env>
+uhd docker update <account> <env>
 ```
 
 For example:
 
 ```
-uhd docker push dev 12345678
+uhd docker update dev 12345678
 ```
 
 Note that when pushing to the ECR in the next account, you will be logged into the ECR for that account
-automatically as part of the `uhd docker push <account> <env>` step.
+automatically as part of the `uhd docker update <account> <env>` step.
 
 Otherwise, should you wish to log in to the ECR within a specific account which is not the tools account:
 
@@ -311,11 +297,12 @@ The update command will perform the following tasks:
 2. Run `terraform init`
 3. Run `terraform apply`
 4. Run `Docker ECR login`
-5. Run `Docker pull` to grab the latest images
+5. Run `Docker pull` to grab the latest images from the tools account
 6. Run `Docker push` to deploy the latest images to your environment
 7. Switch to the dev account
 8. Restart ecs services
-9. Switch back to tools account
+9. Restart lambda functions
+10. Switch back to tools account
 
 ## Flushing caches
 
