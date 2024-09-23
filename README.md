@@ -219,7 +219,7 @@ uhd docker update dev 12345678
 ```
 
 Note that when pushing to the ECR in the next account, you will be logged into the ECR for that account
-automatically as part of the `uhd docker push <account> <env>` step.
+automatically as part of the `uhd docker update <account> <env>` step.
 
 Otherwise, should you wish to log in to the ECR within a specific account which is not the tools account:
 
