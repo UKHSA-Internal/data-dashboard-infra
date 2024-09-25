@@ -47,21 +47,21 @@ function _docker_build_with_custom_tag() {
       cd $root/../data-dashboard-api
       echo "building docker image for ingestion lambda"
       local commit_hash=$(git rev-parse --short HEAD)
-      docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion-lambda:custom-${commit_hash} --push .
+      docker buildx build -f Dockerfile-ingestion --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-ingestion-lambda:custom-${commit_hash}-${RANDOM} --push .
     fi
 
     if [[ ${repo} == "api" || ${repo} == "back-end" || ${repo} == "backend" ]]; then
       cd $root/../data-dashboard-api
       echo "building docker image for back end"
       local commit_hash=$(git rev-parse --short HEAD)
-      docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-back-end-ecs:custom-${commit_hash} --push .
+      docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-back-end-ecs:custom-${commit_hash}-${RANDOM} --push .
     fi
 
     if [[ ${repo} == "front-end" || ${repo} == "frontend" ]]; then
       cd $root/../data-dashboard-frontend
       echo "building docker image for front end"
       local commit_hash=$(git rev-parse --short HEAD)
-      docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end-ecs:custom-${commit_hash} --push .
+      docker buildx build --platform linux/arm64 -t ${dev_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-front-end-ecs:custom-${commit_hash}-${RANDOM} --push .
     fi
 
     cd $root
