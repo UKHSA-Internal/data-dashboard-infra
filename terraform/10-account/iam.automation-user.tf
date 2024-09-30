@@ -1,6 +1,6 @@
 module "iam_data_ingestion_automation_user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-  version = "5.44.0"
+  version = "5.44.1"
 
   name = "DataIngestionAutomation"
 
@@ -11,7 +11,7 @@ module "iam_data_ingestion_automation_user" {
 
 module "iam_data_ingestion_automation_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.44.0"
+  version = "5.44.1"
 
   name = "uhd-data-ingestion-automation-policy"
 

@@ -1,6 +1,6 @@
 module "iam_operations_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.44.0"
+  version = "5.44.1"
 
   create_role          = true
   max_session_duration = 43200
@@ -26,7 +26,7 @@ module "iam_operations_role" {
 
 module "iam_operations_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.44.0"
+  version = "5.44.1"
 
   name = "uhd-operations-policy"
 
