@@ -57,6 +57,14 @@ module "ecs_service_front_end" {
         {
           name  = "PUBLIC_API_URL"
           value = local.urls.public_api
+        },
+        {
+          name  = "RUM_IDENTITY_POOL_ID"
+          value = module.cloudwatch_rum_front_end.rum_cognito_pool_id
+        },
+        {
+          name  = "RUM_APPLICATION_ID"
+          value = module.cloudwatch_rum_front_end.rum_application_id
         }
       ]
       secrets = [
