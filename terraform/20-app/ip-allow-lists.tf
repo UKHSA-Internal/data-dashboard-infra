@@ -17,7 +17,7 @@ locals {
       "92.234.44.48/32",    # Zesh
     ],
     project_team = [
-      "90.221.143.3/32",    # Debbie
+      "90.206.168.235/32",  # Debbie
       "86.19.42.86/32",     # Debbie 2
     ],
     other_stakeholders = [
