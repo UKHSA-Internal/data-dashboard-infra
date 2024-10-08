@@ -89,7 +89,12 @@ function _ecs_restart_containers() {
     local terraform_output_file=terraform/20-app/output.json
     local cluster_name=$(jq -r '.ecs.value.cluster_name' $terraform_output_file)
     local ecs_service_name=$(jq -r '.ecs.value.service_names.'${service_name}  $terraform_output_file)
-    _ecs_force_new_deployment_for_service ${cluster_name} ${service_name}
+    _ecs_force_new_deployment_for_service ${cluster_name} ${ecs_service_name}
+
+    aws ecs wait services-stable \
+      --cluster ${cluster_name} \
+      --services \
+        ${ecs_service_name}
 }
 
 function _ecs_restart_services() {
