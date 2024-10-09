@@ -68,7 +68,7 @@ module "ecs_service_front_end" {
         },
         {
           name  = "REDIS_URL"
-          value = "redis://${aws_elasticache_serverless_cache.front_end.endpoint.0.address}:${aws_elasticache_serverless_cache.front_end.endpoint.0.port}"
+          value = "rediss://${aws_elasticache_serverless_cache.front_end.endpoint.0.address}:${aws_elasticache_serverless_cache.front_end.endpoint.0.port}"
         },
       ]
       secrets = [
