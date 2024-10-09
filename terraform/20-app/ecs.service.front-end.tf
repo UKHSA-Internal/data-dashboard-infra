@@ -65,7 +65,11 @@ module "ecs_service_front_end" {
         {
           name  = "RUM_APPLICATION_ID"
           value = module.cloudwatch_rum_front_end.rum_application_id
-        }
+        },
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_serverless_cache.front_end.endpoint.0.address}:${aws_elasticache_serverless_cache.front_end.endpoint.0.port}"
+        },
       ]
       secrets = [
         {
@@ -141,6 +145,13 @@ module "ecs_service_front_end" {
       to_port     = 80
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+    }
+    cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.front_end_elasticache_security_group.security_group_id
     }
     internet_egress = {
       type        = "egress"
