@@ -46,7 +46,7 @@ module "cloudfront_front_end" {
 
   default_cache_behavior = {
     allowed_methods          = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cache_policy_id          = aws_cloudfront_cache_policy.front_end.id
+    cache_policy_name        = "Managed-CachingDisabled"
     cached_methods           = ["GET", "HEAD"]
     compress                 = true
     origin_request_policy_id = aws_cloudfront_origin_request_policy.front_end.id
@@ -138,10 +138,7 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
   cookies_config {
-    cookie_behavior = "whitelist"
-    cookies {
-      items = ["UKHSAConsentGDPR"]
-    }
+    cookie_behavior = "none"
   }
   headers_config {
     header_behavior = "allViewer"
@@ -158,9 +155,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
-  min_ttl     = 0
-  max_ttl     = 0
-  default_ttl = 0
+  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
