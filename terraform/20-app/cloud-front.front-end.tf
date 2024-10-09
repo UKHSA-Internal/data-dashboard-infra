@@ -158,9 +158,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
-  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
-  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
-  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  min_ttl     = 0
+  max_ttl     = 0
+  default_ttl = 0
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
