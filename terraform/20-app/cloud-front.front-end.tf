@@ -104,7 +104,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/api/proxy/alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -191,9 +191,9 @@ resource "aws_cloudfront_cache_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
   name = "${local.prefix}-front-end-low-ttl"
 
-  min_ttl     = 60
-  max_ttl     = 60
-  default_ttl = 60
+  min_ttl     = 300
+  max_ttl     = 300
+  default_ttl = 300
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
