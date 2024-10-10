@@ -189,7 +189,7 @@ resource "aws_cloudfront_cache_policy" "front_end" {
 }
 
 resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
-  name = "${local.prefix}-front-end"
+  name = "${local.prefix}-front-end-low-ttl"
 
   min_ttl     = 60
   max_ttl     = 60
