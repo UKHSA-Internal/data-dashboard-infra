@@ -221,6 +221,9 @@ resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
           "areaType",
           "page",
           "search",
+          "type",
+          "v",
+          "fid",
         ]
       }
     }
