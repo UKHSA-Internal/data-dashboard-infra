@@ -191,9 +191,9 @@ resource "aws_cloudfront_cache_policy" "front_end" {
 resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
   name = "${local.prefix}-front-end-low-ttl"
 
-  min_ttl     = 300
-  max_ttl     = 300
-  default_ttl = 300
+  min_ttl     = local.five_minutes_in_seconds
+  max_ttl     = local.five_minutes_in_seconds
+  default_ttl = local.five_minutes_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
