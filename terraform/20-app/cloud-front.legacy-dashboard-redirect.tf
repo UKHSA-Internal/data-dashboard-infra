@@ -1,6 +1,6 @@
 module "cloudfront_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.4.0"
+  version = "3.4.1"
 
   create_distribution = !contains(["train", "staging", "perf"], local.environment)
 
