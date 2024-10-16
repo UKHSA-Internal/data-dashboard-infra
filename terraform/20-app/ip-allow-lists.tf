@@ -42,6 +42,7 @@ locals {
       "86.29.186.201/32",   # Charlotte Brace
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
+      "90.218.199.1/32",    # Ruth Baxter
     ]
   }
   complete_ip_allow_list = tolist(
