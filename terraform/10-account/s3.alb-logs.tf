@@ -11,7 +11,7 @@ module "s3_elb_logs" {
 
 module "elb_logs_new_object" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
-  version = "4.2.1"
+  version = "4.1.2"
 
   bucket = module.s3_elb_logs.s3_bucket_id
 

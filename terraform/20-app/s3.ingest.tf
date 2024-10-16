@@ -52,7 +52,7 @@ module "s3_ingest" {
 
 module "s3_ingest_notification" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
-  version = "4.2.1"
+  version = "4.1.2"
 
   bucket = module.s3_ingest.s3_bucket_id
 
