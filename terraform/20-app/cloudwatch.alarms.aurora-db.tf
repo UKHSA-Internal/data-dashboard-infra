@@ -1,6 +1,6 @@
 module "cloudwatch_alarm_aurora_db_app" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "5.6.1"
+  version = "5.6.0"
   count   = local.needs_alarms ? 1 : 0
 
   alarm_name          = "${local.prefix}-aurora-db-app"

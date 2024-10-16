@@ -4,7 +4,7 @@ locals {
 
 module "cloudfront_front_end" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.4.1"
+  version = "3.4.0"
 
   comment             = "${local.prefix}-front-end"
   enabled             = true
