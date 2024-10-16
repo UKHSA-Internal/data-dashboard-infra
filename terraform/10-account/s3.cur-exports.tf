@@ -6,7 +6,7 @@ locals {
 
 module "s3_cur_exports" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.2.1"
+  version = "4.1.2"
 
   bucket = local.s3_cur_exports_bucket_name
 

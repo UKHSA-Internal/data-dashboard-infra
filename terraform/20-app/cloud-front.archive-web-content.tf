@@ -1,6 +1,6 @@
 module "cloudfront_archive_web_content" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.4.1"
+  version = "3.4.0"
 
   aliases                      = [local.dns_names.archive]
   comment                      = "${local.prefix}-archive-web-content"
