@@ -4,7 +4,7 @@ locals {
 
 module "s3_ingest" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.2.1"
+  version = "4.1.2"
 
   bucket = local.s3_ingest_bucket_name
 
