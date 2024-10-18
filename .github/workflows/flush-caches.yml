@@ -10,7 +10,6 @@ on:
         description: Select a well known environment to flush all caches for.
         options:
           - prod
-          - uat
           - dev
           - dpd
           - test
