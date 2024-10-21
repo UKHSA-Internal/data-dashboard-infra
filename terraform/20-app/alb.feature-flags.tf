@@ -1,6 +1,6 @@
 module "feature_flags_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.9.0"
+  version = "9.11.1"
 
   name = "${local.prefix}-feature-flags"
 
