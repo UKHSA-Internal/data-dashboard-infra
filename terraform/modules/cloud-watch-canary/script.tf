@@ -1,13 +1,13 @@
 locals {
-  file_content = file(var.script_path)
-  zip          = "builds/${var.name}-${sha256(local.file_content)}.zip"
+  script_content      = file("${var.script_path}/index.js")
+  script_content_hash = sha256(local.script_content)
 }
 
 data "archive_file" "canary_script" {
   type        = "zip"
-  output_path = local.zip
+  output_path = "builds/${var.name}-${local.script_content_hash}.zip"
   source {
-    content  = local.file_content
+    content  = local.script_content
     filename = "nodejs/node_modules/index.js"
   }
 }
