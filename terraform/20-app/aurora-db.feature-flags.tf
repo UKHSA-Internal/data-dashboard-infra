@@ -10,10 +10,9 @@ module "aurora_db_feature_flags" {
 
   publicly_accessible = true
 
-  manage_master_user_password = false
+  manage_master_user_password = true
   database_name               = "unleash"
-  master_username             = jsondecode(aws_secretsmanager_secret_version.aurora_db_feature_flags_credentials.secret_string)["username"]
-  master_password             = jsondecode(aws_secretsmanager_secret_version.aurora_db_feature_flags_credentials.secret_string)["password"]
+  master_username             = "unleash_user"
 
   monitoring_interval = 60
   apply_immediately   = true

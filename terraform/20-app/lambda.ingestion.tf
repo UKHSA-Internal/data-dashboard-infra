@@ -1,6 +1,6 @@
 module "lambda_ingestion" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.7.0"
+  version       = "7.8.1"
   function_name = "${local.prefix}-ingestion"
   description   = "Consumes records from the Kinesis data stream."
 
@@ -13,8 +13,8 @@ module "lambda_ingestion" {
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${module.ecr_ingestion.repository_url}:latest"
-  depends_on     = [module.ecr_ingestion.repository_arn]
+  image_uri      = module.ecr_ingestion_lambda.image_uri
+  depends_on     = [module.ecr_ingestion_lambda.repo_arn]
 
   maximum_retry_attempts = 1
   timeout                = 60 # Timeout after 1 minute
@@ -101,14 +101,4 @@ module "lambda_ingestion_security_group" {
       source_security_group_id = module.aurora_db_app.security_group_id
     }
   ]
-}
-
-resource "aws_cloudwatch_log_subscription_filter" "lambda_ingestion" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
-  filter_pattern  = ""
-  log_group_name  = module.lambda_ingestion.lambda_cloudwatch_log_group_name
-  name            = "splunk"
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
 }

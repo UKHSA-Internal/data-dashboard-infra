@@ -55,18 +55,3 @@ output "acm" {
     }
   }
 }
-
-output "kinesis" {
-  value = {
-    cloud_watch_logs_to_splunk = {
-      eu_west_2 = {
-        destination_arn = module.cloud_watch_logs_to_splunk_eu_west_2.kinesis_firehose_arn
-        role_arn        = module.cloud_watch_logs_to_splunk_eu_west_2.iam_cloud_watch_role_arn
-      }
-      us_east_1 = {
-        destination_arn = module.cloud_watch_logs_to_splunk_us_east_1.kinesis_firehose_arn
-        role_arn        = module.cloud_watch_logs_to_splunk_us_east_1.iam_cloud_watch_role_arn
-      }
-    }
-  }
-}

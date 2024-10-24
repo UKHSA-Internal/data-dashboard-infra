@@ -32,7 +32,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -64,7 +64,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           role-duration-seconds: "7200"
 
       - uses: ./.github/actions/setup-terraform
@@ -96,7 +96,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/well-known-environment-name
@@ -106,10 +106,7 @@ jobs:
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker ecr:login
-          uhd docker pull
-          uhd docker ecr:login $TARGET_ACCOUNT_NAME
-          uhd docker push $TARGET_ACCOUNT_NAME $ENVIRONMENT_NAME
+          uhd docker update $TARGET_ACCOUNT_NAME $ENVIRONMENT_NAME
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
@@ -127,7 +124,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/well-known-environment-name
@@ -148,9 +145,9 @@ jobs:
         with:
           account-name: ${{ env.TARGET_ACCOUNT_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-          dev-account-role: ${{ secrets.UHD_ECS_ROLE_DEV }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
-          uat-account-role: ${{ secrets.UHD_ECS_ROLE_UAT }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
 
       - name: Restart ECS services
         run: |
@@ -161,5 +158,5 @@ jobs:
       - name: Redeploy lambda functions
         run: |
           source uhd.sh
-          uhd lambda redeploy-functions
+          uhd lambda restart-functions
         shell: zsh {0}

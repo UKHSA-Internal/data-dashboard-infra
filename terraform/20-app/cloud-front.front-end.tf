@@ -80,7 +80,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -92,7 +92,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -104,7 +104,7 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/api/proxy/alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -190,6 +190,46 @@ resource "aws_cloudfront_cache_policy" "front_end" {
     }
   }
 }
+
+resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
+  name = "${local.prefix}-front-end-low-ttl"
+
+  min_ttl     = local.five_minutes_in_seconds
+  max_ttl     = local.five_minutes_in_seconds
+  default_ttl = local.five_minutes_in_seconds
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+
+    cookies_config {
+      cookie_behavior = "whitelist"
+      cookies {
+        items = ["UKHSAConsentGDPR"]
+      }
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "_rsc",
+          "areaName",
+          "areaType",
+          "page",
+          "search",
+          "type",
+          "v",
+          "fid",
+        ]
+      }
+    }
+  }
+}
+
 
 ################################################################################
 # Request viewer

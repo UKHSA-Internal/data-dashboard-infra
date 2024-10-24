@@ -5,14 +5,17 @@ module "eventbridge" {
 
   rules = {
     "${local.prefix}-db-password-rotation" = {
-      description   = "Capture db password rotation event"
+      description   = "Capture db password rotation events"
       event_pattern = jsonencode({
         source : ["aws.secretsmanager"]
         detail : {
           eventSource : ["secretsmanager.amazonaws.com"],
           eventName : ["RotationSucceeded"]
           additionalEventData : {
-            SecretId : [local.main_db_aurora_password_secret_arn]
+            SecretId : [
+              local.main_db_aurora_password_secret_arn,
+              local.feature_flags_db_aurora_password_secret_arn,
+            ]
           }
         }
       })

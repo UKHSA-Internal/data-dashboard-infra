@@ -1,6 +1,6 @@
 module "ecs_service_cms_admin" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.3"
+  version = "5.11.4"
 
   name                   = "${local.prefix}-cms-admin"
   cluster_arn            = module.ecs.cluster_arn
@@ -29,7 +29,7 @@ module "ecs_service_cms_admin" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_api.repository_url}:latest-graviton"
+      image                                  = module.ecr_back_end_ecs.image_uri
       port_mappings                          = [
         {
           containerPort = 80
@@ -91,46 +91,32 @@ module "ecs_service_cms_admin" {
       resources = ["*"]
     }
   ]
-}
 
-module "cms_admin_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_cms_admin.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
+      from_port                = 80
+      to_port                  = 80
+      protocol                 = "tcp"
       description              = "lb to tasks"
-      rule                     = "http-80-tcp"
-      source_security_group_id = module.cms_admin_alb_security_group.security_group_id
+      source_security_group_id = module.cms_admin_alb.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    }
-  ]
-
-  egress_with_source_security_group_id = [
-    {
-      description              = "lb to aurora db"
-      rule                     = "postgresql-tcp"
+    # egress rules
+    db_egress = {
+      type                     = "egress"
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
       source_security_group_id = module.aurora_db_app.security_group_id
     }
-  ]
-}
-
-resource "aws_cloudwatch_log_subscription_filter" "ecs_service_cms_admin" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
-  filter_pattern  = ""
-  log_group_name  = module.ecs_service_cms_admin.container_definitions["api"].cloudwatch_log_group_name
-  name            = "splunk"
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      description = "https to internet"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }
