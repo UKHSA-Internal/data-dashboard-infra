@@ -29,7 +29,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -54,7 +54,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           role-duration-seconds: "7200"
 
       - uses: ./.github/actions/setup-terraform
@@ -79,17 +79,14 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker ecr:login
-          uhd docker pull
-          uhd docker ecr:login prod
-          uhd docker push prod prod
+          uhd docker update prod prod
         shell: zsh {0}
 
   restart_services:
@@ -103,7 +100,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
@@ -119,7 +116,7 @@ jobs:
         with:
           account-name: 'prod'
           aws-region: ${{ env.AWS_REGION }}
-          prod-account-role: ${{ secrets.UHD_ECS_ROLE_PROD }}
+          prod-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_PROD }}
 
       - name: Restart ECS services
         run: |
@@ -130,7 +127,7 @@ jobs:
       - name: Redeploy lambda functions
         run: |
           source uhd.sh
-          uhd lambda redeploy-functions
+          uhd lambda restart-functions
         shell: zsh {0}
 
   trigger-smoke-tests:
@@ -154,8 +151,9 @@ jobs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
-      deploy_uat: ${{ steps.fast_forward_merge.outputs.deploy_uat }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
+      deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -201,14 +199,6 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/perf
-    secrets: inherit
-
-  deploy_uat:
-    needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_uat}}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/uat/uat
     secrets: inherit
 
   deploy_staging:

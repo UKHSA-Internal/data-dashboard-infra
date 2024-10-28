@@ -41,35 +41,24 @@ module "ecs_service_bastion" {
       resources = ["*"]
     }
   ]
-}
 
-module "bastion_service_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_bastion.security_group_id
-
-  egress_with_cidr_blocks = [
-    {
-      description = "http to internet"
-      rule        = "http-80-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
+  security_group_rules = {
+    # egress rules
+    internet_https_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
       description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
+      cidr_blocks = ["0.0.0.0/0"]
     }
-  ]
-}
-
-resource "aws_cloudwatch_log_subscription_filter" "ecs_service_bastion" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
-  filter_pattern  = ""
-  log_group_name  = module.ecs_service_bastion.container_definitions["bastion"].cloudwatch_log_group_name
-  name            = "splunk"
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
+    internet_http_egress = {
+      type        = "egress"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      description = "http to internet"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }

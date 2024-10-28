@@ -10,16 +10,6 @@ updates:
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "terraform"
-    directory: "/terraform/modules/cloud-watch-logs-to-splunk"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/terraform/modules/cloud-watch-metrics-to-splunk"
-    schedule:
-      interval: "weekly"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

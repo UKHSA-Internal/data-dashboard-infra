@@ -8,7 +8,7 @@ locals {
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing         = contains(["perf", "uat", "prod"], local.environment)
+  use_prod_sizing         = contains(["perf", "prod"], local.environment)
   add_password_protection = local.environment == "staging"
 
   wke = {
@@ -42,8 +42,6 @@ locals {
     }
   }
 
-  ship_cloud_watch_logs_to_splunk = true
-
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
     cms_admin        = "cms.${local.account_layer.dns.wke_dns_names[local.environment]}"
@@ -71,5 +69,6 @@ locals {
   thirty_days_in_seconds  = 2592000
   five_minutes_in_seconds = 300
 
-  main_db_aurora_password_secret_arn = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
+  main_db_aurora_password_secret_arn          = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
+  feature_flags_db_aurora_password_secret_arn = try(module.aurora_db_feature_flags.cluster_master_user_secret[0]["secret_arn"], "")
 }

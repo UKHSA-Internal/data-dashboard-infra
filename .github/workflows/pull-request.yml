@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
       - uses: ./.github/actions/setup-terraform
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: Download test coverage
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.8
         with:
           path: ./reports
 
@@ -118,7 +118,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -144,7 +144,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -169,7 +169,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -177,10 +177,7 @@ jobs:
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker ecr:login
-          uhd docker pull
-          uhd docker ecr:login test
-          uhd docker push test ci-$SHORT_SHA
+          uhd docker update test ci-$SHORT_SHA
         shell: zsh {0}
 
   restart_services:
@@ -194,7 +191,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -211,7 +208,7 @@ jobs:
         with:
           account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
 
       - name: Restart ECS services
         run: |
@@ -222,7 +219,7 @@ jobs:
       - name: Redeploy lambda functions
         run: |
           source uhd.sh
-          uhd lambda redeploy-functions
+          uhd lambda restart-functions
         shell: zsh {0}
 
   terraform_destroy:
@@ -238,7 +235,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -263,7 +260,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_ROLE }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -273,7 +270,7 @@ jobs:
         with:
           account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_ECS_ROLE_TEST }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
 
       - name: Delete secrets
         run: |

@@ -29,7 +29,7 @@ module "ecs_service_front_end" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonly_root_filesystem               = false
-      image                                  = "${module.ecr_front_end.repository_url}:latest-graviton"
+      image                                  = module.ecr_front_end_ecs.image_uri
       port_mappings                          = [
         {
           containerPort = 3000
@@ -123,45 +123,32 @@ module "ecs_service_front_end" {
       resources = ["*"]
     }
   ]
-}
 
-module "front_end_tasks_security_group_rules" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
-
-  create_sg         = false
-  security_group_id = module.ecs_service_front_end.security_group_id
-
-  ingress_with_source_security_group_id = [
-    {
-      description              = "lb to tasks"
+  security_group_rules = {
+    # ingress rules
+    alb_ingress = {
+      type                     = "ingress"
       from_port                = 3000
       to_port                  = 3000
-      protocol                 = "TCP"
-      source_security_group_id = module.front_end_alb_security_group.security_group_id
+      protocol                 = "tcp"
+      description              = "lb to tasks"
+      source_security_group_id = module.front_end_alb.security_group_id
     }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
+    # egress rules
+    private_api_egress = {
+      type        = "egress"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    internet_egress = {
+      type        = "egress"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
       description = "https to internet"
-      rule        = "https-443-tcp"
-      cidr_blocks = "0.0.0.0/0"
-    },
-    {
-      description = "to api"
-      rule        = "http-80-tcp"
-      cidr_blocks = "0.0.0.0/0"
+      cidr_blocks = ["0.0.0.0/0"]
     }
-  ]
-}
-
-resource "aws_cloudwatch_log_subscription_filter" "ecs_service_front_end" {
-  count = local.ship_cloud_watch_logs_to_splunk ? 1 : 0
-
-  destination_arn = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.destination_arn
-  filter_pattern  = ""
-  log_group_name  = module.ecs_service_front_end.container_definitions["front-end"].cloudwatch_log_group_name
-  name            = "splunk"
-  role_arn        = local.account_layer.kinesis.cloud_watch_logs_to_splunk.eu_west_2.role_arn
+  }
 }
