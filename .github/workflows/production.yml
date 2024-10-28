@@ -153,6 +153,7 @@ jobs:
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -198,14 +199,6 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/perf
-    secrets: inherit
-
-  deploy_uat:
-    needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_uat}}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/uat/uat
     secrets: inherit
 
   deploy_staging:
