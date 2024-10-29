@@ -17,6 +17,6 @@
   "dependencies": {
     "@aws-sdk/client-kinesis": "^3.637.0",
     "@aws-sdk/client-s3": "^3.679.0",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.2"
   }
 }
