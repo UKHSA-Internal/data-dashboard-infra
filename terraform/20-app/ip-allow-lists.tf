@@ -16,6 +16,7 @@ locals {
       "165.225.199.78/32",  # Krishna - Windows
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
+      "51.241.222.137/32",  # Temitope Akinsoto
       "86.177.34.133/32"    # Luke
     ],
     project_team = [
@@ -44,7 +45,6 @@ locals {
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
-      "84.71.136.178/32",   # Temitope Akinsoto
     ]
   }
   complete_ip_allow_list = tolist(
