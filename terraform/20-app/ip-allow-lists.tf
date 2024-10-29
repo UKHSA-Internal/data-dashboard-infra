@@ -43,7 +43,7 @@ locals {
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
-      "84.71.136.178/32",   # Temitope Akinsoto
+      "51.241.222.137/32",  # Temitope Akinsoto
     ]
   }
   complete_ip_allow_list = tolist(
