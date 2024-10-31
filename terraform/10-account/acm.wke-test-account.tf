@@ -11,6 +11,7 @@ module "acm_wke_pen" {
     "*.${local.wke_dns_names.pen}"
   ]
 
+  validation_method   = "DNS"
   wait_for_validation = true
 }
 
@@ -27,5 +28,6 @@ module "acm_wke_perf" {
     "*.${local.wke_dns_names.perf}"
   ]
 
+  validation_method   = "DNS"
   wait_for_validation = true
 }
