@@ -24,7 +24,7 @@ locals {
       "86.19.42.86/32",     # Debbie 2
     ],
     other_stakeholders = [
-      "62.253.228.56/32",   # UKHSA gateway 
+      "62.253.228.56/32",   # UKHSA gateway
       "80.5.156.26/32",     # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
@@ -46,6 +46,12 @@ locals {
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
     ]
+    ncc = [
+      "5.148.69.16/28",
+      "167.98.200.192/27",
+      "195.95.131.0/24",
+      "5.148.32.192/26",
+    ]
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
@@ -60,7 +66,9 @@ locals {
         # list is used for access to the WAFs
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
-        local.ip_allow_list.other_stakeholders
+        local.ip_allow_list.other_stakeholders,
+        # Add NCC IP addresses only for the `pen` test environment
+        local.environment == "pen" ? local.ip_allow_list.ncc : []
       )
     )
   )
