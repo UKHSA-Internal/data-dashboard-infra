@@ -13,7 +13,7 @@ module "kms_app_rds" {
   aliases_use_name_prefix = true
 }
 
-module "kms_secrets_engineer" {
+module "kms_secrets_app_engineer" {
   source  = "terraform-aws-modules/kms/aws"
   version = "3.1.0"
 
