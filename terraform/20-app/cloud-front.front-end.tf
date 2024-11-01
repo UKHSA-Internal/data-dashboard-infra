@@ -271,7 +271,7 @@ resource "aws_cloudfront_response_headers_policy" "front_end" {
     access_control_allow_methods {
       items = ["GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     }
-    origin_override = true
+    origin_override = false
   }
 
   security_headers_config {
@@ -284,7 +284,7 @@ resource "aws_cloudfront_response_headers_policy" "front_end" {
       override                   = false
     }
     content_type_options {
-      override = false
+      override = true
     }
     frame_options {
       frame_option = "DENY"
