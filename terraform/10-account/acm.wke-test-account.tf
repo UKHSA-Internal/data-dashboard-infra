@@ -1,6 +1,6 @@
 module "acm_wke_pen" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 5.0"
+  version = "5.0.1"
 
   create_certificate = local.account == "test"
 
@@ -11,12 +11,13 @@ module "acm_wke_pen" {
     "*.${local.wke_dns_names.pen}"
   ]
 
+  validation_method   = "DNS"
   wait_for_validation = true
 }
 
 module "acm_wke_perf" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 5.0"
+  version = "5.0.1"
 
   create_certificate = local.account == "test"
 
@@ -27,5 +28,6 @@ module "acm_wke_perf" {
     "*.${local.wke_dns_names.perf}"
   ]
 
+  validation_method   = "DNS"
   wait_for_validation = true
 }
