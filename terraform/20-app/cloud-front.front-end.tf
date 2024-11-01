@@ -261,8 +261,11 @@ resource "aws_cloudfront_response_headers_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
   cors_config {
-    access_control_allow_credentials = true
+    access_control_allow_credentials = false
     access_control_allow_headers {
+      items = ["*"]
+    }
+    access_control_expose_headers {
       items = ["*"]
     }
     access_control_allow_origins {
