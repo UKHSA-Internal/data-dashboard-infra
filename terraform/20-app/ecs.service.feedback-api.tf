@@ -88,6 +88,13 @@ module "ecs_service_feedback_api" {
     }
   ]
 
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [module.kms_secrets_app_engineer.key_arn]
+    }
+  }
+
   security_group_rules = {
     # ingress rules
     alb_ingress = {
