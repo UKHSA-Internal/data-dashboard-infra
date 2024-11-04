@@ -22,7 +22,16 @@ module "kms_secrets_app_engineer" {
   deletion_window_in_days = 7
   multi_region            = false
 
-  key_owners = ["arn:aws:iam::${var.tools_account_id}:root"]
+  key_owners = [
+    "arn:aws:iam::${var.tools_account_id}:root"
+  ]
+  key_service_users = [
+    module.ecs_service_front_end.task_exec_iam_role_arn,
+    module.ecs_service_feedback_api.task_exec_iam_role_arn,
+    module.ecs_service_public_api.task_exec_iam_role_arn,
+    module.ecs_service_private_api.task_exec_iam_role_arn,
+    module.ecs_service_cms_admin.task_exec_iam_role_arn,
+  ]
 
   aliases                 = ["${local.prefix}-secrets-app-engineer"]
   aliases_use_name_prefix = true
@@ -37,7 +46,14 @@ module "kms_secrets_app_operator" {
   deletion_window_in_days = 7
   multi_region            = false
 
-  key_owners = ["arn:aws:iam::${var.tools_account_id}:root"]
+  key_owners = [
+    "arn:aws:iam::${var.tools_account_id}:root"
+  ]
+  key_service_users = [
+    module.ecs_service_front_end.task_exec_iam_role_arn,
+    module.ecs_service_feature_flags.task_exec_iam_role_arn,
+    module.ecs_service_cms_admin.task_exec_iam_role_arn,
+  ]
 
   aliases                 = ["${local.prefix}-secrets-app-operator"]
   aliases_use_name_prefix = true
