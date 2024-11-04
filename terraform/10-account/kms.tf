@@ -1,6 +1,6 @@
 module "kms_secrets" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.0"
+  version = "3.1.1"
 
   description             = "Account level secrets encryption key"
   key_usage               = "ENCRYPT_DECRYPT"
