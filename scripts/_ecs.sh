@@ -168,6 +168,8 @@ function _ecs_register_new_image_for_service() {
     --service ${service_name} \
     --task-definition ${new_task_definition_arn} > /dev/null
 
+  _ecs_deregister_stale_task_definitions ${service_name}
+
   echo "${service_name}"
 }
 
