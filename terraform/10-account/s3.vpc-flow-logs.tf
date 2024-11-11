@@ -1,6 +1,6 @@
 module "s3_vpc_flow_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.1.2"
+  version = "4.2.2"
 
   bucket = "uhd-aws-vpc-flow-logs-${local.account_id}-${local.region}"
 
