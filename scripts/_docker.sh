@@ -40,7 +40,10 @@ function _docker_build_with_custom_tag() {
         return 1
     fi
 
-    local dev_account_id=$(_get_target_aws_account_id "dev")
+    local account_name="dev"
+    uhd docker ecr:login ${account_name}
+
+    local dev_account_id=$(_get_target_aws_account_id ${account_name})
     local env=$(_get_env_name)
 
     if [[ ${repo} == "ingestion" ]]; then
