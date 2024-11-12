@@ -5,14 +5,12 @@ resource "aws_wafv2_web_acl" "cms_admin" {
 
   default_action {
     dynamic "block" {
-      for_each = local.use_ip_allow_list ? [""] : []
-      content {
-      }
+      for_each = [""]
+      content {}
     }
     dynamic "allow" {
-      for_each = local.use_ip_allow_list ? [] : [""]
-      content {
-      }
+      for_each = [""]
+      content {}
     }
   }
 
@@ -93,6 +91,27 @@ resource "aws_wafv2_web_acl" "cms_admin" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "RateLimitRule"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "ip-allow-list"
+    priority = 100
+
+    action {
+      allow {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.ip_allow_list_app.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AllowListIP"
       sampled_requests_enabled   = true
     }
   }
