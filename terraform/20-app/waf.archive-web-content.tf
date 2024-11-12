@@ -59,7 +59,7 @@ resource "aws_wafv2_web_acl" "archive_web_content" {
 
     statement {
       ip_set_reference_statement {
-        arn = aws_wafv2_ip_set.ip_allow_list.arn
+        arn = aws_wafv2_ip_set.ip_allow_list_cloudfront.arn
       }
     }
 

@@ -1,5 +1,5 @@
-resource "aws_wafv2_ip_set" "ip_allow_list" {
-    name               = "${local.prefix}-ip-allow-list"
+resource "aws_wafv2_ip_set" "ip_allow_list_cloudfront" {
+    name               = "${local.prefix}-ip-allow-list-cloudfront"
     scope              = "CLOUDFRONT"
     provider           = aws.us_east_1
     ip_address_version = "IPV4"
