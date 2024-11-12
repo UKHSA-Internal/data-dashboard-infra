@@ -4,7 +4,16 @@ resource "aws_wafv2_web_acl" "cms_admin" {
   scope       = "REGIONAL"
 
   default_action {
-    allow {}
+    dynamic "block" {
+      for_each = local.use_ip_allow_list ? [""] : []
+      content {
+      }
+    }
+    dynamic "allow" {
+      for_each = local.use_ip_allow_list ? [] : [""]
+      content {
+      }
+    }
   }
 
   dynamic "rule" {
