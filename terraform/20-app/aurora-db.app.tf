@@ -25,7 +25,7 @@ module "aurora_db_app" {
     min_capacity = 1
     max_capacity = 50
   }
-  instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3: {} } : { 1 : {} }
+  instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3 : {} } : { 1 : {} }
 
   vpc_id               = module.vpc.vpc_id
   db_subnet_group_name = module.vpc.database_subnet_group_name
@@ -49,6 +49,12 @@ module "aurora_db_app" {
       description              = "cms admin tasks to main db"
       protocol                 = "tcp"
       source_security_group_id = module.ecs_service_cms_admin.security_group_id
+    },
+    feedback_api_tasks_to_db = {
+      type                     = "ingress"
+      description              = "feedback api tasks to main db"
+      protocol                 = "tcp"
+      source_security_group_id = module.ecs_service_feedback_api.security_group_id
     },
     utility_worker_tasks_to_db = {
       type                     = "ingress"
