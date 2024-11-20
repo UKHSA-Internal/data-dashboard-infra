@@ -96,7 +96,7 @@ region = eu-west-2
 
 #### Updating the config files directly
 
-The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://digitaltools.phe.org.uk/confluence/display/DPD/Configuring+the+AWS+CLI).
+The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://confluence.collab.test-and-trace.nhs.uk/display/DPD/Configuring+the+AWS+CLI).
 
 ### Login to the GitHub CLI
 
