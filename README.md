@@ -510,3 +510,6 @@ These repos contain the app source code:
 
 - [UKHSA-Internal/data-dashboard-frontend](https://github.com/UKHSA-Internal/data-dashboard-frontend)
 - [UKHSA-Internal/data-dashboard-api](https://github.com/UKHSA-Internal/data-dashboard-api)
+
+This repo contains the infra for the part of the ETL pipeline which sits within AWS:
+- [data-dashboard-etl-infra](https://github.com/UKHSA-Internal/data-dashboard-etl-infra)
