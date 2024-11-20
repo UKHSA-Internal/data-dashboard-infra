@@ -78,11 +78,7 @@ locals {
         db_name = module.aurora_db_app.cluster_database_name
         address = module.aurora_db_app.cluster_endpoint
       }
-      public_api_replica = {
-        db_name = module.aurora_db_app.cluster_database_name
-        address = module.aurora_db_app.cluster_reader_endpoint
-      }
-      private_api_replica = {
+      secondary = {
         db_name = module.aurora_db_app.cluster_database_name
         address = module.aurora_db_app.cluster_reader_endpoint
       }

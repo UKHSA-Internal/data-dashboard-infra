@@ -42,11 +42,11 @@ module "ecs_service_utility_worker" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.aurora.app.private_api_replica.db_name
+          value = local.aurora.app.secondary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.aurora.app.private_api_replica.address
+          value = local.aurora.app.secondary.address
         },
         {
           name  = "APIENV"

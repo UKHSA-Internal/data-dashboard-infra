@@ -44,11 +44,11 @@ module "ecs_service_feedback_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = module.aurora_db_app.cluster_database_name
+          value = local.aurora.app.secondary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = module.aurora_db_app.cluster_endpoint
+          value = local.aurora.app.secondary.address
         },
         {
           name  = "APIENV"

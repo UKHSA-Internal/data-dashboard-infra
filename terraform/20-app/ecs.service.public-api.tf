@@ -48,11 +48,11 @@ module "ecs_service_public_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.aurora.app.public_api_replica.db_name
+          value = local.aurora.app.secondary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.aurora.app.public_api_replica.address
+          value = local.aurora.app.secondary.address
         },
         {
           name  = "APIENV"
