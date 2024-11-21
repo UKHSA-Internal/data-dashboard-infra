@@ -96,7 +96,7 @@ region = eu-west-2
 
 #### Updating the config files directly
 
-The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://digitaltools.phe.org.uk/confluence/display/DPD/Configuring+the+AWS+CLI).
+The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://confluence.collab.test-and-trace.nhs.uk/display/DPD/Configuring+the+AWS+CLI).
 
 ### Login to the GitHub CLI
 
@@ -510,3 +510,6 @@ These repos contain the app source code:
 
 - [UKHSA-Internal/data-dashboard-frontend](https://github.com/UKHSA-Internal/data-dashboard-frontend)
 - [UKHSA-Internal/data-dashboard-api](https://github.com/UKHSA-Internal/data-dashboard-api)
+
+This repo contains the infra for the part of the ETL pipeline which sits within AWS:
+- [data-dashboard-etl-infra](https://github.com/UKHSA-Internal/data-dashboard-etl-infra)
