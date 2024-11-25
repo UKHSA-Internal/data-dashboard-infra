@@ -456,6 +456,8 @@ function _terraform_cleanup() {
                 echo "Environment $env is a test environment.  It will be destroyed... "
                 echo
                 uhd terraform destroy:layer 20-app $env
+            elif [[ $env == etl-ci-* ]]; then
+                echo "Environment $env is a CI environment belonging to the ETL infra. Skipping this. "
             else
                 echo "Environment $env is an engineer's dev or well known environment."
             fi
