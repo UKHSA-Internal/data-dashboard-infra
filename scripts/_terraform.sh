@@ -142,6 +142,8 @@ function _terraform_plan_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -151,6 +153,7 @@ function _terraform_plan_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
         -var-file=$var_file || return 1
 }
 
@@ -194,6 +197,8 @@ function _terraform_import_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -203,6 +208,7 @@ function _terraform_import_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
         -var-file=$var_file \
         $address \
         $id || return 0
@@ -242,6 +248,8 @@ function _terraform_apply_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -251,6 +259,7 @@ function _terraform_apply_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -360,6 +369,8 @@ function _terraform_destroy_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -369,6 +380,7 @@ function _terraform_destroy_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -480,6 +492,16 @@ function _get_target_aws_account_id() {
   local tools_account_id=$(_get_tools_account_id)
   
   aws secretsmanager get-secret-value --secret-id "aws/account-id/$account" --query SecretString --output text
+}
+
+function _get_etl_sibling_aws_account_id() {
+  local account=$1
+  local tools_account_id=$(_get_tools_account_id)
+
+  aws secretsmanager get-secret-value \
+    --secret-id "aws/account-id/etl-$account" \
+    --query SecretString \
+    --output text
 }
 
 function _get_target_aws_account_name() {
