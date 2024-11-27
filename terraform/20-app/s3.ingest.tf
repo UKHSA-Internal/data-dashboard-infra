@@ -49,10 +49,10 @@ module "s3_ingest" {
     }
   ]
 
-  attach_policy = true
-  policy        = jsonencode({
+  attach_policy        = true
+  policy               = jsonencode({
     Version   = "2012-10-17",
-    Statement = [
+    Statement = concat([
       {
         Sid         = "OnlyAllowJsonFilesToTargetFolders",
         Effect      = "Deny",
@@ -67,7 +67,21 @@ module "s3_ingest" {
           "${module.s3_ingest.s3_bucket_arn}/processed/*.json",
         ]
       }
-    ]
+    ],
+        local.is_ready_for_etl ? [
+        {
+          Sid    = "AllowCrossAccountAccessFromETLPublisherLambda",
+          Effect = "Allow",
+          Principal = {
+            AWS = "arn:aws:iam::${var.etl_account_id}:role/${local.project}-etl-${local.environment}-publisher"
+          }
+          Action   = ["s3:PutObject", "s3:ListBucket"]
+          Resource = [
+            module.s3_ingest.s3_bucket_arn,
+            "${module.s3_ingest.s3_bucket_arn}/*",
+          ]
+        }
+      ] : [])
   })
 }
 
