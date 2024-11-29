@@ -73,7 +73,7 @@ module "s3_ingest" {
           Sid    = "AllowCrossAccountAccessFromETLPublisherLambda",
           Effect = "Allow",
           Principal = {
-            AWS = "arn:aws:iam::${var.etl_account_id}:role/${local.project}-etl-${local.environment}-publisher"
+            AWS = "arn:aws:iam::${local.etl_account_id}:role/${local.project}-etl-${local.environment}-publisher"
           }
           Action   = ["s3:PutObject", "s3:ListBucket"]
           Resource = [
