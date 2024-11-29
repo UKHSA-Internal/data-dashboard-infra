@@ -26,7 +26,7 @@ locals {
   enable_public_db                             = local.is_dev
   is_dev                                       = var.environment_type == "dev"
   is_prod                                      = local.environment == "prod"
-  is_ready_for_etl                             = contains(["dev", "test"], var.environment_type)
+  is_ready_for_etl                             = contains(["dev", "test"], local.environment)
 
   use_ip_allow_list = local.environment != "prod"
 
