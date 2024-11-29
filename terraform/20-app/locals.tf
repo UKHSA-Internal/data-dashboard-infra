@@ -5,6 +5,7 @@ locals {
   prefix      = "${local.project}-${local.environment}"
 
   account_id                    = var.assume_account_id
+  etl_account_id                = var.etl_account_id
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
