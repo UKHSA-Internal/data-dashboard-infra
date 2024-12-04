@@ -89,6 +89,13 @@ module "ecs_service_feature_flags" {
     }
   }
 
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [module.kms_secrets_app_operator.key_arn]
+    }
+  }
+
   security_group_rules = {
     # ingress rules
     alb_ingress = {

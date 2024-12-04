@@ -48,6 +48,41 @@ module "s3_ingest" {
       }
     }
   ]
+
+  attach_policy        = true
+  policy               = jsonencode({
+    Version   = "2012-10-17",
+    Statement = concat([
+      {
+        Sid         = "OnlyAllowJsonFilesToTargetFolders",
+        Effect      = "Deny",
+        Principal   = "*",
+        Action      = ["s3:PutObject"],
+        NotResource = [
+          "${module.s3_ingest.s3_bucket_arn}/in/",
+          "${module.s3_ingest.s3_bucket_arn}/in/*.json",
+          "${module.s3_ingest.s3_bucket_arn}/failed/",
+          "${module.s3_ingest.s3_bucket_arn}/failed/*.json",
+          "${module.s3_ingest.s3_bucket_arn}/processed/",
+          "${module.s3_ingest.s3_bucket_arn}/processed/*.json",
+        ]
+      }
+    ],
+        local.is_ready_for_etl ? [
+        {
+          Sid    = "AllowCrossAccountAccessFromETLPublisherLambda",
+          Effect = "Allow",
+          Principal = {
+            AWS = "arn:aws:iam::${local.etl_account_id}:role/${local.project}-etl-${local.environment}-publisher"
+          }
+          Action   = ["s3:PutObject", "s3:ListBucket"]
+          Resource = [
+            module.s3_ingest.s3_bucket_arn,
+            "${module.s3_ingest.s3_bucket_arn}/*",
+          ]
+        }
+      ] : [])
+  })
 }
 
 module "s3_ingest_notification" {

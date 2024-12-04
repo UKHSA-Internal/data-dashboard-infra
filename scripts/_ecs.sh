@@ -5,12 +5,14 @@ function _ecs_help() {
     echo "uhd ecs <command> [options]"
     echo
     echo "commands:"
-    echo "  help                           - this help screen"
+    echo "  help                               - this help screen"
     echo 
-    echo "  restart-services               - restarts all the ecs services after deploying the most recent images"
-    echo "  run <job name>                 - run the specified job"
-    echo "  logs <env> <task id>           - tail logs for the specified task"
-    echo "  ssh <task id> <container name> - ssh into a container"
+    echo "  restart-services                   - restarts all the ecs services after deploying the most recent images"
+    echo "  restart-containers <service_name>  - restarts the containers for a given ECS service with the same image"
+    echo
+    echo "  run <job name>                     - run the specified job"
+    echo "  logs <env> <task id>               - tail logs for the specified task"
+    echo "  ssh <task id> <container name>     - ssh into a container"
     echo
 
     return 0
@@ -23,6 +25,8 @@ function _ecs() {
     case $verb in
         "run") _ecs_run $args ;;
         "restart-services") _ecs_restart_services $args ;;
+        "restart-containers") _ecs_restart_containers $args ;;
+        "help") _ecs_help ;;
         "logs") _ecs_logs $args ;;
         "ssh") _ecs_ssh $args ;;
 
@@ -72,6 +76,25 @@ function _get_most_recent_front_end_image() {
     local front_end_ecr_name=$(jq -r '.ecr.value.repo_names.front_end'  $terraform_output_file)
     local most_recent_front_end_image_tag=$(_docker_get_most_recent_image_tag_from_repo $front_end_ecr_name)
     echo "${front_end_ecr_url}:${most_recent_front_end_image_tag}"
+}
+
+function _ecs_restart_containers() {
+    local service_name=$1
+
+    if [[ -z ${service_name} ]]; then
+        echo "Services name is required" >&2
+        return 1
+    fi
+
+    local terraform_output_file=terraform/20-app/output.json
+    local cluster_name=$(jq -r '.ecs.value.cluster_name' $terraform_output_file)
+    local ecs_service_name=$(jq -r '.ecs.value.service_names.'${service_name}  $terraform_output_file)
+    _ecs_force_new_deployment_for_service ${cluster_name} ${ecs_service_name}
+
+    aws ecs wait services-stable \
+      --cluster ${cluster_name} \
+      --services \
+        ${ecs_service_name}
 }
 
 function _ecs_restart_services() {
@@ -145,7 +168,28 @@ function _ecs_register_new_image_for_service() {
     --service ${service_name} \
     --task-definition ${new_task_definition_arn} > /dev/null
 
+  _ecs_deregister_stale_task_definitions ${service_name}
+
   echo "${service_name}"
+}
+
+function _ecs_deregister_stale_task_definitions() {
+  local service_name=$1
+  for stale_task_definition_arn in $(_ecs_get_stale_task_definition_arns $service_name); do
+    aws ecs deregister-task-definition --task-definition ${stale_task_definition_arn} --region eu-west-2  > /dev/null
+  done
+}
+
+function _ecs_get_stale_task_definition_arns() {
+  local service_name=$1
+  local stale_arns=$(
+    aws ecs list-task-definitions \
+      --family-prefix ${service_name} \
+      --sort ASC \
+      --status ACTIVE
+  )
+
+  echo ${stale_arns} | jq -M -r '.taskDefinitionArns | .[0:-10][]'
 }
 
 function _ecs_ssh() {

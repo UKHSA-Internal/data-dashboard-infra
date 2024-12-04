@@ -66,7 +66,7 @@ module "cloudfront_public_api" {
     {
       path_pattern               = ".well-known/health-check/"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-      cache_policy_id            = aws_cloudfront_cache_policy.public_api_health_check.id
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.public_api_health_check.id

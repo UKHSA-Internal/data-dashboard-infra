@@ -45,16 +45,16 @@ module "cloudfront_front_end" {
   }
 
   default_cache_behavior = {
-    allowed_methods          = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cache_policy_id          = aws_cloudfront_cache_policy.front_end.id
-    cached_methods           = ["GET", "HEAD"]
-    compress                 = true
-    origin_request_policy_id = aws_cloudfront_origin_request_policy.front_end.id
-    response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63" # CORS-with-preflight-and-SecurityHeadersPolicy
-    target_origin_id         = "alb"
-    use_forwarded_values     = false
-    viewer_protocol_policy   = "redirect-to-https"
-    function_association     = local.add_password_protection ? {
+    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cache_policy_id            = aws_cloudfront_cache_policy.front_end.id
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+    target_origin_id           = "alb"
+    use_forwarded_values       = false
+    viewer_protocol_policy     = "redirect-to-https"
+    function_association       = local.add_password_protection ? {
       viewer-request = {
         function_arn = module.cloudfront_password_protection_frontend.arn
       }
@@ -70,7 +70,7 @@ module "cloudfront_front_end" {
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
@@ -78,13 +78,25 @@ module "cloudfront_front_end" {
     },
     # Behaviour to bypass CDN for the dynamic alert pages
     {
-      path_pattern               = "/weather-health-alerts"
+      path_pattern               = "/"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/weather-health-alerts"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
@@ -92,11 +104,11 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
@@ -104,11 +116,11 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/api/proxy/alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = "eaab4381-ed33-4a86-88ca-d9558dc6cd63"
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
@@ -191,6 +203,46 @@ resource "aws_cloudfront_cache_policy" "front_end" {
   }
 }
 
+resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
+  name = "${local.prefix}-front-end-low-ttl"
+
+  min_ttl     = local.five_minutes_in_seconds
+  max_ttl     = local.five_minutes_in_seconds
+  default_ttl = local.five_minutes_in_seconds
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
+
+    cookies_config {
+      cookie_behavior = "whitelist"
+      cookies {
+        items = ["UKHSAConsentGDPR"]
+      }
+    }
+    headers_config {
+      header_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "whitelist"
+      query_strings {
+        items = [
+          "_rsc",
+          "areaName",
+          "areaType",
+          "page",
+          "search",
+          "type",
+          "v",
+          "fid",
+        ]
+      }
+    }
+  }
+}
+
+
 ################################################################################
 # Request viewer
 ################################################################################
@@ -199,4 +251,52 @@ module "cloudfront_password_protection_frontend" {
   source = "../modules/cloud-front-basic-password-protection"
   create = local.add_password_protection
   name   = "${local.prefix}-front-end-password-protection"
+}
+
+
+################################################################################
+# Response policies
+################################################################################
+resource "aws_cloudfront_response_headers_policy" "front_end" {
+  name = "${local.prefix}-front-end"
+
+  cors_config {
+    access_control_allow_credentials = false
+    access_control_allow_headers {
+      items = ["*"]
+    }
+    access_control_expose_headers {
+      items = ["*"]
+    }
+    access_control_allow_origins {
+      items = ["*"]
+    }
+    access_control_allow_methods {
+      items = ["GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    }
+    origin_override = false
+  }
+
+  security_headers_config {
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = false
+    }
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      override                   = false
+    }
+    content_type_options {
+      override = true
+    }
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+    xss_protection {
+      protection = true
+      mode_block = true
+      override   = false
+    }
+  }
 }

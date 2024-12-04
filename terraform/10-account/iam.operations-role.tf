@@ -35,7 +35,7 @@ module "iam_operations_policy" {
         {
           Action   = ["s3:PutObject"],
           Effect   = "Allow",
-          Resource = "arn:aws:s3:::uhd-*-ingest/in/*"
+          Resource = "arn:aws:s3:::uhd-*-ingest/in/*.json"
         },
         {
           Action   = ["s3:DeleteObject"],

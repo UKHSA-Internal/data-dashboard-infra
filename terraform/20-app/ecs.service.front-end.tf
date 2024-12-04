@@ -57,6 +57,14 @@ module "ecs_service_front_end" {
         {
           name  = "PUBLIC_API_URL"
           value = local.urls.public_api
+        },
+        {
+          name  = "RUM_IDENTITY_POOL_ID"
+          value = module.cloudwatch_rum_front_end.rum_cognito_pool_id
+        },
+        {
+          name  = "RUM_APPLICATION_ID"
+          value = module.cloudwatch_rum_front_end.rum_application_id
         }
       ]
       secrets = [
@@ -115,6 +123,16 @@ module "ecs_service_front_end" {
       resources = ["*"]
     }
   ]
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn,
+        module.kms_secrets_app_operator.key_arn,
+      ]
+    }
+  }
 
   security_group_rules = {
     # ingress rules

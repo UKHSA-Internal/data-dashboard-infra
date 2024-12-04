@@ -10,7 +10,6 @@ on:
         description: Select a well known environment to flush all caches for.
         options:
           - prod
-          - uat
           - dev
           - dpd
           - test
@@ -59,4 +58,10 @@ jobs:
         run: |
           source uhd.sh
           uhd cache flush
+        shell: zsh {0}
+
+      - name: Restart front end
+        run: |
+          source uhd.sh
+          uhd ecs restart-containers front_end
         shell: zsh {0}

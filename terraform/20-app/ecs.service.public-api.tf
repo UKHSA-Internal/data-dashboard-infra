@@ -48,11 +48,11 @@ module "ecs_service_public_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.aurora.app.public_api_replica.db_name
+          value = local.aurora.app.secondary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.aurora.app.public_api_replica.address
+          value = local.aurora.app.secondary.address
         },
         {
           name  = "APIENV"
@@ -95,6 +95,17 @@ module "ecs_service_public_api" {
       resources = ["*"]
     }
   ]
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn,
+        module.kms_app_rds.key_arn
+      ]
+    }
+  }
+
   security_group_rules = {
     # ingress rules
     alb_ingress = {

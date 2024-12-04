@@ -22,6 +22,10 @@ variable "tools_account_id" {
   sensitive = true
 }
 
+variable "etl_account_id" {
+  sensitive = true
+}
+
 variable "single_nat_gateway" {
   default = true
 }

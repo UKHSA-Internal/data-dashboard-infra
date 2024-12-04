@@ -43,11 +43,27 @@ module "ecs_service_feedback_api" {
           value = "FEEDBACK_API"
         },
         {
+          name  = "POSTGRES_DB"
+          value = local.aurora.app.secondary.db_name
+        },
+        {
+          name  = "POSTGRES_HOST"
+          value = local.aurora.app.secondary.address
+        },
+        {
           name  = "APIENV"
-          value = "STANDALONE"
+          value = "PROD"
         },
       ],
       secrets = [
+        {
+          name      = "POSTGRES_USER"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
+        },
+        {
+          name      = "POSTGRES_PASSWORD"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
+        },
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
@@ -88,6 +104,13 @@ module "ecs_service_feedback_api" {
     }
   ]
 
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [module.kms_secrets_app_engineer.key_arn]
+    }
+  }
+
   security_group_rules = {
     # ingress rules
     alb_ingress = {
@@ -105,6 +128,13 @@ module "ecs_service_feedback_api" {
       to_port     = 587
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+    }
+    db_egress = {
+      type                     = "egress"
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
     }
     internet_egress = {
       type        = "egress"
