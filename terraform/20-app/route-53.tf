@@ -80,3 +80,19 @@ module "route_53_records" {
   ]
 }
 
+resource "aws_route53_record" "ses_verification" {
+  zone_id = local.account_layer.dns.account.zone_id
+  name    = "_amazonses.${aws_ses_domain_identity.sender.domain}"
+  type    = "TXT"
+  ttl     = "300"
+  records = [aws_ses_domain_identity.sender.verification_token]
+}
+
+resource "aws_route53_record" "dkim_record" {
+  count   = 3
+  zone_id = local.account_layer.dns.account.zone_id
+  name    = "${element(aws_ses_domain_dkim.sender.dkim_tokens, count.index)}._domainkey.${aws_ses_domain_identity.sender.domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${element(aws_ses_domain_dkim.sender.dkim_tokens, count.index)}.dkim.amazonses.com"]
+}
