@@ -105,6 +105,10 @@ module "ecs_service_feedback_api" {
         "ssmmessages:OpenDataChannel"
       ]
       resources = ["*"]
+    },
+    {
+      actions   = ["ses:SendEmail"]
+      resources = [aws_ses_domain_identity.sender.arn]
     }
   ]
 
