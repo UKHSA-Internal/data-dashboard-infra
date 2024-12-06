@@ -54,6 +54,10 @@ module "ecs_service_feedback_api" {
           name  = "APIENV"
           value = "PROD"
         },
+        {
+          name  = "FEEDBACK_EMAIL_SENDER_ADDRESS"
+          value = "feedback@${aws_ses_domain_identity.sender.domain}"
+        }
       ],
       secrets = [
         {
