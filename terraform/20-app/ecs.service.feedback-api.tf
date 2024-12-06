@@ -101,6 +101,13 @@ module "ecs_service_feedback_api" {
         "ssmmessages:OpenDataChannel"
       ]
       resources = ["*"]
+    },
+    {
+      actions = [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ]
+      resources = ["*"]
     }
   ]
 
