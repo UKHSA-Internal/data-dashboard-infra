@@ -145,13 +145,6 @@ module "ecs_service_front_end" {
       source_security_group_id = module.front_end_alb.security_group_id
     }
     # egress rules
-    private_api_egress = {
-      type        = "egress"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
     internet_egress = {
       type        = "egress"
       from_port   = 443
