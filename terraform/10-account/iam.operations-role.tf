@@ -16,11 +16,9 @@ module "iam_operations_role" {
     local.sso_role_arns.administrator,
     local.sso_role_arns.developer,
     local.sso_role_arns.operations,
-    module.iam_data_ingestion_automation_user.iam_user_arn
     ] : [
     local.sso_role_arns.administrator,
     local.sso_role_arns.operations,
-    module.iam_data_ingestion_automation_user.iam_user_arn
   ]
 }
 
