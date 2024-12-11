@@ -8,7 +8,7 @@ module "aurora_db_feature_flags" {
   engine_version    = "15.5"
   storage_encrypted = true
 
-  publicly_accessible = true
+  publicly_accessible = local.enable_public_db
 
   manage_master_user_password = true
   database_name               = "unleash"
