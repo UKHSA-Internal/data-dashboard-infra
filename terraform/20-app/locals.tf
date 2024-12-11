@@ -33,8 +33,8 @@ locals {
 
   scheduled_scaling_policies_for_non_essential_envs = {
     start_of_working_day_scale_out = {
-      min_capacity = local.use_prod_sizing ? 3 : 1
-      max_capacity = local.use_prod_sizing ? 3 : 1
+      min_capacity = 1
+      max_capacity = 1
       schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
     }
     end_of_working_day_scale_in = {
