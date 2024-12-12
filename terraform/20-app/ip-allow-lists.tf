@@ -47,13 +47,7 @@ locals {
       "86.11.171.6/32",     # Jason Deakin
       "192.168.0.20/32",    # Alana Firth
     ]
-    ncc = [
-      "5.148.69.16/28",
-      "167.98.200.192/27",
-      "167.98.200.196/27",
-      "195.95.131.0/24",
-      "5.148.32.192/26",
-    ]
+    ncc = []
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
