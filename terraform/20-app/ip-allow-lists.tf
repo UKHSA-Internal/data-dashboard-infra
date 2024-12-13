@@ -46,6 +46,7 @@ locals {
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "192.168.0.20/32",    # Alana Firth
+      "62.253.228.56/32",   # Georgina Milne
     ]
     ncc = []
   }
