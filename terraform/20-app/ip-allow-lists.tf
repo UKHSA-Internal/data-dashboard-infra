@@ -7,7 +7,7 @@ locals {
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
       "84.67.254.137/32",   # Rhys
-      "176.254.91.127/32",     # Rhys 2
+      "176.254.91.127/32",  # Rhys 2
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
@@ -20,8 +20,7 @@ locals {
       "86.177.34.133/32"    # Luke
     ],
     project_team = [
-      "90.206.168.235/32",  # Debbie
-      "86.19.42.86/32",     # Debbie 2
+      "5.68.132.72/32",     # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -38,21 +37,18 @@ locals {
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
-      "167.98.243.140/32",  # Tom H
-      "81.105.235.133/32",  # Tom H 2
+      "167.98.243.140/32",  # Tom Hebbert
+      "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
-      "86.29.186.201/32",   # Charlotte Brace
+      "136.226.191.87/32",  # Charlotte Brace
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
+      "86.11.171.6/32",     # Jason Deakin
+      "192.168.0.20/32",    # Alana Firth
+      "62.253.228.56/32",   # Georgina Milne
     ]
-    ncc = [
-      "5.148.69.16/28",
-      "167.98.200.192/27",
-      "167.98.200.196/27",
-      "195.95.131.0/24",
-      "5.148.32.192/26",
-    ]
+    ncc = []
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
