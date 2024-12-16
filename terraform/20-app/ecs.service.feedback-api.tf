@@ -35,7 +35,7 @@ module "ecs_service_feedback_api" {
       cpu                                    = local.use_prod_sizing ? 1024 : 512
       memory                                 = local.use_prod_sizing ? 2048 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
       mount_points                           = [
         {
