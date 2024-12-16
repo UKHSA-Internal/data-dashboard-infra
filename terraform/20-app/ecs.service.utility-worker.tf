@@ -26,7 +26,7 @@ module "ecs_service_utility_worker" {
       cpu                                    = 16384
       memory                                 = 32768
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
       port_mappings                          = [
         {
