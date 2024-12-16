@@ -2,7 +2,7 @@ locals {
   ip_allow_list = {
     engineers = [
       "89.36.123.55/32",    # Afaan
-      "82.132.232.163/32",  # Afaan 2
+      "82.132.229.164/32",  # Afaan 2
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
@@ -48,7 +48,7 @@ locals {
       "192.168.0.20/32",    # Alana Firth
       "62.253.228.56/32",   # Georgina Milne
     ]
-    ncc = []
+    pen_testers = []
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
@@ -64,8 +64,8 @@ locals {
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
-        # Add NCC IP addresses only for the `pen` test environment
-        local.environment == "pen" ? local.ip_allow_list.ncc : []
+        # Add pen testers IP addresses only for the `pen` test environment
+        local.environment == "pen" ? local.ip_allow_list.pen_testers : []
       )
     )
   )
