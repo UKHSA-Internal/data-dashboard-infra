@@ -9,6 +9,7 @@ module "aurora_db_feature_flags" {
   storage_encrypted = true
 
   publicly_accessible = true
+  deletion_protection = local.use_prod_sizing
 
   manage_master_user_password = true
   database_name               = "unleash"
