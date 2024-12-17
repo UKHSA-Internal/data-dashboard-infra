@@ -14,9 +14,10 @@ module "aurora_db_feature_flags" {
   database_name               = "unleash"
   master_username             = "unleash_user"
 
-  monitoring_interval = 60
-  apply_immediately   = true
-  skip_final_snapshot = true
+  monitoring_interval             = 60
+  apply_immediately               = true
+  skip_final_snapshot             = true
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {
