@@ -19,6 +19,7 @@ module "lambda_db_password_rotation" {
     CMS_ADMIN_ECS_SERVICE_NAME           = module.ecs_service_cms_admin.name
     PRIVATE_API_ECS_SERVICE_NAME         = module.ecs_service_private_api.name
     PUBLIC_API_ECS_SERVICE_NAME          = module.ecs_service_public_api.name
+    FEEDBACK_API_ECS_SERVICE_NAME        = module.ecs_service_feedback_api.name
     FEATURE_FLAGS_ECS_SERVICE_NAME       = module.ecs_service_feature_flags.name
   }
 
@@ -31,7 +32,9 @@ module "lambda_db_password_rotation" {
         module.ecs_service_private_api.id,
         module.ecs_service_public_api.id,
         module.ecs_service_cms_admin.id,
+        module.ecs_service_feedback_api.id,
         module.ecs_service_feature_flags.id,
+
       ]
     }
   }
