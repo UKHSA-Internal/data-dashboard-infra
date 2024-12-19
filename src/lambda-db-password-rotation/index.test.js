@@ -80,12 +80,11 @@ describe('restartMainDbECSServices', () => {
         await restartMainDbECSServices(mockedECSClient, spyDependencies);
 
         // Then
-        // The function should have been called 3 times, 1 for each ECS service
-        expect(restartECSServiceSpy.calledThrice).toBeTruthy();
         // The function should have been called with each ECS service name
         expect(restartECSServiceSpy.firstCall.lastArg).toEqual(fakeCMSAdminECSServiceName)
         expect(restartECSServiceSpy.secondCall.lastArg).toEqual(fakePrivateAPIECSServiceName)
         expect(restartECSServiceSpy.thirdCall.lastArg).toEqual(fakePublicAPIECSServiceName)
+        expect(restartECSServiceSpy.lastCall.lastArg).toEqual(fakeFeedbackAPIECSServiceName)
 
         // Restore the environment variable
         mockedEnvVar.restore();
