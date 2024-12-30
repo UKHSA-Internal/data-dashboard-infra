@@ -1,6 +1,6 @@
 module "shield_advanced_drt_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.44.0"
+  version = "5.52.0"
 
   create_role          = true
   max_session_duration = 43200
