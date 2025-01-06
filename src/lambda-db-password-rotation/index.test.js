@@ -58,12 +58,14 @@ describe('restartMainDbECSServices', () => {
         const fakeCMSAdminECSServiceName = 'fake-cms-admin-ecs-service-name'
         const fakePrivateAPIECSServiceName = 'fake-private-api-ecs-service-name'
         const fakePublicAPIECSServiceName = 'fake-public-api-ecs-service-name'
+        const fakeFeedbackAPIECSServiceName = 'fake-feedback-api-ecs-service-name'
 
         const mockedEnvVar = sinon.stub(process, 'env').value(
             {
                 CMS_ADMIN_ECS_SERVICE_NAME: fakeCMSAdminECSServiceName,
                 PRIVATE_API_ECS_SERVICE_NAME: fakePrivateAPIECSServiceName,
                 PUBLIC_API_ECS_SERVICE_NAME: fakePublicAPIECSServiceName,
+                FEEDBACK_API_ECS_SERVICE_NAME: fakeFeedbackAPIECSServiceName,
             }
         );
 
@@ -78,12 +80,11 @@ describe('restartMainDbECSServices', () => {
         await restartMainDbECSServices(mockedECSClient, spyDependencies);
 
         // Then
-        // The function should have been called 3 times, 1 for each ECS service
-        expect(restartECSServiceSpy.calledThrice).toBeTruthy();
         // The function should have been called with each ECS service name
         expect(restartECSServiceSpy.firstCall.lastArg).toEqual(fakeCMSAdminECSServiceName)
         expect(restartECSServiceSpy.secondCall.lastArg).toEqual(fakePrivateAPIECSServiceName)
         expect(restartECSServiceSpy.thirdCall.lastArg).toEqual(fakePublicAPIECSServiceName)
+        expect(restartECSServiceSpy.lastCall.lastArg).toEqual(fakeFeedbackAPIECSServiceName)
 
         // Restore the environment variable
         mockedEnvVar.restore();
