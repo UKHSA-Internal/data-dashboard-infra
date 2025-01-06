@@ -193,6 +193,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
+      - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
