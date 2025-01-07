@@ -32,6 +32,7 @@ async function restartMainDbECSServices(ecsClient = new ECSClient(), overridenDe
     await dependencies.restartECSService(ecsClient, process.env.CMS_ADMIN_ECS_SERVICE_NAME)
     await dependencies.restartECSService(ecsClient, process.env.PRIVATE_API_ECS_SERVICE_NAME)
     await dependencies.restartECSService(ecsClient, process.env.PUBLIC_API_ECS_SERVICE_NAME)
+    await dependencies.restartECSService(ecsClient, process.env.FEEDBACK_API_ECS_SERVICE_NAME)
     console.log(`All required ECS tasks have been restarted for main DB`);
 };
 

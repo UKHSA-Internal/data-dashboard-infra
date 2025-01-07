@@ -13,7 +13,7 @@ locals {
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
       "81.108.89.51/32",    # Krishna - Macbook
-      "165.225.197.26/32",  # Krishna - Windows
+      "147.161.236.99/32",  # Krishna - Windows
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
       "51.241.222.137/32",  # Temitope Akinsoto
