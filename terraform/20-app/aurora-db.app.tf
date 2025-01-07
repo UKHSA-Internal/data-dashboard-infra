@@ -14,11 +14,12 @@ module "aurora_db_app" {
   database_name               = "cms"
   master_username             = "api_user"
 
-  monitoring_interval = 0
-  apply_immediately   = true
-  skip_final_snapshot = true
-  publicly_accessible = local.enable_public_db
-  deletion_protection = local.use_prod_sizing
+  monitoring_interval             = 0
+  apply_immediately               = true
+  skip_final_snapshot             = true
+  publicly_accessible             = local.enable_public_db
+  deletion_protection             = local.use_prod_sizing
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {
