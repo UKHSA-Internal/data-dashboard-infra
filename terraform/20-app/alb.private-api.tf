@@ -5,6 +5,7 @@ module "private_api_alb" {
   name = "${local.prefix}-private-api"
 
   load_balancer_type = "application"
+  internal           = true
 
   vpc_id                     = module.vpc.vpc_id
   subnets                    = module.vpc.public_subnets
@@ -75,11 +76,11 @@ module "private_api_alb" {
     }
   }
   security_group_ingress_rules = {
-    ingress_from_internet = {
-      from_port   = 443
-      to_port     = 443
-      ip_protocol = "tcp"
-      cidr_ipv4   = "0.0.0.0/0"
+    ingress_from_front_end = {
+      from_port                    = 443
+      to_port                      = 443
+      ip_protocol                  = "tcp"
+      referenced_security_group_id = module.ecs_service_front_end.security_group_id
     }
   }
   security_group_egress_rules = {
