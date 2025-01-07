@@ -54,7 +54,6 @@ module "iam_operations_policy" {
             "ecs:DescribeTasks",
             "ecs:ExecuteCommand",
             "ecs:RunTask",
-            "iam:PassRole",
             "logs:StartLiveTail",
             "logs:StopLiveTail"
           ],
