@@ -56,7 +56,7 @@ module "ecs_service_feedback_api" {
         },
         {
           name  = "FEEDBACK_EMAIL_SENDER_ADDRESS"
-          value = "feedback@${aws_ses_domain_identity.sender.domain}"
+          value = "feedback@${aws_ses_domain_mail_from.sender.domain}"
         }
       ],
       secrets = [
