@@ -23,6 +23,14 @@ resource "aws_route53_record" "dmarc" {
   records = ["v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@${aws_ses_domain_identity.sender.domain}"]
 }
 
+resource "aws_route53_record" "spf" {
+  zone_id = local.account_layer.dns.account.zone_id
+  name    = aws_ses_domain_identity.sender.domain
+  type    = "TXT"
+  ttl     = 300
+  records = ["v=spf1 include:amazonses.com -all"]
+}
+
 resource "aws_route53_record" "spf_mail_from" {
   zone_id = local.account_layer.dns.account.zone_id
   name    = aws_ses_domain_mail_from.sender.mail_from_domain
