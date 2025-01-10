@@ -107,7 +107,7 @@ module "ecs_service_feedback_api" {
       resources = ["*"]
     },
     {
-      actions   = ["ses:SendEmail"]
+      actions   = ["ses:SendEmail", "ses:SendRawEmail"]
       resources = [aws_ses_domain_identity.sender.arn]
     }
   ]
