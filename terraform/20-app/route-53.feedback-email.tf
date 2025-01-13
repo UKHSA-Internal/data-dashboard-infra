@@ -36,7 +36,7 @@ resource "aws_route53_record" "spf_mail_from" {
   name    = aws_ses_domain_mail_from.sender.mail_from_domain
   type    = "TXT"
   ttl     = 300
-  records = ["v=spf1 include:amazonses.com -all"]
+  records = ["v=spf1 include:amazonses.com ~all"]
 }
 
 resource "aws_route53_record" "mx_mail_from" {
