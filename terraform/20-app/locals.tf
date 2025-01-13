@@ -55,7 +55,7 @@ locals {
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    } : {
+  } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"

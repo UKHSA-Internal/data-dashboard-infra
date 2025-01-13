@@ -54,6 +54,10 @@ module "ecs_service_feedback_api" {
           name  = "APIENV"
           value = "PROD"
         },
+        {
+          name  = "FEEDBACK_EMAIL_SENDER_ADDRESS"
+          value = "feedback@${aws_ses_domain_mail_from.sender.mail_from_domain}"
+        }
       ],
       secrets = [
         {
@@ -101,6 +105,10 @@ module "ecs_service_feedback_api" {
         "ssmmessages:OpenDataChannel"
       ]
       resources = ["*"]
+    },
+    {
+      actions   = ["ses:SendEmail", "ses:SendRawEmail"]
+      resources = [aws_ses_domain_identity.sender.arn]
     }
   ]
 
