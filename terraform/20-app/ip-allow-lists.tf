@@ -17,7 +17,8 @@ locals {
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
       "51.241.222.137/32",  # Temitope Akinsoto
-      "86.177.34.133/32"    # Luke
+      "86.177.34.133/32",   # Luke
+      "80.229.17.164/32",   # Christian Martin
     ],
     project_team = [
       "5.68.132.72/32",     # Debbie
