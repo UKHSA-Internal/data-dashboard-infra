@@ -20,6 +20,8 @@ locals {
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "86.6.247.91/32",     # Tom Christian
+      "80.1.216.85/32",     # Kola Olusola
+      "86.164.234.203/32",  # Joe Gasewicz
     ],
     project_team = [
       "5.68.132.72/32",     # Debbie
