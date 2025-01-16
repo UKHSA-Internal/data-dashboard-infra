@@ -45,6 +45,11 @@ module "ecs_service_cms_admin" {
         },
         {
           sourceVolume  = "tmp"
+          containerPath = "/code/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "tmp"
           containerPath = "/code/metrics/static"
           readOnly      = false
         }
