@@ -16,7 +16,7 @@ module "front_end_elasticache_security_group" {
 
 resource "aws_elasticache_serverless_cache" "front_end_elasticache" {
   engine = "redis"
-  name   = "${local.prefix}-front-end-serverless-redis"
+  name   = "${local.prefix}-front-end"
 
   major_engine_version     = "7"
   snapshot_retention_limit = 1
