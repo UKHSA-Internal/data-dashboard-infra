@@ -1,6 +1,6 @@
 module "lambda_ingestion" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "7.20.0"
   function_name = "${local.prefix}-ingestion"
   description   = "Consumes records from the Kinesis data stream."
 
