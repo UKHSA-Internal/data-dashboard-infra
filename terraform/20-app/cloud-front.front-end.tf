@@ -1,5 +1,6 @@
 locals {
-  fifteen_minutes_in_seconds = 900
+  fifteen_minutes_in_seconds         = 900
+  managed_caching_disabled_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
 }
 
 module "cloudfront_front_end" {
@@ -46,7 +47,11 @@ module "cloudfront_front_end" {
 
   default_cache_behavior = {
     allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cache_policy_id            = aws_cloudfront_cache_policy.front_end.id
+    cache_policy_id            = (
+        local.is_auth ?
+        local.managed_caching_disabled_policy_id :
+        aws_cloudfront_cache_policy.front_end.id
+      )
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -80,7 +85,11 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
+      cache_policy_id            = (
+        local.is_auth ?
+        local.managed_caching_disabled_policy_id :
+        aws_cloudfront_cache_policy.front_end_low_ttl.id
+      )
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -92,7 +101,11 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
+      cache_policy_id            = (
+        local.is_auth ?
+        local.managed_caching_disabled_policy_id :
+        aws_cloudfront_cache_policy.front_end_low_ttl.id
+      )
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -104,7 +117,11 @@ module "cloudfront_front_end" {
     {
       path_pattern               = "/weather-health-alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = aws_cloudfront_cache_policy.front_end_low_ttl.id
+      cache_policy_id            = (
+        local.is_auth ?
+        local.managed_caching_disabled_policy_id :
+        aws_cloudfront_cache_policy.front_end_low_ttl.id
+      )
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
