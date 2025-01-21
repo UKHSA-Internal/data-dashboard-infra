@@ -22,6 +22,7 @@ locals {
       "86.6.247.91/32",     # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
       "86.164.234.203/32",  # Joe Gasewicz
+      "86.130.56.204/32",   # Chris Warren
     ],
     project_team = [
       "5.68.132.72/32",     # Debbie
