@@ -81,7 +81,7 @@ module "lambda_ingestion" {
 
 module "lambda_ingestion_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.3.0"
 
   name   = "${local.prefix}-lambda-ingestion"
   vpc_id = module.vpc.vpc_id
