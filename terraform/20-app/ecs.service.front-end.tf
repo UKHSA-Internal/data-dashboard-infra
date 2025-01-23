@@ -28,7 +28,7 @@ module "ecs_service_front_end" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_front_end_ecs.image_uri
       port_mappings                          = [
         {
