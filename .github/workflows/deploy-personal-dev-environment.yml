@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Make environment name
-        uses: ./.github/actions/make-environment-name
+        uses: ./.github/actions/make-workspace-name
         with:
           name: ${{ github.event.inputs.name }}
 
@@ -62,7 +62,7 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Make environment name
-        uses: ./.github/actions/make-environment-name
+        uses: ./.github/actions/make-workspace-name
         with:
           name: ${{ github.event.inputs.name }}
 
@@ -89,7 +89,7 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Make environment name
-        uses: ./.github/actions/make-environment-name
+        uses: ./.github/actions/make-workspace-name
         with:
           name: ${{ github.event.inputs.name }}
 
@@ -135,7 +135,7 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Make environment name
-        uses: ./.github/actions/make-environment-name
+        uses: ./.github/actions/make-workspace-name
         with:
           name: ${{ github.event.inputs.name }}
 
