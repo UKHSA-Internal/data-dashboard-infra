@@ -11,5 +11,6 @@ runs:
   steps:
     - run: |
         source uhd.sh
-        echo "ENVIRONMENT_NAME=`echo $(uhd terraform make-workspace-name ${{ inputs.name }})`" >> $GITHUB_ENV
+        ENVIRONMENT_NAME=$(uhd terraform make-workspace-name ${{ inputs.name }})
+        echo "ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" >> $GITHUB_ENV
       shell: bash
