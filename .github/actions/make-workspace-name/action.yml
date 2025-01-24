@@ -12,5 +12,9 @@ runs:
     - run: |
         source uhd.sh
         ENVIRONMENT_NAME=$(uhd terraform make-workspace-name ${{ inputs.name }})
+        echo "Raw Output: '${ENVIRONMENT_NAME}'"
+        CLEAN_OUTPUT=$(echo "${ENVIRONMENT_NAME}" | tr -d '\r' | xargs)
+        echo "Cleaned Output: '${CLEAN_OUTPUT}'"
         echo "ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" >> $GITHUB_ENV
+
       shell: bash
