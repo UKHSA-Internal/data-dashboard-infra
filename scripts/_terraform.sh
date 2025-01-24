@@ -30,6 +30,7 @@ function _terraform_help() {
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
     echo "  workspace-list                                  - lists all terraform workspaces"
     echo "  state-rm                                        - Removes the given item from the Terraform state"
+    echo "  make-workspace-name <name>                      - Generates a short hash of the given name"
     echo
     return 1
 }
@@ -55,6 +56,7 @@ function _terraform() {
         "force-unlock") _terraform_force_unlock $args ;;
         "workspace-list") _terraform_workspace_list $args ;;
         "state-rm") _terraform_state_rm $args ;;
+        "make-workspace-name") _make_workspace_name $args ;;
 
         "cleanup") _terraform_cleanup $args ;;
 
@@ -525,6 +527,11 @@ function _get_target_aws_account_name() {
             echo "dev"
         fi
     fi 
+}
+
+
+_make_workspace_name() {
+    echo "$1" | openssl dgst -sha1 -binary | xxd -p | cut -c1-8
 }
 
 _get_workspace_name() {
