@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: "The name of the user on your machine e.g. janedoe"
+        description: "The name of the dev environment you wish to deploy to e.g. abcd1234"
         required: true
         type: string
 
@@ -33,16 +33,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Make environment name
-        uses: ./.github/actions/make-workspace-name
-        with:
-          name: ${{ github.inputs.name }}
-
       - name: Terraform apply
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform apply:layer 20-app ${{ inputs.name }}
         shell: zsh {0}
 
   push_docker_images:
@@ -60,15 +55,10 @@ jobs:
 
       - uses: ./.github/actions/setup-zsh
 
-      - name: Make environment name
-        uses: ./.github/actions/make-workspace-name
-        with:
-          name: ${{ github.inputs.name }}
-
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker update dev $ENVIRONMENT_NAME
+          uhd docker update dev ${{ inputs.name }}
         shell: zsh {0}
 
   restart_services:
@@ -87,16 +77,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Make environment name
-        uses: ./.github/actions/make-workspace-name
-        with:
-          name: ${{ github.inputs.name }}
-
       - name: Terraform output
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform output:layer 20-app ${{ inputs.name }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for dev account
@@ -133,16 +118,11 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Make environment name
-        uses: ./.github/actions/make-workspace-name
-        with:
-          name: ${{ github.inputs.name }}
-
       - name: Terraform output
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform output:layer 20-app ${{ inputs.name }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for dev account
