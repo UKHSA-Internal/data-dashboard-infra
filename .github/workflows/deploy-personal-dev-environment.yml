@@ -87,6 +87,7 @@ jobs:
       - name: Configure AWS credentials for dev account
         uses: ./.github/actions/configure-aws-credentials
         with:
+          account-name: "dev"
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
 
