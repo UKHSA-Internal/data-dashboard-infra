@@ -123,7 +123,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app ${{ inputs.name }}
+          uhd terraform output ${{ inputs.name }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for dev account
