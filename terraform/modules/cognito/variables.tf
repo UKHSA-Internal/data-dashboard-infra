@@ -13,31 +13,10 @@ variable "sns_role_arn" {
   }
 }
 
-variable "nhs_metadata_url" {
+variable "metadata_url" {
   description = "Metadata URL for NHS SAML IdP"
   type        = string
   default     = "https://auth.nhs.gov.uk"
-}
-
-variable "cobr_oidc_client_id" {
-  description = "Client ID for COBR OIDC IdP"
-  type        = string
-}
-
-variable "cobr_oidc_client_secret" {
-  description = "Client secret for COBR OIDC IdP"
-  type        = string
-}
-
-variable "cobr_oidc_issuer_url" {
-  description = "Issuer URL for COBR OIDC IdP"
-  type        = string
-  default     = "https://auth.cobr.gov.uk"
-}
-
-variable "cobr_oidc_attributes_url" {
-  description = "Attributes URL for COBR OIDC IdP"
-  type        = string
 }
 
 variable "callback_urls" {
@@ -88,7 +67,55 @@ variable "enable_mfa" {
 }
 
 variable "enable_sms" {
-  description = "Enable SMS functionality for Cognito (e.g. for MFA or auto-verification).. Requires sns_role_arn."
+  description = "Enable SMS functionality for Cognito (e.g. for MFA or auto-verification). Requires sns_role_arn."
   type        = bool
   default     = false
+}
+
+variable "enable_saml" {
+  description = "Enable SAML integration"
+  type        = bool
+  default     = false
+}
+
+variable "saml_metadata_url" {
+  description = "URL for SAML metadata"
+  type        = string
+  default     = ""
+}
+
+variable "saml_logout_url" {
+  description = "SAML logout URL"
+  type        = string
+  default     = ""
+}
+
+variable "enable_oidc" {
+  description = "Enable OIDC integration"
+  type        = bool
+  default     = false
+}
+
+variable "oidc_client_id" {
+  description = "OIDC Client ID"
+  type        = string
+  default     = ""
+}
+
+variable "oidc_client_secret" {
+  description = "OIDC Client Secret"
+  type        = string
+  default     = ""
+}
+
+variable "oidc_issuer_url" {
+  description = "OIDC Issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "oidc_attributes_url" {
+  description = "OIDC Attributes URL"
+  type        = string
+  default     = ""
 }
