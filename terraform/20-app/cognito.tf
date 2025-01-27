@@ -50,13 +50,18 @@ module "cognito" {
   user_pool_domain  = "app-${local.prefix}-domain"
   callback_urls     = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/callback"]
   logout_urls       = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/logout"]
+  region = local.region
 
-  nhs_metadata_url         = "https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/nhs-metadata.xml"
-  cobr_oidc_client_id      = "cobr-client-id"
-  cobr_oidc_client_secret  = "cobr-client-secret"
-  cobr_oidc_issuer_url     = "https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/cobr-issuer"
-  cobr_oidc_attributes_url = "https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/attributes"
-  region                   = local.region
+  # Placeholder for SAML metadata URL, used only when SAML is enabled
+  # we will need to add multiple metadata_urls e.g. cobr_metadata_url and nhs_metadata_url for each provider
+  metadata_url = "https://example.com/metadata.xml"
+
+  # Placeholder for OIDC configuration, used only when OIDC is enabled
+  # we will need to add multiple variables e.g. cobr_oidc_client_id and nhs_oidc_client_id for each provider
+  oidc_client_id      = "oidc-client-id"
+  oidc_client_secret  = "oidc-client-secret"
+  oidc_issuer_url     = "https://example.com/issuer"
+  oidc_attributes_url = "https://example.com/attributes"
 }
 
 module "app_security_group" {
