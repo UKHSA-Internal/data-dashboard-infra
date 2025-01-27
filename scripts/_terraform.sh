@@ -541,7 +541,7 @@ _get_workspace_name() {
         # This creates a hash of your username on your machine.  We use this as your
         # dev env name to ensure everyone has their own isolated environment to break 🔥
         # For example janesmith evaluates to 4279cbe8
-        echo $(whoami | openssl dgst -sha1 -binary | xxd -p | cut -c1-8)
+        echo $(_get_dev_workspace_name)
     else
         echo $workspace
     fi
