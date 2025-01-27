@@ -4,7 +4,7 @@ locals {
 
 module "cloudfront_public_api" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "3.4.0"
+  version = "4.1.0"
 
   comment             = "${local.prefix}-public-api"
   enabled             = true
