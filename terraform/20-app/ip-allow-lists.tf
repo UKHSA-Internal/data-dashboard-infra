@@ -17,7 +17,7 @@ locals {
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
       "51.241.222.137/32",  # Temitope Akinsoto
-      "86.177.34.133/32",   # Luke
+      "86.131.213.93/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "86.6.247.91/32",     # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
