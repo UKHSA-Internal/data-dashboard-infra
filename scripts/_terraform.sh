@@ -508,25 +508,35 @@ function _get_etl_sibling_aws_account_id() {
 
 function _get_target_aws_account_name() {
     local layer=$1
-    local workspace=$2 
+    local workspace=$2
 
     if [[ $layer == "10-account" ]]; then
         echo $workspace
     else
-        if [[ $workspace == "prod" ]]; then
-            echo "prod"
-        elif [[ $CI == "true" ]]; then
-            if [[ $branch == "env/dev/"* ]]; then
-                echo "dev"
-            elif [[ $branch == "env/uat/"* ]]; then
-                echo "uat"
-            else
-                echo "test"
-            fi    
-        else
-            echo "dev"
-        fi
-    fi 
+      # This is an app-layer change
+      if [[ $workspace == "prod" ]]; then
+          echo "prod"
+
+      elif [[ $CI == "true" ]]; then
+          if [[ $workspace == ci-* ]]; then
+              echo "test"
+          else
+              case $branch in
+                  env/dev/*)   echo "dev" ;;
+                  env/uat/*)   echo "uat" ;;
+                  env/test/*)  echo "test" ;;
+                  *)           echo "dev" ;;
+                  # In this case, the CI is actively looking
+                  # to deploy to the dev account not the test account
+              esac
+          fi
+
+      else
+          # If we don't want prod, and we're not in the CI environment
+          # then we're interested in deploying to the dev account
+          echo "dev"
+      fi
+    fi
 }
 
 
