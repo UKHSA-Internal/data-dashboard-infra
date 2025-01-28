@@ -72,14 +72,14 @@ jobs:
       - name: Build frontend image
         run: |
           source uhd.sh
-          uhd gh co frontend {{ inputs.frontend_branch }}
+          uhd gh co frontend ${{ inputs.frontend_branch }}
           uhd docker build frontend
         shell: zsh {0}
 
       - name: Build backend image
         run: |
           source uhd.sh
-          uhd gh co api {{ inputs.backend_branch }}
+          uhd gh co api ${{ inputs.backend_branch }}
           uhd docker build backend
         shell: zsh {0}
 
