@@ -1,6 +1,6 @@
 module "lambda_alarm_notification" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "7.20.1"
   function_name = "${local.prefix}-alarm-notification"
   description   = "Sends notifications when Cloudwatch alarms from key services are raised."
 
