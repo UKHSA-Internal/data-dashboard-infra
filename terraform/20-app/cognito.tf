@@ -62,6 +62,8 @@ module "cognito" {
   oidc_client_secret  = "oidc-client-secret"
   oidc_issuer_url     = "https://example.com/issuer"
   oidc_attributes_url = "https://example.com/attributes"
+
+  prefix = local.prefix
 }
 
 module "app_security_group" {
