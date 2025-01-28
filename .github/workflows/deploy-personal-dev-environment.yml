@@ -1,5 +1,7 @@
 name: Deploy Personal Development Environment
 
+run-name: Deployment to `${{ inputs.name }}` development environment
+
 on:
   workflow_dispatch:
     inputs:
