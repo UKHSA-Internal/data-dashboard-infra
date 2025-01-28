@@ -1,0 +1,58 @@
+name: Flush Caches Development Environment Workflow
+run-name: Flush caches for `${{ inputs.environment }}` development environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: Select a personal development environment to flush all caches for.
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  flush_caches:
+    name: Flush caches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output ${{ inputs.environment }}
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: "dev"
+          aws-region: ${{ env.AWS_REGION }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+
+      - name: Flush caches
+        run: |
+          source uhd.sh
+          uhd cache flush
+        shell: zsh {0}
+
+      - name: Restart front end
+        run: |
+          source uhd.sh
+          uhd ecs restart-containers front_end
+        shell: zsh {0}
