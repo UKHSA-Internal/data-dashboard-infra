@@ -58,7 +58,7 @@ function _gh_co() {
    local repo=$1
    local target=$2
 
-   if [[ $1 =~ ^[0-9]+$ ]]; then
+   if [[ $target =~ ^[0-9]+$ ]]; then
      _gh_checkout_pr $repo $target
    fi
 
