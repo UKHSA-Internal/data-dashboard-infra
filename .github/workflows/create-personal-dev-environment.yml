@@ -1,4 +1,4 @@
-name: Deploy Personal Development Environment
+name: Create Personal Development Environment
 
 on:
   workflow_dispatch:
@@ -6,14 +6,6 @@ on:
       name:
         description: "The name of the dev environment you wish to deploy to e.g. abcd1234"
         required: true
-        type: string
-      frontend_branch:
-        description: "The name of the git branch from the frontend which should be deployed"
-        default: "main"
-        type: string
-      backend_branch:
-        description: "The name of the git branch from the backend which should be deployed"
-        default: "main"
         type: string
 
 env:
@@ -63,24 +55,10 @@ jobs:
 
       - uses: ./.github/actions/setup-zsh
 
-      - name: Checkout all repos
+      - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd gh clone
-        shell: zsh {0}
-
-      - name: Build frontend image
-        run: |
-          source uhd.sh
-          uhd gh co frontend {{ inputs.frontend_branch }}
-          uhd docker build frontend
-        shell: zsh {0}
-
-      - name: Build backend image
-        run: |
-          source uhd.sh
-          uhd gh co api {{ inputs.backend_branch }}
-          uhd docker build backend
+          uhd docker update dev ${{ inputs.name }}
         shell: zsh {0}
 
   restart_services:
@@ -125,10 +103,46 @@ jobs:
           uhd lambda restart-functions
         shell: zsh {0}
 
+  bootstrap_database:
+    name: Bootstrap database
+    runs-on: ubuntu-latest
+    needs: [ "restart_services" ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output ${{ inputs.name }}
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for dev account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: "dev"
+          aws-region: ${{ env.AWS_REGION }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+
+      - name: Bootstrap app database with truncated test dataset
+        run: |
+          source uhd.sh
+          uhd ecs run-and-wait bootstrap-env
+        shell: zsh {0}
+
   flush_caches:
     name: Flush caches
     runs-on: ubuntu-latest
-    needs: ["restart_services"]
+    needs: ["bootstrap_database"]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-terraform
