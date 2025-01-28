@@ -1,5 +1,5 @@
 name: Flush Caches Well-Known Environment Workflow
-run-name: Flush caches for `${{ inputs.environment }}` WKE environment
+run-name: Flush caches for `${{ inputs.environment }}` WKE
 
 on:
   workflow_dispatch:
