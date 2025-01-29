@@ -55,6 +55,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
@@ -68,8 +70,6 @@ jobs:
           repository: UKHSA-Internal/data-dashboard-frontend
           path: ../data-dashboard-frontend
 
-      - uses: actions/checkout@v4
-
       - name: Build frontend image
         run: |
           source uhd.sh
@@ -82,6 +82,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
+      - uses: actions/checkout@v4
+
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
@@ -94,8 +96,6 @@ jobs:
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: ../data-dashboard-api
-
-      - uses: actions/checkout@v4
 
       - name: Build frontend image
         run: |
