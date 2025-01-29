@@ -1,5 +1,5 @@
 resource "aws_iam_role" "cognito_sns_role" {
-  name = "cognito-sns-role-${terraform.workspace}"
+  name = "app-${local.prefix}-cognito-sns-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

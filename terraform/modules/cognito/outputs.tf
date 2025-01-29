@@ -39,3 +39,14 @@ output "cognito_oauth_userinfo_url" {
   value       = "https://${aws_cognito_user_pool_domain.cognito_user_pool_domain.domain}.auth.${var.region}.amazoncognito.com/oauth2/userInfo"
   sensitive   = true
 }
+
+output "cognito_user_pool_arn" {
+  description = "ARN of the Cognito User Pool"
+  value       = aws_cognito_user_pool.user_pool.arn
+  sensitive   = true
+}
+
+output "cognito_lambda_role_arn" {
+  description = "The ARN of the Cognito Lambda execution role"
+  value       = aws_iam_role.cognito_lambda_role.arn
+}
