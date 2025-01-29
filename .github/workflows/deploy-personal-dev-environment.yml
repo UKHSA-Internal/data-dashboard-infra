@@ -97,11 +97,11 @@ jobs:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
 
-      - name: Build frontend image
+      - name: Build backend image
         run: |
           source uhd.sh
-          uhd gh co frontend ${{ inputs.frontend_branch }}
-          uhd docker build frontend
+          uhd gh co backend ${{ inputs.backend_branch }}
+          uhd docker build backend
         shell: zsh {0}
 
   restart_services:
