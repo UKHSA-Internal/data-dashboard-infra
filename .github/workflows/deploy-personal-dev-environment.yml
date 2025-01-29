@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
-          path: ../data-dashboard-frontend
+          path: data-dashboard-frontend
 
       - name: Build frontend image
         run: |
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-api
-          path: ../data-dashboard-api
+          path: data-dashboard-api
 
       - name: Build frontend image
         run: |
