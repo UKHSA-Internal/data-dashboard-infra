@@ -69,11 +69,11 @@ jobs:
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
           path: data-dashboard-frontend
+          ref: ${{ inputs.frontend_branch }}
 
       - name: Build frontend image
         run: |
           source uhd.sh
-          uhd gh co frontend ${{ inputs.frontend_branch }}
           uhd docker build frontend
         shell: zsh {0}
 
@@ -96,11 +96,11 @@ jobs:
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
+          ref: ${{ inputs.backend_branch }}
 
       - name: Build backend image
         run: |
           source uhd.sh
-          uhd gh co backend ${{ inputs.backend_branch }}
           uhd docker build backend
         shell: zsh {0}
 
