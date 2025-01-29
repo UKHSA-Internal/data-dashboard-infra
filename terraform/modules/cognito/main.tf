@@ -106,7 +106,7 @@ resource "aws_cognito_user_group" "cognito_user_groups" {
 }
 
 resource "aws_lambda_function" "cognito_post_auth_lambda" {
-  function_name = "post-auth-lambda-${var.prefix}"
+  function_name = "app-${var.prefix}-post-auth-lambda"
   runtime       = "nodejs18.x" # Updated runtime
   role          = aws_iam_role.cognito_lambda_role.arn
 
@@ -117,7 +117,7 @@ resource "aws_lambda_function" "cognito_post_auth_lambda" {
 }
 
 resource "aws_lambda_function" "cognito_pre_signup_lambda" {
-  function_name = "pre-signup-lambda-${var.prefix}"
+  function_name = "app-${var.prefix}-pre-signup-lambda"
   runtime       = "nodejs18.x" # Updated runtime
   role          = aws_iam_role.cognito_lambda_role.arn
 
@@ -128,7 +128,7 @@ resource "aws_lambda_function" "cognito_pre_signup_lambda" {
 }
 
 resource "aws_lambda_function" "cognito_user_migration_lambda" {
-  function_name = "user-migration-lambda-${var.prefix}"
+  function_name = "app-${var.prefix}-user-migration-lambda"
   runtime       = "nodejs18.x" # Updated runtime
   role          = aws_iam_role.cognito_lambda_role.arn
 
@@ -139,7 +139,7 @@ resource "aws_lambda_function" "cognito_user_migration_lambda" {
 }
 
 resource "aws_iam_role" "cognito_lambda_role" {
-  name = "lambda-execution-role-${var.prefix}"
+  name = "app-${var.prefix}-lambda-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -156,7 +156,7 @@ resource "aws_iam_role" "cognito_lambda_role" {
 }
 
 resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
-  name   = "lambda-execution-policy-${var.prefix}"
+  name   = "app-${var.prefix}-lambda-execution-policy"
   role   = aws_iam_role.cognito_lambda_role.id
   policy = jsonencode({
     Version = "2012-10-17",
@@ -168,12 +168,12 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
       },
       {
         Effect   = "Allow",
-        Action   = ["cognito-idp:PostAuthentication"],
+        Action   = ["cognito-idp:PostAuthentication", "cognito-idp:PreSignUp"],
         Resource = "*"
       },
       {
         Effect   = "Allow",
-        Action   = ["cognito-idp:PreSignUp"],
+        Action   = ["lambda:InvokeFunction"],
         Resource = "*"
       }
     ]
