@@ -31,3 +31,9 @@ variable "single_nat_gateway" {
 }
 
 variable "halo_account_type" {}
+
+variable "api_gateway_stage_name" {
+  description = "The stage name for API Gateway (e.g. dev or live)"
+  type        = string
+  default     = "dev"
+}
