@@ -57,7 +57,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: data-dashboard-infra
+          sparse-checkout: |
+            .github
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -66,6 +67,10 @@ jobs:
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
+
+      - uses: actions/checkout@v4
+        with:
+          path: data-dashboard-infra
 
       - uses: actions/checkout@v4
         with:
