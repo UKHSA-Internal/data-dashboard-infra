@@ -1,5 +1,7 @@
 name: Create Personal Development Environment
 
+run-name: Creation of `${{ inputs.name }}` development environment
+
 on:
   workflow_dispatch:
     inputs:
