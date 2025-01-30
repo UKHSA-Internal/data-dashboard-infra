@@ -60,18 +60,6 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "enable_mfa" {
-  description = "Enable Multi-Factor Authentication (MFA) for Cognito. If true, MFA will be enforced."
-  type        = bool
-  default     = false
-}
-
-variable "enable_sms" {
-  description = "Enable SMS functionality for Cognito (e.g. for MFA or auto-verification). Requires sns_role_arn."
-  type        = bool
-  default     = false
-}
-
 variable "enable_saml" {
   description = "Enable SAML integration"
   type        = bool

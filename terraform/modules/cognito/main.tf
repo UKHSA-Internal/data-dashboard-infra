@@ -3,21 +3,12 @@ data "aws_caller_identity" "current" {}
 resource "aws_cognito_user_pool" "user_pool" {
   name = var.user_pool_name
 
-  mfa_configuration = var.enable_mfa ? "ON" : "OFF"
+  mfa_configuration = "OFF"
 
   lambda_config {
     post_authentication  = aws_lambda_function.cognito_post_auth_lambda.arn
     pre_sign_up          = aws_lambda_function.cognito_pre_signup_lambda.arn
     user_migration       = aws_lambda_function.cognito_user_migration_lambda.arn
-  }
-
-  dynamic "sms_configuration" {
-    for_each = var.enable_sms ? [1] : []
-
-    content {
-      sns_caller_arn = var.sns_role_arn != null ? var.sns_role_arn : ""
-      external_id    = "cognito-sms-external-id"
-    }
   }
 
   password_policy {
@@ -28,7 +19,7 @@ resource "aws_cognito_user_pool" "user_pool" {
     require_uppercase = true
   }
 
-  auto_verified_attributes = var.enable_sms ? ["email", "phone_number"] : ["email"]
+  auto_verified_attributes = []
 
   account_recovery_setting {
     recovery_mechanism {
