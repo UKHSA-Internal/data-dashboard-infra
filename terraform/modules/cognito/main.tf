@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_cognito_user_pool" "user_pool" {
   name = var.user_pool_name
 
@@ -46,9 +48,9 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   user_pool_id = aws_cognito_user_pool.user_pool.id
   generate_secret = true
 
-  allowed_oauth_flows = ["code", "implicit"]
+  allowed_oauth_flows = ["code"]
   allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_scopes = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
+  allowed_oauth_scopes = ["openid", "aws.cognito.signin.user.admin"]
 
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
@@ -164,18 +166,35 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
     Statement = [
       {
         Effect   = "Allow",
-        Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
-        Resource = "*"
+        Action   = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:GetLogEvents"
+        ],
+        Resource = [
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/app-${var.prefix}-*:log-stream:*"
+        ]
       },
+
       {
         Effect   = "Allow",
-        Action   = ["cognito-idp:PostAuthentication", "cognito-idp:PreSignUp"],
-        Resource = "*"
+        Action   = [
+          "cognito-idp:PostAuthentication",
+          "cognito-idp:PreSignUp",
+          "cognito-idp:AdminCreateUser",
+          "cognito-idp:AdminUpdateUserAttributes",
+          "cognito-idp:AdminInitiateAuth"
+        ],
+        Resource = aws_cognito_user_pool.user_pool.arn
       },
+
       {
         Effect   = "Allow",
-        Action   = ["lambda:InvokeFunction"],
-        Resource = "*"
+        Action   = "lambda:InvokeFunction",
+        Resource = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:app-${var.prefix}-*"
       }
     ]
   })
