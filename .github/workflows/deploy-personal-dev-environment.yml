@@ -57,8 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: |
-            .github
+          path: data-dashboard-infra
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -71,13 +70,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
-          path: ../data-dashboard-frontend
+          path: data-dashboard-frontend
           ref: ${{ inputs.frontend_branch }}
-
-      - uses: actions/checkout@v4
 
       - name: Build frontend image
         run: |
+          cd data-dashboard-infra
           source uhd.sh
           uhd docker build frontend
         shell: zsh {0}
