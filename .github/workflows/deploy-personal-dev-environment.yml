@@ -137,7 +137,7 @@ jobs:
           cd data-dashboard-infra
           source uhd.sh
           uhd terraform output ${{ inputs.name }}
-          uhd docker build ingestion
+          uhd docker build backend
         shell: zsh {0}
 
   push_ingestion_docker_image:
