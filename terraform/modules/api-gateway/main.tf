@@ -4,7 +4,7 @@ resource "aws_lambda_function" "api_gateway_lambda" {
   function_name = "${var.prefix}-api-gateway-lambda"
   runtime       = "nodejs18.x"
   role          = var.lambda_role_arn
-  handler       = "index.handler"
+  handler       = "api_gateway_lambda.handler"
 
   source_code_hash = filebase64sha256("${path.module}/api_gateway_lambda.zip")
   filename = "${path.module}/api_gateway_lambda.zip"
