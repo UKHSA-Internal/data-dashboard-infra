@@ -56,9 +56,6 @@ jobs:
     needs: ["terraform_apply"]
     steps:
       - uses: actions/checkout@v4
-        with:
-            sparse-checkout: |
-              .github
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
