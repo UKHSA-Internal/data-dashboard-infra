@@ -57,7 +57,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: data-dashboard-infra
+            sparse-checkout: |
+              .github
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -72,6 +73,10 @@ jobs:
           repository: UKHSA-Internal/data-dashboard-frontend
           path: ../data-dashboard-frontend
           ref: ${{ inputs.frontend_branch }}
+
+      - uses: actions/checkout@v4
+        with:
+          path: data-dashboard-infra
 
       - name: Build frontend image
         run: |
