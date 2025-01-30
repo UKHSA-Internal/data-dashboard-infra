@@ -1,6 +1,6 @@
 module "api_gateway" {
   source                 = "../modules/api-gateway"
-  name                   = "app-${local.prefix}-api-gateway"
+  name                   = "${local.prefix}-api-gateway"
   description            = "API Gateway for ${local.prefix}"
   api_gateway_stage_name = var.api_gateway_stage_name
   lambda_role_arn        = module.cognito.cognito_lambda_role_arn

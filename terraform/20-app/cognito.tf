@@ -1,5 +1,5 @@
 resource "aws_iam_role" "cognito_sns_role" {
-  name = "app-${local.prefix}-cognito-sns-role"
+  name = "${local.prefix}-cognito-sns-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -16,11 +16,11 @@ resource "aws_iam_role" "cognito_sns_role" {
 }
 
 resource "aws_sns_topic" "cognito_topic" {
-  name = "app-${local.prefix}-cognito-sms-topic"
+  name = "${local.prefix}-cognito-sms-topic"
 }
 
 resource "aws_iam_policy" "cognito_sns_policy" {
-  name = "app-${local.prefix}-cognito-sns-policy"
+  name = "${local.prefix}-cognito-sns-policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -45,9 +45,9 @@ module "cognito" {
   source = "../modules/cognito"
 
   sns_role_arn = aws_iam_role.cognito_sns_role.arn
-  user_pool_name    = "app-${local.prefix}-user-pool"
-  client_name       = "app-${local.prefix}-client"
-  user_pool_domain  = "app-${local.prefix}-domain"
+  user_pool_name    = "${local.prefix}-user-pool"
+  client_name       = "${local.prefix}-client"
+  user_pool_domain  = "${local.prefix}-domain"
   callback_urls     = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/callback"]
   logout_urls       = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/logout"]
   region = local.region
@@ -70,7 +70,7 @@ module "app_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.0"
 
-  name        = "app-${local.prefix}-security-group"
+  name        = "${local.prefix}-security-group"
   description = "Security group for the application"
   vpc_id      = module.vpc.vpc_id
 
