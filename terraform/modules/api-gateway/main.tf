@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_lambda_function" "api_gateway_lambda" {
-  function_name = "app-${var.prefix}-api-gateway-lambda"
+  function_name = "${var.prefix}-api-gateway-lambda"
   runtime       = "nodejs18.x"
   role          = var.lambda_role_arn
   handler       = "index.handler"
@@ -46,7 +46,7 @@ resource "aws_api_gateway_method" "proxy" {
 }
 
 resource "aws_api_gateway_authorizer" "cognito" {
-  name        = "app-${var.prefix}-cognito-authorizer"
+  name        = "${var.prefix}-cognito-authorizer"
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
   type        = "COGNITO_USER_POOLS"
   provider_arns = [var.cognito_user_pool_arn]
@@ -105,7 +105,7 @@ resource "aws_api_gateway_account" "account" {
 }
 
 resource "aws_iam_role" "api_gateway_cloudwatch_role" {
-  name = "app-${var.prefix}-api-gateway-cloudwatch-role"
+  name = "${var.prefix}-api-gateway-cloudwatch-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
