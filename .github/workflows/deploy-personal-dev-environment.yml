@@ -85,6 +85,7 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
+          uhd terraform output ${{ inputs.name }}
           uhd docker build frontend
         shell: zsh {0}
 
