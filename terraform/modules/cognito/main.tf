@@ -100,40 +100,40 @@ resource "aws_cognito_user_group" "cognito_user_groups" {
 }
 
 resource "aws_lambda_function" "cognito_post_auth_lambda" {
-  function_name = "app-${var.prefix}-post-auth-lambda"
-  runtime       = "nodejs18.x" # Updated runtime
+  function_name = "${var.prefix}-post-auth-lambda"
+  runtime       = "nodejs18.x"
   role          = aws_iam_role.cognito_lambda_role.arn
 
-  handler       = "index.handler"
+  handler       = "post_auth.handler"
   source_code_hash = filebase64sha256("${path.module}/post_auth_lambda.zip")
   filename      = "${path.module}/post_auth_lambda.zip"
   timeout       = 15
 }
 
 resource "aws_lambda_function" "cognito_pre_signup_lambda" {
-  function_name = "app-${var.prefix}-pre-signup-lambda"
-  runtime       = "nodejs18.x" # Updated runtime
+  function_name = "${var.prefix}-pre-signup-lambda"
+  runtime       = "nodejs18.x"
   role          = aws_iam_role.cognito_lambda_role.arn
 
-  handler       = "index.handler"
+  handler       = "pre_signup.handler"
   source_code_hash = filebase64sha256("${path.module}/pre_signup_lambda.zip")
   filename      = "${path.module}/pre_signup_lambda.zip"
   timeout       = 15
 }
 
 resource "aws_lambda_function" "cognito_user_migration_lambda" {
-  function_name = "app-${var.prefix}-user-migration-lambda"
-  runtime       = "nodejs18.x" # Updated runtime
+  function_name = "${var.prefix}-user-migration-lambda"
+  runtime       = "nodejs18.x"
   role          = aws_iam_role.cognito_lambda_role.arn
 
-  handler       = "index.handler"
+  handler       = "user_migration.handler"
   source_code_hash = filebase64sha256("${path.module}/user_migration_lambda.zip")
   filename      = "${path.module}/user_migration_lambda.zip"
   timeout       = 15
 }
 
 resource "aws_iam_role" "cognito_lambda_role" {
-  name = "app-${var.prefix}-lambda-execution-role"
+  name = "${var.prefix}-lambda-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -150,8 +150,9 @@ resource "aws_iam_role" "cognito_lambda_role" {
 }
 
 resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
-  name   = "app-${var.prefix}-lambda-execution-policy"
+  name   = "${var.prefix}-lambda-execution-policy"
   role   = aws_iam_role.cognito_lambda_role.id
+
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -165,11 +166,8 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
           "logs:DescribeLogStreams",
           "logs:GetLogEvents"
         ],
-        Resource = [
-          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/app-${var.prefix}-*:log-stream:*"
-        ]
+        Resource = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.prefix}-*:log-stream:*"
       },
-
       {
         Effect   = "Allow",
         Action   = [
@@ -177,18 +175,35 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
           "cognito-idp:PreSignUp",
           "cognito-idp:AdminCreateUser",
           "cognito-idp:AdminUpdateUserAttributes",
-          "cognito-idp:AdminInitiateAuth"
+          "cognito-idp:AdminInitiateAuth",
+          "cognito-idp:ListUsers",
+          "cognito-idp:DescribeUserPool",
+          "cognito-idp:GetUser",
+          "cognito-idp:UpdateUserPoolClient",
+          "cognito-idp:AdminGetUser"
         ],
         Resource = aws_cognito_user_pool.user_pool.arn
       },
-
       {
         Effect   = "Allow",
         Action   = "lambda:InvokeFunction",
-        Resource = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:app-${var.prefix}-*"
+        Resource = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${var.prefix}-*"
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "cognito_lambda_basic_exec_attach" {
+  role       = aws_iam_role.cognito_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_permission" "allow_cognito" {
+  statement_id  = "AllowCognitoInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.cognito_pre_signup_lambda.arn
+  principal     = "cognito-idp.amazonaws.com"
+  source_arn    = aws_cognito_user_pool.user_pool.arn
 }
 
 variable "prefix" {
