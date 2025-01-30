@@ -55,7 +55,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout .github/ directory
+        uses: actions/checkout@v4
         with:
           sparse-checkout: |
             .github
@@ -68,17 +69,15 @@ jobs:
 
       - uses: ./.github/actions/setup-zsh
 
-      - uses: actions/checkout@v4
-        with:
-          path: data-dashboard-infra
-
-      - uses: actions/checkout@v4
+      - name: Checkout frontend repo
+        uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
           path: data-dashboard-frontend
           ref: ${{ inputs.frontend_branch }}
 
-      - uses: actions/checkout@v4
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
         with:
           path: data-dashboard-infra
 
