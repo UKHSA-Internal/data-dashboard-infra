@@ -92,11 +92,13 @@ jobs:
   push_backend_docker_image:
     name: Push backend docker image
     runs-on: ubuntu-latest
-    needs: ["terraform_apply"]
+    needs: [ "terraform_apply" ]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout .github/ directory
+        uses: actions/checkout@v4
         with:
-          path: data-dashboard-infra
+          sparse-checkout: |
+            .github
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -106,16 +108,25 @@ jobs:
 
       - uses: ./.github/actions/setup-zsh
 
-      - uses: actions/checkout@v4
+      - name: Checkout backend repo
+        uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
           ref: ${{ inputs.backend_branch }}
 
+      - name: Checkout infra repo
+        uses: actions/checkout@v4
+        with:
+          path: data-dashboard-infra
+
       - name: Build backend image
         run: |
+          cd data-dashboard-infra
           source uhd.sh
+          uhd terraform output ${{ inputs.name }}
           uhd docker build backend
+          uhd docker build ingestion
         shell: zsh {0}
 
   restart_services:
