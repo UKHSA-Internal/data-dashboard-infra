@@ -23,6 +23,7 @@ locals {
       "80.1.216.85/32",     # Kola Olusola
       "86.164.234.203/32",  # Joe Gasewicz
       "86.130.56.204/32",   # Chris Warren
+      "192.168.0.61/32",    # Jeff Thomas
     ],
     project_team = [
       "5.68.132.72/32",     # Debbie
@@ -51,7 +52,7 @@ locals {
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "192.168.0.20/32",    # Alana Firth
-      "62.253.228.56/32",   # Georgina Milne
+      "194.9.109.118/32",   # Georgina Milne
     ]
     ncc = []
   }
