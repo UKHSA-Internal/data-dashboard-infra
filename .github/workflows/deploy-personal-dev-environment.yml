@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
-          path: data-dashboard-frontend
+          path: ../data-dashboard-frontend
           ref: ${{ inputs.frontend_branch }}
 
       - name: Build frontend image
