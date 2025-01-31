@@ -125,7 +125,7 @@ function _docker_update_service() {
 
     uhd docker ecr:login $account
     echo "Tagging ${src_image} as ${dest_image}..."
-    docker tag "${src_image}" "${dest_image}"
+    docker tag "${src_image}" "${dest_image}" || { echo "Failed to tag image"; return 1; }
 
     _docker_ecr_login "tools"
     echo "Pushing ${dest_image}..."
