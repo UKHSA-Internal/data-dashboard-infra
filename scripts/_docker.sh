@@ -102,15 +102,10 @@ function _docker_update_service() {
 
     local latest_image_tag
     case "${service}" in
-        "back-end")
-            latest_image_tag=$(_docker_get_most_recent_back_end_image_tag)
-            ;;
-        "ingestion")
-            latest_image_tag=$(_docker_get_most_recent_ingestion_image_tag)
-            ;;
-        "front-end")
-            latest_image_tag=$(_docker_get_most_recent_front_end_image_tag)
-            ;;
+        "back-end") latest_image_tag=$(_docker_get_most_recent_back_end_image_tag) ;;
+        "ingestion") latest_image_tag=$(_docker_get_most_recent_ingestion_image_tag) ;;
+        "front-end") latest_image_tag=$(_docker_get_most_recent_front_end_image_tag) ;;
+        *) echo "Invalid service name '${service}'" >&2; return 1 ;;
     esac
 
     src_account_id=$(_get_tools_account_id)
@@ -126,15 +121,16 @@ function _docker_update_service() {
     fi
 
     echo "Pulling ${src_image}..."
-    docker pull "${src_image}"
+    docker pull "${src_image}" || { echo "Failed to pull image ${src_image}"; return 1; }
 
     uhd docker ecr:login $account
     echo "Tagging ${src_image} as ${dest_image}..."
-    docker tag "${src_image}" "${dest_image}"
+    docker tag "${src_image}" "${dest_image}" || { echo "Failed to tag image"; return 1; }
 
     _docker_ecr_login "tools"
     echo "Pushing ${dest_image}..."
-    docker push "${dest_image}"
+    docker push "${dest_image}" || { echo "Failed to push image"; return 1; }
+echo "Docker update for service '${service}' completed successfully."
 }
 
 function _docker_update() {
