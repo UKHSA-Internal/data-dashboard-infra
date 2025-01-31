@@ -5,14 +5,15 @@ function _docker_help() {
     echo "uhd docker <command> [options]"
     echo
     echo "commands:"
-    echo "  help                                 - this help screen"
+    echo "  help                                     - this help screen"
     echo
-    echo "  build <repo> <!env>                  - build a docker image for the specified repo, env can be used to target an environment"
-    echo "  update <account> <env>               - pull the latest source images and push to the specified environment"
-    echo "  get-recent-tag <ecr-repo> <!account> - gets the latest image tag from the given repo in the current account"
+    echo "  build <repo> <!env>                      - build a docker image for the specified repo, env can be used to target an environment"
+    echo "  update <account> <env>                   - pull the latest source images and push to the specified environment"
+    echo "  update-service <account> <env> <service> - pull the latest source image and push to the specified service in environment"
+    echo "  get-recent-tag <ecr-repo> <!account>     - gets the latest image tag from the given repo in the current account"
     echo
-    echo "  ecr:login                            - login to ECR in the tools account"
-    echo "  ecr:login <account>                  - login to ECR in the specified account"
+    echo "  ecr:login                                - login to ECR in the tools account"
+    echo "  ecr:login <account>                      - login to ECR in the specified account"
     echo
 
     return 0
@@ -25,6 +26,7 @@ function _docker() {
     case $verb in
         "build") _docker_build_with_custom_tag $args ;;
         "update") _docker_update $args ;;
+        "update-service") _docker_update_service $args ;;
         "get-recent-tag") _docker_get_most_recent_image_tag_from_repo $args ;;
         "ecr:login") _docker_ecr_login $args ;;
 
@@ -74,6 +76,61 @@ function _docker_build_with_custom_tag() {
     fi
 
     cd $root
+}
+
+function _docker_update_service() {
+    local account=$1
+    local env=$2
+    local service=$3
+
+    if [[ -z ${account} ]]; then
+        echo "Account is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${env} ]]; then
+        echo "Env is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${service} ]]; then
+        echo "Service (back-end|ingestion|front-end) is required" >&2
+        return 1
+    fi
+
+    uhd docker ecr:login tools
+
+    local latest_image_tag
+    case "${service}" in
+        "back-end") latest_image_tag=$(_docker_get_most_recent_back_end_image_tag) ;;
+        "ingestion") latest_image_tag=$(_docker_get_most_recent_ingestion_image_tag) ;;
+        "front-end") latest_image_tag=$(_docker_get_most_recent_front_end_image_tag) ;;
+        *) echo "Invalid service name '${service}'" >&2; return 1 ;;
+    esac
+
+    src_account_id=$(_get_tools_account_id)
+    dest_account_id=$(_get_target_aws_account_id $account)
+
+    local src_image="${src_account_id}.dkr.ecr.eu-west-2.amazonaws.com/ukhsa-data-dashboard/${service}:${latest_image_tag}"
+    local dest_image="${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${service}-"
+
+    if [[ "${service}" == "ingestion" ]]; then
+        dest_image+="lambda:${latest_image_tag}-${RANDOM}"
+    else
+        dest_image+="ecs:${latest_image_tag}-${RANDOM}"
+    fi
+
+    echo "Pulling ${src_image}..."
+    docker pull "${src_image}" || { echo "Failed to pull image ${src_image}"; return 1; }
+
+    uhd docker ecr:login $account
+    echo "Tagging ${src_image} as ${dest_image}..."
+    docker tag "${src_image}" "${dest_image}" || { echo "Failed to tag image"; return 1; }
+
+    _docker_ecr_login "tools"
+    echo "Pushing ${dest_image}..."
+    docker push "${dest_image}" || { echo "Failed to push image"; return 1; }
+echo "Docker update for service '${service}' completed successfully."
 }
 
 function _docker_update() {
