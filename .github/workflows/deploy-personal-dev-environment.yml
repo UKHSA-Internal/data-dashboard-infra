@@ -91,8 +91,7 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd terraform output ${{ inputs.name }}
-          uhd docker build frontend
+          uhd docker build frontend ${{ inputs.name }}
         shell: zsh {0}
 
   push_backend_docker_image:
@@ -136,8 +135,7 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd terraform output ${{ inputs.name }}
-          uhd docker build backend
+          uhd docker build backend ${{ inputs.name }}
         shell: zsh {0}
 
   push_ingestion_docker_image:
@@ -181,8 +179,7 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd terraform output ${{ inputs.name }}
-          uhd docker build ingestion
+          uhd docker build ingestion ${{ inputs.name }}
         shell: zsh {0}
 
   restart_services:
