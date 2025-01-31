@@ -120,9 +120,9 @@ function _docker_update_service() {
     local dest_image="${dest_account_id}.dkr.ecr.eu-west-2.amazonaws.com/uhd-${env}-${service}-"
 
     if [[ "${service}" == "ingestion" ]]; then
-        dest_image+="lambda:${latest_image_tag}"
+        dest_image+="lambda:${latest_image_tag}-${RANDOM}"
     else
-        dest_image+="ecs:${latest_image_tag}"
+        dest_image+="ecs:${latest_image_tag}-${RANDOM}"
     fi
 
     echo "Pulling ${src_image}..."
