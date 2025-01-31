@@ -126,7 +126,7 @@ function _docker_update_service() {
     fi
 
     echo "Pulling ${src_image}..."
-    docker pull "${src_image}"
+    docker pull "${src_image}" || { echo "Failed to pull image ${src_image}"; return 1; }
 
     uhd docker ecr:login $account
     echo "Tagging ${src_image} as ${dest_image}..."
