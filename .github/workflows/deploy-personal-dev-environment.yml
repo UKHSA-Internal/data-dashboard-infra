@@ -91,7 +91,11 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd docker build frontend ${{ inputs.name }}
+          if [[ "${{ inputs.frontend_branch }}" == "main" ]]; then
+            uhd docker update-service dev ${{ inputs.name }} front-end
+          else
+            uhd docker build frontend ${{ inputs.name }}
+          fi
         shell: zsh {0}
 
   push_backend_docker_image:
@@ -135,7 +139,11 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd docker build backend ${{ inputs.name }}
+          if [[ "${{ inputs.backend_branch }}" == "main" ]]; then
+            uhd docker update-service dev ${{ inputs.name }} back-end
+          else
+            uhd docker build backend ${{ inputs.name }}
+          fi
         shell: zsh {0}
 
   push_ingestion_docker_image:
@@ -179,7 +187,11 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          uhd docker build ingestion ${{ inputs.name }}
+          if [[ "${{ inputs.backend_branch }}" == "main" ]]; then
+            uhd docker update-service dev ${{ inputs.name }} ingestion
+          else
+            uhd docker build ingestion ${{ inputs.name }}
+          fi
         shell: zsh {0}
 
   restart_services:
