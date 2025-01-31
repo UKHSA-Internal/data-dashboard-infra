@@ -102,15 +102,10 @@ function _docker_update_service() {
 
     local latest_image_tag
     case "${service}" in
-        "back-end")
-            latest_image_tag=$(_docker_get_most_recent_back_end_image_tag)
-            ;;
-        "ingestion")
-            latest_image_tag=$(_docker_get_most_recent_ingestion_image_tag)
-            ;;
-        "front-end")
-            latest_image_tag=$(_docker_get_most_recent_front_end_image_tag)
-            ;;
+        "back-end") latest_image_tag=$(_docker_get_most_recent_back_end_image_tag) ;;
+        "ingestion") latest_image_tag=$(_docker_get_most_recent_ingestion_image_tag) ;;
+        "front-end") latest_image_tag=$(_docker_get_most_recent_front_end_image_tag) ;;
+        *) echo "Invalid service name '${service}'" >&2; return 1 ;;
     esac
 
     src_account_id=$(_get_tools_account_id)
