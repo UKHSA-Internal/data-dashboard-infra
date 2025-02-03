@@ -17,6 +17,10 @@ on:
         description: "The name of the git branch from the backend which should be deployed"
         default: "main"
         type: string
+      ingestion_branch:
+        description: "The name of the git branch from the backend which should be deployed to the ingestion service"
+        default: "main"
+        type: string
 
 env:
   AWS_REGION: "eu-west-2"
@@ -170,7 +174,7 @@ jobs:
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
-          ref: ${{ inputs.backend_branch }}
+          ref: ${{ inputs.ingestion_branch }}
 
       - name: Checkout infra repo
         uses: actions/checkout@v4
@@ -187,7 +191,7 @@ jobs:
         run: |
           cd data-dashboard-infra
           source uhd.sh
-          if [[ "${{ inputs.backend_branch }}" == "main" ]]; then
+          if [[ "${{ inputs.ingestion_branch }}" == "main" ]]; then
             uhd docker update-service dev ${{ inputs.name }} ingestion
           else
             uhd docker build ingestion ${{ inputs.name }}
