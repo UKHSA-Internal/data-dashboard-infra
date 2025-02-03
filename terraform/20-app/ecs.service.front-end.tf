@@ -73,7 +73,11 @@ module "ecs_service_front_end" {
         {
           name  = "AUTH_ENABLED",
           value = local.is_auth
-        }
+        },
+        {
+          name  = "NEXTAUTH_URL"
+          value = local.urls.front_end
+        },
       ]
       secrets = [
         {
@@ -107,6 +111,22 @@ module "ecs_service_front_end" {
         {
           name      = "ESRI_CLIENT_SECRET"
           valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "AUTH_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.auth_secret.arn}:auth_secret::"
+        },
+                {
+          name      = "AUTH_CLIENT_URL"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_url::"
+        },
+        {
+          name      = "AUTH_CLIENT_ID"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_id::"
+        },
+        {
+          name      = "AUTH_CLIENT_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_secret::"
         }
       ]
     }

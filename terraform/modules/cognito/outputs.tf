@@ -56,3 +56,9 @@ output "cognito_user_pool_client_secret" {
   value       = aws_cognito_user_pool_client.user_pool_client.client_secret
   sensitive   = true
 }
+
+output "cognito_user_pool_issuer_endpoint" {
+  description = "The Issuer API Endpoint for Cognito User Pool"
+  value       = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.user_pool.id}"
+  sensitive   = true
+}
