@@ -3,13 +3,6 @@ provider "aws" {
   assume_role {
     role_arn = "arn:aws:iam::${var.assume_account_id}:role/${var.assume_role_name}"
   }
-
-  default_tags {
-    tags = {
-      project_name = local.project
-      env          = terraform.workspace
-    }
-  }
 }
 
 provider "aws" {
