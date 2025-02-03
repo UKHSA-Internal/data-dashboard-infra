@@ -63,10 +63,34 @@ jobs:
           uhd docker update dev ${{ inputs.name }}
         shell: zsh {0}
 
+  terraform_re_apply:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    needs: ["push_docker_images"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ${{ inputs.name }}
+        shell: zsh {0}
+
   restart_services:
     name: Restart services
     runs-on: ubuntu-latest
-    needs: ["push_docker_images"]
+    needs: ["terraform_re_apply"]
     steps:
       - uses: actions/checkout@v4
 
@@ -103,29 +127,6 @@ jobs:
         run: |
           source uhd.sh
           uhd lambda restart-functions
-        shell: zsh {0}
-
-  terraform_re_apply:
-    name: Terraform apply
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-
-      - uses: ./.github/actions/setup-terraform
-      - uses: ./.github/actions/setup-zsh
-
-      - name: Terraform apply
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ${{ inputs.name }}
         shell: zsh {0}
 
   bootstrap_database:
