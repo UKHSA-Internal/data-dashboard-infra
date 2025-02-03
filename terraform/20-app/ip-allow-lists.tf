@@ -23,14 +23,15 @@ locals {
       "80.1.216.85/32",     # Kola Olusola
       "86.164.234.203/32",  # Joe Gasewicz
       "86.130.56.204/32",   # Chris Warren
-      "147.161.236.91/32",  # Jeff Thomas
+      "147.161.236.91/32",  # Jeff Thomas - Windows
+      "81.106.144.243/32",  # Jeff Thomas - Macbook
     ],
     project_team = [
       "5.68.132.72/32",     # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "80.5.156.26/32",     # Khawar
+      "86.159.88.234/32",   # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
@@ -43,7 +44,7 @@ locals {
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
-      "167.98.243.140/32",  # Tom Hebbert
+      "147.161.143.88/32",  # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
       "136.226.191.87/32",  # Charlotte Brace
