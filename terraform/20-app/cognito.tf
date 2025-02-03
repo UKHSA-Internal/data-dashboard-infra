@@ -48,8 +48,8 @@ module "cognito" {
   user_pool_name    = "${local.prefix}-user-pool"
   client_name       = "${local.prefix}-client"
   user_pool_domain  = "${local.prefix}-domain"
-  callback_urls     = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/callback"]
-  logout_urls       = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/logout"]
+  callback_urls     = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/api/auth/callback/cognito"]
+  logout_urls       = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk"]
   region = local.region
 
   # Placeholder for SAML metadata URL, used only when SAML is enabled

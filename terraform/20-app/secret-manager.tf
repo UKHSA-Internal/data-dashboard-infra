@@ -153,9 +153,9 @@ resource "aws_secretsmanager_secret" "cognito_service_credentials" {
 resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
   secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
   secret_string = jsonencode({
-    client_url    = ""
-    client_id     = ""
-    client_secret = ""
+    client_url    = module.cognito.cognito_user_pool_issuer_endpoint
+    client_id     = module.cognito.cognito_user_pool_client_id
+    client_secret = module.cognito.cognito_user_pool_client_secret
   })
 }
 
@@ -172,7 +172,7 @@ resource "aws_secretsmanager_secret" "auth_secret" {
 resource "aws_secretsmanager_secret_version" "auth_secret" {
   secret_id     = aws_secretsmanager_secret.auth_secret.id
   secret_string = jsonencode({
-    auth_secret = ""
+    auth_secret = local.auth_secret
   })
 }
 
