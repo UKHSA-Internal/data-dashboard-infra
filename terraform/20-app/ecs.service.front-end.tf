@@ -75,6 +75,10 @@ module "ecs_service_front_end" {
           value = local.is_auth
         },
         {
+          name  = "AUTH_DEBUG",
+          value = local.debug
+        },
+        {
           name  = "NEXTAUTH_URL"
           value = local.urls.front_end
         },
@@ -116,7 +120,7 @@ module "ecs_service_front_end" {
           name      = "AUTH_SECRET"
           valueFrom = "${aws_secretsmanager_secret.auth_secret.arn}:auth_secret::"
         },
-                {
+        {
           name      = "AUTH_CLIENT_URL"
           valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_url::"
         },
