@@ -44,6 +44,10 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes = ["openid", "aws.cognito.signin.user.admin"]
 
+  access_token_validity   = 1    # 1 hour
+  id_token_validity       = 1    # 1 hour
+  refresh_token_validity  = 720  # 720 hours (30 days)
+
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
 
@@ -180,7 +184,8 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
           "logs:PutLogEvents",
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams",
-          "logs:GetLogEvents"
+          "logs:GetLogEvents",
+          "logs:DeleteLogStream"
         ],
         Resource = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.prefix}-*:log-stream:*"
       },
@@ -198,11 +203,15 @@ resource "aws_iam_role_policy" "cognito_lambda_role_policy" {
           "cognito-idp:UpdateUserPoolClient",
           "cognito-idp:AdminGetUser"
         ],
-        Resource = aws_cognito_user_pool.user_pool.arn
+        Resource = "arn:aws:cognito-idp:${var.region}:${data.aws_caller_identity.current.account_id}:userpool/${aws_cognito_user_pool.user_pool.id}"
       },
       {
         Effect   = "Allow",
-        Action   = "lambda:InvokeFunction",
+        Action   = [
+          "lambda:InvokeFunction",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration"
+        ],
         Resource = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${var.prefix}-*"
       }
     ]
