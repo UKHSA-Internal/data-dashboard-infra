@@ -6,6 +6,7 @@ resource "aws_cognito_user_pool" "user_pool" {
   mfa_configuration = "OFF"
 
   lambda_config {
+    pre_authentication   = aws_lambda_function.cognito_pre_auth_lambda.arn
     post_authentication  = aws_lambda_function.cognito_post_auth_lambda.arn
     pre_sign_up          = aws_lambda_function.cognito_pre_signup_lambda.arn
     user_migration       = aws_lambda_function.cognito_user_migration_lambda.arn
@@ -99,6 +100,18 @@ resource "aws_cognito_user_group" "cognito_user_groups" {
   description  = "Group for ${each.value} role"
 }
 
+resource "aws_lambda_function" "cognito_pre_auth_lambda" {
+  function_name = "${var.prefix}-pre-auth-lambda"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.cognito_lambda_role.arn
+
+  handler       = "pre_auth.handler"
+  source_code_hash = filebase64sha256("${path.module}/pre_auth_lambda.zip")
+  filename      = "${path.module}/pre_auth_lambda.zip"
+  timeout       = 15
+  description   = "Handles pre-authentication events in Cognito"
+}
+
 resource "aws_lambda_function" "cognito_post_auth_lambda" {
   function_name = "${var.prefix}-post-auth-lambda"
   runtime       = "nodejs18.x"
@@ -108,6 +121,7 @@ resource "aws_lambda_function" "cognito_post_auth_lambda" {
   source_code_hash = filebase64sha256("${path.module}/post_auth_lambda.zip")
   filename      = "${path.module}/post_auth_lambda.zip"
   timeout       = 15
+  description   = "Handles post-authentication events in Cognito"
 }
 
 resource "aws_lambda_function" "cognito_pre_signup_lambda" {
@@ -119,6 +133,7 @@ resource "aws_lambda_function" "cognito_pre_signup_lambda" {
   source_code_hash = filebase64sha256("${path.module}/pre_signup_lambda.zip")
   filename      = "${path.module}/pre_signup_lambda.zip"
   timeout       = 15
+  description   = "Handles pre-signup events in Cognito"
 }
 
 resource "aws_lambda_function" "cognito_user_migration_lambda" {
@@ -130,6 +145,7 @@ resource "aws_lambda_function" "cognito_user_migration_lambda" {
   source_code_hash = filebase64sha256("${path.module}/user_migration_lambda.zip")
   filename      = "${path.module}/user_migration_lambda.zip"
   timeout       = 15
+  description   = "Handles user migration events in Cognito"
 }
 
 resource "aws_iam_role" "cognito_lambda_role" {
