@@ -66,7 +66,7 @@ module "cloudfront_front_end" {
     } : {}
   }
 
-  ordered_cache_behavior = [
+  ordered_cache_behavior = flatten(concat([
     # Behaviour to bypass cloudfront for health check
     {
       path_pattern               = "api/health"
@@ -81,6 +81,21 @@ module "cloudfront_front_end" {
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
     },
+    # Behaviour to enable cookie forwarding for auth endpoints
+    local.is_auth ? [
+      {
+        path_pattern               = "/api/auth/*"
+        allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+        cache_policy_id            = local.managed_caching_disabled_policy_id
+        cached_methods             = ["GET", "HEAD"]
+        compress                   = true
+        origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end_auth.id
+        response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+        target_origin_id           = "alb"
+        use_forwarded_values       = false
+        viewer_protocol_policy     = "redirect-to-https"
+      }
+    ] : [],
     # Behaviour to bypass CDN for the dynamic alert pages
     {
       path_pattern               = "/"
@@ -142,7 +157,7 @@ module "cloudfront_front_end" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
     },
-  ]
+  ]))
 
   custom_error_response = [
     {
@@ -172,6 +187,31 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
       items = ["UKHSAConsentGDPR"]
     }
   }
+  headers_config {
+    header_behavior = "allViewer"
+  }
+  query_strings_config {
+    query_string_behavior = "all"
+  }
+}
+
+resource "aws_cloudfront_origin_request_policy" "front_end_auth" {
+  name = "${local.prefix}-front-end-auth"
+
+  cookies_config {
+    cookie_behavior = "whitelist"
+    cookies {
+      items = [
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token",
+        "next-auth.csrf-token",
+        "__Host-next-auth.csrf-token",
+        "next-auth.callback-url",
+        "next-auth.state"
+      ]
+    }
+  }
+
   headers_config {
     header_behavior = "allViewer"
   }
