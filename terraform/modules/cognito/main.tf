@@ -3,6 +3,8 @@ data "aws_caller_identity" "current" {}
 resource "aws_cognito_user_pool" "user_pool" {
   name = var.user_pool_name
 
+  username_attributes = ["email"]
+
   mfa_configuration = "OFF"
 
   password_policy {
@@ -36,9 +38,22 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes = ["openid", "email", "aws.cognito.signin.user.admin"]
 
-  access_token_validity   = 1    # 1 hour
-  id_token_validity       = 1    # 1 hour
+  access_token_validity   = 60    # 1 hour
+  id_token_validity       = 60    # 1 hour
   refresh_token_validity  = 720  # 720 hours (30 days)
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "minutes"
+    refresh_token = "days"
+  }
+
+  prevent_user_existence_errors = "ENABLED"
+
+  explicit_auth_flows = [
+    "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_PASSWORD_AUTH",
+  ]
 
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
