@@ -184,7 +184,11 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   cookies_config {
     cookie_behavior = "whitelist"
     cookies {
-      items = ["UKHSAConsentGDPR"]
+      items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
+        "__Host-next-auth.csrf-token",
+        "__Secure-next-auth.callback-url",
+        "__Secure-next-auth.session-token",
+      ] : []]))
     }
   }
   headers_config {
@@ -199,21 +203,17 @@ resource "aws_cloudfront_origin_request_policy" "front_end_auth" {
   name = "${local.prefix}-front-end-auth"
 
   cookies_config {
-    cookie_behavior = "whitelist"
-    cookies {
-      items = [
-        "next-auth.session-token",
-        "__Secure-next-auth.session-token",
-        "next-auth.csrf-token",
-        "__Host-next-auth.csrf-token",
-        "next-auth.callback-url",
-        "next-auth.state"
-      ]
-    }
+    cookie_behavior = "all"
   }
 
   headers_config {
-    header_behavior = "allViewer"
+    header_behavior = "whitelist"
+    headers {
+      items = [
+        "Accept",
+        "Content-Type",
+      ]
+    }
   }
   query_strings_config {
     query_string_behavior = "all"
