@@ -109,6 +109,7 @@ resource "aws_lambda_function" "cognito_pre_auth_lambda" {
   source_code_hash = filebase64sha256("${path.module}/pre_auth_lambda.zip")
   filename      = "${path.module}/pre_auth_lambda.zip"
   timeout       = 15
+  description   = "Handles pre-authentication events in Cognito"
 }
 
 resource "aws_lambda_function" "cognito_post_auth_lambda" {
@@ -120,6 +121,7 @@ resource "aws_lambda_function" "cognito_post_auth_lambda" {
   source_code_hash = filebase64sha256("${path.module}/post_auth_lambda.zip")
   filename      = "${path.module}/post_auth_lambda.zip"
   timeout       = 15
+  description   = "Handles post-authentication events in Cognito"
 }
 
 resource "aws_lambda_function" "cognito_pre_signup_lambda" {
@@ -131,6 +133,7 @@ resource "aws_lambda_function" "cognito_pre_signup_lambda" {
   source_code_hash = filebase64sha256("${path.module}/pre_signup_lambda.zip")
   filename      = "${path.module}/pre_signup_lambda.zip"
   timeout       = 15
+  description   = "Handles pre-signup events in Cognito"
 }
 
 resource "aws_lambda_function" "cognito_user_migration_lambda" {
@@ -142,6 +145,7 @@ resource "aws_lambda_function" "cognito_user_migration_lambda" {
   source_code_hash = filebase64sha256("${path.module}/user_migration_lambda.zip")
   filename      = "${path.module}/user_migration_lambda.zip"
   timeout       = 15
+  description   = "Handles user migration events in Cognito"
 }
 
 resource "aws_iam_role" "cognito_lambda_role" {
