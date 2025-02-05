@@ -53,6 +53,7 @@ locals {
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
+      "194.9.109.92/32",    # Jason Deakin 2
       "192.168.0.20/32",    # Alana Firth
       "194.9.109.118/32",   # Georgina Milne
     ]
