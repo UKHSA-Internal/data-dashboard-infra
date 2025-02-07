@@ -6,8 +6,9 @@ locals {
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "82.132.247.113/32",  # Rhys
-      "81.78.30.247/32",    # Rhys 2
+      "82.132.247.113/32",  # Rhys Inlaws
+      "81.78.30.247/32",    # Rhys hotspot
+      "86.3.198.35/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
@@ -52,6 +53,7 @@ locals {
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
+      "194.9.109.92/32",    # Jason Deakin 2
       "192.168.0.20/32",    # Alana Firth
       "194.9.109.118/32",   # Georgina Milne
     ]
