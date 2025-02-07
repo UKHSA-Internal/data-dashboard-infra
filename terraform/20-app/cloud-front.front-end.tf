@@ -185,9 +185,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
     cookie_behavior = "whitelist"
     cookies {
       items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
-        "__Host-next-auth.csrf-token",
-        "__Secure-next-auth.callback-url",
-        "__Secure-next-auth.session-token",
+        "__Secure-authjs.csrf-token",
+        "__Secure-authjs.csrf-token",
+        "__Secure-authjs.session-token",
       ] : []]))
     }
   }
