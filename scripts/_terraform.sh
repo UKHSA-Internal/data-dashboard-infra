@@ -30,7 +30,7 @@ function _terraform_help() {
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
     echo "  workspace-list                                  - lists all terraform workspaces"
     echo "  state-rm                                        - Removes the given item from the Terraform state"
-    echo "  get-dev-workspace-name                          - Generates the personal dev env ID of the current user"
+    echo "  get-dev-workspace-name <!username>              - Generates the personal dev env ID of the current user"
     echo
     return 1
 }
@@ -541,7 +541,8 @@ function _get_target_aws_account_name() {
 
 
 _get_dev_workspace_name() {
-    echo $(whoami | openssl dgst -sha1 -binary | xxd -p | cut -c1-8)
+    local input="${1:-$(whoami)}"
+    echo "$input" | openssl dgst -sha1 -binary | xxd -p | cut -c1-8
 }
 
 _get_workspace_name() {
