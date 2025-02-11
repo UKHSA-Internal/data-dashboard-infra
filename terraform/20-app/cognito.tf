@@ -43,7 +43,6 @@ resource "aws_iam_role_policy_attachment" "cognito_sns_policy_attachment" {
 
 module "cognito" {
   source = "../modules/cognito"
-
   sns_role_arn = aws_iam_role.cognito_sns_role.arn
   user_pool_name    = "${local.prefix}-user-pool"
   client_name       = "${local.prefix}-client"
@@ -58,18 +57,30 @@ module "cognito" {
   )
   region = local.region
 
-  # Placeholder for SAML metadata URL, used only when SAML is enabled
-  # we will need to add multiple metadata_urls e.g. cobr_metadata_url and nhs_metadata_url for each provider
-  metadata_url = "https://example.com/metadata.xml"
+  ukhsa_oidc_client_id      = "ukhsa-oidc-client-id"
+  ukhsa_oidc_client_secret  = "ukhsa-oidc-client-secret"
+  ukhsa_oidc_issuer_url     = "https://example.com/issuer"
+  ukhsa_oidc_attributes_url = "https://example.com/attributes"
 
-  # Placeholder for OIDC configuration, used only when OIDC is enabled
-  # we will need to add multiple variables e.g. cobr_oidc_client_id and nhs_oidc_client_id for each provider
-  oidc_client_id      = "oidc-client-id"
-  oidc_client_secret  = "oidc-client-secret"
-  oidc_issuer_url     = "https://example.com/issuer"
-  oidc_attributes_url = "https://example.com/attributes"
-
+  lambda_role_arn           = aws_iam_role.cognito_lambda_role.arn
   prefix = local.prefix
+}
+
+resource "aws_iam_role" "cognito_lambda_role" {
+  name = "${local.prefix}-lambda-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
 module "app_security_group" {

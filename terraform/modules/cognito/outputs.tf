@@ -46,11 +46,6 @@ output "cognito_user_pool_arn" {
   sensitive   = true
 }
 
-output "cognito_lambda_role_arn" {
-  description = "The ARN of the Cognito Lambda execution role"
-  value       = aws_iam_role.cognito_lambda_role.arn
-}
-
 output "cognito_user_pool_client_secret" {
   description = "The Client Secret for Cognito User Pool Client"
   value       = aws_cognito_user_pool_client.user_pool_client.client_secret
