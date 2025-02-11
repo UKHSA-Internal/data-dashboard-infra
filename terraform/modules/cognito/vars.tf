@@ -13,12 +13,6 @@ variable "sns_role_arn" {
   }
 }
 
-variable "metadata_url" {
-  description = "Metadata URL for NHS SAML IdP"
-  type        = string
-  default     = "https://auth.nhs.gov.uk"
-}
-
 variable "callback_urls" {
   description = "List of allowed callback URLs for OAuth flows"
   type        = list(string)
@@ -60,50 +54,37 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "enable_saml" {
-  description = "Enable SAML integration"
+variable "ukhsa_oidc_client_id" {
+  description = "UKHSA OIDC Client ID"
+  type        = string
+  default     = ""
+}
+
+variable "ukhsa_oidc_client_secret" {
+  description = "UKHSA OIDC Client Secret"
+  type        = string
+  default     = ""
+}
+
+variable "ukhsa_oidc_issuer_url" {
+  description = "UKHSA OIDC Issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "ukhsa_oidc_attributes_url" {
+  description = "UKHSA OIDC Attributes URL"
+  type        = string
+  default     = ""
+}
+
+variable "enable_ukhsa_oidc" {
+  description = "Enable UKHSA OIDC Identity Provider"
   type        = bool
   default     = false
 }
 
-variable "saml_metadata_url" {
-  description = "URL for SAML metadata"
+variable "lambda_role_arn" {
+  description = "The ARN of the Cognito Lambda execution role"
   type        = string
-  default     = ""
-}
-
-variable "saml_logout_url" {
-  description = "SAML logout URL"
-  type        = string
-  default     = ""
-}
-
-variable "enable_oidc" {
-  description = "Enable OIDC integration"
-  type        = bool
-  default     = false
-}
-
-variable "oidc_client_id" {
-  description = "OIDC Client ID"
-  type        = string
-  default     = ""
-}
-
-variable "oidc_client_secret" {
-  description = "OIDC Client Secret"
-  type        = string
-  default     = ""
-}
-
-variable "oidc_issuer_url" {
-  description = "OIDC Issuer URL"
-  type        = string
-  default     = ""
-}
-
-variable "oidc_attributes_url" {
-  description = "OIDC Attributes URL"
-  type        = string
-  default     = ""
 }
