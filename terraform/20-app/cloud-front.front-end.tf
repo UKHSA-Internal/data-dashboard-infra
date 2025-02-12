@@ -185,6 +185,7 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
     cookie_behavior = "whitelist"
     cookies {
       items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
+        "__Secure-authjs.callback-url",  # Stores the redirect destination after authentication
         "__Secure-authjs.csrf-token",  # CSRF token required for authentication flows
         "__Secure-authjs.session-token",  # Main session token
         "__Secure-authjs.session-token.0",  # Split session token (if size exceeds 4KB)
