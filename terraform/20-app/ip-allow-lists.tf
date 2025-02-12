@@ -20,7 +20,7 @@ locals {
       "147.161.224.196/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
-      "86.6.247.91/32",     # Tom Christian
+      "81.108.125.246/32",  # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
       "86.164.234.203/32",  # Joe Gasewicz
       "86.130.56.204/32",   # Chris Warren
