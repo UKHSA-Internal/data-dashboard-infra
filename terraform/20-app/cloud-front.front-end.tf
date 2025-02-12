@@ -185,9 +185,13 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
     cookie_behavior = "whitelist"
     cookies {
       items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
-        "__Secure-authjs.csrf-token",
-        "__Secure-authjs.csrf-token",
-        "__Secure-authjs.session-token",
+        "__Secure-authjs.csrf-token",  # CSRF token required for authentication flows
+        "__Secure-authjs.session-token",  # Main session token
+        "__Secure-authjs.session-token.0",  # Split session token (if size exceeds 4KB)
+        "__Secure-authjs.session-token.1",  # Additional split session token
+        "__Secure-authjs.session-token.2",  # Additional split session token
+        "__Secure-authjs.session-token.3",  # Additional split session token
+        "__Secure-authjs.session-token.4",  # Additional split session token (safety margin)
       ] : []]))
     }
   }
