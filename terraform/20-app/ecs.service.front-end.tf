@@ -75,8 +75,8 @@ module "ecs_service_front_end" {
           value = local.is_auth
         },
         {
-          name  = "AUTH_DEBUG",
-          value = local.debug
+          name  = "AUTH_DOMAIN"
+          value = module.cognito.cognito_oauth_url
         },
         {
           name  = "NEXTAUTH_URL"
