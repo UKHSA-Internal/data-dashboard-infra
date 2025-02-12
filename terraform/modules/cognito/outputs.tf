@@ -16,6 +16,12 @@ output "cognito_user_pool_domain" {
   sensitive   = true
 }
 
+output "cognito_oauth_url" {
+  description = "The Cognito User Pool OAuth URL"
+  value       = "https://${aws_cognito_user_pool_domain.cognito_user_pool_domain.domain}.auth.${var.region}.amazoncognito.com"
+  sensitive   = true
+}
+
 output "cognito_oauth_authorize_url" {
   description = "The Cognito User Pool OAuth authorize URL"
   value       = "https://${aws_cognito_user_pool_domain.cognito_user_pool_domain.domain}.auth.${var.region}.amazoncognito.com/oauth2/authorize"
