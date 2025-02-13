@@ -217,9 +217,11 @@ resource "aws_cloudfront_origin_request_policy" "front_end_auth" {
       items = [
         "Accept",
         "Content-Type",
+        "Set-Cookie",
       ]
     }
   }
+
   query_strings_config {
     query_string_behavior = "all"
   }
