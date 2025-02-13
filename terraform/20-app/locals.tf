@@ -11,26 +11,23 @@ locals {
 
   use_prod_sizing         = contains(["perf", "pen", "prod"], local.environment)
   add_password_protection = local.environment == "staging"
-  is_auth                 = length(regexall("auth", local.environment)) > 0 ? true : false
+  is_auth                 = length(regexall("auth", local.environment)) > 0
+  is_dev                  = var.environment_type == "dev"
+  is_prod                 = local.environment == "prod"
+  is_ready_for_etl        = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
+
+  use_ip_allow_list = local.environment != "prod"
+  needs_alarms      = contains(["dev", "uat", "prod"], local.environment)
 
   wke = {
     account = ["dev", "test", "uat", "prod"]
     other   = ["pen", "perf", "train"]
   }
 
-  needs_alarms = contains(["dev", "uat", "prod"], local.environment)
-}
-
-locals {
   certificate_arn                              = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].certificate_arn : local.account_layer.acm.account.certificate_arn
   cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
-  is_dev                                       = var.environment_type == "dev"
-  is_prod                                      = local.environment == "prod"
-  is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
-
-  use_ip_allow_list = local.environment != "prod"
 
   scheduled_scaling_policies_for_non_essential_envs = {
     start_of_working_day_scale_out = {
