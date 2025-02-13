@@ -179,14 +179,6 @@ jobs:
       branch: env/dev/dev
     secrets: inherit
 
-  deploy_auth:
-    needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth}}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/dev/auth
-    secrets: inherit
-
   deploy_dpd:
     needs: fast_forward_env_branches
     if: ${{needs.fast_forward_env_branches.outputs.deploy_dpd}}
