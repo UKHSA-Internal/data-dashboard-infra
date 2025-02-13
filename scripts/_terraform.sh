@@ -513,31 +513,43 @@ function _get_target_aws_account_name() {
     local workspace=$2
 
     if [[ $layer == "10-account" ]]; then
-        echo $workspace
+        echo "$workspace"
     else
-      # This is an app-layer change
-      if [[ $workspace == "prod" ]]; then
-          echo "prod"
+        # Detect if the environment is an auth env
+        local is_auth=false
+        if [[ $workspace == *"auth"* ]]; then
+            is_auth=true
+        fi
 
-      elif [[ $CI == "true" ]]; then
-          if [[ $workspace == ci-* ]]; then
-              echo "test"
-          else
-              case $branch in
-                  env/dev/*)   echo "dev" ;;
-                  env/uat/*)   echo "uat" ;;
-                  env/test/*)  echo "test" ;;
-                  *)           echo "dev" ;;
-                  # In this case, the CI is actively looking
-                  # to deploy to the dev account not the test account
-              esac
-          fi
+        if [[ $workspace == "prod" ]]; then
+            echo "prod"
 
-      else
-          # If we don't want prod, and we're not in the CI environment
-          # then we're interested in deploying to the dev account
-          echo "dev"
-      fi
+        elif [[ $CI == "true" ]]; then
+            if [[ $workspace == ci-* ]]; then
+                echo "test"
+            else
+                case $branch in
+                    env/dev/*)       echo "dev" ;;
+                    env/uat/*)       echo "uat" ;;
+                    env/test/*)      echo "test" ;;
+                    env/auth-dev/*)  echo "auth-dev" ;;
+                    env/auth-test/*) echo "auth-test" ;;
+                    *)               echo "dev" ;;
+                esac
+            fi
+
+        else
+            # If we are outside CI, default to dev unless it is auth
+            if [[ $is_auth == true ]]; then
+                case $workspace in
+                    auth-dev)  echo "auth-dev" ;;
+                    auth-test) echo "auth-test" ;;
+                    *)         echo "auth-dev" ;;  # Default to auth-dev if unknown
+                esac
+            else
+                echo "dev"
+            fi
+        fi
     fi
 }
 

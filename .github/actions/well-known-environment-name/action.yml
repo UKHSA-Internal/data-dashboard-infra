@@ -17,5 +17,5 @@ runs:
         echo "IS_ACCOUNT_LAYER_BRANCH=$is_account_layer_branch" >> $GITHUB_ENV
       env:
         branch: ${{ inputs.branch }}
-        is_account_layer_branch: ${{ contains(fromJSON('["env/dev/dev", "env/test/test", "env/uat/uat"]'), inputs.branch) }}
+        is_account_layer_branch: ${{ contains(fromJSON('["env/dev/dev", "env/test/test", "env/uat/uat", "env/auth-dev/auth-dev", "env/auth-test/auth-test"]'), inputs.branch) }}
       shell: bash
