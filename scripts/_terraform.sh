@@ -514,45 +514,46 @@ function _get_target_aws_account_name() {
 
     if [[ $layer == "10-account" ]]; then
         echo "$workspace"
+        return
+    fi
+
+    if [[ $workspace == *"auth"* ]]; then
+        _get_auth_target_aws_account_name "$workspace"
     else
-        # Detect if the environment is an auth env
-        local is_auth=false
-        if [[ $workspace == *"auth"* ]]; then
-            is_auth=true
-        fi
-
-        if [[ $workspace == "prod" ]]; then
-            echo "prod"
-
-        elif [[ $CI == "true" ]]; then
-            if [[ $workspace == ci-* ]]; then
-                echo "test"
-            else
-                case $branch in
-                    env/dev/*)       echo "dev" ;;
-                    env/uat/*)       echo "uat" ;;
-                    env/test/*)      echo "test" ;;
-                    env/auth-dev/*)  echo "auth-dev" ;;
-                    env/auth-test/*) echo "auth-test" ;;
-                    *)               echo "dev" ;;
-                esac
-            fi
-
-        else
-            # If we are outside CI, default to dev unless it is auth
-            if [[ $is_auth == true ]]; then
-                case $workspace in
-                    auth-dev)  echo "auth-dev" ;;
-                    auth-test) echo "auth-test" ;;
-                    *)         echo "auth-dev" ;;  # Default to auth-dev if unknown
-                esac
-            else
-                echo "dev"
-            fi
-        fi
+        _get_main_target_aws_account_name "$workspace"
     fi
 }
 
+function _get_main_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "prod" ]]; then
+        echo "prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "test"
+        else
+            case $branch in
+                env/dev/*)  echo "dev" ;;
+                env/uat/*)  echo "uat" ;;
+                env/test/*) echo "test" ;;
+                *)          echo "dev" ;; # Default to dev
+            esac
+        fi
+    else
+        echo "dev"
+    fi
+}
+
+function _get_auth_target_aws_account_name() {
+    local workspace=$1
+
+    case $workspace in
+        auth-dev)  echo "auth-dev" ;;
+        auth-test) echo "auth-test" ;;
+        *)         echo "auth-dev" ;; # Default to auth-dev if unknown
+    esac
+}
 
 _get_dev_workspace_name() {
     local input="${1:-$(whoami)}"
