@@ -16,10 +16,20 @@ jobs:
   build_base:
     name: Build base env
     runs-on: ubuntu-latest
+    outputs:
+      target_env: ${{ steps.set_env.outputs.TARGET_ENV }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
+
+      - name: Ensure SHORT_SHA is Set
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Verify UHD Script
+        run: |
+          [[ -f uhd.sh ]] || { echo "Error: uhd.sh not found! Exiting."; exit 1; }
+          chmod +x uhd.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -31,14 +41,25 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Build base env
+      - name: Determine Environment
+        id: set_env
         run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ci-$SHORT_SHA
-        shell: zsh {0}
+          if [[ "${{ github.head_ref }}" == *"auth-dev"* ]]; then
+            echo "TARGET_ENV=auth-dev" >> $GITHUB_ENV
+            echo "TARGET_ENV=auth-dev" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.head_ref }}" == *"auth-test"* ]]; then
+            echo "TARGET_ENV=auth-test" >> $GITHUB_ENV
+            echo "TARGET_ENV=auth-test" >> $GITHUB_OUTPUT
+          else
+            echo "TARGET_ENV=test" >> $GITHUB_ENV
+            echo "TARGET_ENV=test" >> $GITHUB_OUTPUT
+          fi
 
   unit_test_functions:
+    needs: ["build_base"]
+    strategy:
+      matrix:
+        function: [ lambda-producer-handler, lambda-db-password-rotation, lambda-alarm-notification, legacy-dashboard-redirect-viewer-request, public-api-cloud-front-viewer-request ]
     name: Unit test functions
     runs-on: ubuntu-latest
     permissions:
@@ -48,31 +69,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Test lambda-producer-handler
+      - name: Test ${{ matrix.function }}
         uses: ./.github/actions/npm-test
         with:
-          function-name: lambda-producer-handler
-
-      - name: Test lambda-db-password-rotation
-        uses: ./.github/actions/npm-test
-        with:
-          function-name: lambda-db-password-rotation
-
-      - name: Test lambda-alarm-notification
-        uses: ./.github/actions/npm-test
-        with:
-          function-name: lambda-alarm-notification
-
-      - name: Test legacy-dashboard-redirect-viewer-request
-        uses: ./.github/actions/npm-test
-        with:
-          function-name: legacy-dashboard-redirect-viewer-request
-
-      - name: Test public-api-cloud-front-viewer-request
-        uses: ./.github/actions/npm-test
-        with:
-          function-name: public-api-cloud-front-viewer-request
+          function-name: ${{ matrix.function }}
 
   unit_test_report:
     name: Unit test coverage report
@@ -110,6 +110,8 @@ jobs:
     name: Terraform plan
     runs-on: ubuntu-latest
     needs: ["build_base", "unit_test_functions"]
+    env:
+      TARGET_ENV: ${{ needs.build_base.outputs.target_env }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -126,9 +128,9 @@ jobs:
 
       - name: Terraform plan
         run: |
-          source uhd.sh
+          [[ -f uhd.sh ]] && source uhd.sh
           uhd terraform init
-          uhd terraform plan:layer 10-account test
+          uhd terraform plan:layer 10-account $TARGET_ENV
           uhd terraform plan:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
@@ -136,6 +138,8 @@ jobs:
     name: Terraform apply
     runs-on: ubuntu-latest
     needs: ["build_base", "terraform_plan"]
+    env:
+      TARGET_ENV: ${{ needs.build_base.outputs.target_env }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -154,7 +158,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
-          uhd terraform apply:layer 10-account test
+          uhd terraform apply:layer 10-account $TARGET_ENV
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
@@ -227,7 +231,7 @@ jobs:
     name: Terraform destroy
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: ["restart_services"]
+    needs: [ "restart_services" ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -243,17 +247,20 @@ jobs:
       - uses: ./.github/actions/short-sha
 
       - name: Terraform destroy
+        env:
+          TARGET_ENV: ${{ needs.build_base.outputs.target_env || 'test' }}
         run: |
+          [[ -f uhd.sh ]] || { echo "uhd.sh not found! Exiting."; exit 1; }
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform destroy:layer 20-app ci-$SHORT_SHA
+          uhd terraform destroy:layer 20-app "$TARGET_ENV-ci-$SHORT_SHA"
         shell: zsh {0}
 
   clean_up_remaining_resources:
     name: Clean up remaining resources
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: ["terraform_destroy"]
+    needs: [ "terraform_destroy" ]
     steps:
       - uses: actions/checkout@v4
 
@@ -266,15 +273,13 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Configure AWS credentials for test account
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          account-name: 'test'
-          aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+      - name: Set AWS Role for Target Environment
+        run: |
+          TARGET_ENV="${{ needs.build_base.outputs.target_env || 'test' }}"
+          ROLE_KEY="UHD_TERRAFORM_ROLE_${TARGET_ENV^^}"
+          echo "AWS_ROLE=${{ secrets[ROLE_KEY] }}" >> $GITHUB_ENV
 
       - name: Delete secrets
         run: |
-          source uhd.sh
           uhd secrets delete-all-secrets ci-$SHORT_SHA
         shell: zsh {0}
