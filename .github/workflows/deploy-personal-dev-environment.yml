@@ -104,7 +104,7 @@ jobs:
 
   push_backend_docker_image:
     name: Push backend docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     needs: [ "terraform_apply" ]
     steps:
       - name: Checkout .github/ directory
@@ -152,7 +152,7 @@ jobs:
 
   push_ingestion_docker_image:
     name: Push ingestion docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     needs: [ "terraform_apply" ]
     steps:
       - name: Checkout .github/ directory
