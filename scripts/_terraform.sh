@@ -500,8 +500,10 @@ function _get_etl_sibling_aws_account_id() {
   local account=$1
   local tools_account_id=$(_get_tools_account_id)
 
+  local account_name=${account#auth-}
+
   aws secretsmanager get-secret-value \
-    --secret-id "aws/account-id/etl-$account" \
+    --secret-id "aws/account-id/etl-$account_name" \
     --query SecretString \
     --output text
 }
