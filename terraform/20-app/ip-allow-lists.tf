@@ -22,7 +22,7 @@ locals {
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
-      "86.164.234.203/32",  # Joe Gasewicz
+      "86.164.230.184/32",  # Joe Gasewicz
       "86.130.56.204/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
