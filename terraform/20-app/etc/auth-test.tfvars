@@ -1,2 +1,2 @@
 environment_type = "auth-test"
-halo_account_type = "nl8"
+halo_account_type = "nl7"
