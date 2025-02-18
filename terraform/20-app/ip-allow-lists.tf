@@ -29,7 +29,7 @@ locals {
       "146.198.70.45/32",   # Mike Elshaw
     ],
     project_team = [
-      "5.68.132.72/32",     # Debbie
+      "90.196.180.145/32",     # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
