@@ -231,7 +231,7 @@ jobs:
     name: Terraform destroy
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ "restart_services" ]
+    needs: [ "restart_services", "deploy_auth_dev", "deploy_auth_test" ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -274,10 +274,19 @@ jobs:
       - uses: ./.github/actions/short-sha
 
       - name: Set AWS Role for Target Environment
+        env:
+          TARGET_ENV: ${{ needs.build_base.outputs.target_env || 'test' }}
+          AWS_ROLE_AUTH_DEV: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
+          AWS_ROLE_AUTH_TEST: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+          AWS_ROLE_TEST: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
         run: |
-          TARGET_ENV="${{ needs.build_base.outputs.target_env || 'test' }}"
-          ROLE_KEY="UHD_TERRAFORM_ROLE_${TARGET_ENV^^}"
-          echo "AWS_ROLE=${{ secrets[ROLE_KEY] }}" >> $GITHUB_ENV
+          if [[ "$TARGET_ENV" == "auth-dev" ]]; then
+            echo "AWS_ROLE=$AWS_ROLE_AUTH_DEV" >> $GITHUB_ENV
+          elif [[ "$TARGET_ENV" == "auth-test" ]]; then
+            echo "AWS_ROLE=$AWS_ROLE_AUTH_TEST" >> $GITHUB_ENV
+          else
+            echo "AWS_ROLE=$AWS_ROLE_TEST" >> $GITHUB_ENV
+          fi
 
       - name: Delete secrets
         run: |
