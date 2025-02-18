@@ -151,9 +151,9 @@ jobs:
     outputs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_auth_dev: ${{ steps.fast_forward_merge.outputs.deploy_auth_dev }}
-      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
       deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
+      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
 
