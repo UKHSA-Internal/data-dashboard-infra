@@ -88,3 +88,8 @@ variable "lambda_role_arn" {
   description = "The ARN of the Cognito Lambda execution role"
   type        = string
 }
+
+variable "prefix" {
+  description = "Prefix for naming resources"
+  type        = string
+}

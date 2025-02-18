@@ -25,3 +25,8 @@ output "lambda_alias_arn" {
     "dev"  = aws_lambda_alias.dev.arn
   }, var.lambda_alias, aws_lambda_alias.live.arn)
 }
+
+output "api_gateway_lambda_arn" {
+  description = "The ARN of the API Gateway Lambda function"
+  value       = aws_lambda_function.api_gateway_lambda.arn
+}

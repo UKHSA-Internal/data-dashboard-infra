@@ -63,3 +63,8 @@ output "cognito_user_pool_issuer_endpoint" {
   value       = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.user_pool.id}"
   sensitive   = true
 }
+
+output "cognito_lambda_role_arn" {
+  description = "The ARN of the Cognito Lambda execution role"
+  value       = var.lambda_role_arn
+}

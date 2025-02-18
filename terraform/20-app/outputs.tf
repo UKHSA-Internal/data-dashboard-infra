@@ -84,3 +84,4 @@ output "lambda" {
     ingestion_lambda_arn = module.lambda_ingestion.lambda_function_arn
   }
 }
+

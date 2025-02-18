@@ -101,3 +101,12 @@ variable "lambda_alias" {
     error_message = "Invalid alias provided. Allowed values are 'dev' or 'live'."
   }
 }
+
+variable "prefix" {
+  description = "Prefix for naming resources"
+  type        = string
+  validation {
+    condition = can(regex("^[a-zA-Z0-9_-]+$", var.prefix))
+    error_message = "Prefix must only contain letters, numbers, hyphens, or underscores."
+  }
+}

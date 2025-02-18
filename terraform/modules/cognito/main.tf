@@ -94,13 +94,3 @@ resource "aws_cognito_user_group" "cognito_user_groups" {
   precedence = lookup(var.group_precedence, each.value, null)
   description  = "Group for ${each.value} role"
 }
-
-output "cognito_lambda_role_arn" {
-  description = "The ARN of the Cognito Lambda execution role"
-  value       = var.lambda_role_arn
-}
-
-variable "prefix" {
-  description = "Prefix for naming resources"
-  type        = string
-}
