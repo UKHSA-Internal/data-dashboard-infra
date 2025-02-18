@@ -231,7 +231,7 @@ jobs:
     name: Terraform destroy
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ "restart_services", "deploy_auth_dev", "deploy_auth_test" ]
+    needs: [ "restart_services" ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
