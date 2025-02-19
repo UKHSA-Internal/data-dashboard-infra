@@ -66,7 +66,7 @@ module "cloudfront_front_end" {
     } : {}
   }
 
-  ordered_cache_behavior = [
+  ordered_cache_behavior = flatten(concat([
     # Behaviour to bypass cloudfront for health check
     {
       path_pattern               = "api/health"
@@ -81,6 +81,21 @@ module "cloudfront_front_end" {
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
     },
+    # Behaviour to enable cookie forwarding for auth endpoints
+    local.is_auth ? [
+      {
+        path_pattern               = "/api/auth/*"
+        allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+        cache_policy_id            = local.managed_caching_disabled_policy_id
+        cached_methods             = ["GET", "HEAD"]
+        compress                   = true
+        origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end_auth.id
+        response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+        target_origin_id           = "alb"
+        use_forwarded_values       = false
+        viewer_protocol_policy     = "redirect-to-https"
+      }
+    ] : [],
     # Behaviour to bypass CDN for the dynamic alert pages
     {
       path_pattern               = "/"
@@ -142,7 +157,7 @@ module "cloudfront_front_end" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
     },
-  ]
+  ]))
 
   custom_error_response = [
     {
@@ -169,12 +184,44 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   cookies_config {
     cookie_behavior = "whitelist"
     cookies {
-      items = ["UKHSAConsentGDPR"]
+      items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
+        "__Secure-authjs.callback-url",  # Stores the redirect destination after authentication
+        "__Secure-authjs.csrf-token",  # CSRF token required for authentication flows
+        "__Secure-authjs.session-token",  # Main session token
+        "__Secure-authjs.session-token.0",  # Split session token (if size exceeds 4KB)
+        "__Secure-authjs.session-token.1",  # Additional split session token
+        "__Secure-authjs.session-token.2",  # Additional split session token
+        "__Secure-authjs.session-token.3",  # Additional split session token
+        "__Secure-authjs.session-token.4",  # Additional split session token (safety margin)
+      ] : []]))
     }
   }
   headers_config {
     header_behavior = "allViewer"
   }
+  query_strings_config {
+    query_string_behavior = "all"
+  }
+}
+
+resource "aws_cloudfront_origin_request_policy" "front_end_auth" {
+  name = "${local.prefix}-front-end-auth"
+
+  cookies_config {
+    cookie_behavior = "all"
+  }
+
+  headers_config {
+    header_behavior = "whitelist"
+    headers {
+      items = [
+        "Accept",
+        "Content-Type",
+        "Set-Cookie",
+      ]
+    }
+  }
+
   query_strings_config {
     query_string_behavior = "all"
   }
