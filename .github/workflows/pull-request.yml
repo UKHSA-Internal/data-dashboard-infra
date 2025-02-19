@@ -23,9 +23,6 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
-      - name: Ensure SHORT_SHA is Set
-        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
       - name: Verify UHD Script
         run: |
           [[ -f uhd.sh ]] || { echo "Error: uhd.sh not found! Exiting."; exit 1; }
@@ -44,16 +41,8 @@ jobs:
       - name: Determine Environment
         id: set_env
         run: |
-          if [[ "${{ github.head_ref }}" == *"auth-dev"* ]]; then
-            echo "TARGET_ENV=auth-dev" >> $GITHUB_ENV
-            echo "TARGET_ENV=auth-dev" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.head_ref }}" == *"auth-test"* ]]; then
-            echo "TARGET_ENV=auth-test" >> $GITHUB_ENV
-            echo "TARGET_ENV=auth-test" >> $GITHUB_OUTPUT
-          else
-            echo "TARGET_ENV=test" >> $GITHUB_ENV
-            echo "TARGET_ENV=test" >> $GITHUB_OUTPUT
-          fi
+          echo "TARGET_ENV=test" >> $GITHUB_ENV
+          echo "TARGET_ENV=test" >> $GITHUB_OUTPUT
 
   unit_test_functions:
     needs: [ "build_base" ]
@@ -253,7 +242,7 @@ jobs:
           [[ -f uhd.sh ]] || { echo "uhd.sh not found! Exiting."; exit 1; }
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform destroy:layer 20-app "$TARGET_ENV-ci-$SHORT_SHA"
+          uhd terraform destroy:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
   clean_up_remaining_resources:
