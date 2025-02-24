@@ -1,0 +1,13 @@
+name: Mask Secrets
+description: "Masks sensitive secrets before logging"
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "::add-mask::${{ secrets.GITHUB_TOKEN }}"
+        echo "::add-mask::${{ secrets.UHD_TERRAFORM_IAM_ROLE }}"
+        echo "::add-mask::${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}"
+        echo "::add-mask::${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}"
+        echo "::add-mask::${{ secrets.UHD_TERRAFORM_ROLE_TEST }}"
+        echo "::add-mask::${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}"
+      shell: bash

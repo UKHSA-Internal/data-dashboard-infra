@@ -1,0 +1,19 @@
+name: "Select Terraform Workspace"
+description: "Selects or creates the correct Terraform workspace"
+inputs:
+  target_env:
+    description: "Target Terraform environment"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Select Terraform Workspace
+      shell: bash
+      run: |
+        if terraform workspace list | grep -q "${{ inputs.target_env }}"; then
+          echo "Selecting existing Terraform workspace: ${{ inputs.target_env }}"
+          terraform workspace select "${{ inputs.target_env }}"
+        else
+          echo "Creating new Terraform workspace: ${{ inputs.target_env }}"
+          terraform workspace new "${{ inputs.target_env }}"
+        fi
