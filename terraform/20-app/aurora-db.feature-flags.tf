@@ -1,6 +1,6 @@
 module "aurora_db_feature_flags" {
   source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "9.5.0"
+  version = "9.12.0"
 
   name              = "${local.prefix}-aurora-db-feature-flags"
   engine            = "aurora-postgresql"
