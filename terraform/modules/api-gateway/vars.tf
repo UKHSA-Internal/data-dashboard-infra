@@ -110,3 +110,8 @@ variable "prefix" {
     error_message = "Prefix must only contain letters, numbers, hyphens, or underscores."
   }
 }
+
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
+  type        = string
+}
