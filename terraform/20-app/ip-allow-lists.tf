@@ -17,7 +17,7 @@ locals {
       "147.161.236.99/32",  # Krishna - Windows
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
-      "147.161.224.196/32", # Temitope Akinsoto
+      "147.161.167.103/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
