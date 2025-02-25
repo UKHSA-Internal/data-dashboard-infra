@@ -1,2 +1,5 @@
 environment_type  = "dev"
 halo_account_type = "nl1"
+ukhsa_tenant_id = "ee4e1499-4a35-4b2e-ad47-5f3cf9de8666"
+ukhsa_oidc_client_id = "7if63oimhbeh5jonkv0qt3bsrb"
+ukhsa_oidc_client_secret = "lmsdvl9qbcqfga8584cofjf9577smvtatjth1m87hu1s8rfpc92"

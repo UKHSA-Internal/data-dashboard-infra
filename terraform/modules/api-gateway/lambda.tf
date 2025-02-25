@@ -5,10 +5,16 @@ resource "aws_lambda_function" "api_gateway_lambda" {
   handler       = "api_gateway_lambda.handler"
 
   source_code_hash = filebase64sha256("${path.module}/api_gateway_lambda.zip")
-  filename    = "${path.module}/api_gateway_lambda.zip"
-  timeout     = 15
-  publish     = true
-  description = "Handles API Gateway requests for the ${var.prefix} service"
+  filename         = "${path.module}/api_gateway_lambda.zip"
+  timeout         = 15
+  publish         = true
+  description     = "Handles API Gateway requests for the ${var.prefix} service"
+
+  environment {
+    variables = {
+      UKHSA_TENANT_ID = var.ukhsa_tenant_id
+    }
+  }
 }
 
 resource "aws_lambda_alias" "live" {
