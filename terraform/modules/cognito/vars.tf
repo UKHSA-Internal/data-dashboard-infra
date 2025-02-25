@@ -57,25 +57,11 @@ variable "user_pool_domain" {
 variable "ukhsa_oidc_client_id" {
   description = "UKHSA OIDC Client ID"
   type        = string
-  default     = ""
 }
 
 variable "ukhsa_oidc_client_secret" {
   description = "UKHSA OIDC Client Secret"
   type        = string
-  default     = ""
-}
-
-variable "ukhsa_oidc_issuer_url" {
-  description = "UKHSA OIDC Issuer URL"
-  type        = string
-  default     = ""
-}
-
-variable "ukhsa_oidc_attributes_url" {
-  description = "UKHSA OIDC Attributes URL"
-  type        = string
-  default     = ""
 }
 
 variable "enable_ukhsa_oidc" {
@@ -91,5 +77,10 @@ variable "lambda_role_arn" {
 
 variable "prefix" {
   description = "Prefix for naming resources"
+  type        = string
+}
+
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
   type        = string
 }

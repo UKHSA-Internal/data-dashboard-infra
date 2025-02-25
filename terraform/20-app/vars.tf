@@ -43,3 +43,18 @@ variable "cognito_admin_email" {
   type        = string
   default     = "Afaan.Ashiq@ukhsa.gov.uk"
 }
+
+variable "ukhsa_oidc_client_id" {
+  description = "UKHSA OIDC Client ID for Cognito"
+  type        = string
+}
+
+variable "ukhsa_oidc_client_secret" {
+  description = "UKHSA OIDC Client Secret for Cognito"
+  type        = string
+}
+
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
+  type        = string
+}

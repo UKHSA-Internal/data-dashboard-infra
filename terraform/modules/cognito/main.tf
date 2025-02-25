@@ -58,7 +58,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
 
-  supported_identity_providers = var.enable_ukhsa_oidc ? ["COGNITO", "UKHSAOIDC"] : ["COGNITO"]
+  supported_identity_providers = var.enable_ukhsa_oidc ? ["UKHSAOIDC"] : ["COGNITO"]
 }
 
 resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
@@ -79,10 +79,10 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   provider_details = {
     client_id                     = var.ukhsa_oidc_client_id
     client_secret                 = var.ukhsa_oidc_client_secret
-    oidc_issuer                   = var.ukhsa_oidc_issuer_url
-    authorize_scopes              = "openid email"
+    oidc_issuer                   = "https://login.microsoftonline.com/${var.ukhsa_tenant_id}/v2.0"
+    authorize_scopes              = "openid email profile"
     attributes_request_method     = "GET"
-    attributes_url                = var.ukhsa_oidc_attributes_url
+    attributes_url                = "https://graph.microsoft.com/oidc/userinfo"
     attributes_url_add_attributes = "true"
   }
 }

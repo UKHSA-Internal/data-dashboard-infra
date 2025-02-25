@@ -14,10 +14,10 @@ module "cognito" {
   )
   region = local.region
 
-  ukhsa_oidc_client_id      = "ukhsa-oidc-client-id"
-  ukhsa_oidc_client_secret  = "ukhsa-oidc-client-secret"
-  ukhsa_oidc_issuer_url     = "https://example.com/issuer"
-  ukhsa_oidc_attributes_url = "https://example.com/attributes"
+  ukhsa_tenant_id = var.ukhsa_tenant_id
+  enable_ukhsa_oidc = true
+  ukhsa_oidc_client_id      = var.ukhsa_oidc_client_id
+  ukhsa_oidc_client_secret  = var.ukhsa_oidc_client_secret
 
   lambda_role_arn           = aws_iam_role.cognito_lambda_role.arn
   prefix = local.prefix
