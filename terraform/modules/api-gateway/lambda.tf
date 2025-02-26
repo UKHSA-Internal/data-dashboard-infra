@@ -41,3 +41,39 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   principal  = "apigateway.amazonaws.com"
   source_arn = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api_gateway.id}/*/*/*"
 }
+
+resource "aws_iam_policy" "secrets_manager_access" {
+  name        = "${var.prefix}-secrets-manager-access"
+  description = "Allow Lambda to retrieve secrets from AWS Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action   = ["secretsmanager:GetSecretValue"]
+      Effect   = "Allow"
+      Resource = "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-ukhsa-tenant-id-*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_secrets_manager" {
+  role       = aws_iam_role.api_gateway_lambda_role.name
+  policy_arn = aws_iam_policy.secrets_manager_access.arn
+}
+
+resource "aws_iam_role" "api_gateway_lambda_role" {
+  name = "${var.prefix}-api-gateway-lambda-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = { Service = "lambda.amazonaws.com" },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+  role       = aws_iam_role.api_gateway_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
