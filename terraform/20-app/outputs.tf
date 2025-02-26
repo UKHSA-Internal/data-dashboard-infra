@@ -85,3 +85,9 @@ output "lambda" {
   }
 }
 
+output "kms_key_id" {
+  description = "The KMS key ID for encrypting secrets"
+  value       = module.kms_secrets_app_engineer.key_id
+}
+
+
