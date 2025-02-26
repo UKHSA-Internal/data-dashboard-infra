@@ -1,8 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "89.36.121.11/32",    # Afaan
-      "82.132.232.163/32",  # Afaan 2
+      "82.132.220.25/32",   # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
@@ -27,7 +26,7 @@ locals {
       "146.198.70.45/32",   # Mike Elshaw
     ],
     project_team = [
-      "90.196.180.145/32",     # Debbie
+      "90.196.180.145/32",  # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
