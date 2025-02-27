@@ -24,6 +24,16 @@ jobs:
           path: data-dashboard-infra
           sparse-checkout: false
 
+      - name: Debug Repository Files
+        run: |
+          echo "Checking Repository Files..."
+          ls -la
+          ls -la .github || echo ".github directory is missing!"
+          ls -la .github/actions || echo ".github/actions is missing!"
+          ls -la .github/actions/mask-secrets || echo "mask-secrets action is missing!"
+          ls -la .github/actions/setup-zsh || echo "setup-zsh action is missing!"
+          ls -la .github/actions/configure-aws-credentials || echo "configure-aws-credentials action is missing!"
+
       - name: Debug Mask Secrets Action Path
         run: |
           echo "Current Directory: $(pwd)"
