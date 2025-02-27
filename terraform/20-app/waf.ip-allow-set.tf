@@ -17,4 +17,6 @@ resource "aws_wafv2_ip_set" "ip_allow_list_regional" {
     local.complete_ip_allow_list,
     formatlist("%s/32", module.vpc.nat_public_ips)
   )
+
+  depends_on = [aws_wafv2_web_acl.cms_admin]
 }
