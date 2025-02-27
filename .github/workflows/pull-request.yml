@@ -21,8 +21,8 @@ jobs:
       public_env: ${{ steps.set_env.outputs.PUBLIC_ENV }}
       auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
-      - uses: ./.github/actions/mask-secrets
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/mask-secrets
         with:
           ref: ${{ github.base_ref }}
 
@@ -159,8 +159,8 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: ./.github/actions/mask-secrets
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/mask-secrets
 
       - name: Test ${{ matrix.function }}
         uses: ./.github/actions/npm-test
@@ -178,6 +178,7 @@ jobs:
       pull-requests: write
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/mask-secrets
 
       - name: Download test coverage
