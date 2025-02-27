@@ -32,13 +32,11 @@ jobs:
           submodules: false
           set-safe-directory: true
 
-      - name: Debug Repository Structure
+      - name: Debug Repository Files
         run: |
           echo "Current Directory: $(pwd)"
-          ls -la
-          ls -la .github
           ls -la .github/actions
-          ls -la .github/actions/mask-secrets
+          ls -la .github/actions/mask-secrets || echo "mask-secrets directory is missing!"
 
       - name: Mask Secrets
         uses: ./.github/actions/mask-secrets
