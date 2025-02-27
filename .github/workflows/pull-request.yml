@@ -28,8 +28,9 @@ jobs:
           sparse-checkout: false
           persist-credentials: true
 
-      - name: Force Sync Repository
+      - name: Disable Sparse Checkout and Fetch Everything
         run: |
+          git sparse-checkout disable
           git fetch --prune --tags
           git reset --hard origin/${{ github.base_ref }}
           git pull origin ${{ github.base_ref }} --force
