@@ -32,6 +32,14 @@ jobs:
           submodules: false
           set-safe-directory: true
 
+      - name: Debug Repository Structure
+        run: |
+          echo "Current Directory: $(pwd)"
+          ls -la
+          ls -la .github
+          ls -la .github/actions
+          ls -la .github/actions/mask-secrets
+
       - name: Mask Secrets
         uses: ./.github/actions/mask-secrets
         with:
