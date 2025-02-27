@@ -3,7 +3,7 @@ data "aws_secretsmanager_secret" "ukhsa_oidc_credentials" {
 }
 
 data "aws_secretsmanager_secret_version" "ukhsa_oidc_credentials" {
-  secret_id = data.aws_secretsmanager_secret.ukhsa_oidc_credentials.id
+  secret_id = try(data.aws_secretsmanager_secret.ukhsa_oidc_credentials.id, null)
 }
 
 data "aws_secretsmanager_secret" "ukhsa_tenant_id" {
@@ -11,7 +11,7 @@ data "aws_secretsmanager_secret" "ukhsa_tenant_id" {
 }
 
 data "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
-  secret_id = data.aws_secretsmanager_secret.ukhsa_tenant_id.id
+  secret_id = try(data.aws_secretsmanager_secret.ukhsa_tenant_id.id, null)
 }
 
 locals {
