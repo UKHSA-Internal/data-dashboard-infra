@@ -24,13 +24,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
-          fetch-depth: 1
-          sparse-checkout-cone-mode: true
-          fetch-tags: false
-          show-progress: true
-          lfs: false
-          submodules: false
-          set-safe-directory: true
+          fetch-depth: 0
+          sparse-checkout: false
+          persist-credentials: true
+
+      - name: Force Git Pull to Restore Missing Files
+        run: |
+          git fetch --unshallow
+          git pull origin ${{ github.base_ref }} --force
+          ls -la .github/actions/mask-secrets || echo "mask-secrets directory is still missing!"
 
       - name: Debug Repository Files
         run: |
