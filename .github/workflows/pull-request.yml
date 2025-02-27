@@ -31,7 +31,7 @@ jobs:
           ls -la .github/actions/mask-secrets/
 
       - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
+        uses: ./data-dashboard-infra/.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
