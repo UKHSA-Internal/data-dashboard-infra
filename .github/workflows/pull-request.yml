@@ -14,6 +14,18 @@ permissions:
   contents: read
 
 jobs:
+  debug_mask_action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List contents of .github/actions/mask-secrets
+        run: ls -la .github/actions/mask-secrets/
+
+      - name: Display action.yml contents
+        run: cat .github/actions/mask-secrets/action.yml || echo "Mask Secrets File not found"
+
   build_base:
     name: Build base env
     runs-on: ubuntu-latest
