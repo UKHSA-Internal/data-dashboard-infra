@@ -28,11 +28,13 @@ jobs:
           sparse-checkout: false
           persist-credentials: true
 
-      - name: Force Git Pull to Restore Missing Files
+      - name: Force Sync Repository
         run: |
-          git fetch --unshallow
+          git fetch --prune --tags
+          git reset --hard origin/${{ github.base_ref }}
           git pull origin ${{ github.base_ref }} --force
-          ls -la .github/actions/mask-secrets || echo "mask-secrets directory is still missing!"
+          git status
+          git ls-files .github/actions/mask-secrets || echo "mask-secrets directory is STILL missing!"
 
       - name: Debug Repository Files
         run: |
