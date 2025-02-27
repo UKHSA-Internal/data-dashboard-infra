@@ -1,10 +1,9 @@
----
 name: Pull Request Workflow
 
 on:
   pull_request:
     branches:
-      - "**"
+      - "*"
 
 env:
   AWS_REGION: "eu-west-2"
@@ -14,81 +13,13 @@ permissions:
   contents: read
 
 jobs:
-  debug_mask_action:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - name: Debug Checkout Path
-        run: |
-          echo "Current Directory: $(pwd)"
-          ls -la
-          ls -la .github || echo ".github directory is missing!"
-          ls -la .github/actions || echo ".github/actions is missing!"
-          ls -la .github/actions/mask-secrets || echo "mask-secrets action is missing!"
-
-      - name: Debug Repository Files
-        run: |
-          echo "Checking Repository Files..."
-          ls -la
-          ls -la .github || echo ".github directory is missing!"
-          ls -la .github/actions || echo ".github/actions is missing!"
-          ls -la .github/actions/mask-secrets || echo "mask-secrets action is missing!"
-          ls -la .github/actions/setup-zsh || echo "setup-zsh action is missing!"
-          ls -la .github/actions/configure-aws-credentials || echo "configure-aws-credentials action is missing!"
-
-      - name: Debug Mask Secrets Action Path
-        run: |
-          echo "Current Directory: $(pwd)"
-          ls -la .github/actions
-          ls -la .github/actions/mask-secrets/
-
-      - name: Mask Secrets
-        uses: ./data-dashboard-infra/.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
   build_base:
     name: Build base env
     runs-on: ubuntu-latest
-    outputs:
-      public_env: ${{ steps.set_env.outputs.PUBLIC_ENV }}
-      auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
-      - name: Ensure UHD Script Exists
-        run: |
-          if [[ ! -f uhd.sh ]]; then
-            echo "uhd.sh script missing. Exiting."
-            exit 1
-          fi
-          chmod +x uhd.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -96,121 +27,18 @@ jobs:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Validate AWS Assume Role Permissions
-        run: |
-          echo "Checking Current AWS Identity..."
-          aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
-
-          echo "Attempting to assume AWS IAM role..."
-          if ! OUTPUT=$(aws sts assume-role --role-arn "${{ secrets.UHD_TERRAFORM_IAM_ROLE }}" --role-session-name "GithubActionsTest" --duration-seconds 900 2>&1); then
-            echo "ERROR: Failed to assume AWS IAM role."
-            echo "Possible Causes:"
-            echo "  - IAM role does not trust GitHub Actions"
-            echo "  - Role lacks 'sts:AssumeRole' permissions"
-            echo "  - AWS service issue"
-            echo "Error Output:"
-            echo "$OUTPUT"
-            exit 1
-          fi
-
-      - name: Debug AWS IAM Permissions
-        run: |
-          ROLE_NAME=$(aws sts get-caller-identity --query "Arn" --output text | awk -F'/' '{print $2}')
-          echo "IAM Policies for Role: $ROLE_NAME"
-          aws iam list-attached-role-policies --role-name "$ROLE_NAME" || echo "IAM Policy Fetch Failed"
-
-      - name: Verify AWS Permissions (Strict Check)
-        run: |
-          echo "Validating AWS Identity..."
-          if ! aws sts get-caller-identity; then
-            echo "ERROR: Invalid AWS credentials. Exiting."
-            exit 1
-          fi
-
-          echo "Checking AWS S3 Access..."
-          if ! aws s3 ls > /dev/null 2>&1; then
-            echo "WARNING: Limited AWS permissions detected!"
-            exit 1
-          fi
-
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Verify Short SHA
+      - name: Build base env
         run: |
-          if [[ -z "${{ env.SHORT_SHA }}" ]]; then
-            echo "Error: SHORT_SHA is not set!"
-            exit 1
-          fi
-          echo "SHORT_SHA=${{ env.SHORT_SHA }}"
-
-      - name: Determine Environment
-        id: set_env
-        run: |
-          echo "PUBLIC_ENV=ci-$SHORT_SHA" >> $GITHUB_ENV
-          echo "AUTH_ENV=ci-a-$SHORT_SHA" >> $GITHUB_ENV
-          echo "PUBLIC_ENV=ci-$SHORT_SHA" >> $GITHUB_OUTPUT
-          echo "AUTH_ENV=ci-a-$SHORT_SHA" >> $GITHUB_OUTPUT
-
-
-  fast_forward_env_branches:
-    name: Fast forward env branches
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      deploy_auth_dev: ${{ steps.fast_forward_merge.outputs.deploy_auth_dev }}
-      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - uses: ./.github/actions/setup-zsh
-      - name: Fast forward env branches
-        id: fast_forward_merge
-        run: |
-          echo "Starting fast-forward merge..."
-          if scripts/fast-forward-env-branches.sh; then
-            echo "Fast forward merge completed successfully."
-          else
-            echo "Fast forward merge failed!" >&2
-            exit 1
-          fi
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
-        env:
-          CI: "true"
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-  deploy_auth_dev:
-    needs: fast_forward_env_branches
-    if: ${{ needs.fast_forward_env_branches.outputs.deploy_auth_dev == 'true' }}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/auth-dev/auth-dev
-    secrets: inherit
-
-
-  deploy_auth_test:
-    needs: fast_forward_env_branches
-    if: ${{ needs.fast_forward_env_branches.outputs.deploy_auth_test == 'true' }}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/auth-test/auth-test
-    secrets: inherit
-
 
   unit_test_functions:
-    needs: [ "build_base" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        function: [ lambda-producer-handler, lambda-db-password-rotation, lambda-alarm-notification, legacy-dashboard-redirect-viewer-request, public-api-cloud-front-viewer-request ]
     name: Unit test functions
     runs-on: ubuntu-latest
     permissions:
@@ -219,56 +47,43 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
+      - uses: actions/checkout@v4
 
-      - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
-      - name: Test ${{ matrix.function }}
+      - name: Test lambda-producer-handler
         uses: ./.github/actions/npm-test
         with:
-          function-name: ${{ matrix.function }}
+          function-name: lambda-producer-handler
 
+      - name: Test lambda-db-password-rotation
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-db-password-rotation
+
+      - name: Test lambda-alarm-notification
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-alarm-notification
+
+      - name: Test legacy-dashboard-redirect-viewer-request
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: legacy-dashboard-redirect-viewer-request
+
+      - name: Test public-api-cloud-front-viewer-request
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: public-api-cloud-front-viewer-request
 
   unit_test_report:
     name: Unit test coverage report
     runs-on: ubuntu-latest
-    needs: [ "unit_test_functions" ]
+    needs: ["unit_test_functions"]
     permissions:
       contents: read
       id-token: write
       pull-requests: write
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
       - name: Download test coverage
         uses: actions/download-artifact@v4.1.9
         with:
@@ -291,362 +106,93 @@ jobs:
             public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-report/junit.xml
           title: unit test coverage report
 
-
   terraform_plan:
-    name: Terraform plan (${{ matrix.environment }})
+    name: Terraform plan
     runs-on: ubuntu-latest
-    needs: [ "build_base" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [ public, auth ]
-    env:
-      TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
-      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
+    needs: ["build_base", "unit_test_functions"]
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
-      - name: Mask Secrets
-        uses: actions/setup-python@v5
-      - uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
-      - name: Terraform plan (${{ matrix.environment }})
-        run: |
-          source uhd.sh
-          uhd terraform init
-          uhd terraform plan:layer 10-account $TARGET_ENV -refresh=true
-          uhd terraform plan:layer 20-app $TARGET_ENV -refresh=true
-        shell: zsh {0}
-
-      - name: Terraform Plan Summary
-        run: |
-          echo "### Terraform Plan Summary ###"
-          PLAN_FILE="terraform-plan-${{ matrix.environment }}.json"
-          terraform show -json tfplan-${{ matrix.environment }}.out | jq '.' > "$PLAN_FILE"
-          
-          if [[ -s "$PLAN_FILE" ]]; then
-            ADDED_RESOURCES=$(jq '[.resource_changes[] | select(.change.actions | contains(["create"]))] | length' "$PLAN_FILE")
-            CHANGED_RESOURCES=$(jq '[.resource_changes[] | select(.change.actions | contains(["update"]))] | length' "$PLAN_FILE")
-            DELETED_RESOURCES=$(jq -r '.resource_changes[] | select(.change.actions | contains(["delete"])) | .address' "$PLAN_FILE")
-
-            if [[ "$DELETED_RESOURCES" != "[]" ]]; then
-              echo "WARNING: Terraform plan includes deletions!"
-              echo "Resources marked for deletion:"
-              echo "$DELETED_RESOURCES"
-              exit 1
-            else
-              echo "No deletions detected. Safe to proceed!"
-            fi
-
-            echo "Resources to be added: $ADDED_RESOURCES"
-            echo "Resources to be changed: $CHANGED_RESOURCES"
-            [[ -z "$DELETED_RESOURCES" ]] && echo "No deletions detected."
-          else
-            echo "Warning: Terraform plan file is empty or missing! No changes detected."
-          fi
-
-      - name: Upload Terraform Plan Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan-${{ matrix.environment }}
-          path: terraform-plan-${{ matrix.environment }}.json
-          retention-days: 7
-
-      - name: Validate Terraform Plan Output
-        run: |
-          echo "Checking Terraform Plan..."
-          PLAN_FILE=tfplan-${{ matrix.environment }}.out
-          terraform show -json $PLAN_FILE | jq '.' > terraform-plan-${{ matrix.environment }}.json
-          
-          if [[ -s "terraform-plan-${{ matrix.environment }}.json" ]]; then
-            DELETED_RESOURCES=$(jq -r '.resource_changes[] | select(.change.actions | contains(["delete"]))' terraform-plan-${{ matrix.environment }}.json 2>/dev/null || echo "")
-          else
-            echo "Warning: Terraform plan file is missing or empty!"
-            exit 1
-          fi
-          
-          if [[ -n "$DELETED_RESOURCES" ]]; then
-            echo "WARNING: Terraform plan contains deletions!"
-            echo "Resources marked for deletion:"
-            echo "$DELETED_RESOURCES"
-            exit 1
-          else
-            echo "Terraform plan is safe to apply!"
-          fi
-
-      - name: Debug Terraform Setup
-        if: ${{ env.DESTROY_SKIPPED != 'true' }}
-        run: |
-          terraform version
-          [[ -n "$TARGET_ENV" ]] && terraform workspace show
-
-      - name: Select Terraform Workspace
-        uses: ./.github/actions/select-terraform-workspace
-        with:
-          target_env: $TARGET_ENV
-
-      - name: Debug Terraform State
-        run: |
-          echo "Current Terraform State in $TARGET_ENV:"
-          terraform state list || { 
-            echo "No Terraform state found! Retrying with refresh...";
-            terraform refresh;
-            terraform state list || { echo "Still no state! Check remote backend permissions."; exit 1; }
-          }
-
-      - name: Configure AWS credentials (${{ matrix.environment }})
+      - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ env.TERRAFORM_ROLE }}
-
-      - name: Debug AWS Role & Permissions
-        run: |
-          echo "Verifying AWS Role Identity..."
-          aws sts get-caller-identity || { echo "ERROR: Failed to fetch AWS identity"; exit 1; }
-
-          echo "Validating AWS Permissions..."
-          aws s3 ls s3://nonexistent-bucket >/dev/null 2>&1 && echo "S3 Access OK" || echo "Limited S3 Access (Expected for some roles)"
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Validate Terraform Configuration
-        run: |
-          terraform validate || { echo "Terraform configuration is invalid!"; exit 1; }
-
-      - name: Validate AWS Credentials Before Terraform
-        run: |
-          echo "Checking AWS credentials before Terraform Apply..."
-          if ! aws sts get-caller-identity; then
-            echo "ERROR: AWS credentials are invalid! Terraform cannot proceed."
-            exit 1
-          fi
-
-      - name: Auto-Fix Terraform Formatting
-        run: terraform fmt -recursive
-
-
-  terraform_apply:
-    name: Terraform apply (${{ matrix.environment }})
-    runs-on: ubuntu-latest
-    needs: [ "terraform_plan" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [ public, auth ]
-    env:
-      TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
-      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - uses: actions/setup-python@v5
-
-      - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
-      - name: Debug Terraform Setup
-        if: ${{ env.DESTROY_SKIPPED != 'true' }}
-        run: |
-          terraform version
-          [[ -n "$TARGET_ENV" ]] && terraform workspace show
-
-      - name: Select Terraform Workspace
-        uses: ./.github/actions/select-terraform-workspace
-        with:
-          target_env: $TARGET_ENV
-
-      - name: Configure AWS credentials (${{ matrix.environment }})
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
-
-      - name: Retry Terraform Apply (${{ matrix.environment }})
-        run: |
-          for attempt in {1..3}; do
-            set -e
-            source uhd.sh
-            uhd terraform init
-
-            layers=("10-account" "20-app")
-            declare -A pids errors logs start_times end_times durations
-
-            for layer in "${layers[@]}"; do
-              logs[$layer]="terraform-apply-$layer.log"
-              start_times[$layer]=$(date +%s)
-              echo "Applying Terraform for $layer (log: ${logs[$layer]})..."
-
-              (uhd terraform apply:layer $layer $TARGET_ENV | tee "${logs[$layer]}") &
-              pids[$layer]=$!
-            done
-
-            for layer in "${!pids[@]}"; do
-              if ! wait "${pids[$layer]}"; then
-                errors[$layer]=1
-              fi
-              end_times[$layer]=$(date +%s)
-              durations[$layer]=$((end_times[$layer] - start_times[$layer]))
-            done
-
-            if [[ ${#errors[@]} -gt 0 ]]; then
-              echo "Terraform apply failed for layers: ${!errors[@]}"
-              for layer in "${!errors[@]}"; do
-                echo "Terraform Apply Log ($layer) (Time: ${durations[$layer]}s):"
-                cat "${logs[$layer]}"
-                echo "--------------------------------"
-              done
-              if [[ $attempt -lt 3 ]]; then
-                echo "Retrying Terraform Apply (Attempt $((attempt+1)))..."
-                sleep 10
-              else
-                echo "Final Attempt Failed. Exiting..."
-                exit 1
-              fi
-            else
-              echo "Terraform Apply Succeeded!"
-              break
-            fi
-          done
-        shell: zsh {0}
-
-      - name: Upload Terraform Apply Logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-apply-${{ matrix.environment }}
-          path: terraform-apply-*.log
-          retention-days: 7
-
-      - name: Terraform Apply Summary
-        run: |
-          echo "### Terraform Apply Summary ###"
-          for layer in "10-account" "20-app"; do
-            if [[ -f "terraform-apply-$layer.log" ]]; then
-              echo "----- Terraform Apply Log for $layer (Last 50 lines) -----"
-              tail -n 50 "terraform-apply-$layer.log"
-              echo "--------------------------------------------------------"
-
-              echo "Changes Applied:"
-              CREATED=$(grep "created" "terraform-apply-$layer.log" || echo "No new resources created.")
-              UPDATED=$(grep "updated" "terraform-apply-$layer.log" || echo "No resources updated.")
-              DESTROYED=$(grep "destroyed" "terraform-apply-$layer.log" || echo "No resources deleted.")
-
-              echo "Terraform Apply Summary for $layer"
-              echo "----------------------------------------"
-              echo "Created Resources:"
-              echo "$CREATED"
-              echo ""
-              echo "Updated Resources:"
-              echo "$UPDATED"
-              echo ""
-              echo "Deleted Resources:"
-              echo "$DESTROYED"
-              echo "----------------------------------------"
-
-              echo "Checking Terraform Apply status for $layer..."
-              if grep -q "Apply complete!" "terraform-apply-$layer.log" || ! grep -iq "error" "terraform-apply-$layer.log"; then
-                echo "Terraform Apply Completed Successfully for $layer"
-              else
-                echo "ERROR: Terraform Apply failed for $layer!"
-                ERROR_LINES=$(grep -i "error" "terraform-apply-$layer.log" | tail -n 10)
-
-                if [[ -z "$ERROR_LINES" ]]; then
-                  echo "No specific errors found, check full logs."
-                else
-                  echo "Last 10 error messages:"
-                  echo "$ERROR_LINES"
-                fi
-
-              exit 1
-            fi
-            else
-              echo "Warning: Log file for $layer not found!"
-            fi
-          done
-        shell: zsh {0}
-
-
-  push_docker_images:
-    name: Push docker images (${{ matrix.environment }})
-    runs-on: ubuntu-latest
-    needs: [ "terraform_apply" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [ public, auth ]
-    env:
-      TARGET_ENV: ${{ needs.build_base.outputs[format('{0}_env', matrix.environment)] }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
-      - name: Configure AWS credentials (${{ matrix.environment }})
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
-      - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
-      - name: Pull / push docker images (${{ matrix.environment }})
+      - name: Terraform plan
         run: |
           source uhd.sh
-          uhd docker update ${{ matrix.environment }} $TARGET_ENV
+          uhd terraform init
+          uhd terraform plan:layer 10-account test
+          uhd terraform plan:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
-
-  restart_services:
-    name: Restart services (${{ matrix.environment }})
+  terraform_apply:
+    name: Terraform apply
     runs-on: ubuntu-latest
-    needs: [ "push_docker_images" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [ public, auth ]
-    env:
-      TARGET_ENV: ${{ needs.build_base.outputs[format('{0}_env', matrix.environment)] }}
+    needs: ["build_base", "terraform_plan"]
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
-      - name: Configure AWS credentials (${{ matrix.environment }})
+      - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init
+          uhd terraform apply:layer 10-account test
+          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+  push_docker_images:
+    name: Push docker images
+    runs-on: ubuntu-latest
+    needs: ["terraform_apply"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Pull / push docker images
+        run: |
+          source uhd.sh
+          uhd docker update test ci-$SHORT_SHA
+        shell: zsh {0}
+
+  restart_services:
+    name: Restart services
+    runs-on: ubuntu-latest
+    needs: ["push_docker_images"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -655,18 +201,17 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app $PUBLIC_ENV
-          uhd terraform output:layer 20-app $AUTH_ENV
+          uhd terraform output:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
-      - name: Configure AWS credentials for restart services
+      - name: Configure AWS credentials for test account
         uses: ./.github/actions/configure-aws-credentials
         with:
+          account-name: 'test'
           aws-region: ${{ env.AWS_REGION }}
           test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
-      - name: Restart ECS services (${{ matrix.environment }})
+      - name: Restart ECS services
         run: |
           source uhd.sh
           uhd ecs restart-services
@@ -678,141 +223,58 @@ jobs:
           uhd lambda restart-functions
         shell: zsh {0}
 
-
   terraform_destroy:
-    name: Terraform destroy (${{ matrix.environment }})
+    name: Terraform destroy
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ success() }}
-    needs: [ "terraform_plan" ]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [ public, auth ]
-    env:
-      TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
-      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
+    if: ${{ always() }}
+    needs: ["restart_services"]
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
-
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-
-      - name: Debug Terraform Setup
-        if: ${{ env.DESTROY_SKIPPED != 'true' }}
-        run: |
-          terraform version
-          [[ -n "$TARGET_ENV" ]] && terraform workspace show
-
-      - name: Select Terraform Workspace
-        uses: ./.github/actions/select-terraform-workspace
-        with:
-          target_env: $TARGET_ENV
-
-      - name: Configure AWS credentials (${{ matrix.environment }})
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
-
-      - name: Cleanup Terraform Workspace on Failure
-        if: failure()
-        run: |
-          echo "Terraform Destroy failed. Cleaning up workspace..."
-          terraform workspace select default
-          terraform workspace delete $TARGET_ENV || echo "Warning: Failed to delete workspace"
-
-      - name: Retry Terraform Destroy (${{ matrix.environment }})
-        run: |
-          for attempt in {1..3}; do
-            set -x
-            source uhd.sh
-            uhd terraform init:layer 20-app
-
-            layers=("20-app" "10-account")
-            declare -A pids errors logs start_times end_times durations
-
-            for layer in "${layers[@]}"; do
-              logs[$layer]="terraform-destroy-$layer.log"
-              start_times[$layer]=$(date +%s)
-              echo "Destroying Terraform for $layer (log: ${logs[$layer]})..."
-
-              (uhd terraform destroy:layer $layer $TARGET_ENV > >(tee "${logs[$layer]}") 2> >(tee -a "${logs[$layer]}" >&2)) &
-              pids[$layer]=$!
-            done
-
-            for layer in "${!pids[@]}"; do
-              if ! wait "${pids[$layer]}"; then
-                errors[$layer]=1
-              fi
-              end_times[$layer]=$(date +%s)
-              durations[$layer]=$((end_times[$layer] - start_times[$layer]))
-            done
-
-            if [[ ${#errors[@]} -gt 0 ]]; then
-              echo "Terraform Destroy Failed for: ${!errors[@]}"
-              for layer in "${!errors[@]}"; do
-                echo "ERROR: Destroy Failure in $layer"
-                echo "----------------------------------------"
-                tail -n 20 "${logs[$layer]}"  # Show last 20 lines of logs
-                echo "----------------------------------------"
-              done
-              if [[ $attempt -lt 3 ]]; then
-                echo "Retrying Terraform Destroy (Attempt $((attempt+1)))..."
-                sleep 10
-              else
-                echo "Final attempt failed. Exiting..."
-                exit 1
-              fi
-            else
-              break
-            fi
-          done
-        shell: zsh {0}
-
-      - name: Upload Terraform Destroy Logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-destroy-${{ matrix.environment }}
-          path: terraform-destroy-${{ matrix.environment }}.log
-
-
-  clean_up_remaining_resources:
-    name: Clean up remaining resources
-    runs-on: ubuntu-latest
-    needs: [ "terraform_destroy" ]
-    if: always()
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: "."
-          sparse-checkout: false
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
-      - name: Cleanup Terraform Workspaces
-        continue-on-error: true
-        run: |
-          terraform init -upgrade
-          terraform workspace list | grep -q "default" || terraform workspace new default
-          for workspace in $(terraform workspace list | grep -E '^ci-|^auth-ci-'); do
-            terraform workspace select default
-            terraform workspace delete "$workspace" || echo "Warning: Failed to delete $workspace"
-          done
-      - name: Delete secrets safely
-        continue-on-error: true
+
+      - name: Terraform destroy
         run: |
           source uhd.sh
-          uhd secrets delete-all-secrets ci-$SHORT_SHA || echo "⚠ Warning: Secret deletion failed!"
+          uhd terraform init:layer 20-app
+          uhd terraform destroy:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
+
+  clean_up_remaining_resources:
+    name: Clean up remaining resources
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: ["terraform_destroy"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Configure AWS credentials for test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: 'test'
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+
+      - name: Delete secrets
+        run: |
+          source uhd.sh
+          uhd secrets delete-all-secrets ci-$SHORT_SHA
         shell: zsh {0}
