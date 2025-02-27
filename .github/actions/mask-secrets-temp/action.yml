@@ -1,0 +1,34 @@
+name: Mask Secrets
+description: "Masks sensitive secrets before logging"
+
+inputs:
+  github_token:
+    description: "GitHub token"
+    required: true
+  terraform_iam_role:
+    description: "Terraform IAM Role"
+    required: true
+  terraform_role_public:
+    description: "Terraform Role Public"
+    required: true
+  terraform_role_auth:
+    description: "Terraform Role Auth"
+    required: true
+  terraform_role_test:
+    description: "Terraform Role Test"
+    required: true
+  terraform_role_auth_test:
+    description: "Terraform Role Auth Test"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "::add-mask::${{ inputs.github_token }}"
+        echo "::add-mask::${{ inputs.terraform_iam_role }}"
+        echo "::add-mask::${{ inputs.terraform_role_public }}"
+        echo "::add-mask::${{ inputs.terraform_role_auth }}"
+        echo "::add-mask::${{ inputs.terraform_role_test }}"
+        echo "::add-mask::${{ inputs.terraform_role_auth_test }}"
+      shell: bash
