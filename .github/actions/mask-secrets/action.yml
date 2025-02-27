@@ -1,0 +1,104 @@
+name: "Configure AWS credentials"
+
+description: "Configures credentials for the selected AWS account"
+
+inputs:
+  account-name:
+    description: "The name of the AWS account being selected. Defaults to `tools`."
+    default: "tools"
+  aws-region:
+    description: "The AWS region to configure credentials in."
+    required: true
+  role-duration-seconds:
+    description: "The assumed role duration in seconds. Defaults to 1 hour."
+    default: "3600"
+
+  # Note that the roles are optional by default.
+  # When using this composite action, you must pass in the role you need
+  # from the `secrets` context.
+  tools-account-role:
+    description: "The role associated with the tools account"
+    required: false
+  prod-account-role:
+    description: "The role associated with the prod account"
+    required: false
+  dev-account-role:
+    description: "The role associated with the dev account"
+    required: false
+  test-account-role:
+    description: "The role associated with the test account"
+    required: false
+  uat-account-role:
+    description: "The role associated with the uat account"
+    required: false
+  auth-dev-account-role:
+    description: "The role associated with the auth-dev account"
+    required: false
+  auth-test-account-role:
+    description: "The role associated with the auth-test account"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials for tools account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'tools' }}
+      with:
+        role-to-assume: ${{ inputs.tools-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for prod account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'prod' }}
+      with:
+        role-to-assume: ${{ inputs.prod-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for dev account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ contains(fromJSON('["dev", "dpd"]'), inputs.account-name) }}
+      with:
+        role-to-assume: ${{ inputs.dev-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for test account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'test' }}
+      with:
+        role-to-assume: ${{ inputs.test-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for uat account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'uat' || inputs.account-name == 'staging' }}
+      with:
+        role-to-assume: ${{ inputs.uat-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for auth-dev account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'auth-dev' }}
+      with:
+        role-to-assume: ${{ inputs.auth-dev-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for auth-test account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'auth-test' }}
+      with:
+        role-to-assume: ${{ inputs.auth-test-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
