@@ -21,10 +21,13 @@ jobs:
       public_env: ${{ steps.set_env.outputs.PUBLIC_ENV }}
       auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
-      - uses: ./github/actions/mask-secrets
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
@@ -114,7 +117,8 @@ jobs:
       deploy_auth_dev: ${{ steps.fast_forward_merge.outputs.deploy_auth_dev }}
       deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-zsh
@@ -166,8 +170,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./github/actions/mask-secrets
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
@@ -192,8 +199,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./github/actions/mask-secrets
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
@@ -237,9 +247,12 @@ jobs:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
       TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-      - uses: ./github/actions/mask-secrets
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Mask Secrets
+        uses: actions/setup-python@v5
+      - uses: ./.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
@@ -378,9 +391,12 @@ jobs:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
       TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - uses: ./github/actions/mask-secrets
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
@@ -521,7 +537,8 @@ jobs:
     env:
       TARGET_ENV: ${{ needs.build_base.outputs[format('{0}_env', matrix.environment)] }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Configure AWS credentials (${{ matrix.environment }})
         uses: ./.github/actions/configure-aws-credentials
         with:
@@ -547,7 +564,8 @@ jobs:
     env:
       TARGET_ENV: ${{ needs.build_base.outputs[format('{0}_env', matrix.environment)] }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Configure AWS credentials (${{ matrix.environment }})
         uses: ./.github/actions/configure-aws-credentials
         with:
@@ -599,7 +617,8 @@ jobs:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
       TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - uses: actions/setup-python@v5
 
       - name: Debug Terraform Setup
@@ -687,7 +706,8 @@ jobs:
     needs: [ "terraform_destroy" ]
     if: always()
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
         with:
