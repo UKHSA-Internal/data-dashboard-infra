@@ -213,7 +213,7 @@ jobs:
         environment: [ public, auth ]
     env:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
-      TERRAFORM_ROLE: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', upper(matrix.environment))] }}
+      TERRAFORM_ROLE: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -367,7 +367,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', upper(matrix.environment))] }}
+          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
 
       - name: Retry Terraform Apply (${{ matrix.environment }})
         run: |
@@ -489,7 +489,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', upper(matrix.environment))] }}
+          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
       - name: Pull / push docker images (${{ matrix.environment }})
@@ -515,7 +515,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', upper(matrix.environment))] }}
+          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -579,7 +579,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', upper(matrix.environment))] }}
+          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
 
       - name: Cleanup Terraform Workspace on Failure
         if: failure()
