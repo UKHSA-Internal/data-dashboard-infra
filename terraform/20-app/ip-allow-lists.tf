@@ -24,13 +24,14 @@ locals {
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
+      "2.220.184.212/32",   # Hashim Malik
     ],
     project_team = [
       "90.196.180.145/32",  # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "86.159.88.234/32",   # Khawar
+      "109.147.97.65/32",   # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
