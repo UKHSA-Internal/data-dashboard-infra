@@ -22,9 +22,16 @@ jobs:
       auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/mask-secrets
         with:
           ref: ${{ github.base_ref }}
+      - uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Ensure UHD Script Exists
         run: |
@@ -161,6 +168,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Test ${{ matrix.function }}
         uses: ./.github/actions/npm-test
@@ -180,6 +194,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Download test coverage
         uses: actions/download-artifact@v4.1.9
@@ -214,11 +235,18 @@ jobs:
         environment: [ public, auth ]
     env:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
-      TERRAFORM_ROLE: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
+      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Terraform plan (${{ matrix.environment }})
         run: |
@@ -347,11 +375,19 @@ jobs:
       matrix:
         environment: [ public, auth ]
     env:
-      TARGET_ENV: ${{ needs.build_base.outputs[format('{0}_env', matrix.environment)] }}
+      TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
+      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Debug Terraform Setup
         if: ${{ env.DESTROY_SKIPPED != 'true' }}
@@ -561,6 +597,7 @@ jobs:
         environment: [ public, auth ]
     env:
       TARGET_ENV: ${{ needs.build_base.outputs[matrix.environment == 'public' && 'public_env' || 'auth_env'] }}
+      TERRAFORM_ROLE: ${{ matrix.environment == 'public' && secrets.UHD_TERRAFORM_ROLE_PUBLIC || secrets.UHD_TERRAFORM_ROLE_AUTH }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
