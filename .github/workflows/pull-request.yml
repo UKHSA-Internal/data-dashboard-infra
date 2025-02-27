@@ -14,6 +14,30 @@ permissions:
   contents: read
 
 jobs:
+  debug_mask_action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          sparse-checkout: false
+
+      - name: Debug Mask Secrets Action Path
+        run: |
+          echo "Current Directory: $(pwd)"
+          ls -la .github/actions
+          ls -la .github/actions/mask-secrets/
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
   build_base:
     name: Build base env
     runs-on: ubuntu-latest
