@@ -44,7 +44,7 @@ jobs:
 
       - name: Apply Terraform for Main Branch
         run: |
-          source uhd.sh
+          source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
           uhd terraform init:layer "20-app"
           uhd terraform apply:layer "20-app" "ci-${{ github.event.pull_request.number }}-$SHORT_SHA"
         shell: zsh {0}
@@ -84,13 +84,11 @@ jobs:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: ./.github/actions/setup-terraform
-      - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
-
       - name: Validate AWS Assume Role Permissions
         run: |
           aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
 
       - name: Apply Terraform for Feature Branch
         run: |
