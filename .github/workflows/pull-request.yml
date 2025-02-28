@@ -84,11 +84,13 @@ jobs:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
       - name: Validate AWS Assume Role Permissions
         run: |
           aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
-      - uses: ./.github/actions/setup-terraform
-      - uses: ./.github/actions/setup-zsh
 
       - name: Apply Terraform for Feature Branch
         run: |
