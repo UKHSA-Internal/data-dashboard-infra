@@ -3,6 +3,10 @@ resource "aws_wafv2_web_acl" "cms_admin" {
   description = "Web ACL for CMS application"
   scope       = "REGIONAL"
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   default_action {
     dynamic "block" {
       for_each = [""]
