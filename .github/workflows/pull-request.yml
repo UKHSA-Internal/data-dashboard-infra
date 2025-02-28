@@ -47,7 +47,7 @@ jobs:
           source uhd.sh
           uhd terraform init:layer 20-app
           uhd terraform apply:layer 20-app ci-${{ github.event.pull_request.number }}-$SHORT_SHA
-        shell: zsh {0}
+        shell: bash
 
       - name: Checkout Feature Branch
         run: |
@@ -94,7 +94,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform apply:layer 20-app ci-${{ github.event.pull_request.number }}-$SHORT_SHA
-        shell: zsh {0}
+        shell: bash
 
       - name: Determine Environment
         id: set_env
@@ -136,7 +136,7 @@ jobs:
             echo "Fast forward merge failed!" >&2
             exit 1
           fi
-        shell: zsh {0}
+        shell: bash
         env:
           CI: "true"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -274,7 +274,7 @@ jobs:
           uhd terraform init
           uhd terraform plan:layer 10-account $TARGET_ENV -refresh=true
           uhd terraform plan:layer 20-app $TARGET_ENV -refresh=true
-        shell: zsh {0}
+        shell: bash
 
       - name: Terraform Plan Summary
         run: |
@@ -473,7 +473,7 @@ jobs:
               break
             fi
           done
-        shell: zsh {0}
+        shell: bash
 
       - name: Upload Terraform Apply Logs
         uses: actions/upload-artifact@v4
@@ -528,7 +528,7 @@ jobs:
               echo "Warning: Log file for $layer not found!"
             fi
           done
-        shell: zsh {0}
+        shell: bash
 
 
   push_docker_images:
@@ -643,19 +643,19 @@ jobs:
           uhd terraform init:layer 20-app
           uhd terraform output:layer 20-app $PUBLIC_ENV
           uhd terraform output:layer 20-app $AUTH_ENV
-        shell: zsh {0}
+        shell: bash
 
       - name: Restart ECS services (${{ matrix.environment }})
         run: |
           source uhd.sh
           uhd ecs restart-services
-        shell: zsh {0}
+        shell: bash
 
       - name: Redeploy lambda functions
         run: |
           source uhd.sh
           uhd lambda restart-functions
-        shell: zsh {0}
+        shell: bash
 
 
   terraform_destroy:
@@ -760,7 +760,7 @@ jobs:
               break
             fi
           done
-        shell: zsh {0}
+        shell: bash
 
       - name: Upload Terraform Destroy Logs
         uses: actions/upload-artifact@v4
@@ -827,4 +827,4 @@ jobs:
         run: |
           source uhd.sh
           uhd secrets delete-all-secrets ci-$SHORT_SHA || echo "⚠ Warning: Secret deletion failed!"
-        shell: zsh {0}
+        shell: bash
