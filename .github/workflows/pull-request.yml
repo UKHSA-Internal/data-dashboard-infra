@@ -35,11 +35,6 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-      - name: Export SHORT_SHA Globally
-        run: |
-          echo "SHORT_SHA=${{ env.SHORT_SHA }}" >> $GITHUB_ENV
-          echo "SHORT_SHA=${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
-
       - name: Verify Short SHA
         run: |
           if [[ -z "${{ env.SHORT_SHA }}" ]]; then
@@ -52,7 +47,7 @@ jobs:
         run: |
           source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
           uhd terraform init:layer "20-app"
-          uhd terraform apply:layer "20-app" "ci-${{ github.event.pull_request.number }}-$SHORT_SHA"
+          uhd terraform apply:layer "20-app" "uhd-ci-$SHORT_SHA"
         shell: zsh {0}
 
       - name: Checkout Feature Branch
@@ -91,16 +86,18 @@ jobs:
       - name: Apply Terraform for Feature Branch
         run: |
           source uhd.sh
-          uhd terraform apply:layer 20-app ci-${{ github.event.pull_request.number }}-$SHORT_SHA
+          uhd terraform apply:layer 20-app ${{ env.PUBLIC_ENV }}
+          uhd terraform apply:layer 20-app ${{ env.AUTH_ENV }}
         shell: zsh {0}
 
       - name: Determine Environment
         id: set_env
         run: |
-          echo "PUBLIC_ENV=ci-${{ github.event.pull_request.number }}-$SHORT_SHA" >> $GITHUB_ENV
-          echo "AUTH_ENV=ci-a-${{ github.event.pull_request.number }}-$SHORT_SHA" >> $GITHUB_ENV
-          echo "PUBLIC_ENV=ci-${{ github.event.pull_request.number }}-$SHORT_SHA" >> $GITHUB_OUTPUT
-          echo "AUTH_ENV=ci-a-${{ github.event.pull_request.number }}-$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
+
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
 
   fast_forward_env_branches:
     name: Fast forward env branches
@@ -278,7 +275,7 @@ jobs:
         run: |
           echo "### Terraform Plan Summary ###"
           PLAN_FILE="terraform-plan-${{ matrix.environment }}.json"
-          terraform show -json tfplan-${{ matrix.environment }}.out | jq '.' > "$PLAN_FILE" || { echo "⚠ No Terraform output found!"; exit 0; }
+          terraform show -json tfplan-${{ matrix.environment }}.out | jq '.' > "$PLAN_FILE" || { echo "No Terraform output found!"; exit 0; }
 
           if [[ ! -s "$PLAN_FILE" ]]; then
             echo "⚠ No changes detected in Terraform plan. Skipping summary."
@@ -310,14 +307,13 @@ jobs:
         run: |
           echo "Checking Terraform Plan..."
           PLAN_FILE=tfplan-${{ matrix.environment }}.out
-          terraform show -json $PLAN_FILE | jq '.' > terraform-plan-${{ matrix.environment }}.json || { echo "⚠ No Terraform plan output found!"; exit 0; }
+          terraform show -json $PLAN_FILE | jq '.' > terraform-plan-${{ matrix.environment }}.json || { echo "No Terraform plan output found!"; exit 0; }
 
-          DELETED_RESOURCES=$(jq -r '.resource_changes[] | select(.change.actions | contains(["delete"]))' terraform-plan-${{ matrix.environment }}.json 2>/dev/null || echo "")
-
-          if [[ -n "$DELETED_RESOURCES" ]]; then
+          DELETED_RESOURCES=$(jq -r '[.resource_changes[] | select(.change.actions | contains(["delete"]))] | length' terraform-plan-${{ matrix.environment }}.json 2>/dev/null || echo "0")
+          
+          if [[ "$DELETED_RESOURCES" -gt 0 ]]; then
             echo "ERROR: Terraform plan contains deletions!"
-            echo "Resources marked for deletion:"
-            echo "$DELETED_RESOURCES"
+            echo "Resources marked for deletion: $DELETED_RESOURCES"
             exit 1
           else
             echo "Terraform plan is safe to apply!"
@@ -347,7 +343,12 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ env.TERRAFORM_ROLE }}
+          test-account-role: ${{ secrets[format('UHD_TERRAFORM_ROLE_{0}', matrix.environment == 'public' && 'PUBLIC' || 'AUTH')] }}
+
+      - name: Terraform Apply (${{ matrix.environment }})
+        run: |
+          source uhd.sh
+          uhd terraform apply:layer 20-app $TARGET_ENV
 
       - name: Debug AWS Role & Permissions
         run: |
@@ -443,6 +444,8 @@ jobs:
               start_times[$layer]=$(date +%s)
               echo "Applying Terraform for $layer (log: ${logs[$layer]})..."
 
+              terraform force-unlock -force || echo "No active locks found for $layer"
+
               (uhd terraform apply:layer $layer $TARGET_ENV | tee "${logs[$layer]}") &
               pids[$layer]=$!
             done
@@ -495,16 +498,11 @@ jobs:
               DESTROYED=$(grep "destroyed" "terraform-apply-$layer.log" || echo "No resources deleted.")
 
               echo "Terraform Apply Summary for $layer"
-              echo "----------------------------------------"
-              echo "Created Resources:"
-              echo "$CREATED"
-              echo ""
-              echo "Updated Resources:"
-              echo "$UPDATED"
-              echo ""
-              echo "Deleted Resources:"
-              echo "$DESTROYED"
-              echo "----------------------------------------"
+              echo "=================================="
+              echo "- Created Resources:  $(grep "created" "terraform-apply-$layer.log" | wc -l)"
+              echo "- Updated Resources:  $(grep "updated" "terraform-apply-$layer.log" | wc -l)"
+              echo "- Deleted Resources:  $(grep "destroyed" "terraform-apply-$layer.log" | wc -l)"
+              echo "=================================="
 
               echo "Checking Terraform Apply status for $layer..."
               if grep -q "Apply complete!" "terraform-apply-$layer.log" || ! grep -iq "error" "terraform-apply-$layer.log"; then
@@ -581,26 +579,31 @@ jobs:
       - name: Check if Docker image exists in ECR
         id: check_docker_image
         run: |
-          IMAGE_TAG="ci-${{ github.event.pull_request.number }}-${{ env.SHORT_SHA }}"
+          IMAGE_TAG="uhd-ci-${{ env.SHORT_SHA }}"
+          AUTH_IMAGE_TAG="uhd-ci-${{ env.SHORT_SHA }}-a"
+
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
           echo "Checking if image $IMAGE_TAG exists in AWS ECR ($REPO_NAME)..."
-
-          if aws ecr describe-images --repository-name "$REPO_NAME" \
-              --image-ids imageTag="$IMAGE_TAG" \
-              --registry-id "$AWS_ACCOUNT_ID" &> /dev/null; then
-            echo "Docker image $IMAGE_TAG already exists. Skipping push."
-            echo "SKIP_PUSH=true" >> $GITHUB_ENV
+          if aws ecr describe-images --repository-name "$REPO_NAME" --image-ids imageTag="$IMAGE_TAG" --registry-id "$AWS_ACCOUNT_ID" &> /dev/null; then
+            echo "Public Docker image $IMAGE_TAG already exists."
           else
-            echo "Docker image $IMAGE_TAG not found. Proceeding with push."
-            echo "SKIP_PUSH=false" >> $GITHUB_ENV
+            echo "Public Docker image $IMAGE_TAG not found. Proceeding with push."
+          fi
+
+          echo "Checking if auth image $AUTH_IMAGE_TAG exists..."
+          if aws ecr describe-images --repository-name "$REPO_NAME" --image-ids imageTag="$AUTH_IMAGE_TAG" --registry-id "$AWS_ACCOUNT_ID" &> /dev/null; then
+            echo "Auth Docker image $AUTH_IMAGE_TAG already exists."
+          else
+            echo "Auth Docker image $AUTH_IMAGE_TAG not found. Proceeding with push."
           fi
 
       - name: Pull / Push Docker image
         if: ${{ env.SKIP_PUSH != 'true' }}
         run: |
           source uhd.sh
-          uhd docker update ${{ matrix.environment }} ci-${{ github.event.pull_request.number }}-${{ env.SHORT_SHA }}
+          uhd docker update public uhd-ci-${{ env.SHORT_SHA }}
+          uhd docker update auth uhd-ci-${{ env.SHORT_SHA }}-a
 
   restart_services:
     name: Restart services (${{ matrix.environment }})
@@ -639,9 +642,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app $PUBLIC_ENV
-          uhd terraform output:layer 20-app $AUTH_ENV
-        shell: zsh {0}
+          uhd terraform output:layer 20-app $TARGET_ENV
 
       - name: Restart ECS services (${{ matrix.environment }})
         run: |
@@ -729,6 +730,8 @@ jobs:
               logs[$layer]="terraform-destroy-$layer.log"
               start_times[$layer]=$(date +%s)
               echo "Destroying Terraform for $layer (log: ${logs[$layer]})..."
+
+              terraform force-unlock -force || echo "No active locks found for $layer"
 
               (uhd terraform destroy:layer $layer $TARGET_ENV > >(tee "${logs[$layer]}") 2> >(tee -a "${logs[$layer]}" >&2)) &
               pids[$layer]=$!

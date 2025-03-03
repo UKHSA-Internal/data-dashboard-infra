@@ -557,7 +557,7 @@ function _get_auth_target_aws_account_name() {
 
 _get_dev_workspace_name() {
     local input="${1:-$(whoami)}"
-    echo "$input" | openssl dgst -sha1 -binary | xxd -p | cut -c1-5
+    echo "$input" | openssl dgst -sha1 -binary | xxd -p | cut -c1-8
 }
 
 _get_workspace_name() {
