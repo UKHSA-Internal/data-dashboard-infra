@@ -350,7 +350,7 @@ jobs:
       - name: Terraform Apply (${{ matrix.environment }})
         run: |
           source uhd.sh
-          uhd terraform apply:layer 20-app $TARGET_ENV
+          uhd terraform apply:layer 20-app $TARGET_ENV -auto-approve
 
       - name: Debug AWS Role & Permissions
         run: |
