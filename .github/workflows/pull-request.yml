@@ -309,14 +309,16 @@ jobs:
           PLAN_FILE=tfplan-${{ matrix.environment }}.out
           terraform show -json $PLAN_FILE | jq '.' > terraform-plan-${{ matrix.environment }}.json || { echo "No Terraform plan output found!"; exit 0; }
 
-          DELETED_RESOURCES=$(jq -r '[.resource_changes[] | select(.change.actions | contains(["delete"]))] | length' terraform-plan-${{ matrix.environment }}.json 2>/dev/null || echo "0")
-          
-          if [[ "$DELETED_RESOURCES" -gt 0 ]]; then
+          echo "Checking for deletions in Terraform Plan..."
+          DELETED_RESOURCES=$(terraform show -json $PLAN_FILE | jq '.resource_changes[] | select(.change.actions | contains(["delete"]))' 2>/dev/null || echo "")
+
+          if [[ -n "$DELETED_RESOURCES" && "$DELETED_RESOURCES" != "[]" ]]; then
             echo "ERROR: Terraform plan contains deletions!"
-            echo "Resources marked for deletion: $DELETED_RESOURCES"
+            echo "Resources marked for deletion:"
+            echo "$DELETED_RESOURCES"
             exit 1
           else
-            echo "Terraform plan is safe to apply!"
+            echo "No deletions detected. Terraform plan is safe to apply."
           fi
 
       - name: Debug Terraform Setup
