@@ -2,7 +2,7 @@ locals {
   region      = "eu-west-2"
   project     = "uhd"
   environment = terraform.workspace
-  prefix      = local.environment
+  prefix      = "${local.project}-${local.environment}"
 
   account_id                    = var.assume_account_id
   etl_account_id                = var.etl_account_id
