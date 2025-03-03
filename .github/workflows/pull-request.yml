@@ -23,9 +23,13 @@ jobs:
       - name: Checkout Repository (Main)
         uses: actions/checkout@v4
         with:
-          ref: main
-          fetch-depth: 0
-          persist-credentials: true
+          ref: ${{ github.base_ref }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -79,12 +83,6 @@ jobs:
             exit 1
           fi
           chmod +x uhd.sh
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
 
       - name: Validate AWS Assume Role Permissions
         run: |
