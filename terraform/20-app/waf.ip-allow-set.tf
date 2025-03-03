@@ -8,3 +8,13 @@ resource "aws_wafv2_ip_set" "ip_allow_list" {
         formatlist("%s/32", module.vpc.nat_public_ips)
     )
 }
+
+resource "aws_wafv2_ip_set" "ip_allow_list_regional" {
+  name               = "${local.prefix}-ip-allow-list-regional"
+  scope              = "REGIONAL"
+  ip_address_version = "IPV4"
+  addresses          = concat(
+    local.complete_ip_allow_list,
+    formatlist("%s/32", module.vpc.nat_public_ips)
+  )
+}
