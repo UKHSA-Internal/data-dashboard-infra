@@ -93,11 +93,11 @@ jobs:
       - name: Determine Environment
         id: set_env
         run: |
-          echo "PUBLIC_ENV=ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
-          echo "AUTH_ENV=ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
 
-          echo "PUBLIC_ENV=ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
-          echo "AUTH_ENV=ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
 
   fast_forward_env_branches:
     name: Fast forward env branches
