@@ -1,7 +1,7 @@
 locals {
   region  = "eu-west-2"
   project = "uhd"
-  account = terraform.workspace == "default" ? local.project : replace(terraform.workspace, "^uhd-", "")
+  account = terraform.workspace
 
   wke_dns_names = {
     dev   = "dev.ukhsa-dashboard.data.gov.uk"
@@ -15,5 +15,5 @@ locals {
 }
 
 locals {
-  ship_cur_to_green_ops_dashboard = true
+  ship_cur_to_green_ops_dashboard    = true
 }
