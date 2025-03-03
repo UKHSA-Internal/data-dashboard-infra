@@ -1,8 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "89.36.121.11/32",    # Afaan
-      "82.132.232.163/32",  # Afaan 2
+      "82.132.220.25/32",   # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
@@ -13,8 +12,6 @@ locals {
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "81.108.89.51/32",    # Krishna - Macbook
-      "147.161.236.99/32",  # Krishna - Windows
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
       "147.161.167.103/32", # Temitope Akinsoto
@@ -27,13 +24,14 @@ locals {
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
+      "165.225.17.7/32",    # Declan Barrett
     ],
     project_team = [
-      "90.196.180.145/32",     # Debbie
+      "90.196.180.145/32",  # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "86.159.88.234/32",   # Khawar
+      "109.147.97.65/32",   # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
@@ -55,7 +53,6 @@ locals {
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "194.9.109.92/32",    # Jason Deakin 2
-      "192.168.0.20/32",    # Alana Firth
       "194.9.109.118/32",   # Georgina Milne
     ]
     pen_testers = []
