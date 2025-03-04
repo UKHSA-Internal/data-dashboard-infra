@@ -40,6 +40,18 @@ jobs:
         with:
           branch: ${{ env.branch }}
 
+      - name: Debug Environment Variables  # 🔹 ADD THIS
+        run: |
+          echo "==== Debugging Environment Variables ===="
+          echo "Branch: $branch"
+          echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
+          echo "Target Account Name: $TARGET_ACCOUNT_NAME"
+          echo "Is Account Layer Branch: $IS_ACCOUNT_LAYER_BRANCH"
+          echo "Full ENVIRONMENT_NAME: $(env | grep ENVIRONMENT_NAME)"
+          echo "All ENV variables:"
+          env | sort
+        shell: bash
+
       - name: Terraform plan
         run: |
           source uhd.sh

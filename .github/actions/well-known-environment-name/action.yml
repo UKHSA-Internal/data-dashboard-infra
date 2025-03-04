@@ -12,20 +12,26 @@ runs:
   steps:
     - run: |
         source uhd.sh
+        echo "==== Extracting ENVIRONMENT_NAME ===="
+        echo "Raw branch name: $branch"
+        
         EXTRACTED_ENVIRONMENT_NAME=$(echo $branch | grep -P '([^\/]+$)' -o)
+        echo "Extracted environment name: $EXTRACTED_ENVIRONMENT_NAME"
 
-        # Ensure "uhd-" is only prefixed once
+        # Ensure 'uhd-' is only prefixed once
         if [[ $EXTRACTED_ENVIRONMENT_NAME == uhd-* ]]; then
-          ENVIRONMENT_NAME=$EXTRACTED_ENVIRONMENT_NAME
+          FINAL_ENV_NAME="$EXTRACTED_ENVIRONMENT_NAME"
         else
-          ENVIRONMENT_NAME="uhd-$EXTRACTED_ENVIRONMENT_NAME"
+          FINAL_ENV_NAME="uhd-$EXTRACTED_ENVIRONMENT_NAME"
         fi
-
-        echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
-
-        echo "ENVIRONMENT_NAME=$ENVIRONMENT_NAME" >> $GITHUB_ENV
-        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $EXTRACTED_ENVIRONMENT_NAME)" >> $GITHUB_ENV  
+        
+        echo "Final ENVIRONMENT_NAME: $FINAL_ENV_NAME"
+        
+        echo "ENVIRONMENT_NAME=$FINAL_ENV_NAME" >> $GITHUB_ENV
+        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $FINAL_ENV_NAME)" >> $GITHUB_ENV  
         echo "IS_ACCOUNT_LAYER_BRANCH=$is_account_layer_branch" >> $GITHUB_ENV
+
+        echo "==== ENVIRONMENT_NAME Set to: $FINAL_ENV_NAME ===="
       env:
         branch: ${{ inputs.branch }}
         is_account_layer_branch: ${{ contains(fromJSON('["env/dev/dev", "env/test/test", "env/uat/uat", "env/auth-dev/auth-dev", "env/auth-test/auth-test"]'), inputs.branch) }}
