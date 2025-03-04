@@ -104,6 +104,8 @@ jobs:
           echo "Checking uhd.sh script..."
           ls -la uhd.sh || { echo "ERROR: uhd.sh missing!"; exit 1; }
           echo "-----------------------------------------"
+          terraform output debug_workspace
+          terraform output debug_prefix
         shell: bash
 
       - name: Apply Terraform for Main Branch
