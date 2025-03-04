@@ -1,7 +1,7 @@
 locals {
   region  = "eu-west-2"
   project = "uhd"
-  account = terraform.workspace
+  account = replace(terraform.workspace, "^uhd-", "")
 
   wke_dns_names = {
     dev   = "dev.ukhsa-dashboard.data.gov.uk"
