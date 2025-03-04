@@ -72,7 +72,20 @@ jobs:
 
           echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
           echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
-        shell: zsh {0}
+        shell: bash
+
+      - name: Debug Environment Variables After Setting PUBLIC_ENV & AUTH_ENV
+        run: |
+          echo "---- DEBUGGING ENVIRONMENT VARIABLES ----"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Extracted ENVIRONMENT_NAME: ${{ env.ENVIRONMENT_NAME }}"
+          echo "TARGET_ACCOUNT_NAME: ${{ env.TARGET_ACCOUNT_NAME }}"
+          echo "IS_ACCOUNT_LAYER_BRANCH: ${{ env.IS_ACCOUNT_LAYER_BRANCH }}"
+          echo "SHORT_SHA: ${{ env.SHORT_SHA }}"
+          echo "PUBLIC_ENV: ${{ env.PUBLIC_ENV }}"
+          echo "AUTH_ENV: ${{ env.AUTH_ENV }}"
+          echo "-----------------------------------------"
+        shell: bash
 
       - name: Debug Environment Variables (Pre-Terraform)
         run: |
