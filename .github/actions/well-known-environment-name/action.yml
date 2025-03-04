@@ -12,14 +12,22 @@ runs:
   steps:
     - run: |
         source uhd.sh
-        echo "==== Extracting ENVIRONMENT_NAME ===="
+        echo "==== DEBUG: Extracting ENVIRONMENT_NAME ===="
         echo "Raw branch name: $branch"
         
-        EXTRACTED_ENVIRONMENT_NAME=$(echo $branch | grep -P '([^\/]+$)' -o)
+        # Extract the last part of the branch name (without /)
+        EXTRACTED_ENVIRONMENT_NAME=$(echo "$branch" | grep -oE '[^/]+$')
+
+        # If extraction fails, set fallback environment name
+        if [[ -z "$EXTRACTED_ENVIRONMENT_NAME" ]]; then
+          echo "ERROR: Failed to extract ENVIRONMENT_NAME! Falling back to 'unknown-env'"
+          EXTRACTED_ENVIRONMENT_NAME="unknown-env"
+        fi
+
         echo "Extracted environment name: $EXTRACTED_ENVIRONMENT_NAME"
 
         # Ensure 'uhd-' is only prefixed once
-        if [[ $EXTRACTED_ENVIRONMENT_NAME == uhd-* ]]; then
+        if [[ "$EXTRACTED_ENVIRONMENT_NAME" == uhd-* ]]; then
           FINAL_ENV_NAME="$EXTRACTED_ENVIRONMENT_NAME"
         else
           FINAL_ENV_NAME="uhd-$EXTRACTED_ENVIRONMENT_NAME"
@@ -27,12 +35,33 @@ runs:
         
         echo "Final ENVIRONMENT_NAME: $FINAL_ENV_NAME"
         
+        # Set environment variables
         echo "ENVIRONMENT_NAME=$FINAL_ENV_NAME" >> $GITHUB_ENV
-        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $FINAL_ENV_NAME)" >> $GITHUB_ENV  
-        echo "IS_ACCOUNT_LAYER_BRANCH=$is_account_layer_branch" >> $GITHUB_ENV
+        
+        # Debug: Check if _get_target_aws_account_name exists
+        if command -v _get_target_aws_account_name &> /dev/null; then
+          TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $FINAL_ENV_NAME)
+          echo "TARGET_ACCOUNT_NAME=$TARGET_ACCOUNT_NAME" >> $GITHUB_ENV
+        else
+          echo "ERROR: _get_target_aws_account_name not found!"
+        fi
+        
+        # Set IS_ACCOUNT_LAYER_BRANCH properly
+        if [[ "$branch" =~ ^env/(dev|test|uat|auth-dev|auth-test)/ ]]; then
+          IS_ACCOUNT_LAYER_BRANCH=true
+        else
+          IS_ACCOUNT_LAYER_BRANCH=false
+        fi
+        echo "IS_ACCOUNT_LAYER_BRANCH=$IS_ACCOUNT_LAYER_BRANCH" >> $GITHUB_ENV
 
-        echo "==== ENVIRONMENT_NAME Set to: $FINAL_ENV_NAME ===="
+        # Debugging Output
+        echo "==== FINAL DEBUG OUTPUT ===="
+        echo "Branch: $branch"
+        echo "Extracted ENVIRONMENT_NAME: $EXTRACTED_ENVIRONMENT_NAME"
+        echo "Final ENVIRONMENT_NAME: $FINAL_ENV_NAME"
+        echo "TARGET_ACCOUNT_NAME: $TARGET_ACCOUNT_NAME"
+        echo "IS_ACCOUNT_LAYER_BRANCH: $IS_ACCOUNT_LAYER_BRANCH"
+        echo "============================"
       env:
         branch: ${{ inputs.branch }}
-        is_account_layer_branch: ${{ contains(fromJSON('["env/dev/dev", "env/test/test", "env/uat/uat", "env/auth-dev/auth-dev", "env/auth-test/auth-test"]'), inputs.branch) }}
       shell: bash
