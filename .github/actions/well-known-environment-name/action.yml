@@ -14,13 +14,17 @@ runs:
         source uhd.sh
         EXTRACTED_ENVIRONMENT_NAME=$(echo $branch | grep -P '([^\/]+$)' -o)
 
-        # Remove "uhd-" if it already exists
+        # Ensure "uhd-" is only prefixed once
         if [[ $EXTRACTED_ENVIRONMENT_NAME == uhd-* ]]; then
-          EXTRACTED_ENVIRONMENT_NAME=${EXTRACTED_ENVIRONMENT_NAME#uhd-}
+          ENVIRONMENT_NAME=$EXTRACTED_ENVIRONMENT_NAME
+        else
+          ENVIRONMENT_NAME="uhd-$EXTRACTED_ENVIRONMENT_NAME"
         fi
 
-        echo "ENVIRONMENT_NAME=uhd-$EXTRACTED_ENVIRONMENT_NAME" >> $GITHUB_ENV
-        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)" >> $GITHUB_ENV  
+        echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
+
+        echo "ENVIRONMENT_NAME=$ENVIRONMENT_NAME" >> $GITHUB_ENV
+        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $EXTRACTED_ENVIRONMENT_NAME)" >> $GITHUB_ENV  
         echo "IS_ACCOUNT_LAYER_BRANCH=$is_account_layer_branch" >> $GITHUB_ENV
       env:
         branch: ${{ inputs.branch }}
