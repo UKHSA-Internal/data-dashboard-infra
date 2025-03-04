@@ -30,6 +30,12 @@ jobs:
         with:
           branch: ${{ github.head_ref }}
 
+      - name: Debug Environment Variables from build_base
+        run: |
+          echo "PUBLIC_ENV from build_base: ${{ needs.build_base.outputs.public_env }}"
+          echo "AUTH_ENV from build_base: ${{ needs.build_base.outputs.auth_env }}"
+        shell: bash
+
       - name: Debug Environment Variables (After well-known-environment-name)
         run: |
           echo "---- DEBUG AFTER well-known-environment-name ----"
@@ -57,6 +63,16 @@ jobs:
             exit 1
           fi
           echo "SHORT_SHA=${{ env.SHORT_SHA }}"
+
+      - name: Determine Environment
+        id: set_env
+        run: |
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
+
+          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
+          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
+        shell: zsh {0}
 
       - name: Debug Environment Variables (Pre-Terraform)
         run: |
@@ -126,18 +142,16 @@ jobs:
       - name: Apply Terraform for Feature Branch
         run: |
           source uhd.sh
+          uhd terraform plan:layer 20-app ${{ env.PUBLIC_ENV }}
+          uhd terraform plan:layer 20-app ${{ env.AUTH_ENV }}
+          
+          if grep -q 'No changes.' terraform-plan-${{ env.PUBLIC_ENV }}.json && grep -q 'No changes.' terraform-plan-${{ env.AUTH_ENV }}.json; then
+            echo "No changes detected, skipping Terraform apply."
+            exit 0
+          fi
+
           uhd terraform apply:layer 20-app ${{ env.PUBLIC_ENV }}
           uhd terraform apply:layer 20-app ${{ env.AUTH_ENV }}
-        shell: zsh {0}
-
-      - name: Determine Environment
-        id: set_env
-        run: |
-          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
-          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
-
-          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
-          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
         shell: zsh {0}
 
       - name: Debug Environment Variables After Setting PUBLIC_ENV & AUTH_ENV
