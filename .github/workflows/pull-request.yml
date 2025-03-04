@@ -70,6 +70,19 @@ jobs:
           echo "-----------------------------------------"
         shell: bash {0}
 
+      - name: Debug Before Applying Terraform for Main Branch
+        run: |
+          echo "---- DEBUGGING BEFORE APPLY TERRAFORM ----"
+          echo "SHORT_SHA: ${{ env.SHORT_SHA }}"
+          echo "AWS_REGION: ${{ env.AWS_REGION }}"
+          aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
+          echo "Checking Terraform CLI..."
+          terraform version || echo "ERROR: Terraform CLI not found!"
+          echo "Checking uhd.sh script..."
+          ls -la uhd.sh || { echo "ERROR: uhd.sh missing!"; exit 1; }
+          echo "-----------------------------------------"
+        shell: bash
+
       - name: Apply Terraform for Main Branch
         run: |
           source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
