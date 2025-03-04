@@ -43,6 +43,18 @@ jobs:
           fi
           echo "SHORT_SHA=${{ env.SHORT_SHA }}"
 
+      - name: Debug Environment Variables (Pre-Terraform)
+        run: |
+          echo "---- DEBUGGING ENVIRONMENT VARIABLES ----"
+          echo "Branch: ${{ github.head_ref }}"
+          echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
+          echo "TARGET_ACCOUNT_NAME: $TARGET_ACCOUNT_NAME"
+          echo "IS_ACCOUNT_LAYER_BRANCH: $IS_ACCOUNT_LAYER_BRANCH"
+          echo "PUBLIC_ENV: ${{ env.PUBLIC_ENV }}"
+          echo "AUTH_ENV: ${{ env.AUTH_ENV }}"
+          echo "-----------------------------------------"
+        shell: bash {0}
+
       - name: Apply Terraform for Main Branch
         run: |
           source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
@@ -262,6 +274,17 @@ jobs:
             echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
             echo "TERRAFORM_ROLE=${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}" >> $GITHUB_ENV
           fi
+
+      - name: Debug Environment Variables (Terraform Plan)
+        run: |
+          echo "---- DEBUGGING ENVIRONMENT VARIABLES ----"
+          echo "TARGET_ENV: $TARGET_ENV"
+          echo "TERRAFORM_ROLE: $TERRAFORM_ROLE"
+          echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
+          echo "TARGET_ACCOUNT_NAME: $TARGET_ACCOUNT_NAME"
+          echo "IS_ACCOUNT_LAYER_BRANCH: $IS_ACCOUNT_LAYER_BRANCH"
+          echo "-----------------------------------------"
+        shell: bash {0}
 
       - name: Terraform plan (${{ matrix.environment }})
         run: |

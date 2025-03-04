@@ -40,7 +40,7 @@ jobs:
         with:
           branch: ${{ env.branch }}
 
-      - name: Debug Environment Variables  # 🔹 ADD THIS
+      - name: Debug Environment Variables
         run: |
           echo "==== Debugging Environment Variables ===="
           echo "Branch: $branch"
