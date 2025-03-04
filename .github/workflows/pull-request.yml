@@ -30,12 +30,6 @@ jobs:
         with:
           branch: ${{ github.head_ref }}
 
-      - name: Debug Environment Variables from build_base
-        run: |
-          echo "PUBLIC_ENV from build_base: ${{ needs.build_base.outputs.public_env }}"
-          echo "AUTH_ENV from build_base: ${{ needs.build_base.outputs.auth_env }}"
-        shell: bash
-
       - name: Debug Environment Variables (After well-known-environment-name)
         run: |
           echo "---- DEBUG AFTER well-known-environment-name ----"
@@ -152,6 +146,19 @@ jobs:
         run: |
           aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
 
+      - name: Verify Terraform Plan Output Before Apply
+        run: |
+          if [ ! -f terraform-plan-${{ env.PUBLIC_ENV }}.json ] || [ ! -f terraform-plan-${{ env.AUTH_ENV }}.json ]; then
+            echo "ERROR: Terraform plan files are missing!"
+            exit 1
+          fi
+
+          if grep -q 'No changes.' terraform-plan-${{ env.PUBLIC_ENV }}.json && grep -q 'No changes.' terraform-plan-${{ env.AUTH_ENV }}.json; then
+            echo "No changes detected, skipping Terraform apply."
+            exit 0
+          fi
+        shell: bash
+
       - name: Apply Terraform for Feature Branch
         run: |
           source uhd.sh
@@ -178,6 +185,18 @@ jobs:
           echo "PUBLIC_ENV: ${{ env.PUBLIC_ENV }}"
           echo "AUTH_ENV: ${{ env.AUTH_ENV }}"
           echo "-----------------------------------------"
+        shell: bash
+
+      - name: Debug Environment Variables from build_base
+        run: |
+          echo "PUBLIC_ENV from build_base: ${{ needs.build_base.outputs.public_env }}"
+          echo "AUTH_ENV from build_base: ${{ needs.build_base.outputs.auth_env }}"
+        shell: bash
+
+      - name: Debug Build Base Outputs
+        run: |
+          echo "PUBLIC_ENV (build_base output): ${{ steps.set_env.outputs.PUBLIC_ENV }}"
+          echo "AUTH_ENV (build_base output): ${{ steps.set_env.outputs.AUTH_ENV }}"
         shell: bash
 
   fast_forward_env_branches:
