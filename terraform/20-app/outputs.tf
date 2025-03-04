@@ -85,3 +85,10 @@ output "lambda" {
   }
 }
 
+output "debug_workspace" {
+  value = terraform.workspace
+}
+
+output "debug_prefix" {
+  value = local.prefix
+}
