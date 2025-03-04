@@ -439,9 +439,10 @@ jobs:
           [[ -n "$TARGET_ENV" ]] && terraform workspace show
 
       - name: Select Terraform Workspace
-        uses: ./.github/actions/select-terraform-workspace
-        with:
-          target_env: $TARGET_ENV
+        run: |
+          WORKSPACE_NAME=$(echo "$TARGET_ENV" | sed 's/^uhd-//')
+          terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
+        shell: bash
 
       - name: Debug Terraform State
         run: |
