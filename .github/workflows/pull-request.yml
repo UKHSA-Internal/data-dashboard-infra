@@ -93,6 +93,10 @@ jobs:
           echo "-----------------------------------------"
         shell: bash {0}
 
+      - name: Initialize Terraform
+        run: terraform init
+        shell: bash
+
       - name: Debug Before Applying Terraform for Main Branch
         run: |
           echo "---- DEBUGGING BEFORE APPLY TERRAFORM ----"
