@@ -442,7 +442,7 @@ jobs:
 
       - name: Select Terraform Workspace
         run: |
-          WORKSPACE_NAME=$(echo "$TARGET_ENV" | sed 's/^uhd-//')
+          WORKSPACE_NAME=$(echo "$TARGET_ENV" | sed 's/^uhd-//' | sed 's/^uhd-//')
           terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
         shell: bash
 
