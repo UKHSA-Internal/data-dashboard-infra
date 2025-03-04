@@ -93,8 +93,14 @@ jobs:
           echo "-----------------------------------------"
         shell: bash {0}
 
-      - name: Initialize Terraform
-        run: terraform init
+      - name: Initialize Terraform for All Layers
+        run: |
+          for dir in terraform/10-account terraform/20-app; do
+            echo "Initializing Terraform in $dir..."
+            cd $dir
+            terraform init || { echo "ERROR: Terraform init failed in $dir"; exit 1; }
+            cd -  # Return to previous directory
+          done
         shell: bash
 
       - name: Debug Before Applying Terraform for Main Branch
