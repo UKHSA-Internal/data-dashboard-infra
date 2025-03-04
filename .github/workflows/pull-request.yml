@@ -61,11 +61,11 @@ jobs:
       - name: Determine Environment
         id: set_env
         run: |
-          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
-          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_ENV
+          PUBLIC_ENV=$(echo "uhd-ci-${{ env.SHORT_SHA }}" | sed 's/^uhd-//')
+          AUTH_ENV=$(echo "uhd-ci-${{ env.SHORT_SHA }}-a" | sed 's/^uhd-//')
 
-          echo "PUBLIC_ENV=uhd-ci-${{ env.SHORT_SHA }}" >> $GITHUB_OUTPUT
-          echo "AUTH_ENV=uhd-ci-${{ env.SHORT_SHA }}-a" >> $GITHUB_OUTPUT
+          echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_ENV
+          echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_ENV
         shell: bash
 
       - name: Debug Environment Variables After Setting PUBLIC_ENV & AUTH_ENV
