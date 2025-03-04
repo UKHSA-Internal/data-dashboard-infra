@@ -103,6 +103,20 @@ jobs:
           done
         shell: bash
 
+      - name: Apply Terraform (Ensure State Exists)
+        run: |
+          cd terraform/20-app
+          terraform apply -auto-approve || { echo "ERROR: Terraform apply failed!"; exit 1; }
+        shell: bash
+
+      - name: Debug Terraform State & Outputs
+        run: |
+          echo "Terraform Debugging - Listing State Outputs..."
+          terraform state list || { echo "No Terraform state found! Ensure that Terraform apply was successful."; exit 1; }
+          echo "Terraform Outputs:"
+          terraform output || echo "No outputs found. Ensure outputs are defined in your Terraform configuration."
+        shell: bash
+
       - name: Debug Before Applying Terraform for Main Branch
         run: |
           echo "---- DEBUGGING BEFORE APPLY TERRAFORM ----"
@@ -118,18 +132,23 @@ jobs:
           terraform output debug_prefix
         shell: bash
 
-      - name: Debug Terraform State & Outputs
+      - name: Validate AWS Assume Role Permissions
         run: |
-          echo "Terraform Debugging - Listing State Outputs..."
-          terraform state list || echo "No Terraform state found!"
-          echo "Terraform Outputs:"
-          terraform output || echo "No outputs found."
+          aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
+
+      - name: Check Terraform Plan Before Apply
+        run: |
+          cd terraform/20-app
+          terraform plan -out=tfplan || { echo "ERROR: Terraform plan failed!"; exit 1; }
+          if grep -q 'No changes.' tfplan; then
+            echo "No changes detected, skipping Terraform apply."
+            exit 0
+          fi
         shell: bash
 
       - name: Apply Terraform for Main Branch
         run: |
           source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
-          uhd terraform init:layer "20-app"
           uhd terraform apply:layer "20-app" "uhd-ci-$SHORT_SHA"
         shell: zsh {0}
 
@@ -162,16 +181,19 @@ jobs:
           fi
           chmod +x uhd.sh
 
-      - name: Validate AWS Assume Role Permissions
-        run: |
-          aws sts get-caller-identity || { echo "ERROR: AWS credentials invalid!"; exit 1; }
 
       - name: Verify Terraform Plan Output Before Apply
         run: |
-          if [ ! -f terraform-plan-${{ env.PUBLIC_ENV }}.json ] || [ ! -f terraform-plan-${{ env.AUTH_ENV }}.json ]; then
-            echo "ERROR: Terraform plan files are missing!"
-            exit 1
-          fi
+          for plan in "terraform-plan-${{ env.PUBLIC_ENV }}.json" "terraform-plan-${{ env.AUTH_ENV }}.json"; do
+            if [ ! -f "$plan" ]; then
+              echo "ERROR: $plan is missing!"
+              exit 1
+            fi
+            if ! jq -e . "$plan" > /dev/null 2>&1; then
+              echo "ERROR: $plan is not a valid JSON file!"
+              exit 1
+            fi
+          done
 
           if grep -q 'No changes.' terraform-plan-${{ env.PUBLIC_ENV }}.json && grep -q 'No changes.' terraform-plan-${{ env.AUTH_ENV }}.json; then
             echo "No changes detected, skipping Terraform apply."
@@ -394,6 +416,12 @@ jobs:
           echo "-----------------------------------------"
         shell: bash {0}
 
+      - name: Select Terraform Workspace
+        run: |
+          WORKSPACE_NAME=$(echo "$TARGET_ENV" | sed 's/^uhd-//' | sed 's/^uhd-//')
+          terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
+        shell: bash
+
       - name: Terraform plan (${{ matrix.environment }})
         run: |
           source uhd.sh
@@ -432,7 +460,7 @@ jobs:
         with:
           name: terraform-plan-${{ matrix.environment }}
           path: terraform-plan-${{ matrix.environment }}.json
-          retention-days: 7
+          retention-days: 3
 
       - name: Validate Terraform Plan Output
         run: |
@@ -457,12 +485,6 @@ jobs:
         run: |
           terraform version
           [[ -n "$TARGET_ENV" ]] && terraform workspace show
-
-      - name: Select Terraform Workspace
-        run: |
-          WORKSPACE_NAME=$(echo "$TARGET_ENV" | sed 's/^uhd-//' | sed 's/^uhd-//')
-          terraform workspace select "$WORKSPACE_NAME" || terraform workspace new "$WORKSPACE_NAME"
-        shell: bash
 
       - name: Debug Terraform State
         run: |
@@ -795,7 +817,7 @@ jobs:
     name: Terraform destroy (${{ matrix.environment }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ success() }}
+    if: always() && needs.terraform_plan.result == 'success'
     needs: [ "terraform_plan" ]
     strategy:
       fail-fast: false
