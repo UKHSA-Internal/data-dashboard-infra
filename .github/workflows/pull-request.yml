@@ -108,6 +108,14 @@ jobs:
           terraform output debug_prefix
         shell: bash
 
+      - name: Debug Terraform State & Outputs
+        run: |
+          echo "Terraform Debugging - Listing State Outputs..."
+          terraform state list || echo "No Terraform state found!"
+          echo "Terraform Outputs:"
+          terraform output || echo "No outputs found."
+        shell: bash
+
       - name: Apply Terraform for Main Branch
         run: |
           source uhd.sh || { echo "ERROR: uhd.sh not found!"; exit 1; }
