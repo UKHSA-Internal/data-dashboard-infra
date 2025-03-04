@@ -1,8 +1,8 @@
 locals {
   region      = "eu-west-2"
   project     = "uhd"
-  environment = replace(terraform.workspace, "^uhd-", "")
-  prefix      = "${local.project}-${local.environment}"
+  environment = terraform.workspace
+  prefix      = "uhd-${replace(local.environment, "^uhd-", "")}"
 
   account_id                    = var.assume_account_id
   etl_account_id                = var.etl_account_id
