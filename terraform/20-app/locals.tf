@@ -72,11 +72,3 @@ locals {
   main_db_aurora_password_secret_arn          = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
   feature_flags_db_aurora_password_secret_arn = try(module.aurora_db_feature_flags.cluster_master_user_secret[0]["secret_arn"], "")
 }
-
-output "debug_workspace" {
-  value = terraform.workspace
-}
-
-output "debug_prefix" {
-  value = local.prefix
-}
