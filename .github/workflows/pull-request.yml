@@ -25,17 +25,19 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
-      - name: Debug Environment Variables After Checkout
+      - name: Determine Well-Known Environment Name
+        uses: ./.github/actions/well-known-environment-name
+        with:
+          branch: ${{ github.head_ref }}
+
+      - name: Debug Environment Variables (After well-known-environment-name)
         run: |
-          echo "---- DEBUGGING ENVIRONMENT VARIABLES ----"
-          echo "Branch: ${{ github.ref_name }}"
+          echo "---- DEBUG AFTER well-known-environment-name ----"
+          echo "Branch: ${{ github.head_ref }}"
           echo "Extracted ENVIRONMENT_NAME: ${{ env.ENVIRONMENT_NAME }}"
           echo "TARGET_ACCOUNT_NAME: ${{ env.TARGET_ACCOUNT_NAME }}"
           echo "IS_ACCOUNT_LAYER_BRANCH: ${{ env.IS_ACCOUNT_LAYER_BRANCH }}"
-          echo "SHORT_SHA: ${{ env.SHORT_SHA }}"
-          echo "PUBLIC_ENV: ${{ env.PUBLIC_ENV }}"
-          echo "AUTH_ENV: ${{ env.AUTH_ENV }}"
-          echo "-----------------------------------------"
+          echo "-----------------------------------------------"
         shell: bash
 
       - name: Configure AWS credentials
