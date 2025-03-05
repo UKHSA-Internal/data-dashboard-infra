@@ -16,10 +16,19 @@ jobs:
   build_base:
     name: Build base env
     runs-on: ubuntu-latest
+    outputs:
+      public_env: ${{ steps.set_env.outputs.PUBLIC_ENV }}
+      auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main first
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.base_ref }}
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -31,12 +40,69 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - name: Determine Environment Names
+        id: set_env
+        run: |
+          PUBLIC_ENV="ci-${{ env.SHORT_SHA }}"
+          AUTH_ENV="ci-${{ env.SHORT_SHA }}-a"
+
+          echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_ENV
+          echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_ENV
+          echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_OUTPUT
+          echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_OUTPUT
+          
+          echo "Set PUBLIC_ENV: $PUBLIC_ENV"
+          echo "Set AUTH_ENV: $AUTH_ENV"
+        shell: bash
+
+      - name: Debug build_base outputs
+        run: |
+          echo "PUBLIC_ENV from build_base: ${{ needs.build_base.outputs.public_env }}"
+          echo "AUTH_ENV from build_base: ${{ needs.build_base.outputs.auth_env }}"
+        shell: bash
+
       - name: Build base env
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+          uhd terraform apply:layer 20-app $PUBLIC_ENV
         shell: zsh {0}
+
+  fast_forward_env_branches:
+    name: Fast forward env branches
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      deploy_auth_dev: ${{ steps.fast_forward_merge.outputs.deploy_auth_dev }}
+      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Fast forward env branches
+        id: fast_forward_merge
+        run: |
+          echo "Starting fast-forward merge..."
+          if scripts/fast-forward-env-branches.sh; then
+            echo "Fast forward merge completed successfully."
+          else
+            echo "Fast forward merge failed!" >&2
+            exit 1
+          fi
+        shell: zsh {0}
+        env:
+          CI: "true"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   unit_test_functions:
     name: Unit test functions
@@ -77,7 +143,7 @@ jobs:
   unit_test_report:
     name: Unit test coverage report
     runs-on: ubuntu-latest
-    needs: ["unit_test_functions"]
+    needs: [ "unit_test_functions" ]
     permissions:
       contents: read
       id-token: write
@@ -109,151 +175,228 @@ jobs:
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    needs: ["build_base", "unit_test_functions"]
+    needs: [ "build_base" ]
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [ public, auth ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
+      - name: Checkout main first
+        uses: actions/checkout@v4
         with:
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - name: Set TARGET_ENV
+        run: |
+          if [[ "${{ matrix.environment }}" == "public" ]]; then
+            echo "TARGET_ENV=${{ needs.build_base.outputs.public_env }}" >> $GITHUB_ENV
+          else
+            echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
+          fi
+
+          echo "TARGET_ENV=$(printenv TARGET_ENV)"
+        shell: bash
+
+      - name: Debug TARGET_ENV
+        run: |
+          echo "TARGET_ENV (before plan/apply): $TARGET_ENV"
+          if [ -z "$TARGET_ENV" ]; then
+            echo "ERROR: TARGET_ENV is empty!"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
 
       - name: Terraform plan
         run: |
           source uhd.sh
           uhd terraform init
-          uhd terraform plan:layer 10-account test
-          uhd terraform plan:layer 20-app ci-$SHORT_SHA
+          uhd terraform plan:layer 20-app $TARGET_ENV
         shell: zsh {0}
+
+      - name: Mask Terraform Outputs
+        run: |
+          SENSITIVE_OUTPUTS=$(terraform output -json | jq -r '.[] | select(.sensitive == true) | .value')
+          for output in $SENSITIVE_OUTPUTS; do
+            echo "::add-mask::$output"
+          done
+        shell: bash
 
   terraform_apply:
     name: Terraform apply
     runs-on: ubuntu-latest
-    needs: ["build_base", "terraform_plan"]
+    needs: [ "terraform_plan", "build_base" ]
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [ public, auth ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
+      - name: Checkout main first
+        uses: actions/checkout@v4
         with:
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - name: Set TARGET_ENV
+        run: |
+          PUBLIC_ENV="${{ needs.build_base.outputs.public_env }}"
+          AUTH_ENV="${{ needs.build_base.outputs.auth_env }}"
+
+          # Debugging output
+          echo "🔍 PUBLIC_ENV received: $PUBLIC_ENV"
+          echo "🔍 AUTH_ENV received: $AUTH_ENV"
+
+          # Ensure the outputs are not empty
+          if [[ -z "$PUBLIC_ENV" || -z "$AUTH_ENV" ]]; then
+            echo "ERROR: One or more environment variables are empty!"
+            exit 1
+          fi
+
+          # Set TARGET_ENV based on the matrix environment
+          if [[ "${{ matrix.environment }}" == "public" ]]; then
+            TARGET_ENV="$PUBLIC_ENV"
+          else
+            TARGET_ENV="$AUTH_ENV"
+          fi
+
+          # Write to GitHub Environment
+          echo "TARGET_ENV=${TARGET_ENV}" >> "$GITHUB_ENV"
+          echo "TARGET_ENV set to: $TARGET_ENV"
+        shell: bash
+
+      - name: Debug TARGET_ENV
+        run: |
+          echo "TARGET_ENV (before apply): $TARGET_ENV"
+          if [ -z "$TARGET_ENV" ]; then
+            echo "ERROR: TARGET_ENV is empty!"
+            exit 1
+          fi
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
 
       - name: Terraform apply
         run: |
           source uhd.sh
-          uhd terraform init
-          uhd terraform apply:layer 10-account test
-          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+          uhd terraform apply:layer 20-app $TARGET_ENV
         shell: zsh {0}
+
+      - name: Mask Terraform Outputs
+        run: |
+          SENSITIVE_OUTPUTS=$(terraform output -json | jq -r '.[] | select(.sensitive == true) | .value')
+          for output in $SENSITIVE_OUTPUTS; do
+            echo "::add-mask::$output"
+          done
+        shell: bash
 
   push_docker_images:
     name: Push docker images
     runs-on: ubuntu-latest
-    needs: ["terraform_apply"]
+    needs: [ "terraform_apply" ]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
 
-      - name: Pull / push docker images
+      - name: Push Docker images
         run: |
           source uhd.sh
-          uhd docker update test ci-$SHORT_SHA
+          uhd docker update $TARGET_ENV
         shell: zsh {0}
 
   restart_services:
     name: Restart services
     runs-on: ubuntu-latest
-    needs: ["push_docker_images"]
+    needs: [ "push_docker_images" ]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
 
-      - name: Terraform output
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app ci-$SHORT_SHA
-        shell: zsh {0}
-
-      - name: Configure AWS credentials for test account
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          account-name: 'test'
-          aws-region: ${{ env.AWS_REGION }}
-          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-
-      - name: Restart ECS services
+      - name: Restart services
         run: |
           source uhd.sh
           uhd ecs restart-services
-        shell: zsh {0}
-
-      - name: Redeploy lambda functions
-        run: |
-          source uhd.sh
           uhd lambda restart-functions
         shell: zsh {0}
 
   terraform_destroy:
     name: Terraform destroy
     runs-on: ubuntu-latest
-    if: ${{ always() }}
-    needs: ["restart_services"]
+    needs: [ "restart_services" ]
+    if: always()
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
 
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/short-sha
 
-      - name: Terraform destroy
+      - name: Destroy Terraform resources
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform destroy:layer 20-app ci-$SHORT_SHA
+          uhd terraform destroy:layer 20-app $TARGET_ENV
         shell: zsh {0}
 
   clean_up_remaining_resources:
     name: Clean up remaining resources
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: ["terraform_destroy"]
+    needs: [ "terraform_destroy" ]
     steps:
       - uses: actions/checkout@v4
 

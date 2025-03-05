@@ -1,0 +1,26 @@
+name: Mask Secrets
+description: "Masks sensitive secrets before logging"
+
+inputs:
+  github_token:
+    description: "GitHub token"
+    required: true
+  terraform_iam_role:
+    description: "Terraform IAM Role"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        SECRETS_TO_MASK=(
+          "${{ inputs.github_token }}"
+          "${{ inputs.terraform_iam_role }}"
+        )
+
+        for secret in "${SECRETS_TO_MASK[@]}"; do
+          if [[ -n "$secret" ]]; then
+            echo "::add-mask::$secret"
+          fi
+        done
+      shell: bash
