@@ -25,10 +25,14 @@ runs:
   using: "composite"
   steps:
     - run: |
-        echo "::add-mask::${{ inputs.github_token }}"
-        echo "::add-mask::${{ inputs.terraform_iam_role }}"
-        echo "::add-mask::${{ inputs.terraform_role_public }}"
-        echo "::add-mask::${{ inputs.terraform_role_auth }}"
-        echo "::add-mask::${{ inputs.terraform_role_test }}"
-        echo "::add-mask::${{ inputs.terraform_role_auth_test }}"
-      shell: bash
+        for secret in "${{ inputs.github_token }}" \
+                     "${{ inputs.terraform_iam_role }}" \
+                     "${{ inputs.terraform_role_public }}" \
+                     "${{ inputs.terraform_role_auth }}" \
+                     "${{ inputs.terraform_role_test }}" \
+                     "${{ inputs.terraform_role_auth_test }}"; do
+          if [[ -n "$secret" ]]; then
+            echo "::add-mask::$secret"
+          fi
+        done
+        shell: bash
