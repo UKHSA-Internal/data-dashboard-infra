@@ -156,6 +156,18 @@ jobs:
             echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
           fi
 
+          echo "TARGET_ENV=$(printenv TARGET_ENV)"
+        shell: bash
+
+      - name: Debug TARGET_ENV
+        run: |
+          echo "TARGET_ENV (before plan/apply): $TARGET_ENV"
+          if [ -z "$TARGET_ENV" ]; then
+            echo "ERROR: TARGET_ENV is empty!"
+            exit 1
+          fi
+        shell: bash
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
