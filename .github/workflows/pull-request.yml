@@ -45,10 +45,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Determine Environment Names
         id: set_env
@@ -132,10 +128,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Set TARGET_ENV
         run: |
@@ -205,10 +197,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Set TARGET_ENV
         run: |

@@ -7,32 +7,20 @@ inputs:
     required: true
   terraform_iam_role:
     description: "Terraform IAM Role"
-    required: false
-  terraform_role_public:
-    description: "Terraform Role Public"
-    required: false
-  terraform_role_auth:
-    description: "Terraform Role Auth"
-    required: false
-  terraform_role_test:
-    description: "Terraform Role Test"
-    required: false
-  terraform_role_auth_test:
-    description: "Terraform Role Auth Test"
-    required: false
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - shell: bash
-      run: |
-        for secret in "${{ inputs.github_token }}" \
-                     "${{ inputs.terraform_iam_role }}" \
-                     "${{ inputs.terraform_role_public }}" \
-                     "${{ inputs.terraform_role_auth }}" \
-                     "${{ inputs.terraform_role_test }}" \
-                     "${{ inputs.terraform_role_auth_test }}"; do
+    - run: |
+        SECRETS_TO_MASK=(
+          "${{ inputs.github_token }}"
+          "${{ inputs.terraform_iam_role }}"
+        )
+
+        for secret in "${SECRETS_TO_MASK[@]}"; do
           if [[ -n "$secret" ]]; then
             echo "::add-mask::$secret"
           fi
         done
+      shell: bash
