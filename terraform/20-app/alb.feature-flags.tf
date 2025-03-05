@@ -18,8 +18,8 @@ module "feature_flags_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-feature-flags-tg" = {
-      name              = "${local.prefix}-feature-flags-tg"
+    "${local.prefix}-ft-flags-tg" = {
+      name              = "${local.prefix}-ft-flags-tg"
       backend_protocol  = "HTTP"
       backend_port      = 4242
       target_type       = "ip"
@@ -57,7 +57,7 @@ module "feature_flags_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-feature-flags-tg"
+              target_group_key = "${local.prefix}-ft-flags-tg"
             }
           ]
           conditions = [
