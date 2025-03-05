@@ -151,17 +151,18 @@ jobs:
       - name: Set TARGET_ENV
         run: |
           if [[ "${{ matrix.environment }}" == "public" ]]; then
-            echo "TARGET_ENV=${{ needs.build_base.outputs.public_env }}" >> $GITHUB_ENV
+            TARGET_ENV="${{ needs.build_base.outputs.public_env }}"
           else
-            echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
+            TARGET_ENV="${{ needs.build_base.outputs.auth_env }}"
           fi
 
-          echo "TARGET_ENV=$(printenv TARGET_ENV)"
+          echo "TARGET_ENV=${TARGET_ENV}" >> $GITHUB_ENV
+          echo "TARGET_ENV set to: $TARGET_ENV"
         shell: bash
 
       - name: Debug TARGET_ENV
         run: |
-          echo "TARGET_ENV (before plan/apply): $TARGET_ENV"
+          echo "TARGET_ENV (before apply): $TARGET_ENV"
           if [ -z "$TARGET_ENV" ]; then
             echo "ERROR: TARGET_ENV is empty!"
             exit 1
