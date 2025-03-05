@@ -43,8 +43,14 @@ jobs:
           echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_ENV
           echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_ENV
 
-          echo "PUBLIC_ENV=${PUBLIC_ENV}"
-          echo "AUTH_ENV=${AUTH_ENV}"
+          echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_OUTPUT
+          echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Debug build_base outputs
+        run: |
+          echo "PUBLIC_ENV from build_base: ${{ needs.build_base.outputs.public_env }}"
+          echo "AUTH_ENV from build_base: ${{ needs.build_base.outputs.auth_env }}"
         shell: bash
 
       - name: Build base env
@@ -103,9 +109,16 @@ jobs:
             echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
           fi
 
+          echo "TARGET_ENV=$(printenv TARGET_ENV)"
+        shell: bash
+
       - name: Debug TARGET_ENV
         run: |
-          echo "TARGET_ENV: $TARGET_ENV"
+          echo "TARGET_ENV (before plan/apply): $TARGET_ENV"
+          if [ -z "$TARGET_ENV" ]; then
+            echo "ERROR: TARGET_ENV is empty!"
+            exit 1
+          fi
         shell: bash
 
       - name: Configure AWS credentials
@@ -176,8 +189,7 @@ jobs:
       - name: Push Docker images
         run: |
           source uhd.sh
-          uhd docker update public $PUBLIC_ENV
-          uhd docker update auth $AUTH_ENV
+          uhd docker update $TARGET_ENV
         shell: zsh {0}
 
   restart_services:
@@ -223,6 +235,5 @@ jobs:
       - name: Destroy Terraform resources
         run: |
           source uhd.sh
-          uhd terraform destroy:layer 20-app $PUBLIC_ENV
-          uhd terraform destroy:layer 20-app $AUTH_ENV
+          uhd terraform destroy:layer 20-app $TARGET_ENV
         shell: zsh {0}
