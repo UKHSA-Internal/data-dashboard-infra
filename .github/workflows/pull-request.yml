@@ -24,16 +24,6 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
-      - name: Mask Secrets
-        uses: ./.github/actions/mask-secrets
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
-          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
-          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,6 +33,16 @@ jobs:
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
+
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
       - name: Determine Environment Names
         id: set_env
