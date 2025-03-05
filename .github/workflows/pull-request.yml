@@ -20,9 +20,15 @@ jobs:
       public_env: ${{ steps.set_env.outputs.PUBLIC_ENV }}
       auth_env: ${{ steps.set_env.outputs.AUTH_ENV }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main first
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.base_ref }}
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -111,7 +117,15 @@ jobs:
       matrix:
         environment: [ public, auth ]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main first
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Mask Secrets
         uses: ./.github/actions/mask-secrets
@@ -176,7 +190,15 @@ jobs:
       matrix:
         environment: [ public, auth ]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main first
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Mask Secrets
         uses: ./.github/actions/mask-secrets
