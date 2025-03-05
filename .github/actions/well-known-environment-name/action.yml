@@ -1,37 +1,35 @@
+name: "Well known environment name"
+description: "Generates the well-known environment name from the branch name"
+
+inputs:
+  branch:
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
     - run: |
         source uhd.sh
-        echo "==== Extracting ENVIRONMENT_NAME ===="
-        echo "Raw branch name: $branch"
-        
-        BRANCH_NAME="${{ inputs.branch }}"
-        EXTRACTED_ENVIRONMENT_NAME=$(echo "$BRANCH_NAME" | grep -oP '([^\/]+$)')
-        echo "Extracted environment name: $EXTRACTED_ENVIRONMENT_NAME"
+        echo "Raw branch name: ${{ inputs.branch }}"
 
-        # Ensure 'uhd-' is only prefixed once
-        if [[ "$EXTRACTED_ENVIRONMENT_NAME" == uhd-* ]]; then
-          FINAL_ENV_NAME="$EXTRACTED_ENVIRONMENT_NAME"
-        else
-          FINAL_ENV_NAME="uhd-$EXTRACTED_ENVIRONMENT_NAME"
-        fi
-        
-        echo "Final ENVIRONMENT_NAME: $FINAL_ENV_NAME"
-        
-        echo "ENVIRONMENT_NAME=$FINAL_ENV_NAME" >> $GITHUB_ENV
-        TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app "$FINAL_ENV_NAME")
-        echo "TARGET_ACCOUNT_NAME=$TARGET_ACCOUNT_NAME" >> $GITHUB_ENV
+        # Extract the environment name (last segment of the branch)
+        ENVIRONMENT_NAME="${{ inputs.branch##*/ }}"
 
+        # Determine if this is an account-layer branch
+        ACCOUNT_LAYER_BRANCHES=("env/dev/dev" "env/test/test" "env/uat/uat" "env/auth-dev/auth-dev" "env/auth-test/auth-test")
         IS_ACCOUNT_LAYER_BRANCH="false"
-        if [[ "$BRANCH_NAME" =~ ^env\/(dev|test|uat|auth-dev|auth-test)\/\1$ ]]; then
-          IS_ACCOUNT_LAYER_BRANCH="true"
-        fi
+        for branch in "${ACCOUNT_LAYER_BRANCHES[@]}"; do
+          [[ "$ENVIRONMENT_NAME" == "$branch" ]] && IS_ACCOUNT_LAYER_BRANCH="true"
+        done
+
+        # Set environment variables
+        echo "ENVIRONMENT_NAME=$ENVIRONMENT_NAME" >> $GITHUB_ENV
+        echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)" >> $GITHUB_ENV
         echo "IS_ACCOUNT_LAYER_BRANCH=$IS_ACCOUNT_LAYER_BRANCH" >> $GITHUB_ENV
 
-        echo "==== ENVIRONMENT_NAME Set to: $FINAL_ENV_NAME ===="
+        # Debug output
+        echo "Extracted ENVIRONMENT_NAME: $ENVIRONMENT_NAME"
         echo "TARGET_ACCOUNT_NAME: $TARGET_ACCOUNT_NAME"
         echo "IS_ACCOUNT_LAYER_BRANCH: $IS_ACCOUNT_LAYER_BRANCH"
-      env:
-        branch: ${{ inputs.branch }}
       shell: bash
