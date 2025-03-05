@@ -84,11 +84,3 @@ output "lambda" {
     ingestion_lambda_arn = module.lambda_ingestion.lambda_function_arn
   }
 }
-
-output "debug_workspace" {
-  value = terraform.workspace
-}
-
-output "debug_prefix" {
-  value = local.prefix
-}
