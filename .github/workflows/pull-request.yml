@@ -150,10 +150,13 @@ jobs:
 
       - name: Set TARGET_ENV
         run: |
+          PUBLIC_ENV="${{ needs.build_base.outputs.public_env }}"
+          AUTH_ENV="${{ needs.build_base.outputs.auth_env }}"
+
           if [[ "${{ matrix.environment }}" == "public" ]]; then
-            TARGET_ENV="${{ needs.build_base.outputs.public_env }}"
+            TARGET_ENV="$PUBLIC_ENV"
           else
-            TARGET_ENV="${{ needs.build_base.outputs.auth_env }}"
+            TARGET_ENV="$AUTH_ENV"
           fi
 
           echo "TARGET_ENV=${TARGET_ENV}" >> $GITHUB_ENV
