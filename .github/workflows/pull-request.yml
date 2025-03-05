@@ -103,6 +103,11 @@ jobs:
             echo "TARGET_ENV=${{ needs.build_base.outputs.auth_env }}" >> $GITHUB_ENV
           fi
 
+      - name: Debug TARGET_ENV
+        run: |
+          echo "TARGET_ENV: $TARGET_ENV"
+        shell: bash
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
