@@ -63,7 +63,7 @@ runs:
 
     - name: Configure AWS credentials for test account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ inputs.account-name == 'test' }}
+      if: ${{ contains(fromJSON('["test", "perf"]'), inputs.account-name) }}
       with:
         role-to-assume: ${{ inputs.test-account-role }}
         aws-region: ${{ inputs.aws-region }}
