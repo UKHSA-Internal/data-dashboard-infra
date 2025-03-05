@@ -37,8 +37,8 @@ jobs:
       - name: Determine Environment Names
         id: set_env
         run: |
-          PUBLIC_ENV="ci-${{ env.SHORT_SHA }}"
-          AUTH_ENV="ci-${{ env.SHORT_SHA }}-a"
+          PUBLIC_ENV="uhd-ci-${{ env.SHORT_SHA }}"
+          AUTH_ENV="uhd-ci-${{ env.SHORT_SHA }}-a"
 
           echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_ENV
           echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_ENV
