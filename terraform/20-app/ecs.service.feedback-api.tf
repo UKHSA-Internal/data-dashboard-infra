@@ -82,7 +82,7 @@ module "ecs_service_feedback_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.feedback_api_alb.target_groups["${local.prefix}-feedback-api-tg"].arn
+      target_group_arn = module.feedback_api_alb.target_groups["${local.prefix}-feedb-api-tg"].arn
       container_name   = "api"
       container_port   = 80
     }

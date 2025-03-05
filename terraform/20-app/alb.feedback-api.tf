@@ -19,8 +19,8 @@ module "feedback_api_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-feedback-api-tg" = {
-      name              = "${local.prefix}-feedback-api-tg"
+    "${local.prefix}-feedb-api-tg" = {
+      name              = "${local.prefix}-feedb-api-tg"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -60,7 +60,7 @@ module "feedback_api_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-feedback-api-tg"
+              target_group_key = "${local.prefix}-feedb-api-tg"
             }
           ]
           conditions = [
