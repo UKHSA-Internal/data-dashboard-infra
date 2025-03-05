@@ -24,6 +24,16 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -42,9 +52,11 @@ jobs:
 
           echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_ENV
           echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_ENV
-
           echo "PUBLIC_ENV=${PUBLIC_ENV}" >> $GITHUB_OUTPUT
           echo "AUTH_ENV=${AUTH_ENV}" >> $GITHUB_OUTPUT
+          
+          echo "Set PUBLIC_ENV: $PUBLIC_ENV"
+          echo "Set AUTH_ENV: $AUTH_ENV"
         shell: bash
 
       - name: Debug build_base outputs
@@ -101,6 +113,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+
       - name: Set TARGET_ENV
         run: |
           if [[ "${{ matrix.environment }}" == "public" ]]; then
@@ -137,6 +159,14 @@ jobs:
           uhd terraform plan:layer 20-app $TARGET_ENV
         shell: zsh {0}
 
+      - name: Mask Terraform Outputs
+        run: |
+          SENSITIVE_OUTPUTS=$(terraform output -json | jq -r '.[] | select(.sensitive == true) | .value')
+          for output in $SENSITIVE_OUTPUTS; do
+            echo "::add-mask::$output"
+          done
+        shell: bash
+
   terraform_apply:
     name: Terraform apply
     runs-on: ubuntu-latest
@@ -148,18 +178,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Mask Secrets
+        uses: ./.github/actions/mask-secrets
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_iam_role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          terraform_role_public: ${{ secrets.UHD_TERRAFORM_ROLE_PUBLIC }}
+          terraform_role_auth: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH }}
+          terraform_role_test: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          terraform_role_auth_test: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+
       - name: Set TARGET_ENV
         run: |
           PUBLIC_ENV="${{ needs.build_base.outputs.public_env }}"
           AUTH_ENV="${{ needs.build_base.outputs.auth_env }}"
 
+          # Debugging output
+          echo "🔍 PUBLIC_ENV received: $PUBLIC_ENV"
+          echo "🔍 AUTH_ENV received: $AUTH_ENV"
+
+          # Ensure the outputs are not empty
+          if [[ -z "$PUBLIC_ENV" || -z "$AUTH_ENV" ]]; then
+            echo "ERROR: One or more environment variables are empty!"
+            exit 1
+          fi
+
+          # Set TARGET_ENV based on the matrix environment
           if [[ "${{ matrix.environment }}" == "public" ]]; then
             TARGET_ENV="$PUBLIC_ENV"
           else
             TARGET_ENV="$AUTH_ENV"
           fi
 
-          echo "TARGET_ENV=${TARGET_ENV}" >> $GITHUB_ENV
+          # Write to GitHub Environment
+          echo "TARGET_ENV=${TARGET_ENV}" >> "$GITHUB_ENV"
           echo "TARGET_ENV set to: $TARGET_ENV"
         shell: bash
 
@@ -186,6 +238,14 @@ jobs:
           source uhd.sh
           uhd terraform apply:layer 20-app $TARGET_ENV
         shell: zsh {0}
+
+      - name: Mask Terraform Outputs
+        run: |
+          SENSITIVE_OUTPUTS=$(terraform output -json | jq -r '.[] | select(.sensitive == true) | .value')
+          for output in $SENSITIVE_OUTPUTS; do
+            echo "::add-mask::$output"
+          done
+        shell: bash
 
   push_docker_images:
     name: Push docker images
