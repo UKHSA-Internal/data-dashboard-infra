@@ -25,6 +25,9 @@ locals {
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
       "165.225.17.7/32",    # Declan Barrett
+      "82.45.117.43/32",    # Bin Yu
+      "165.225.197.24/32",  # Hashim Malik
+      "77.99.123.145/32",   # Gautam Dalal
     ],
     project_team = [
       "90.196.180.145/32",  # Debbie
