@@ -175,12 +175,14 @@ jobs:
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest
-    needs: [ "build_base" ]
+    needs: [ "build_base", "unit_test_functions"]
     strategy:
       fail-fast: false
       matrix:
         environment: [ public, auth ]
     steps:
+      - uses: actions/setup-python@v5
+
       - name: Checkout main first
         uses: actions/checkout@v4
         with:
@@ -230,6 +232,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
+          uhd terraform plan:layer 10-account test
           uhd terraform plan:layer 20-app $TARGET_ENV
         shell: zsh {0}
 
@@ -250,6 +253,8 @@ jobs:
       matrix:
         environment: [ public, auth ]
     steps:
+      - uses: actions/setup-python@v5
+
       - name: Checkout main first
         uses: actions/checkout@v4
         with:
@@ -272,8 +277,8 @@ jobs:
           AUTH_ENV="${{ needs.build_base.outputs.auth_env }}"
 
           # Debugging output
-          echo "🔍 PUBLIC_ENV received: $PUBLIC_ENV"
-          echo "🔍 AUTH_ENV received: $AUTH_ENV"
+          echo "PUBLIC_ENV received: $PUBLIC_ENV"
+          echo "AUTH_ENV received: $AUTH_ENV"
 
           # Ensure the outputs are not empty
           if [[ -z "$PUBLIC_ENV" || -z "$AUTH_ENV" ]]; then
@@ -314,6 +319,7 @@ jobs:
       - name: Terraform apply
         run: |
           source uhd.sh
+          uhd terraform init:layer 20-app
           uhd terraform apply:layer 20-app $TARGET_ENV
         shell: zsh {0}
 
@@ -335,15 +341,15 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
 
       - name: Push Docker images
         run: |
           source uhd.sh
-          uhd docker update $TARGET_ENV
+          uhd docker update test $TARGET_ENV
         shell: zsh {0}
 
   restart_services:
@@ -353,19 +359,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
-      - name: Restart services
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output:layer 20-app $TARGET_ENV
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: 'test'
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+
+      - name: Restart ECS services
         run: |
           source uhd.sh
           uhd ecs restart-services
+        shell: zsh {0}
+
+      - name: Redeploy lambda functions
+        run: |
+          source uhd.sh
           uhd lambda restart-functions
         shell: zsh {0}
 
@@ -376,12 +401,13 @@ jobs:
     if: always()
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
@@ -389,6 +415,9 @@ jobs:
       - name: Destroy Terraform resources
         run: |
           source uhd.sh
+          uhd terraform init:layer 10-account
+          uhd terraform destroy:layer 10-account $TARGET_ENV
+          uhd terraform init:layer 20-app
           uhd terraform destroy:layer 20-app $TARGET_ENV
         shell: zsh {0}
 
@@ -404,7 +433,7 @@ jobs:
         uses: ./.github/actions/configure-aws-credentials
         with:
           aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
@@ -419,5 +448,5 @@ jobs:
       - name: Delete secrets
         run: |
           source uhd.sh
-          uhd secrets delete-all-secrets ci-$SHORT_SHA
+          uhd secrets delete-all-secrets $TARGET_ENV
         shell: zsh {0}
