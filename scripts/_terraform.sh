@@ -551,7 +551,8 @@ function _get_auth_target_aws_account_name() {
     case $workspace in
         auth-dev)  echo "auth-dev" ;;
         auth-test) echo "auth-test" ;;
-        *)         echo "auth-dev" ;; # Default to auth-dev if unknown
+        ci-*)      echo "auth-test" ;; # Map ephemeral CI envs to auth-test
+        *)         echo "auth-dev" ;;  # Default to auth-dev if unknown
     esac
 }
 

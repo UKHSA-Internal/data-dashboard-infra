@@ -334,9 +334,18 @@ jobs:
   push_docker_images:
     name: Push docker images
     runs-on: ubuntu-latest
-    needs: [ "terraform_apply" ]
+    needs: [ "terraform_apply", "build_base" ]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Debug TARGET_ENV
+        run: |
+          echo "TARGET_ENV: $TARGET_ENV"
+          if [ -z "$TARGET_ENV" ]; then
+            echo "ERROR: TARGET_ENV is empty!"
+            exit 1
+          fi
+        shell: bash
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
