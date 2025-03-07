@@ -70,15 +70,3 @@ module "cognito" {
   lambda_role_arn     = aws_iam_role.cognito_lambda_role.arn
   prefix             = local.prefix
 }
-
-output "cognito_user_pool_id" {
-  description = "Cognito User Pool ID"
-  value       = module.cognito.cognito_user_pool_id
-  sensitive   = true
-}
-
-output "cognito_user_pool_client_id" {
-  description = "Cognito User Pool Client ID"
-  value       = module.cognito.cognito_user_pool_client_id
-  sensitive   = true
-}
