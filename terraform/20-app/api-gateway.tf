@@ -7,8 +7,10 @@ module "api_gateway" {
   cognito_user_pool_arn  = module.cognito.cognito_user_pool_arn
   region                 = local.region
   resource_path_part     = "{proxy+}"
-  lambda_invoke_arn      = module.api_gateway.lambda_alias_arn
-  lambda_function_arn    = module.api_gateway.api_gateway_lambda_arn
+
+  lambda_function_arn    = module.api_gateway_lambda.lambda_function_arn
+  lambda_invoke_arn      = module.api_gateway_lambda.lambda_function_arn
+
   prefix                 = local.prefix
   ukhsa_tenant_id        = var.ukhsa_tenant_id
   kms_key_id             = module.kms_secrets_app_engineer.key_id

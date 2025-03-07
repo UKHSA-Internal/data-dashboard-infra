@@ -24,8 +24,18 @@ locals {
   ukhsa_oidc_client_secret = lookup(local.ukhsa_oidc_credentials, "client_secret", "")
 
   # Define callback and logout URLs
-  default_callback_urls = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/api/auth/callback/cognito"]
-  default_logout_urls   = ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk"]
+  env_domain_map = {
+    dev  = "dev.ukhsa-dashboard.data.gov.uk"
+    test = "test.ukhsa-dashboard.data.gov.uk"
+    uat  = "uat.ukhsa-dashboard.data.gov.uk"
+    prod = "ukhsa-dashboard.data.gov.uk"
+  }
+  default_callback_urls = [
+    "https://${lookup(local.env_domain_map, terraform.workspace, "dev.ukhsa-dashboard.data.gov.uk")}/api/auth/callback/cognito"
+  ]
+  default_logout_urls = [
+    "https://${lookup(local.env_domain_map, terraform.workspace, "dev.ukhsa-dashboard.data.gov.uk")}"
+  ]
 
   dev_callback_urls = terraform.workspace == "dev" ? [
     "http://localhost:3000/api/auth/callback/cognito",
