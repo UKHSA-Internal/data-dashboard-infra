@@ -55,7 +55,7 @@ variable "api_gateway_stage_name" {
 variable "cognito_admin_email" {
   description = "Admin email address for Cognito SNS notifications"
   type        = string
-  default     = "Afaan.Ashiq@ukhsa.gov.uk"
+  default     = "Christian.Martin@ukhsa.gov.uk"
 }
 
 variable "ukhsa_oidc_client_id" {

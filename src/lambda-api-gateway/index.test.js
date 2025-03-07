@@ -73,7 +73,7 @@ describe("API Gateway Lambda Authorizer", () => {
         const result = await handler(event);
 
         expect(result.policyDocument.Statement[0].Effect).toBe("Deny");
-        expect(result.context.errorMessage).toBe("Missing Authorization header"); // Updated to match actual output
+        expect(result.context.errorMessage).toBe("Missing Authorization header");
     });
 
     it("should deny requests with an invalid JWT", async () => {
