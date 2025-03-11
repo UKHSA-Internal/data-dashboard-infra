@@ -1,7 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "82.132.220.25/32",   # Afaan
+      "84.67.98.26/32",     # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
@@ -14,7 +14,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
-      "147.161.225.81/32", # Temitope Akinsoto
+      "147.161.225.81/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
