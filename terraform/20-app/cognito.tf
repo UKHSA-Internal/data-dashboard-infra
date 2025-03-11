@@ -6,8 +6,18 @@ data "aws_secretsmanager_secret_version" "cognito_service_credentials" {
   secret_id = data.aws_secretsmanager_secret.cognito_service_credentials.id
 }
 
+data "aws_secretsmanager_secret" "ukhsa_tenant_id" {
+  name = "${local.prefix}-ukhsa-tenant-id"
+}
+
+data "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
+  secret_id = data.aws_secretsmanager_secret.ukhsa_tenant_id.id
+}
+
 locals {
-  decoded_cognito_credentials = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)
+  decoded_client_id     = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_id"]
+  decoded_client_secret = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_secret"]
+  decoded_tenant_id     = jsondecode(data.aws_secretsmanager_secret_version.ukhsa_tenant_id.secret_string)["tenant_id"]
 
   # Define callback and logout URLs
   env_domain_map = {
@@ -49,9 +59,9 @@ module "cognito" {
 
   enable_ukhsa_oidc   = true
 
-  client_id           = local.decoded_cognito_credentials.client_id
-  client_secret       = local.decoded_cognito_credentials.client_secret
-  ukhsa_tenant_id     = local.decoded_cognito_credentials.tenant_id
+  client_id           = local.decoded_client_id
+  client_secret       = local.decoded_client_secret
+  ukhsa_tenant_id     = local.decoded_tenant_id
 
   cognito_user_pool_issuer_endpoint = var.cognito_user_pool_issuer_endpoint
 
