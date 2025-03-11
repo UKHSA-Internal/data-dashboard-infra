@@ -57,7 +57,7 @@ locals {
     }
   }
 
-  scheduled_scaling_policies_for_non_essential_envs = local.environment == "dpd" ? local.dpd_dev_env_scheduled_policy : local.scheduled_scaling_policies_for_non_essential_envs
+  scheduled_scaling_policies_for_non_essential_envs = local.environment == "dpd" ? local.dpd_dev_env_scheduled_policy : local.non_essential_envs_scheduled_policy
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
