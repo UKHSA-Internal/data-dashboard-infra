@@ -11,28 +11,34 @@ async function getSecrets() {
     // If the function experiences a cold start, cachedSecrets will be reset.
     if (cachedSecrets) return cachedSecrets;
 
-    try {
+      try {
+        const credentialsSecretName = process.env.SECRET_NAME;
+        const tenantSecretName = process.env.TENANT_SECRET_NAME;
 
-        const secretName = process.env.SECRET_NAME;
-        const command = new GetSecretValueCommand({ SecretId: secretName });
-        const response = await secretsClient.send(command);
+        // Fetch both secrets in parallel
+        const [credentialsResponse, tenantResponse] = await Promise.all([
+          secretsClient.send(new GetSecretValueCommand({ SecretId: credentialsSecretName })),
+          secretsClient.send(new GetSecretValueCommand({ SecretId: tenantSecretName }))
+        ]);
 
-        const parsed = JSON.parse(response.SecretString);
+        const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
+        const tenantParsed = JSON.parse(tenantResponse.SecretString);
+
         cachedSecrets = {
-            clientId:     parsed.client_id,
-            clientSecret: parsed.client_secret,
-            tenantId:     parsed.tenant_id
+          clientId: credentialsParsed.client_id,
+          clientSecret: credentialsParsed.client_secret,
+          tenantId: tenantParsed.tenant_id
         };
 
         return cachedSecrets;
-    } catch (error) {
+      } catch (error) {
         console.error("Failed to retrieve secrets:", error);
         throw new Error("Secrets retrieval failed");
+      }
     }
-}
 
-exports.handler = async (event) => {
-    try {
+    exports.handler = async (event) => {
+      try {
         const secrets = await getSecrets();
         const UKHSA_JWKS_URL = `https://login.microsoftonline.com/${secrets.tenantId}/discovery/v2.0/keys`;
 
@@ -44,58 +50,50 @@ exports.handler = async (event) => {
                       event.headers?.authorization?.replace("Bearer ", "");
         if (!token) throw new Error("Missing Authorization header");
 
-        // Verify token
+        // Verify the token
         const decoded = await new Promise((resolve, reject) => {
-            jwt.verify(
-                token,
-                async (header, callback) => {
-                    try {
-                        const key = await getSigningKey(header.kid);
-                        callback(null, key.publicKey || key.rsaPublicKey);
-                    } catch (err) {
-                        callback(err);
-                    }
-                },
-                { algorithms: ["RS256"] },
-                (err, decodedToken) => {
-                    if (err) reject(err);
-                    else resolve(decodedToken);
-                }
-            );
+          jwt.verify(
+            token,
+            async (header, callback) => {
+              try {
+                const key = await getSigningKey(header.kid);
+                callback(null, key.publicKey || key.rsaPublicKey);
+              } catch (err) {
+                callback(err);
+              }
+            },
+            { algorithms: ["RS256"] },
+            (err, decodedToken) => {
+              if (err) reject(err);
+              else resolve(decodedToken);
+            }
+          );
         });
 
         const groupId = decoded["groups"]?.[0] || "unknown";
 
         return {
-            principalId: decoded.sub || "user",
-            policyDocument: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "execute-api:Invoke",
-                        Effect: "Allow",
-                        Resource: event.methodArn
-                    }
-                ]
-            },
-            context: { "X-Group-ID": groupId }
+          principalId: decoded.sub || "user",
+          policyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              { Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }
+            ]
+          },
+          context: { "X-Group-ID": groupId }
         };
 
-    } catch (error) {
+      } catch (error) {
         console.error("Token verification failed:", error.message);
         return {
-            principalId: "user",
-            policyDocument: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "execute-api:Invoke",
-                        Effect: "Deny",
-                        Resource: event.methodArn
-                    }
-                ]
-            },
-            context: { "errorMessage": error.message }
+          principalId: "user",
+          policyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              { Action: "execute-api:Invoke", Effect: "Deny", Resource: event.methodArn }
+            ]
+          },
+          context: { "errorMessage": error.message }
         };
-    }
-};
+      }
+    };

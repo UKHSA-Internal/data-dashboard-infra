@@ -20,7 +20,8 @@ module "api_gateway_lambda" {
   cloudwatch_logs_retention_in_days = 7
 
   environment_variables = {
-    SECRET_NAME = "${local.prefix}-cognito-service-credentials"
+    SECRET_NAME         = "${local.prefix}-cognito-service-credentials"
+    TENANT_SECRET_NAME  = "${local.prefix}-ukhsa-tenant-id"
   }
 
   attach_policy_statements = true
@@ -29,7 +30,8 @@ module "api_gateway_lambda" {
       effect    = "Allow"
       actions   = ["secretsmanager:GetSecretValue"]
       resources = [
-        "arn:aws:secretsmanager:${local.region}:${data.aws_caller_identity.current.account_id}:secret/${local.prefix}-cognito-service-credentials-*"
+        "arn:aws:secretsmanager:${local.region}:${data.aws_caller_identity.current.account_id}:secret/${local.prefix}-cognito-service-credentials-*",
+        "arn:aws:secretsmanager:${local.region}:${data.aws_caller_identity.current.account_id}:secret/${local.prefix}-ukhsa-tenant-id-*"
       ]
     }
     allow_api_gateway_invoke = {

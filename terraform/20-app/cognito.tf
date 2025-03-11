@@ -1,23 +1,7 @@
-data "aws_secretsmanager_secret" "cognito_service_credentials" {
-  name = "${local.prefix}-cognito-service-credentials"
-}
-
-data "aws_secretsmanager_secret_version" "cognito_service_credentials" {
-  secret_id = data.aws_secretsmanager_secret.cognito_service_credentials.id
-}
-
-data "aws_secretsmanager_secret" "ukhsa_tenant_id" {
-  name = "${local.prefix}-ukhsa-tenant-id"
-}
-
-data "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
-  secret_id = data.aws_secretsmanager_secret.ukhsa_tenant_id.id
-}
-
 locals {
-  decoded_client_id     = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_id"]
-  decoded_client_secret = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_secret"]
-  decoded_tenant_id     = jsondecode(data.aws_secretsmanager_secret_version.ukhsa_tenant_id.secret_string)["tenant_id"]
+  decoded_client_id     = jsondecode(aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_id"]
+  decoded_client_secret = jsondecode(aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_secret"]
+  decoded_tenant_id     = jsondecode(aws_secretsmanager_secret_version.ukhsa_tenant_id.secret_string)["tenant_id"]
 
   # Define callback and logout URLs
   env_domain_map = {

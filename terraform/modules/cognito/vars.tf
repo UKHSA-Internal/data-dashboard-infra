@@ -68,6 +68,13 @@ variable "client_secret" {
   sensitive   = true
 }
 
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "cognito_user_pool_issuer_endpoint" {
   description = "The issuer endpoint for the Cognito user pool (typically provided by Cognito)"
   type        = string
@@ -89,9 +96,4 @@ variable "prefix" {
   type        = string
 }
 
-variable "ukhsa_tenant_id" {
-  description = "UKHSA Entra ID Tenant ID"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
+
