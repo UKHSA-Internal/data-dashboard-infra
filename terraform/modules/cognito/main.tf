@@ -23,12 +23,14 @@ resource "aws_cognito_user_pool" "user_pool" {
       priority = 1
     }
   }
+
+  lifecycle {
+    ignore_changes = [schema]
+  }
 }
 
 resource "aws_cognito_user_pool_client" "user_pool_client" {
-  depends_on = [
-    aws_cognito_identity_provider.ukhsa_oidc_idp
-  ]
+  depends_on = [aws_cognito_identity_provider.ukhsa_oidc_idp]
 
   name         = var.client_name
   user_pool_id = aws_cognito_user_pool.user_pool.id
@@ -77,8 +79,8 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   provider_type = "OIDC"
 
   provider_details = {
-    client_id                     = var.ukhsa_oidc_client_id
-    client_secret                 = var.ukhsa_oidc_client_secret
+    client_id                     = var.client_id
+    client_secret                 = var.client_secret
     oidc_issuer                   = "https://login.microsoftonline.com/${var.ukhsa_tenant_id}/v2.0"
     authorize_scopes              = "openid email profile"
     attributes_request_method     = "GET"

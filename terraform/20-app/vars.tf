@@ -58,15 +58,22 @@ variable "cognito_admin_email" {
   default     = "Christian.Martin@ukhsa.gov.uk"
 }
 
-variable "ukhsa_oidc_client_id" {
-  description = "UKHSA OIDC Client ID for Cognito"
+variable "client_id" {
+  description = "Client ID for Cognito integration"
   type        = string
   default     = ""
   sensitive   = true
 }
 
-variable "ukhsa_oidc_client_secret" {
-  description = "UKHSA OIDC Client Secret for Cognito"
+variable "client_secret" {
+  description = "Client Secret for Cognito integration"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "cognito_user_pool_issuer_endpoint" {
+  description = "The issuer endpoint for the Cognito user pool (e.g. https://cognito-idp.<region>.amazonaws.com/<user_pool_id>)"
   type        = string
   default     = ""
   sensitive   = true

@@ -12,6 +12,6 @@ module "api_gateway" {
   lambda_invoke_arn      = module.api_gateway_lambda.lambda_function_arn
 
   prefix                 = local.prefix
-  ukhsa_tenant_id        = var.ukhsa_tenant_id
+  ukhsa_tenant_id        = module.cognito.tenant_id
   kms_key_id             = module.kms_secrets_app_engineer.key_id
 }

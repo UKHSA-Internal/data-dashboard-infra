@@ -146,16 +146,17 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
 
 resource "aws_secretsmanager_secret" "cognito_service_credentials" {
   name        = "${local.prefix}-cognito-service-credentials"
-  description = "These are the credentials required for AWS Congito service."
+  description = "These are the credentials required for AWS Cognito service."
   kms_key_id  = module.kms_secrets_app_engineer.key_id
 }
 
 resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
   secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
   secret_string = jsonencode({
-    client_url    = module.cognito.cognito_user_pool_issuer_endpoint
-    client_id     = module.cognito.cognito_user_pool_client_id
-    client_secret = module.cognito.cognito_user_pool_client_secret
+    client_url    = var.cognito_user_pool_issuer_endpoint,
+    client_id     = var.client_id,
+    client_secret = var.client_secret,
+    tenant_id     = var.ukhsa_tenant_id
   })
 }
 
@@ -209,7 +210,6 @@ resource "aws_secretsmanager_secret_version" "esri_maps_service_credentials" {
   })
 }
 
-
 ################################################################################
 # Slack webhook URL
 ################################################################################
@@ -225,44 +225,4 @@ resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
   secret_string = jsonencode({
     slack_webhook_url = ""
   })
-}
-
-################################################################################
-# UKHSA OIDC Credentials and Tenant ID
-################################################################################
-
-resource "aws_secretsmanager_secret" "ukhsa_oidc_credentials" {
-  name        = "${local.prefix}-ukhsa-oidc-credentials"
-  description = "OIDC credentials required for UKHSA authentication."
-  kms_key_id  = module.kms_secrets_app_engineer.key_id
-}
-
-resource "aws_secretsmanager_secret_version" "ukhsa_oidc_credentials" {
-  secret_id     = aws_secretsmanager_secret.ukhsa_oidc_credentials.id
-  secret_string = jsonencode({
-    client_id     = var.ukhsa_oidc_client_id
-    client_secret = var.ukhsa_oidc_client_secret
-  })
-}
-
-resource "aws_secretsmanager_secret" "ukhsa_tenant_id" {
-  name        = "${local.prefix}-ukhsa-tenant-id"
-  description = "UKHSA Entra ID Tenant ID."
-  kms_key_id  = module.kms_secrets_app_engineer.key_id
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes  = [kms_key_id]
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
-  secret_id     = aws_secretsmanager_secret.ukhsa_tenant_id.id
-  secret_string = jsonencode({
-    tenant_id = var.ukhsa_tenant_id
-  })
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
 }

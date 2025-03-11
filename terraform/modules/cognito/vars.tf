@@ -54,13 +54,22 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "ukhsa_oidc_client_id" {
-  description = "UKHSA OIDC Client ID"
+variable "client_id" {
+  description = "Client ID for Cognito integration"
   type        = string
+  default     = ""
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_client_secret" {
-  description = "UKHSA OIDC Client Secret"
+variable "client_secret" {
+  description = "Client secret for Cognito integration"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "cognito_user_pool_issuer_endpoint" {
+  description = "The issuer endpoint for the Cognito user pool (typically provided by Cognito)"
   type        = string
 }
 
@@ -83,4 +92,6 @@ variable "prefix" {
 variable "ukhsa_tenant_id" {
   description = "UKHSA Entra ID Tenant ID"
   type        = string
+  default     = ""
+  sensitive   = true
 }

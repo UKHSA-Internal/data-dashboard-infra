@@ -12,18 +12,16 @@ async function getSecrets() {
     if (cachedSecrets) return cachedSecrets;
 
     try {
-        const command = new GetSecretValueCommand({ SecretId: "ukhsa_oidc_credentials" });
-        const commandTenant = new GetSecretValueCommand({ SecretId: "ukhsa-tenant-id" });
 
-        // Fetch both secrets in parallel for efficiency
-        const [oidcResponse, tenantResponse] = await Promise.all([
-            secretsClient.send(command),
-            secretsClient.send(commandTenant)
-        ]);
+        const secretName = process.env.SECRET_NAME;
+        const command = new GetSecretValueCommand({ SecretId: secretName });
+        const response = await secretsClient.send(command);
 
+        const parsed = JSON.parse(response.SecretString);
         cachedSecrets = {
-            oidc: JSON.parse(oidcResponse.SecretString),
-            tenantId: JSON.parse(tenantResponse.SecretString).tenant_id
+            clientId:     parsed.client_id,
+            clientSecret: parsed.client_secret,
+            tenantId:     parsed.tenant_id
         };
 
         return cachedSecrets;
@@ -41,22 +39,29 @@ exports.handler = async (event) => {
         const client = jwksClient({ jwksUri: UKHSA_JWKS_URL });
         const getSigningKey = util.promisify(client.getSigningKey.bind(client));
 
-        // Extract JWT from request headers
-        const token = event.headers?.Authorization?.replace("Bearer ", "") || event.headers?.authorization?.replace("Bearer ", "");
+        // Extract JWT from headers
+        const token = event.headers?.Authorization?.replace("Bearer ", "") ||
+                      event.headers?.authorization?.replace("Bearer ", "");
         if (!token) throw new Error("Missing Authorization header");
 
+        // Verify token
         const decoded = await new Promise((resolve, reject) => {
-            jwt.verify(token, async (header, callback) => {
-                try {
-                    const key = await getSigningKey(header.kid);
-                    callback(null, key.publicKey || key.rsaPublicKey);
-                } catch (error) {
-                    callback(error);
+            jwt.verify(
+                token,
+                async (header, callback) => {
+                    try {
+                        const key = await getSigningKey(header.kid);
+                        callback(null, key.publicKey || key.rsaPublicKey);
+                    } catch (err) {
+                        callback(err);
+                    }
+                },
+                { algorithms: ["RS256"] },
+                (err, decodedToken) => {
+                    if (err) reject(err);
+                    else resolve(decodedToken);
                 }
-            }, { algorithms: ["RS256"] }, (err, decoded) => {
-                if (err) reject(err);
-                else resolve(decoded);
-            });
+            );
         });
 
         const groupId = decoded["groups"]?.[0] || "unknown";
@@ -65,7 +70,13 @@ exports.handler = async (event) => {
             principalId: decoded.sub || "user",
             policyDocument: {
                 Version: "2012-10-17",
-                Statement: [{ Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }]
+                Statement: [
+                    {
+                        Action: "execute-api:Invoke",
+                        Effect: "Allow",
+                        Resource: event.methodArn
+                    }
+                ]
             },
             context: { "X-Group-ID": groupId }
         };
@@ -76,7 +87,13 @@ exports.handler = async (event) => {
             principalId: "user",
             policyDocument: {
                 Version: "2012-10-17",
-                Statement: [{ Action: "execute-api:Invoke", Effect: "Deny", Resource: event.methodArn }]
+                Statement: [
+                    {
+                        Action: "execute-api:Invoke",
+                        Effect: "Deny",
+                        Resource: event.methodArn
+                    }
+                ]
             },
             context: { "errorMessage": error.message }
         };

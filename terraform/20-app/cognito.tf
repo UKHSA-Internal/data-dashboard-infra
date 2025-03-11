@@ -1,27 +1,13 @@
-data "aws_secretsmanager_secret" "ukhsa_oidc_credentials" {
-  name = "${local.prefix}-ukhsa-oidc-credentials"
+data "aws_secretsmanager_secret" "cognito_service_credentials" {
+  name = "${local.prefix}-cognito-service-credentials"
 }
 
-data "aws_secretsmanager_secret_version" "ukhsa_oidc_credentials" {
-  secret_id = try(data.aws_secretsmanager_secret.ukhsa_oidc_credentials.id, null)
-}
-
-data "aws_secretsmanager_secret" "ukhsa_tenant_id" {
-  name = "${local.prefix}-ukhsa-tenant-id"
-}
-
-data "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
-  secret_id = try(data.aws_secretsmanager_secret.ukhsa_tenant_id.id, null)
+data "aws_secretsmanager_secret_version" "cognito_service_credentials" {
+  secret_id = data.aws_secretsmanager_secret.cognito_service_credentials.id
 }
 
 locals {
-  # Retrieve values from Secrets Manager
-  ukhsa_oidc_credentials = try(jsondecode(data.aws_secretsmanager_secret_version.ukhsa_oidc_credentials.secret_string), {})
-  ukhsa_tenant_id        = try(jsondecode(data.aws_secretsmanager_secret_version.ukhsa_tenant_id.secret_string)["tenant_id"], "")
-
-  # Ensure correct retrieval of OIDC credentials
-  ukhsa_oidc_client_id     = lookup(local.ukhsa_oidc_credentials, "client_id", "")
-  ukhsa_oidc_client_secret = lookup(local.ukhsa_oidc_credentials, "client_secret", "")
+  decoded_cognito_credentials = jsondecode(data.aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)
 
   # Define callback and logout URLs
   env_domain_map = {
@@ -53,7 +39,6 @@ locals {
 
 module "cognito" {
   source = "../modules/cognito"
-
   sns_role_arn        = aws_iam_role.cognito_sns_role.arn
   user_pool_name      = "${local.prefix}-user-pool"
   client_name         = "${local.prefix}-client"
@@ -63,10 +48,13 @@ module "cognito" {
   region              = local.region
 
   enable_ukhsa_oidc   = true
-  ukhsa_tenant_id     = local.ukhsa_tenant_id
-  ukhsa_oidc_client_id      = local.ukhsa_oidc_client_id
-  ukhsa_oidc_client_secret  = local.ukhsa_oidc_client_secret
+
+  client_id           = local.decoded_cognito_credentials.client_id
+  client_secret       = local.decoded_cognito_credentials.client_secret
+  ukhsa_tenant_id     = local.decoded_cognito_credentials.tenant_id
+
+  cognito_user_pool_issuer_endpoint = var.cognito_user_pool_issuer_endpoint
 
   lambda_role_arn     = aws_iam_role.cognito_lambda_role.arn
-  prefix             = local.prefix
+  prefix              = local.prefix
 }
