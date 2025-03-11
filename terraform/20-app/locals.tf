@@ -32,18 +32,32 @@ locals {
 
   use_ip_allow_list = local.environment != "prod"
 
-  scheduled_scaling_policies_for_non_essential_envs = {
+  dpd_dev_env_scheduled_policy = {
     start_of_working_day_scale_out = {
       min_capacity = 1
       max_capacity = 1
-      schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
+      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 7 AM BST
     }
     end_of_working_day_scale_in = {
       min_capacity = 0
       max_capacity = 0
-      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      schedule     = "cron(0 21 ? * MON-FRI *)" # Run every weekday at 10 PM
     }
   }
+  non_essential_envs_scheduled_policy = {
+    start_of_working_day_scale_out = {
+      min_capacity = 1
+      max_capacity = 1
+      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 7am
+    }
+    end_of_working_day_scale_in = {
+      min_capacity = 0
+      max_capacity = 0
+      schedule     = "cron(0 19 ? * MON-FRI *)" # Run every weekday at 8pm
+    }
+  }
+
+  scheduled_scaling_policies_for_non_essential_envs = local.environment == "dpd" ? local.dpd_dev_env_scheduled_policy : local.non_essential_envs_scheduled_policy
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
