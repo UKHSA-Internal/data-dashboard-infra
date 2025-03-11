@@ -5,7 +5,7 @@ locals {
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "82.132.247.113/32",  # Rhys Inlaws
+      "81.78.9.5/32",       # Rhys Inlaws
       "81.78.30.247/32",    # Rhys hotspot
       "86.3.198.35/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
@@ -14,7 +14,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "80.7.227.61/32",     # Kiran
       "92.234.44.48/32",    # Zesh
-      "147.161.167.103/32", # Temitope Akinsoto
+      "147.161.225.81/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
