@@ -1,3 +1,6 @@
+process.env.SECRET_NAME = "cognito-service-credentials";
+process.env.TENANT_SECRET_NAME = "ukhsa-tenant-id";
+
 const { handler } = require("./index.js");
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
@@ -5,24 +8,34 @@ const sinon = require("sinon");
 
 // Mock AWS Secrets Manager
 jest.mock("@aws-sdk/client-secrets-manager", () => {
-    const actualAWS = jest.requireActual("@aws-sdk/client-secrets-manager");
-
-    return {
-        SecretsManagerClient: jest.fn(() => ({
-            send: jest.fn((command) => {
-                if (command instanceof actualAWS.GetSecretValueCommand) {
-                    return Promise.resolve({
-                        SecretString: JSON.stringify({
-                            publicKey: "fake-public-key",
-                            anotherSecret: "test-secret-value",
-                        }),
-                    });
-                }
-                return Promise.reject(new Error("Unknown command"));
-            }),
-        })),
-        GetSecretValueCommand: actualAWS.GetSecretValueCommand,
-    };
+  const actualAWS = jest.requireActual("@aws-sdk/client-secrets-manager");
+  return {
+    SecretsManagerClient: jest.fn(() => ({
+      send: jest.fn((command) => {
+        // Check the secret ID requested
+        if (command.input && command.input.SecretId) {
+          if (command.input.SecretId.includes("cognito-service-credentials")) {
+            // Return credentials
+            return Promise.resolve({
+              SecretString: JSON.stringify({
+                client_id: "fake-client-id",
+                client_secret: "fake-client-secret"
+              })
+            });
+          } else if (command.input.SecretId.includes("tenant-id")) {
+            // Return tenant id
+            return Promise.resolve({
+              SecretString: JSON.stringify({
+                tenant_id: "fake-tenant-id"
+              })
+            });
+          }
+        }
+        return Promise.reject(new Error("Unknown command"));
+      }),
+    })),
+    GetSecretValueCommand: actualAWS.GetSecretValueCommand,
+  };
 });
 
 // Mock JWKS Client
