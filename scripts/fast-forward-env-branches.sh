@@ -3,9 +3,11 @@
 env_branches=("env/uat/uat"
               "env/uat/staging"
               "env/test/test"
+              "env/auth-test/auth-test"
               "env/test/perf"
               "env/dev/dpd"
-              "env/dev/dev")
+              "env/dev/dev"
+              "env/auth-dev/auth-dev")
 
 for branch in ${env_branches[@]}; do 
     env=$(echo $branch | cut -d : -f 1 | xargs basename)
