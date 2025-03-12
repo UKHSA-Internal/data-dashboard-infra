@@ -57,21 +57,18 @@ variable "user_pool_domain" {
 variable "client_id" {
   description = "Client ID for Cognito integration"
   type        = string
-  default     = ""
   sensitive   = true
 }
 
 variable "client_secret" {
   description = "Client secret for Cognito integration"
   type        = string
-  default     = ""
   sensitive   = true
 }
 
 variable "ukhsa_tenant_id" {
   description = "UKHSA Entra ID Tenant ID"
   type        = string
-  default     = ""
   sensitive   = true
 }
 

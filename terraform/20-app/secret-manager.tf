@@ -153,6 +153,10 @@ resource "aws_secretsmanager_secret" "ukhsa_tenant_id" {
 resource "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
   secret_id     = aws_secretsmanager_secret.ukhsa_tenant_id.id
   secret_string = jsonencode({ tenant_id = var.ukhsa_tenant_id })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
 
 ################################################################################
@@ -172,6 +176,10 @@ resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
     client_id     = var.client_id,
     client_secret = var.client_secret
   })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
 
 ################################################################################
