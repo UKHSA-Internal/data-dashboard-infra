@@ -1,0 +1,280 @@
+name: Pull Request Workflow for Non-public Environments
+
+on:
+  pull_request:
+    branches:
+      - "*"
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build_base:
+    name: Build base env
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Build base env
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+  unit_test_functions:
+    name: Unit test functions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test lambda-producer-handler
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-producer-handler
+
+      - name: Test lambda-db-password-rotation
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-db-password-rotation
+
+      - name: Test lambda-alarm-notification
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-alarm-notification
+
+      - name: Test legacy-dashboard-redirect-viewer-request
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: legacy-dashboard-redirect-viewer-request
+
+      - name: Test public-api-cloud-front-viewer-request
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: public-api-cloud-front-viewer-request
+
+  unit_test_report:
+    name: Unit test coverage report
+    runs-on: ubuntu-latest
+    needs: ["unit_test_functions"]
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Download test coverage
+        uses: actions/download-artifact@v4.1.9
+        with:
+          path: ./reports
+
+      - name: Unit test report
+        uses: ukhsa-internal/jest-coverage-comment-action@v1
+        with:
+          multiple-files: |
+            lambda-producer-handler, ./reports/lambda-producer-handler-coverage-summary/coverage-summary.json
+            lambda-db-password-rotation, ./reports/lambda-db-password-rotation-coverage-summary/coverage-summary.json
+            lambda-alarm-notification, ./reports/lambda-alarm-notification-coverage-summary/coverage-summary.json
+            legacy-dashboard-redirect-viewer-request, ./reports/legacy-dashboard-redirect-viewer-request-coverage-summary/coverage-summary.json
+            public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-summary/coverage-summary.json
+          multiple-junitxml-files: |
+            lambda-producer-handler, ./reports/lambda-producer-handler-coverage-report/junit.xml
+            lambda-db-password-rotation, ./reports/lambda-db-password-rotation-coverage-report/junit.xml
+            lambda-alarm-notification, ./reports/lambda-alarm-notification-coverage-report/junit.xml
+            legacy-dashboard-redirect-viewer-request, ./reports/legacy-dashboard-redirect-viewer-request-coverage-report/junit.xml
+            public-api-cloud-front-viewer-request, ./reports/public-api-cloud-front-viewer-request-coverage-report/junit.xml
+          title: unit test coverage report
+
+  terraform_plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    needs: ["build_base", "unit_test_functions"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform plan
+        run: |
+          source uhd.sh
+          uhd terraform init
+          uhd terraform plan:layer 10-account auth-test
+          uhd terraform plan:layer 20-app ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+  terraform_apply:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    needs: ["build_base", "terraform_plan"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform apply
+        run: |
+          source uhd.sh
+          uhd terraform init
+          uhd terraform apply:layer 10-account auth-test
+          uhd terraform apply:layer 20-app ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+  push_docker_images:
+    name: Push docker images
+    runs-on: ubuntu-latest
+    needs: ["terraform_apply"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Pull / push docker images
+        run: |
+          source uhd.sh
+          uhd docker update auth-test ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+  restart_services:
+    name: Restart services
+    runs-on: ubuntu-latest
+    needs: ["push_docker_images"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output:layer 20-app ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for auth-test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: 'auth-test'
+          aws-region: ${{ env.AWS_REGION }}
+          auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+
+      - name: Restart ECS services
+        run: |
+          source uhd.sh
+          uhd ecs restart-services
+        shell: zsh {0}
+
+      - name: Redeploy lambda functions
+        run: |
+          source uhd.sh
+          uhd lambda restart-functions
+        shell: zsh {0}
+
+  terraform_destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: ["restart_services"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform destroy
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform destroy:layer 20-app ci-a-$SHORT_SHA
+        shell: zsh {0}
+
+  clean_up_remaining_resources:
+    name: Clean up remaining resources
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: ["terraform_destroy"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Configure AWS credentials for auth-test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: 'auth-test'
+          aws-region: ${{ env.AWS_REGION }}
+          auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
+
+      - name: Delete secrets
+        run: |
+          source uhd.sh
+          uhd secrets delete-all-secrets ci-a-$SHORT_SHA
+        shell: zsh {0}
