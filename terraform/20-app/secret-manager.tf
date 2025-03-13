@@ -141,25 +141,6 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
 }
 
 ################################################################################
-# UKHSA Entra ID
-################################################################################
-
-resource "aws_secretsmanager_secret" "ukhsa_tenant_id" {
-  name        = "${local.prefix}-ukhsa-tenant-id"
-  description = "UKHSA Entra ID Tenant ID"
-  kms_key_id  = module.kms_secrets_app_engineer.key_id
-}
-
-resource "aws_secretsmanager_secret_version" "ukhsa_tenant_id" {
-  secret_id     = aws_secretsmanager_secret.ukhsa_tenant_id.id
-  secret_string = jsonencode({ tenant_id = var.ukhsa_tenant_id })
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
-}
-
-################################################################################
 # Cognito
 ################################################################################
 
