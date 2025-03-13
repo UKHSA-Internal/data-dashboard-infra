@@ -134,6 +134,7 @@ function _terraform_plan_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
 
     echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -156,6 +157,7 @@ function _terraform_plan_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var-file=$var_file || return 1
 }
 
@@ -189,6 +191,7 @@ function _terraform_import_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
 
     echo "Running terraform import for address '$address' and id '$id' into layer '$layer', workspace '$workspace', and account '$target_account_name'..."
 
@@ -211,6 +214,7 @@ function _terraform_import_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var-file=$var_file \
         $address \
         $id || return 0
@@ -240,6 +244,7 @@ function _terraform_apply_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
 
     echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -262,6 +267,7 @@ function _terraform_apply_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -361,6 +367,7 @@ function _terraform_destroy_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
 
     echo "Running terraform destroy for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -383,6 +390,7 @@ function _terraform_destroy_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -498,7 +506,6 @@ function _get_target_aws_account_id() {
 
 function _get_etl_sibling_aws_account_id() {
   local account=$1
-  local tools_account_id=$(_get_tools_account_id)
 
   local account_name=${account#auth-}
 
@@ -506,6 +513,10 @@ function _get_etl_sibling_aws_account_id() {
     --secret-id "aws/account-id/etl-$account_name" \
     --query SecretString \
     --output text
+}
+
+function _get_ukhsa_tenant_id() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-tenant-id" --query SecretString --output text
 }
 
 function _get_target_aws_account_name() {
