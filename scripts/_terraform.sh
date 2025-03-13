@@ -558,7 +558,7 @@ function _get_auth_target_aws_account_name() {
                 env/auth-dev/*)  echo "auth-dev"  ;;
                 env/auth-uat/*)  echo "auth-uat"  ;;
                 env/auth-test/*) echo "auth-test" ;;
-                *)          echo "auth-dev"  ;;
+                *)               echo "auth-dev"  ;;
             esac
         fi
     else
