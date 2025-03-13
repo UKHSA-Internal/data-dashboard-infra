@@ -555,9 +555,9 @@ function _get_auth_target_aws_account_name() {
             echo "auth-test"
         else
             case $branch in
-                env/dev/*)  echo "auth-dev"  ;;
-                env/uat/*)  echo "auth-uat"  ;;
-                env/test/*) echo "auth-test" ;;
+                env/auth-dev/*)  echo "auth-dev"  ;;
+                env/auth-uat/*)  echo "auth-uat"  ;;
+                env/auth-test/*) echo "auth-test" ;;
                 *)          echo "auth-dev"  ;;
             esac
         fi
