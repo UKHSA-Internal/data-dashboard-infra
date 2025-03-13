@@ -78,10 +78,3 @@ variable "cognito_user_pool_issuer_endpoint" {
   default     = ""
   sensitive   = true
 }
-
-variable "ukhsa_tenant_id" {
-  description = "UKHSA Entra ID Tenant ID"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
