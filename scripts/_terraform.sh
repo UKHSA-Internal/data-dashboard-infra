@@ -524,34 +524,58 @@ function _get_target_aws_account_name() {
     local workspace=$2
 
     if [[ $layer == "10-account" ]]; then
-        echo $workspace
+        echo "$workspace"
+        return
+    fi
+
+    if [[ $workspace == *"auth"* ]]; then
+        _get_auth_target_aws_account_name "$workspace"
     else
-      # This is an app-layer change
-      if [[ $workspace == "prod" ]]; then
-          echo "prod"
-
-      elif [[ $CI == "true" ]]; then
-          if [[ $workspace == ci-* ]]; then
-              echo "test"
-          else
-              case $branch in
-                  env/dev/*)   echo "dev" ;;
-                  env/uat/*)   echo "uat" ;;
-                  env/test/*)  echo "test" ;;
-                  *)           echo "dev" ;;
-                  # In this case, the CI is actively looking
-                  # to deploy to the dev account not the test account
-              esac
-          fi
-
-      else
-          # If we don't want prod, and we're not in the CI environment
-          # then we're interested in deploying to the dev account
-          echo "dev"
-      fi
+        _get_main_target_aws_account_name "$workspace"
     fi
 }
 
+function _get_main_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "prod" ]]; then
+        echo "prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "test"
+        else
+            case $branch in
+                env/dev/*)  echo "dev"  ;;
+                env/uat/*)  echo "uat"  ;;
+                env/test/*) echo "test" ;;
+                *)          echo "dev"  ;; # Default to dev
+            esac
+        fi
+    else
+        echo "dev"
+    fi
+}
+
+function _get_auth_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "auth-prod" ]]; then
+        echo "auth-prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "auth-test"
+        else
+            case $branch in
+                env/auth-dev/*)  echo "auth-dev"  ;;
+                env/auth-uat/*)  echo "auth-uat"  ;;
+                env/auth-test/*) echo "auth-test" ;;
+                *)               echo "auth-dev"  ;;
+            esac
+        fi
+    else
+        echo "auth-dev"
+    fi
+}
 
 _get_dev_workspace_name() {
     local input="${1:-$(whoami)}"
