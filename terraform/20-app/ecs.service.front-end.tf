@@ -72,7 +72,7 @@ module "ecs_service_front_end" {
         },
         {
           name  = "AUTH_ENABLED",
-          value = local.is_auth
+          value = local.auth_enabled
         },
         {
           name  = "AUTH_DOMAIN"
