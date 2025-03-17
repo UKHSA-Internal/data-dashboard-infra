@@ -24,3 +24,5 @@ variable "ukhsa_tenant_id" {
 }
 
 variable "halo_account_type" {}
+
+variable "auth_enabled" {}

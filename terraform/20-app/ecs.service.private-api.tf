@@ -64,7 +64,7 @@ module "ecs_service_private_api" {
         },
         {
           name  = "AUTH_ENABLED"
-          value = local.is_auth
+          value = local.auth_enabled
         },
       ],
       secrets = [
