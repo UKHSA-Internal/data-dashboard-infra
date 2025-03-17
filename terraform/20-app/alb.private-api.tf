@@ -19,8 +19,8 @@ module "private_api_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-private-api-tg" = {
-      name              = "${local.prefix}-private-api-tg"
+    "${local.prefix}-private-api" = {
+      name              = "${local.prefix}-private-api"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -60,7 +60,7 @@ module "private_api_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-private-api-tg"
+              target_group_key = "${local.prefix}-private-api"
             }
           ]
           conditions = [
