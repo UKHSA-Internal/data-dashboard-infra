@@ -1,6 +1,6 @@
 module "iam_sentinel_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.44.0"
+  version = "5.54.0"
 
   create_role          = true
   max_session_duration = 3600
@@ -19,7 +19,7 @@ module "iam_sentinel_role" {
 
 module "iam_sentinel_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.44.0"
+  version = "5.54.0"
 
   name = "uhd-sentinel-policy"
 
