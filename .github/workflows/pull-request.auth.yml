@@ -1,4 +1,4 @@
-name: Pull Request Workflow for Non-public Environments
+name: Pull Request Workflow for Non-public
 
 on:
   pull_request:
