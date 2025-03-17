@@ -138,7 +138,7 @@ module "ecs_service_front_end" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end-tg"].arn
+      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end"].arn
       container_name   = "front-end"
       container_port   = 3000
     }
