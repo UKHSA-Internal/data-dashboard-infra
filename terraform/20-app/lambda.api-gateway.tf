@@ -21,7 +21,7 @@ module "api_gateway_lambda" {
 
   environment_variables = {
     SECRET_NAME         = "${local.prefix}-cognito-service-credentials"
-    TENANT_SECRET_NAME  = "${local.prefix}-ukhsa-tenant-id"
+    TENANT_SECRET_NAME  = var.ukhsa_tenant_id
   }
 
   attach_policy_statements = true
@@ -30,8 +30,7 @@ module "api_gateway_lambda" {
       effect    = "Allow"
       actions   = ["secretsmanager:GetSecretValue"]
       resources = [
-        "arn:aws:secretsmanager:${local.region}:${data.aws_caller_identity.current.account_id}:secret/${local.prefix}-cognito-service-credentials-*",
-        "arn:aws:secretsmanager:${local.region}:${data.aws_caller_identity.current.account_id}:secret/${local.prefix}-ukhsa-tenant-id-*"
+        aws_secretsmanager_secret.cognito_service_credentials.arn
       ]
     }
     allow_api_gateway_invoke = {
