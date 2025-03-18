@@ -35,7 +35,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ci-a-$SHORT_SHA
+          uhd terraform apply:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
   unit_test_functions_auth:
@@ -129,7 +129,7 @@ jobs:
           source uhd.sh
           uhd terraform init
           uhd terraform plan:layer 10-account auth-test
-          uhd terraform plan:layer 20-app ci-a-$SHORT_SHA
+          uhd terraform plan:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
   terraform_apply_auth:
@@ -155,7 +155,7 @@ jobs:
           source uhd.sh
           uhd terraform init
           uhd terraform apply:layer 10-account auth-test
-          uhd terraform apply:layer 20-app ci-a-$SHORT_SHA
+          uhd terraform apply:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
   push_docker_images_auth:
@@ -177,7 +177,7 @@ jobs:
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker update auth-test ci-a-$SHORT_SHA
+          uhd docker update auth-test ci-auth-$SHORT_SHA
         shell: zsh {0}
 
   restart_services_auth:
@@ -201,7 +201,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app ci-a-$SHORT_SHA
+          uhd terraform output:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
       - name: Configure AWS credentials for auth-test account
@@ -246,7 +246,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform destroy:layer 20-app ci-a-$SHORT_SHA
+          uhd terraform destroy:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
   clean_up_remaining_resources_auth:
@@ -276,5 +276,5 @@ jobs:
       - name: Delete secrets
         run: |
           source uhd.sh
-          uhd secrets delete-all-secrets ci-a-$SHORT_SHA
+          uhd secrets delete-all-secrets ci-auth-$SHORT_SHA
         shell: zsh {0}
