@@ -6,10 +6,7 @@ module "ecr" {
   repository_image_tag_mutability   = "IMMUTABLE"
   repository_name                   = var.name
   repository_read_access_arns       = ["arn:aws:iam::${var.account_id}:root"]
-  repository_read_write_access_arns = [
-    "arn:aws:iam::${var.tools_account_id}:root",
-    "arn:aws:iam::${var.tools_account_id}:role/GithubInfraCIRole/GitHubActions"
-  ]
+  repository_read_write_access_arns = ["arn:aws:iam::${var.tools_account_id}:*"]
 
   create_lifecycle_policy     = true
   repository_lifecycle_policy = local.standard_ecr_lifecycle_policy
