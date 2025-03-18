@@ -48,7 +48,7 @@ module "cloudfront_front_end" {
   default_cache_behavior = {
     allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
     cache_policy_id            = (
-        local.is_auth ?
+        local.auth_enabled ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end.id
       )
@@ -82,7 +82,7 @@ module "cloudfront_front_end" {
       query_string               = false
     },
     # Behaviour to enable cookie forwarding for auth endpoints
-    local.is_auth ? [
+    local.auth_enabled ? [
       {
         path_pattern               = "/api/auth/*"
         allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
@@ -101,7 +101,7 @@ module "cloudfront_front_end" {
       path_pattern               = "/"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_id            = (
-        local.is_auth ?
+        local.auth_enabled ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
       )
@@ -117,7 +117,7 @@ module "cloudfront_front_end" {
       path_pattern               = "/weather-health-alerts"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_id            = (
-        local.is_auth ?
+        local.auth_enabled ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
       )
@@ -133,7 +133,7 @@ module "cloudfront_front_end" {
       path_pattern               = "/weather-health-alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_id            = (
-        local.is_auth ?
+        local.auth_enabled ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
       )
@@ -184,7 +184,7 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
   cookies_config {
     cookie_behavior = "whitelist"
     cookies {
-      items = flatten(concat(["UKHSAConsentGDPR", local.is_auth ? [
+      items = flatten(concat(["UKHSAConsentGDPR", local.auth_enabled ? [
         "__Secure-authjs.callback-url",  # Stores the redirect destination after authentication
         "__Secure-authjs.csrf-token",  # CSRF token required for authentication flows
         "__Secure-authjs.session-token",  # Main session token
