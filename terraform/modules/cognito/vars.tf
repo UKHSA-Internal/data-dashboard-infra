@@ -54,15 +54,15 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "client_id" {
-  description = "Client ID for Cognito integration"
+variable "ukhsa_client_id" {
   type        = string
+  description = "Azure UKHSA Application Client ID"
   sensitive   = true
 }
 
-variable "client_secret" {
-  description = "Client secret for Cognito integration"
+variable "ukhsa_client_secret" {
   type        = string
+  description = "Azure UKHSA Application Client Secret"
   sensitive   = true
 }
 

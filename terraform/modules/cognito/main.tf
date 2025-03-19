@@ -24,6 +24,13 @@ resource "aws_cognito_user_pool" "user_pool" {
     }
   }
 
+  schema {
+    name                     = "custom:groups"
+    attribute_data_type      = "String"
+    mutable                  = true
+    required                 = false
+  }
+
   lifecycle {
     ignore_changes = [schema]
   }
@@ -79,13 +86,16 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   provider_type = "OIDC"
 
   provider_details = {
-    client_id                     = var.client_id
-    client_secret                 = var.client_secret
-    oidc_issuer                   = "https://login.microsoftonline.com/${var.ukhsa_tenant_id}/v2.0"
-    authorize_scopes              = "openid email profile"
-    attributes_request_method     = "GET"
-    attributes_url                = "https://graph.microsoft.com/oidc/userinfo"
-    attributes_url_add_attributes = "true"
+    client_id                 = var.ukhsa_client_id
+    client_secret             = var.ukhsa_client_secret
+    oidc_issuer               = "https://login.microsoftonline.com/${var.ukhsa_tenant_id}/v2.0"
+    authorize_scopes          = "openid email profile"
+    attributes_request_method = "GET"
+  }
+
+  attribute_mapping = {
+    "custom:groups"   = "groups"
+    "username"        = "sub"
   }
 }
 
