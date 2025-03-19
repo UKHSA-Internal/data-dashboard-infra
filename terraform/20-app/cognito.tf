@@ -1,7 +1,4 @@
 locals {
-  decoded_client_id     = jsondecode(aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_id"]
-  decoded_client_secret = jsondecode(aws_secretsmanager_secret_version.cognito_service_credentials.secret_string)["client_secret"]
-
   # Define callback and logout URLs
   env_domain_map = {
     dev  = "dev.ukhsa-dashboard.data.gov.uk"
@@ -42,8 +39,8 @@ module "cognito" {
 
   enable_ukhsa_oidc   = true
 
-  client_id           = local.decoded_client_id
-  client_secret       = local.decoded_client_secret
+  ukhsa_client_id     = var.ukhsa_client_id
+  ukhsa_client_secret = var.ukhsa_client_secret
   ukhsa_tenant_id     = var.ukhsa_tenant_id
 
   cognito_user_pool_issuer_endpoint = var.cognito_user_pool_issuer_endpoint
