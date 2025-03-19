@@ -66,9 +66,9 @@ data "terraform_remote_state" "uat_account" {
 locals {
   account_states = {
     dev       = data.terraform_remote_state.dev_account.outputs
-    auth_dev  = data.terraform_remote_state.auth_dev_account.outputs
+    auth-dev  = data.terraform_remote_state.auth_dev_account.outputs
     test      = data.terraform_remote_state.test_account.outputs
-    auth_test = data.terraform_remote_state.auth_test_account.outputs
+    auth-test = data.terraform_remote_state.auth_test_account.outputs
     uat       = data.terraform_remote_state.uat_account.outputs
   }
 }
