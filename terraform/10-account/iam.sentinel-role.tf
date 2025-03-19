@@ -6,7 +6,7 @@ module "iam_sentinel_role" {
   max_session_duration = 3600
   role_name            = "uhd-sentinel-role"
   role_requires_mfa    = false
-  role_sts_externalid  = data.aws_secretsmanager_secret_version.sentinel_external_id.secret_string
+  role_sts_externalid  = aws_secretsmanager_secret_version.sentinel_external_id.secret_string
 
   custom_role_policy_arns = [
     module.iam_sentinel_policy.arn
@@ -47,8 +47,4 @@ module "iam_sentinel_policy" {
       ]
     }
   )
-}
-
-data "aws_secretsmanager_secret_version" "sentinel_external_id" {
-  secret_id = aws_secretsmanager_secret.sentinel_external_id.id
 }
