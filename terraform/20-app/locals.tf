@@ -36,12 +36,12 @@ locals {
     start_of_working_day_scale_out = {
       min_capacity = 1
       max_capacity = 1
-      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 7 AM BST
+      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 6 AM
     }
     end_of_working_day_scale_in = {
       min_capacity = 0
       max_capacity = 0
-      schedule     = "cron(0 21 ? * MON-FRI *)" # Run every weekday at 10 PM
+      schedule     = "cron(0 22 ? * MON-FRI *)" # Run every weekday at 10 PM
     }
   }
   non_essential_envs_scheduled_policy = {
