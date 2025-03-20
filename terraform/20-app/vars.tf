@@ -55,5 +55,26 @@ variable "api_gateway_stage_name" {
 variable "cognito_admin_email" {
   description = "Admin email address for Cognito SNS notifications"
   type        = string
-  default     = "Afaan.Ashiq@ukhsa.gov.uk"
+  default     = "Christian.Martin@ukhsa.gov.uk"
+}
+
+variable "client_id" {
+  description = "Client ID for Cognito integration"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "client_secret" {
+  description = "Client Secret for Cognito integration"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "cognito_user_pool_issuer_endpoint" {
+  description = "The issuer endpoint for the Cognito user pool (e.g. https://cognito-idp.<region>.amazonaws.com/<user_pool_id>)"
+  type        = string
+  default     = ""
+  sensitive   = true
 }
