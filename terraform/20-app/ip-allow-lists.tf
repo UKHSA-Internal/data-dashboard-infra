@@ -12,7 +12,7 @@ locals {
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "80.7.227.61/32",     # Kiran
+      "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
       "147.161.225.81/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
@@ -39,7 +39,6 @@ locals {
       "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
       "82.68.136.38/32",    # Steve Ryan
-      "90.208.183.134/32",  # Christie
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince

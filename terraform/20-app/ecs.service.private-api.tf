@@ -64,7 +64,7 @@ module "ecs_service_private_api" {
         },
         {
           name  = "AUTH_ENABLED"
-          value = local.is_auth
+          value = local.auth_enabled
         },
       ],
       secrets = [
@@ -86,7 +86,7 @@ module "ecs_service_private_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api-tg"].arn
+      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api"].arn
       container_name   = "api"
       container_port   = 80
     }

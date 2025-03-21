@@ -37,6 +37,9 @@ inputs:
   uat-account-role:
     description: "The role associated with the uat account"
     required: false
+  auth-uat-account-role:
+    description: "The role associated with the auth-uat account"
+    required: false
 
 runs:
   using: "composite"
@@ -96,9 +99,18 @@ runs:
 
     - name: Configure AWS credentials for uat account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ inputs.account-name == 'uat' || inputs.account-name == 'staging' }}
+      if: ${{ contains(fromJSON('["uat", "staging"]'), inputs.account-name) }}
       with:
         role-to-assume: ${{ inputs.uat-account-role }}
+        aws-region: ${{ inputs.aws-region }}
+        role-chaining: true
+        role-duration-seconds: ${{ inputs.role-duration-seconds }}
+
+    - name: Configure AWS credentials for auth uat account
+      uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ inputs.account-name == 'auth-uat' }}
+      with:
+        role-to-assume: ${{ inputs.auth-uat-account-role }}
         aws-region: ${{ inputs.aws-region }}
         role-chaining: true
         role-duration-seconds: ${{ inputs.role-duration-seconds }}

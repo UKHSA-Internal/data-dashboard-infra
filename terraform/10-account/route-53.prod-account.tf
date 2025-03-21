@@ -13,10 +13,22 @@ module "route_53_records" {
       records = local.account_states.dev.dns.account.name_servers
     },
     {
+      name    = "auth-dev"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-dev.dns.account.name_servers
+    },
+    {
       name    = "test"
       type    = "NS"
       ttl     = 300
       records = local.account_states.test.dns.account.name_servers
+    },
+    {
+      name    = "auth-test"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-test.dns.account.name_servers
     },
     {
       name    = "pen"
@@ -60,10 +72,22 @@ module "route_53_records_legacy" {
       records = local.account_states.dev.dns.legacy.name_servers
     },
     {
+      name    = "auth-dev"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-dev.dns.legacy.name_servers
+    },
+    {
       name    = "test"
       type    = "NS"
       ttl     = 300
       records = local.account_states.test.dns.legacy.name_servers
+    },
+    {
+      name    = "auth-test"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-test.dns.legacy.name_servers
     },
     {
       name    = "uat"
