@@ -83,6 +83,6 @@ locals {
     test      = data.terraform_remote_state.test_account.outputs
     auth-test = data.terraform_remote_state.auth_test_account.outputs
     uat       = data.terraform_remote_state.uat_account.outputs
-    auth_uat  = data.terraform_remote_state.auth_uat_account.outputs
+    auth-uat  = data.terraform_remote_state.auth_uat_account.outputs
   }
 }

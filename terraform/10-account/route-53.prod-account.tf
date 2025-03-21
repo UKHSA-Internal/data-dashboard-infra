@@ -53,7 +53,13 @@ module "route_53_records" {
       type    = "NS"
       ttl     = 300
       records = local.account_states.uat.dns.wke.train.name_servers
-    }
+    },
+    {
+      name    = "auth-uat"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-uat.dns.account.name_servers
+    },
   ]
 }
 
@@ -94,6 +100,12 @@ module "route_53_records_legacy" {
       type    = "NS"
       ttl     = 300
       records = local.account_states.uat.dns.legacy.name_servers
+    },
+    {
+      name    = "auth-uat"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-uat.dns.legacy.name_servers
     }
   ]
 }
