@@ -130,7 +130,7 @@ function _docker_update_service() {
     _docker_ecr_login "tools"
     echo "Pushing ${dest_image}..."
     docker push "${dest_image}" || { echo "Failed to push image"; return 1; }
-echo "Docker update for service '${service}' completed successfully."
+    echo "Docker update for service '${service}' completed successfully."
 }
 
 function _docker_update() {
