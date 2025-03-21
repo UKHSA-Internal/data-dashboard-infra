@@ -84,7 +84,7 @@ module "route_53_records_legacy" {
       records = local.account_states.test.dns.legacy.name_servers
     },
     {
-      name    = "auth_test"
+      name    = "auth-test"
       type    = "NS"
       ttl     = 300
       records = local.account_states.auth_test.dns.legacy.name_servers
