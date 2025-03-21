@@ -12,7 +12,7 @@ locals {
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "80.7.227.61/32",     # Kiran
+      "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
       "147.161.225.81/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
