@@ -6,14 +6,15 @@ locals {
   wke_dns_names = {
     dev       = "dev.ukhsa-dashboard.data.gov.uk"
     auth-dev  = "auth-dev.ukhsa-dashboard.data.gov.uk"
+    test      = "test.ukhsa-dashboard.data.gov.uk"
+    auth-test = "auth-test.ukhsa-dashboard.data.gov.uk"
     pen       = "pen.ukhsa-dashboard.data.gov.uk"
     perf      = "perf.ukhsa-dashboard.data.gov.uk"
     auth-perf = "auth-perf.ukhsa-dashboard.data.gov.uk"
-    prod      = "ukhsa-dashboard.data.gov.uk"
-    test      = "test.ukhsa-dashboard.data.gov.uk"
-    auth-test = "auth-test.ukhsa-dashboard.data.gov.uk"
-    train     = "train.ukhsa-dashboard.data.gov.uk"
     uat       = "uat.ukhsa-dashboard.data.gov.uk"
+    train     = "train.ukhsa-dashboard.data.gov.uk"
+    auth-uat  = "auth-uat.ukhsa-dashboard.data.gov.uk"
+    prod      = "ukhsa-dashboard.data.gov.uk"
   }
 }
 
