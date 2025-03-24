@@ -19,7 +19,7 @@ locals {
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
-      "86.164.230.184/32",  # Joe Gasewicz
+      "86.145.139.101/32",  # Joe Gasewicz
       "86.130.56.216/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
@@ -27,7 +27,7 @@ locals {
       "165.225.17.7/32",    # Declan Barrett
     ],
     project_team = [
-      "90.196.180.145/32",  # Debbie
+      "90.196.180.145/32", # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
