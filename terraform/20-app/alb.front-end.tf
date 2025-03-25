@@ -1,6 +1,6 @@
 module "front_end_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.9.0"
+  version = "9.14.0"
 
   name = "${local.prefix}-front-end"
 
