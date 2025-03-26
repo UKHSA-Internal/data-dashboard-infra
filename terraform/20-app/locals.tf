@@ -14,8 +14,8 @@ locals {
   auth_enabled            = var.auth_enabled
 
   wke = {
-    account = ["dev", "test", "uat", "prod"]
-    other   = ["pen", "perf", "train"]
+    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod"]
+    other   = ["pen", "auth-perf", "perf", "auth-pen", "train"]
   }
 
   needs_alarms = contains(["dev", "uat", "prod"], local.environment)
