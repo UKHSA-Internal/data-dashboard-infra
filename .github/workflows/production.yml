@@ -152,6 +152,7 @@ jobs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
+      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
 
@@ -192,6 +193,14 @@ jobs:
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/test/test
+    secrets: inherit
+
+  deploy_auth_test:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth_test}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/auth-test/auth-test
     secrets: inherit
 
   deploy_perf:
