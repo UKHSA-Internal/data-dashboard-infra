@@ -8,7 +8,7 @@ env_branches=("env/dev/dev"
               "env/uat/staging"
               "env/auth-dev/auth-dev"
               "env/auth-test/auth-test"
-              "env/auth-perf/auth-perf"
+              "env/auth-test/auth-perf"
               "env/auth-uat/auth-uat")
 
 for branch in ${env_branches[@]}; do 
