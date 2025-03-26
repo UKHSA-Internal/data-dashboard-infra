@@ -151,6 +151,7 @@ jobs:
           test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
           auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
           uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
+          auth-uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_UAT }}
 
       - name: Restart ECS services
         run: |

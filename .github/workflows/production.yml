@@ -152,10 +152,10 @@ jobs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
       deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
-      deploy_auth_test: ${{ steps.fast_forward_merge.outputs.deploy_auth_test }}
+      deploy_auth-test: ${{ steps.fast_forward_merge.outputs.deploy_auth-test }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
       deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
-      deploy_auth_perf: ${{ steps.fast_forward_merge.outputs.deploy_auth_perf }}
+      deploy_auth-perf: ${{ steps.fast_forward_merge.outputs.deploy_auth-perf }}
 
     steps:
       - uses: actions/checkout@v4
@@ -196,9 +196,9 @@ jobs:
       branch: env/test/test
     secrets: inherit
 
-  deploy_auth_test:
+  deploy_auth-test:
     needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth_test}}
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-test}}
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/auth-test/auth-test
@@ -212,9 +212,9 @@ jobs:
       branch: env/test/perf
     secrets: inherit
 
-  deploy_auth_perf:
+  deploy_auth-perf:
     needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth_perf}}
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-perf}}
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/auth-test/auth-perf
