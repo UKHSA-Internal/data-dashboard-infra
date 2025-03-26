@@ -43,6 +43,12 @@ module "route_53_records" {
       records = local.account_states.test.dns.wke.perf.name_servers
     },
     {
+      name    = "auth-perf"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-test.dns.wke.auth-perf.name_servers
+    },
+    {
       name    = "uat"
       type    = "NS"
       ttl     = 300

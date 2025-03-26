@@ -21,8 +21,8 @@ output "dns" {
         name_servers = module.route_53_zone_wke_test_account.route53_zone_name_servers[local.wke_dns_names.perf]
       } : null
       auth-perf = local.account == "auth-test" ? {
-        zone_id      = module.route_53_zone_wke_test_account.route53_zone_zone_id[local.wke_dns_names.auth-perf]
-        name_servers = module.route_53_zone_wke_test_account.route53_zone_name_servers[local.wke_dns_names.auth-perf]
+        zone_id      = module.route_53_zone_wke_auth_test_account.route53_zone_zone_id[local.wke_dns_names.auth-perf]
+        name_servers = module.route_53_zone_wke_auth_test_account.route53_zone_name_servers[local.wke_dns_names.auth-perf]
       } : null
       train = local.account == "uat" ? {
         zone_id      = module.route_53_zone_wke_uat_account.route53_zone_zone_id[local.wke_dns_names.train]
