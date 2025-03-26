@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        echo "CI=true >> $GITHUB_ENV
+        echo "CI=true" >> $GITHUB_ENV
         source uhd.sh
         echo "ENVIRONMENT_NAME=$(echo $branch | grep -P '([^\/]+$)' -o)" >> $GITHUB_ENV
         echo "TARGET_ACCOUNT_NAME=$(_get_target_aws_account_name 20-app $ENVIRONMENT_NAME)" >> $GITHUB_ENV  
