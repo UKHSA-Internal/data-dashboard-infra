@@ -26,7 +26,7 @@ locals {
   cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
-  is_dev                                       = var.environment_type == "dev"
+  is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
   is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
 
