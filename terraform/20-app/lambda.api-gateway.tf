@@ -38,5 +38,12 @@ module "api_gateway_lambda" {
       actions   = ["lambda:InvokeFunction"]
       resources = ["arn:aws:execute-api:${local.region}:${data.aws_caller_identity.current.account_id}:${module.api_gateway.api_gateway_id}/*/*/*"]
     }
+    kms_decrypt = {
+      effect    = "Allow"
+      actions   = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn
+      ]
+    }
   }
 }

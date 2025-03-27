@@ -37,7 +37,7 @@ exports.handler = async (event) => {
   try {
     const secrets = await getSecrets();
 
-    const COGNITO_JWKS_URL = `https://cognito-idp.${secrets.region}.amazonaws.com/${secrets.userPoolId}/.well-known/jwks.json`;
+    const COGNITO_JWKS_URL = `https://cognito-idp.eu-west-2.amazonaws.com/${secrets.userPoolId}/.well-known/jwks.json`;
 
     const client = jwksClient({ jwksUri: COGNITO_JWKS_URL });
     const getSigningKey = util.promisify(client.getSigningKey.bind(client));
