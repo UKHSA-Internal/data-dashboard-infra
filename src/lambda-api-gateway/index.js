@@ -7,93 +7,94 @@ const secretsClient = new SecretsManagerClient({});
 let cachedSecrets = null;
 
 async function getSecrets() {
-    // This caching only lasts as long as the Lambda instance is warm.
-    // If the function experiences a cold start, cachedSecrets will be reset.
-    if (cachedSecrets) return cachedSecrets;
+  // This caching only lasts as long as the Lambda instance is warm.
+  // If the function experiences a cold start, cachedSecrets will be reset.
+  if (cachedSecrets) return cachedSecrets;
 
-      try {
-        const credentialsSecretName = process.env.SECRET_NAME;
-        const tenantSecretName = process.env.TENANT_SECRET_NAME;
+  try {
+    const credentialsSecretName = process.env.SECRET_NAME;
 
-        // Fetch both secrets in parallel
-        const [credentialsResponse, tenantResponse] = await Promise.all([
-          secretsClient.send(new GetSecretValueCommand({ SecretId: credentialsSecretName })),
-          secretsClient.send(new GetSecretValueCommand({ SecretId: tenantSecretName }))
-        ]);
+    const credentialsResponse = await secretsClient.send(
+      new GetSecretValueCommand({ SecretId: credentialsSecretName })
+    );
 
-        const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
-        const tenantParsed = JSON.parse(tenantResponse.SecretString);
+    const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
 
-        cachedSecrets = {
-          clientId: credentialsParsed.client_id,
-          clientSecret: credentialsParsed.client_secret,
-          tenantId: tenantParsed.tenant_id
-        };
-
-        return cachedSecrets;
-      } catch (error) {
-        console.error("Failed to retrieve secrets:", error);
-        throw new Error("Secrets retrieval failed");
-      }
-    }
-
-    exports.handler = async (event) => {
-      try {
-        const secrets = await getSecrets();
-        const UKHSA_JWKS_URL = `https://login.microsoftonline.com/${secrets.tenantId}/discovery/v2.0/keys`;
-
-        const client = jwksClient({ jwksUri: UKHSA_JWKS_URL });
-        const getSigningKey = util.promisify(client.getSigningKey.bind(client));
-
-        // Extract JWT from headers
-        const token = event.headers?.Authorization?.replace("Bearer ", "") ||
-                      event.headers?.authorization?.replace("Bearer ", "");
-        if (!token) throw new Error("Missing Authorization header");
-
-        // Verify the token
-        const decoded = await new Promise((resolve, reject) => {
-          jwt.verify(
-            token,
-            async (header, callback) => {
-              try {
-                const key = await getSigningKey(header.kid);
-                callback(null, key.publicKey || key.rsaPublicKey);
-              } catch (err) {
-                callback(err);
-              }
-            },
-            { algorithms: ["RS256"] },
-            (err, decodedToken) => {
-              if (err) reject(err);
-              else resolve(decodedToken);
-            }
-          );
-        });
-
-        const groupId = decoded["groups"]?.[0] || "unknown";
-
-        return {
-          principalId: decoded.sub || "user",
-          policyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              { Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }
-            ]
-          },
-          context: { "X-Group-ID": groupId }
-        };
-
-      } catch (error) {
-        console.error("Token verification failed:", error.message);
-        return {
-          principalId: "user",
-          policyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              { Action: "execute-api:Invoke", Effect: "Deny", Resource: event.methodArn }
-            ]
-          },
-          context: { "errorMessage": error.message }
-        };
-      }
+    cachedSecrets = {
+      clientId: credentialsParsed.client_id,
+      userPoolId: credentialsParsed.user_pool_id,
+      region: credentialsParsed.region
     };
+
+    return cachedSecrets;
+  } catch (error) {
+    console.error("Failed to retrieve secrets:", error);
+    throw new Error("Secrets retrieval failed");
+  }
+}
+
+exports.handler = async (event) => {
+  try {
+    const secrets = await getSecrets();
+
+    const COGNITO_JWKS_URL = `https://cognito-idp.${secrets.region}.amazonaws.com/${secrets.userPoolId}/.well-known/jwks.json`;
+
+    const client = jwksClient({ jwksUri: COGNITO_JWKS_URL });
+    const getSigningKey = util.promisify(client.getSigningKey.bind(client));
+
+    // Extract JWT from headers
+    const token = event.headers?.Authorization?.replace("Bearer ", "") ||
+                  event.headers?.authorization?.replace("Bearer ", "");
+    if (!token) throw new Error("Missing Authorization header");
+
+    // Verify the token explicitly using Cognito JWKS
+    const decoded = await new Promise((resolve, reject) => {
+      jwt.verify(
+        token,
+        async (header, callback) => {
+          try {
+            const key = await getSigningKey(header.kid);
+            callback(null, key.publicKey || key.rsaPublicKey);
+          } catch (err) {
+            callback(err);
+          }
+        },
+        { algorithms: ["RS256"] },
+        (err, decodedToken) => {
+          if (err) reject(err);
+          else resolve(decodedToken);
+        }
+      );
+    });
+
+    // Explicitly parse custom:groups (JSON-encoded string)
+    const customGroupsRaw = decoded["custom:groups"] || "[]";
+    const customGroups = JSON.parse(customGroupsRaw);
+
+    const groupId = customGroups[0] || "unknown";
+
+    return {
+      principalId: decoded.sub || "user",
+      policyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          { Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }
+        ]
+      },
+      context: { "X-Group-ID": groupId }
+    };
+
+  } catch (error) {
+    console.error("Token verification failed:", error.message);
+    return {
+      principalId: "user",
+      policyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          { Action: "execute-api:Invoke", Effect: "Deny", Resource: event.methodArn }
+        ]
+      },
+      context: { "errorMessage": error.message }
+    };
+  }
+};

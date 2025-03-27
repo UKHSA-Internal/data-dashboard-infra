@@ -1,38 +1,21 @@
 process.env.SECRET_NAME = "cognito-service-credentials";
-process.env.TENANT_SECRET_NAME = "ukhsa-tenant-id";
 
 const { handler } = require("./index.js");
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
-const sinon = require("sinon");
 
 // Mock AWS Secrets Manager
 jest.mock("@aws-sdk/client-secrets-manager", () => {
   const actualAWS = jest.requireActual("@aws-sdk/client-secrets-manager");
   return {
     SecretsManagerClient: jest.fn(() => ({
-      send: jest.fn((command) => {
-        // Check the secret ID requested
-        if (command.input && command.input.SecretId) {
-          if (command.input.SecretId.includes("cognito-service-credentials")) {
-            // Return credentials
-            return Promise.resolve({
-              SecretString: JSON.stringify({
-                client_id: "fake-client-id",
-                client_secret: "fake-client-secret"
-              })
-            });
-          } else if (command.input.SecretId.includes("tenant-id")) {
-            // Return tenant id
-            return Promise.resolve({
-              SecretString: JSON.stringify({
-                tenant_id: "fake-tenant-id"
-              })
-            });
-          }
-        }
-        return Promise.reject(new Error("Unknown command"));
-      }),
+      send: jest.fn(() => Promise.resolve({
+        SecretString: JSON.stringify({
+          client_id: "fake-client-id",
+          user_pool_id: "eu-west-2_fakePoolId",
+          region: "eu-west-2"
+        })
+      })),
     })),
     GetSecretValueCommand: actualAWS.GetSecretValueCommand,
   };
@@ -40,65 +23,83 @@ jest.mock("@aws-sdk/client-secrets-manager", () => {
 
 // Mock JWKS Client
 jest.mock("jwks-rsa", () => {
-    return jest.fn(() => ({
-        getSigningKey: jest.fn((kid, callback) => callback(null, { publicKey: "fake-public-key" })),
-    }));
+  return jest.fn(() => ({
+    getSigningKey: jest.fn((kid, callback) => callback(null, { publicKey: "fake-public-key" })),
+  }));
 });
 
 // Mock JWT Verification
 jest.mock("jsonwebtoken", () => ({
-    verify: jest.fn((token, key, options, callback) => {
-        if (token === "VALID_TEST_JWT") {
-            callback(null, { sub: "fake-user-id" }); // Simulated decoded JWT
-        } else {
-            callback(new Error("jwt malformed"), null);
-        }
-    }),
+  verify: jest.fn((token, key, options, callback) => {
+    if (token === "VALID_COGNITO_JWT") {
+      callback(null, {
+        sub: "fake-user-id",
+        "custom:groups": "[\"group-id-123\",\"group-id-456\"]"
+      }); // Simulated decoded JWT
+    } else if (token === "VALID_JWT_NO_GROUPS") {
+      callback(null, {
+        sub: "fake-user-id",
+        "custom:groups": "[]"
+      });
+    } else {
+      callback(new Error("jwt malformed"), null);
+    }
+  }),
 }));
 
-describe("API Gateway Lambda Authorizer", () => {
-    let sandbox;
+describe("Updated API Gateway Cognito Lambda Authorizer", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    beforeEach(() => {
-        sandbox = sinon.createSandbox();
-    });
+  it("allows requests with a valid Cognito JWT containing groups", async () => {
+    const event = {
+      headers: {
+        Authorization: "Bearer VALID_COGNITO_JWT",
+      },
+      methodArn: "arn:aws:execute-api:region:account-id:api-id/stage/GET/resource"
+    };
 
-    afterEach(() => {
-        sandbox.restore();
-        jest.clearAllMocks();
-    });
+    const result = await handler(event);
 
-    it("should allow requests with a valid JWT", async () => {
-        const event = {
-            headers: {
-                Authorization: "Bearer VALID_TEST_JWT",
-            },
-        };
+    expect(result.policyDocument.Statement[0].Effect).toBe("Allow");
+    expect(result.context["X-Group-ID"]).toBe("group-id-123");
+  });
 
-        const result = await handler(event);
+  it("allows requests with a valid JWT but no groups, defaulting to 'unknown'", async () => {
+    const event = {
+      headers: {
+        Authorization: "Bearer VALID_JWT_NO_GROUPS",
+      },
+      methodArn: "arn:aws:execute-api:region:account-id:api-id/stage/GET/resource"
+    };
 
-        expect(result.policyDocument.Statement[0].Effect).toBe("Allow");
-    });
+    const result = await handler(event);
 
-    it("should deny requests without a token", async () => {
-        const event = { headers: {} };
+    expect(result.policyDocument.Statement[0].Effect).toBe("Allow");
+    expect(result.context["X-Group-ID"]).toBe("unknown");
+  });
 
-        const result = await handler(event);
+  it("denies requests without an Authorization token", async () => {
+    const event = { headers: {}, methodArn: "arn:aws:execute-api:region:account-id:api-id/stage/GET/resource" };
 
-        expect(result.policyDocument.Statement[0].Effect).toBe("Deny");
-        expect(result.context.errorMessage).toBe("Missing Authorization header");
-    });
+    const result = await handler(event);
 
-    it("should deny requests with an invalid JWT", async () => {
-        const event = {
-            headers: {
-                Authorization: "Bearer INVALID_JWT",
-            },
-        };
+    expect(result.policyDocument.Statement[0].Effect).toBe("Deny");
+    expect(result.context.errorMessage).toBe("Missing Authorization header");
+  });
 
-        const result = await handler(event);
+  it("denies requests with an invalid JWT", async () => {
+    const event = {
+      headers: {
+        Authorization: "Bearer INVALID_JWT",
+      },
+      methodArn: "arn:aws:execute-api:region:account-id:api-id/stage/GET/resource"
+    };
 
-        expect(result.policyDocument.Statement[0].Effect).toBe("Deny");
-        expect(result.context.errorMessage).toBe("jwt malformed");
-    });
+    const result = await handler(event);
+
+    expect(result.policyDocument.Statement[0].Effect).toBe("Deny");
+    expect(result.context.errorMessage).toBe("jwt malformed");
+  });
 });
