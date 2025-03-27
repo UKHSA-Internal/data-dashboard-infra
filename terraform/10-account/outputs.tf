@@ -20,6 +20,10 @@ output "dns" {
         zone_id      = module.route_53_zone_wke_test_account.route53_zone_zone_id[local.wke_dns_names.perf]
         name_servers = module.route_53_zone_wke_test_account.route53_zone_name_servers[local.wke_dns_names.perf]
       } : null
+      auth-perf = local.account == "auth-test" ? {
+        zone_id      = module.route_53_zone_wke_auth_test_account.route53_zone_zone_id[local.wke_dns_names.auth-perf]
+        name_servers = module.route_53_zone_wke_auth_test_account.route53_zone_name_servers[local.wke_dns_names.auth-perf]
+      } : null
       train = local.account == "uat" ? {
         zone_id      = module.route_53_zone_wke_uat_account.route53_zone_zone_id[local.wke_dns_names.train]
         name_servers = module.route_53_zone_wke_uat_account.route53_zone_name_servers[local.wke_dns_names.train]
@@ -47,6 +51,10 @@ output "acm" {
       perf = local.account == "test" ? {
         certificate_arn             = module.acm_wke_perf.acm_certificate_arn
         cloud_front_certificate_arn = module.acm_cloud_front_wke_perf.acm_certificate_arn
+      } : null
+      auth-perf = local.account == "auth-test" ? {
+        certificate_arn             = module.acm_wke_auth_perf.acm_certificate_arn
+        cloud_front_certificate_arn = module.acm_cloud_front_wke_auth_perf.acm_certificate_arn
       } : null
       train = local.account == "uat" ? {
         certificate_arn             = module.acm_wke_train.acm_certificate_arn

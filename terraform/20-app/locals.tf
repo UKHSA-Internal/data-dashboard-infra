@@ -9,13 +9,13 @@ locals {
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing         = contains(["perf", "pen", "prod"], local.environment)
+  use_prod_sizing         = contains(["perf", "auth-perf", "pen", "auth-pen", "prod"], local.environment)
   add_password_protection = local.environment == "staging"
   auth_enabled            = var.auth_enabled
 
   wke = {
-    account = ["dev", "test", "uat", "prod"]
-    other   = ["pen", "perf", "train"]
+    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod"]
+    other   = ["pen", "auth-perf", "perf", "auth-pen", "train"]
   }
 
   needs_alarms = contains(["dev", "uat", "prod"], local.environment)
@@ -26,7 +26,7 @@ locals {
   cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
-  is_dev                                       = var.environment_type == "dev"
+  is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
   is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
 
