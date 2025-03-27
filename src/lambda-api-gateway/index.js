@@ -36,7 +36,7 @@ async function getSecrets() {
 exports.handler = async (event) => {
   try {
     const secrets = await getSecrets();
-    const UKHSA_JWKS_URL = `https://login.microsoftonline.com/${secrets.tenantId}/discovery/v2.0/keys`;
+    const UKHSA_JWKS_URL = `https://cognito-idp.eu-west-2.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
     const client = jwksClient({ jwksUri: UKHSA_JWKS_URL });
     const getSigningKey = util.promisify(client.getSigningKey.bind(client));

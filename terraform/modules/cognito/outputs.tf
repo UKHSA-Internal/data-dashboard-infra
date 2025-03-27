@@ -79,3 +79,7 @@ output "tenant_id" {
   value       = var.ukhsa_tenant_id
   sensitive   = true
 }
+
+output "user_pool_id" {
+  value = aws_cognito_user_pool.user_pool.id
+}

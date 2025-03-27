@@ -22,6 +22,7 @@ module "api_gateway_lambda" {
   environment_variables = {
     SECRET_COGNITO_CREDENTIALS = "${local.prefix}-cognito-service-credentials"
     UKHSA_TENANT_ID            = var.ukhsa_tenant_id
+    COGNITO_USER_POOL_ID       = module.cognito.user_pool_id
   }
 
   attach_policy_statements = true
