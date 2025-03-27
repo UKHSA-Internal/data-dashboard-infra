@@ -20,8 +20,8 @@ module "api_gateway_lambda" {
   cloudwatch_logs_retention_in_days = 7
 
   environment_variables = {
-    SECRET_NAME         = "${local.prefix}-cognito-service-credentials"
-    TENANT_SECRET_NAME  = var.ukhsa_tenant_id
+    SECRET_COGNITO_CREDENTIALS = "${local.prefix}-cognito-service-credentials"
+    UKHSA_TENANT_ID            = var.ukhsa_tenant_id
   }
 
   attach_policy_statements = true

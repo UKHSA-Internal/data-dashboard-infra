@@ -12,21 +12,18 @@ async function getSecrets() {
   if (cachedSecrets) return cachedSecrets;
 
   try {
-    const credentialsSecretName = process.env.SECRET_NAME;
-    const tenantSecretName = process.env.TENANT_SECRET_NAME;
+    const cognitoCredentials = process.env.SECRET_COGNITO_CREDENTIALS;
+    const ukhsaTenantId = process.env.UKHSA_TENANT_ID;
 
-    const [credentialsResponse, tenantResponse] = await Promise.all([
-      secretsClient.send(new GetSecretValueCommand({ SecretId: credentialsSecretName })),
-      secretsClient.send(new GetSecretValueCommand({ SecretId: tenantSecretName }))
-    ]);
-
+    const credentialsResponse = await secretsClient.send(
+      new GetSecretValueCommand({ SecretId: cognitoCredentials })
+    );
     const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
-    const tenantParsed = JSON.parse(tenantResponse.SecretString);
 
     cachedSecrets = {
       clientId: credentialsParsed.client_id,
       clientSecret: credentialsParsed.client_secret,
-      tenantId: tenantParsed.tenant_id
+      tenantId: ukhsaTenantId
     };
 
     return cachedSecrets;
