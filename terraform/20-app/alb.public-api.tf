@@ -18,8 +18,8 @@ module "public_api_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-public-api-tg" = {
-      name              = "${local.prefix}-public-api-tg"
+    "${local.prefix}-public-api" = {
+      name              = "${local.prefix}-public-api"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -57,7 +57,7 @@ module "public_api_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-public-api-tg"
+              target_group_key = "${local.prefix}-public-api"
             }
           ]
           conditions = [

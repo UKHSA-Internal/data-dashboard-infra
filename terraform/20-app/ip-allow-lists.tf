@@ -1,26 +1,26 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "82.132.220.25/32",   # Afaan
+      "84.67.98.26/32",     # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "82.132.247.113/32",  # Rhys Inlaws
-      "81.78.30.247/32",    # Rhys hotspot
+      "81.78.9.5/32",       # Rhys Inlaws
+      "82.132.246.253/32",  # Rhys hotspot
       "86.3.198.35/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "80.7.227.61/32",     # Kiran
+      "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "147.161.225.81/32", # Temitope Akinsoto
+      "147.161.225.81/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
       "80.1.216.85/32",     # Kola Olusola
-      "86.164.230.184/32",  # Joe Gasewicz
-      "86.130.56.204/32",   # Chris Warren
+      "86.145.139.101/32",  # Joe Gasewicz
+      "86.130.56.216/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
@@ -28,7 +28,7 @@ locals {
       "165.225.17.177/32",  # Temi2
     ],
     project_team = [
-      "90.196.180.145/32",  # Debbie
+      "90.196.180.145/32", # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -40,7 +40,6 @@ locals {
       "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
       "82.68.136.38/32",    # Steve Ryan
-      "90.208.183.134/32",  # Christie
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
