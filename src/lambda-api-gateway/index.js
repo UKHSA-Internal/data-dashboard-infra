@@ -3,27 +3,30 @@ const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
 const util = require("util");
 
+const REQUIRED_GROUP_ID = "ab55e906-8ca2-4b93-9d34-5588870688e4";
+
 const secretsClient = new SecretsManagerClient({});
 let cachedSecrets = null;
 
 async function getSecrets() {
-  // This caching only lasts as long as the Lambda instance is warm.
-  // If the function experiences a cold start, cachedSecrets will be reset.
   if (cachedSecrets) return cachedSecrets;
 
   try {
     const credentialsSecretName = process.env.SECRET_NAME;
+    const tenantSecretName = process.env.TENANT_SECRET_NAME;
 
-    const credentialsResponse = await secretsClient.send(
-      new GetSecretValueCommand({ SecretId: credentialsSecretName })
-    );
+    const [credentialsResponse, tenantResponse] = await Promise.all([
+      secretsClient.send(new GetSecretValueCommand({ SecretId: credentialsSecretName })),
+      secretsClient.send(new GetSecretValueCommand({ SecretId: tenantSecretName }))
+    ]);
 
     const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
+    const tenantParsed = JSON.parse(tenantResponse.SecretString);
 
     cachedSecrets = {
       clientId: credentialsParsed.client_id,
-      userPoolId: credentialsParsed.user_pool_id,
-      region: credentialsParsed.region
+      clientSecret: credentialsParsed.client_secret,
+      tenantId: tenantParsed.tenant_id
     };
 
     return cachedSecrets;
@@ -36,18 +39,15 @@ async function getSecrets() {
 exports.handler = async (event) => {
   try {
     const secrets = await getSecrets();
+    const UKHSA_JWKS_URL = `https://login.microsoftonline.com/${secrets.tenantId}/discovery/v2.0/keys`;
 
-    const COGNITO_JWKS_URL = `https://cognito-idp.eu-west-2.amazonaws.com/${secrets.userPoolId}/.well-known/jwks.json`;
-
-    const client = jwksClient({ jwksUri: COGNITO_JWKS_URL });
+    const client = jwksClient({ jwksUri: UKHSA_JWKS_URL });
     const getSigningKey = util.promisify(client.getSigningKey.bind(client));
 
-    // Extract JWT from headers
     const token = event.headers?.Authorization?.replace("Bearer ", "") ||
                   event.headers?.authorization?.replace("Bearer ", "");
     if (!token) throw new Error("Missing Authorization header");
 
-    // Verify the token explicitly using Cognito JWKS
     const decoded = await new Promise((resolve, reject) => {
       jwt.verify(
         token,
@@ -67,11 +67,14 @@ exports.handler = async (event) => {
       );
     });
 
-    // Explicitly parse custom:groups (JSON-encoded string)
-    const customGroupsRaw = decoded["custom:groups"] || "[]";
-    const customGroups = JSON.parse(customGroupsRaw);
+    const userGroups = decoded["groups"] || [];
+    const userCustomGroups = decoded["custom:groups"] ? JSON.parse(decoded["custom:groups"]) : [];
 
-    const groupId = customGroups[0] || "unknown";
+    const allGroups = [...userGroups, ...userCustomGroups];
+
+    if (!allGroups.includes(REQUIRED_GROUP_ID)) {
+      throw new Error("User not in required group");
+    }
 
     return {
       principalId: decoded.sub || "user",
@@ -81,7 +84,7 @@ exports.handler = async (event) => {
           { Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }
         ]
       },
-      context: { "X-Group-ID": groupId }
+      context: { "X-Group-ID": REQUIRED_GROUP_ID }
     };
 
   } catch (error) {
