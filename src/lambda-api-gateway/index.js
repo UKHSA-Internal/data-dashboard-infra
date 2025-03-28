@@ -2,6 +2,8 @@ const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
 const util = require("util");
+const https = require("https");
+const querystring = require("querystring");
 
 const REQUIRED_GROUP_ID = "ab55e906-8ca2-4b93-9d34-5588870688e4";
 
@@ -11,34 +13,98 @@ let cachedSecrets = null;
 async function getSecrets() {
   if (cachedSecrets) return cachedSecrets;
 
-  try {
-    const cognitoCredentials = process.env.SECRET_COGNITO_CREDENTIALS;
-    const ukhsaTenantId = process.env.UKHSA_TENANT_ID;
+  const credentials = await secretsClient.send(
+    new GetSecretValueCommand({ SecretId: process.env.SECRET_COGNITO_CREDENTIALS })
+  );
 
-    const credentialsResponse = await secretsClient.send(
-      new GetSecretValueCommand({ SecretId: cognitoCredentials })
-    );
-    const credentialsParsed = JSON.parse(credentialsResponse.SecretString);
+  const { client_id, client_secret } = JSON.parse(credentials.SecretString);
 
-    cachedSecrets = {
-      clientId: credentialsParsed.client_id,
-      clientSecret: credentialsParsed.client_secret,
-      tenantId: ukhsaTenantId
-    };
+  cachedSecrets = {
+    clientId: client_id,
+    clientSecret: client_secret,
+    tenantId: process.env.UKHSA_TENANT_ID,
+    azureClientId: process.env.UKHSA_CLIENT_ID,
+    azureClientSecret: process.env.UKHSA_CLIENT_SECRET
+  };
 
-    return cachedSecrets;
-  } catch (error) {
-    console.error("Failed to retrieve secrets:", error);
-    throw new Error("Secrets retrieval failed");
-  }
+  return cachedSecrets;
+}
+
+async function getGraphAccessToken({ azureClientId, azureClientSecret, tenantId }) {
+  const postData = querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: azureClientId,
+    client_secret: azureClientSecret,
+    scope: "https://graph.microsoft.com/.default"
+  });
+
+  const options = {
+    hostname: "login.microsoftonline.com",
+    path: `/${tenantId}/oauth2/v2.0/token`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": Buffer.byteLength(postData)
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, res => {
+      let body = "";
+      res.on("data", chunk => (body += chunk));
+      res.on("end", () => {
+        try {
+          const { access_token } = JSON.parse(body);
+          if (!access_token) return reject(new Error("No access token in response"));
+          resolve(access_token);
+        } catch (err) {
+          reject(new Error("Failed to parse token response"));
+        }
+      });
+    });
+
+    req.on("error", reject);
+    req.write(postData);
+    req.end();
+  });
+}
+
+async function getGroupNameFromGraph(groupId, graphToken) {
+  const options = {
+    hostname: "graph.microsoft.com",
+    path: `/v1.0/groups/${groupId}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${graphToken}`
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, res => {
+      let data = "";
+      res.on("data", chunk => (data += chunk));
+      res.on("end", () => {
+        try {
+          const result = JSON.parse(data);
+          if (result.error) return reject(new Error(result.error.message));
+          resolve(result.displayName);
+        } catch (err) {
+          reject(new Error("Failed to parse group lookup response"));
+        }
+      });
+    });
+
+    req.on("error", reject);
+    req.end();
+  });
 }
 
 exports.handler = async (event) => {
   try {
     const secrets = await getSecrets();
-    const UKHSA_JWKS_URL = `https://cognito-idp.eu-west-2.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+    const jwksUri = `https://cognito-idp.eu-west-2.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
-    const client = jwksClient({ jwksUri: UKHSA_JWKS_URL });
+    const client = jwksClient({ jwksUri });
     const getSigningKey = util.promisify(client.getSigningKey.bind(client));
 
     const token = event.headers?.Authorization?.replace("Bearer ", "") ||
@@ -73,6 +139,11 @@ exports.handler = async (event) => {
       throw new Error("User not in required group");
     }
 
+    const graphToken = await getGraphAccessToken(secrets);
+    const groupName = await getGroupNameFromGraph(REQUIRED_GROUP_ID, graphToken);
+
+    if (!groupName) throw new Error("Group name not found");
+
     return {
       principalId: decoded.sub || "user",
       policyDocument: {
@@ -81,7 +152,10 @@ exports.handler = async (event) => {
           { Action: "execute-api:Invoke", Effect: "Allow", Resource: event.methodArn }
         ]
       },
-      context: { "X-Group-ID": REQUIRED_GROUP_ID }
+      context: {
+        "X-Group-ID": REQUIRED_GROUP_ID,
+        "X-Group-Name": groupName
+      }
     };
 
   } catch (error) {
