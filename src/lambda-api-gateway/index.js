@@ -1,11 +1,10 @@
+// index.js
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
 const util = require("util");
 const https = require("https");
 const querystring = require("querystring");
-
-const REQUIRED_GROUP_ID = "ab55e906-8ca2-4b93-9d34-5588870688e4";
 
 const secretsClient = new SecretsManagerClient({});
 let cachedSecrets = null;
@@ -57,7 +56,7 @@ async function getGraphAccessToken({ azureClientId, azureClientSecret, tenantId 
           const { access_token } = JSON.parse(body);
           if (!access_token) return reject(new Error("No access token in response"));
           resolve(access_token);
-        } catch (err) {
+        } catch {
           reject(new Error("Failed to parse token response"));
         }
       });
@@ -88,7 +87,7 @@ async function getGroupNameFromGraph(groupId, graphToken) {
           const result = JSON.parse(data);
           if (result.error) return reject(new Error(result.error.message));
           resolve(result.displayName);
-        } catch (err) {
+        } catch {
           reject(new Error("Failed to parse group lookup response"));
         }
       });
@@ -131,18 +130,29 @@ exports.handler = async (event) => {
     });
 
     const userGroups = decoded["groups"] || [];
-    const userCustomGroups = decoded["custom:groups"] ? JSON.parse(decoded["custom:groups"]) : [];
+    const userCustomGroups = decoded["custom:groups"]
+      ? JSON.parse(decoded["custom:groups"])
+      : [];
 
     const allGroups = [...userGroups, ...userCustomGroups];
 
-    if (!allGroups.includes(REQUIRED_GROUP_ID)) {
-      throw new Error("User not in required group");
-    }
+    if (!allGroups.length) throw new Error("User not in any groups");
 
     const graphToken = await getGraphAccessToken(secrets);
-    const groupName = await getGroupNameFromGraph(REQUIRED_GROUP_ID, graphToken);
 
-    if (!groupName) throw new Error("Group name not found");
+    const groupNameMap = await Promise.all(
+      allGroups.map(async (groupId) => {
+        try {
+          const name = await getGroupNameFromGraph(groupId, graphToken);
+          return { id: groupId, name };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    const validGroups = groupNameMap.filter(Boolean);
+    if (!validGroups.length) throw new Error("No valid group names resolved");
 
     return {
       principalId: decoded.sub || "user",
@@ -153,8 +163,8 @@ exports.handler = async (event) => {
         ]
       },
       context: {
-        "X-Group-ID": REQUIRED_GROUP_ID,
-        "X-Group-Name": groupName
+        "X-Group-IDs": validGroups.map(g => g.id).join(","),
+        "X-Group-Names": validGroups.map(g => g.name).join(",")
       }
     };
 
