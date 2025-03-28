@@ -5,7 +5,7 @@ locals {
 
   wke_dns_names = {
     dev       = "dev.ukhsa-dashboard.data.gov.uk"
-    auth-dev  = "auth-dev.ukhsa-dashboard.data.gov.uk"
+    auth-dev  = "non-public-dev.ukhsa-dashboard.data.gov.uk"
     test      = "test.ukhsa-dashboard.data.gov.uk"
     auth-test = "non-public-test.ukhsa-dashboard.data.gov.uk"
     pen       = "pen.ukhsa-dashboard.data.gov.uk"
