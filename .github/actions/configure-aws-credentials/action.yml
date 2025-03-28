@@ -72,7 +72,7 @@ runs:
 
     - name: Configure AWS credentials for auth-dev account
       uses: aws-actions/configure-aws-credentials@v4
-      if: ${{ contains(fromJSON('["auth-dev", "auth-dpd"]'), inputs.account-name) }}
+      if: ${{ contains(fromJSON('["auth-dev", "auth-dpd", "auth-sandbox"]'), inputs.account-name) }}
       with:
         role-to-assume: ${{ inputs.auth-dev-account-role }}
         aws-region: ${{ inputs.aws-region }}

@@ -7,6 +7,7 @@ env_branches=("env/dev/dev"
               "env/uat/uat"
               "env/uat/staging"
               "env/auth-dev/auth-dev"
+              "env/auth-dev/auth-sandbox"
               "env/auth-test/auth-test"
               "env/auth-test/auth-perf"
               "env/auth-uat/auth-uat")
