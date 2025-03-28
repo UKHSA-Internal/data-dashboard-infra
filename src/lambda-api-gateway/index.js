@@ -1,10 +1,10 @@
-// index.js
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
 const util = require("util");
-const https = require("https");
-const querystring = require("querystring");
+
+// hardcode the group id for now, group name for this id is App.Auth.Atlassian.agreed
+const REQUIRED_GROUP_ID = "ab55e906-8ca2-4b93-9d34-5588870688e4";
 
 const secretsClient = new SecretsManagerClient({});
 let cachedSecrets = null;
@@ -21,81 +21,10 @@ async function getSecrets() {
   cachedSecrets = {
     clientId: client_id,
     clientSecret: client_secret,
-    tenantId: process.env.UKHSA_TENANT_ID,
-    azureClientId: process.env.UKHSA_CLIENT_ID,
-    azureClientSecret: process.env.UKHSA_CLIENT_SECRET
+    tenantId: process.env.UKHSA_TENANT_ID
   };
 
   return cachedSecrets;
-}
-
-async function getGraphAccessToken({ azureClientId, azureClientSecret, tenantId }) {
-  const postData = querystring.stringify({
-    grant_type: "client_credentials",
-    client_id: azureClientId,
-    client_secret: azureClientSecret,
-    scope: "https://graph.microsoft.com/.default"
-  });
-
-  const options = {
-    hostname: "login.microsoftonline.com",
-    path: `/${tenantId}/oauth2/v2.0/token`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": Buffer.byteLength(postData)
-    }
-  };
-
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, res => {
-      let body = "";
-      res.on("data", chunk => (body += chunk));
-      res.on("end", () => {
-        try {
-          const { access_token } = JSON.parse(body);
-          if (!access_token) return reject(new Error("No access token in response"));
-          resolve(access_token);
-        } catch {
-          reject(new Error("Failed to parse token response"));
-        }
-      });
-    });
-
-    req.on("error", reject);
-    req.write(postData);
-    req.end();
-  });
-}
-
-async function getGroupNameFromGraph(groupId, graphToken) {
-  const options = {
-    hostname: "graph.microsoft.com",
-    path: `/v1.0/groups/${groupId}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${graphToken}`
-    }
-  };
-
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, res => {
-      let data = "";
-      res.on("data", chunk => (data += chunk));
-      res.on("end", () => {
-        try {
-          const result = JSON.parse(data);
-          if (result.error) return reject(new Error(result.error.message));
-          resolve(result.displayName);
-        } catch {
-          reject(new Error("Failed to parse group lookup response"));
-        }
-      });
-    });
-
-    req.on("error", reject);
-    req.end();
-  });
 }
 
 exports.handler = async (event) => {
@@ -129,30 +58,10 @@ exports.handler = async (event) => {
       );
     });
 
-    const userGroups = decoded["groups"] || [];
-    const userCustomGroups = decoded["custom:groups"]
-      ? JSON.parse(decoded["custom:groups"])
-      : [];
-
-    const allGroups = [...userGroups, ...userCustomGroups];
-
-    if (!allGroups.length) throw new Error("User not in any groups");
-
-    const graphToken = await getGraphAccessToken(secrets);
-
-    const groupNameMap = await Promise.all(
-      allGroups.map(async (groupId) => {
-        try {
-          const name = await getGroupNameFromGraph(groupId, graphToken);
-          return { id: groupId, name };
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    const validGroups = groupNameMap.filter(Boolean);
-    if (!validGroups.length) throw new Error("No valid group names resolved");
+    const userGroups = decoded["custom:groups"] ? JSON.parse(decoded["custom:groups"]) : [];
+    if (!userGroups.includes(REQUIRED_GROUP_ID)) {
+      throw new Error("User not in required group");
+    }
 
     return {
       principalId: decoded.sub || "user",
@@ -163,8 +72,7 @@ exports.handler = async (event) => {
         ]
       },
       context: {
-        "X-Group-IDs": validGroups.map(g => g.id).join(","),
-        "X-Group-Names": validGroups.map(g => g.name).join(",")
+        "X-Group-ID": REQUIRED_GROUP_ID
       }
     };
 
