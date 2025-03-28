@@ -83,12 +83,12 @@ module "route_53_records_legacy" {
       ttl     = 300
       records = local.account_states.dev.dns.legacy.name_servers
     },
-    {
-      name    = "auth-dev"
-      type    = "NS"
-      ttl     = 300
-      records = local.account_states.auth-dev.dns.legacy.name_servers
-    },
+#     {
+#       name    = "auth-dev"
+#       type    = "NS"
+#       ttl     = 300
+#       records = local.account_states.auth-dev.dns.legacy.name_servers
+#     },
     {
       name    = "test"
       type    = "NS"
