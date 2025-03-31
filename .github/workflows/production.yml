@@ -173,6 +173,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+  deploy_auth-prod:
+    needs: fast_forward_env_branches
+    uses: ./.github/workflows/production.auth.yml
+    secrets: inherit
+
   deploy_dev:
     needs: fast_forward_env_branches
     if: ${{needs.fast_forward_env_branches.outputs.deploy_dev}}
