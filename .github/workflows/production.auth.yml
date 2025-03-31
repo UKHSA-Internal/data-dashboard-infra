@@ -5,6 +5,7 @@ on:
 
 env:
   AWS_REGION: "eu-west-2"
+  branch: "env/auth-prod/auth-prod"
 
 permissions:
   id-token: write
