@@ -14,7 +14,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "147.161.225.81/32",  # Temitope Akinsoto
+      "147.161.225.104/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "86.130.56.216/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
