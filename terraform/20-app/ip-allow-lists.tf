@@ -14,7 +14,7 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "147.161.225.81/32",  # Temitope Akinsoto
+      "147.161.225.104/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "80.229.17.164/32",   # Christian Martin
       "81.108.125.246/32",  # Tom Christian
