@@ -1,18 +1,10 @@
-name: Well Known Environment Workflow
+name: Production Workflow Non-public
 
 on:
-  push:
-    branches:
-      - "env/**"
   workflow_call:
-    inputs:
-      branch:
-        required: true
-        type: string
 
 env:
   AWS_REGION: "eu-west-2"
-  branch: ${{ inputs.branch == '' && github.ref_name || inputs.branch }}
 
 permissions:
   id-token: write
@@ -36,7 +28,6 @@ jobs:
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/well-known-environment-name
         with:
           branch: ${{ env.branch }}
 
@@ -44,8 +35,8 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init
-          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform plan:layer 10-account $TARGET_ACCOUNT_NAME
-          uhd terraform plan:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform plan:layer 10-account auth-prod
+          uhd terraform plan:layer 20-app auth-prod
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
@@ -69,16 +60,13 @@ jobs:
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/well-known-environment-name
-        with:
-          branch: ${{ env.branch }}
 
       - name: Terraform apply
         run: |
           source uhd.sh
           uhd terraform init
-          [ $IS_ACCOUNT_LAYER_BRANCH = "true" ] && uhd terraform apply:layer 10-account $TARGET_ACCOUNT_NAME
-          uhd terraform apply:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform apply:layer 10-account auth-prod
+          uhd terraform apply:layer 20-app auth-prod
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
@@ -99,14 +87,11 @@ jobs:
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/well-known-environment-name
-        with:
-          branch: ${{ env.branch }}
 
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker update $TARGET_ACCOUNT_NAME $ENVIRONMENT_NAME
+          uhd docker update auth-prod auth-prod
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
@@ -128,15 +113,12 @@ jobs:
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
-      - uses: ./.github/actions/well-known-environment-name
-        with:
-          branch: ${{ env.branch }}
 
       - name: Terraform output
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app $ENVIRONMENT_NAME
+          uhd terraform output:layer 20-app auth-prod
         env:
           branch: ${{ env.branch }}
         shell: zsh {0}
@@ -146,12 +128,7 @@ jobs:
         with:
           account-name: ${{ env.TARGET_ACCOUNT_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
-          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
-          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
-          auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
-          uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
-          auth-uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_UAT }}
+          auth-prod-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_PROD }}
 
       - name: Restart ECS services
         run: |

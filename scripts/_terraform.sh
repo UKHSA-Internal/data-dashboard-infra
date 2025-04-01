@@ -134,6 +134,9 @@ function _terraform_plan_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -156,6 +159,9 @@ function _terraform_plan_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file || return 1
 }
 
@@ -189,6 +195,9 @@ function _terraform_import_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform import for address '$address' and id '$id' into layer '$layer', workspace '$workspace', and account '$target_account_name'..."
 
@@ -211,6 +220,9 @@ function _terraform_import_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         $address \
         $id || return 0
@@ -240,6 +252,9 @@ function _terraform_apply_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -262,6 +277,9 @@ function _terraform_apply_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -361,6 +379,9 @@ function _terraform_destroy_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform destroy for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -383,6 +404,9 @@ function _terraform_destroy_layer() {
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -498,7 +522,6 @@ function _get_target_aws_account_id() {
 
 function _get_etl_sibling_aws_account_id() {
   local account=$1
-  local tools_account_id=$(_get_tools_account_id)
 
   local account_name=${account#auth-}
 
@@ -508,39 +531,75 @@ function _get_etl_sibling_aws_account_id() {
     --output text
 }
 
+function _get_ukhsa_tenant_id() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-tenant-id" --query SecretString --output text
+}
+
+function _get_ukhsa_client_id() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-id" --query SecretString --output text
+}
+
+function _get_ukhsa_client_secret() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-secret" --query SecretString --output text
+}
+
 function _get_target_aws_account_name() {
     local layer=$1
     local workspace=$2
 
     if [[ $layer == "10-account" ]]; then
-        echo $workspace
+        echo "$workspace"
+        return
+    fi
+
+    if [[ $workspace == *"auth"* ]]; then
+        _get_auth_target_aws_account_name "$workspace"
     else
-      # This is an app-layer change
-      if [[ $workspace == "prod" ]]; then
-          echo "prod"
-
-      elif [[ $CI == "true" ]]; then
-          if [[ $workspace == ci-* ]]; then
-              echo "test"
-          else
-              case $branch in
-                  env/dev/*)   echo "dev" ;;
-                  env/uat/*)   echo "uat" ;;
-                  env/test/*)  echo "test" ;;
-                  *)           echo "dev" ;;
-                  # In this case, the CI is actively looking
-                  # to deploy to the dev account not the test account
-              esac
-          fi
-
-      else
-          # If we don't want prod, and we're not in the CI environment
-          # then we're interested in deploying to the dev account
-          echo "dev"
-      fi
+        _get_main_target_aws_account_name "$workspace"
     fi
 }
 
+function _get_main_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "prod" ]]; then
+        echo "prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "test"
+        else
+            case $branch in
+                env/dev/*)  echo "dev"  ;;
+                env/uat/*)  echo "uat"  ;;
+                env/test/*) echo "test" ;;
+                *)          echo "dev"  ;; # Default to dev
+            esac
+        fi
+    else
+        echo "dev"
+    fi
+}
+
+function _get_auth_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "auth-prod" ]]; then
+        echo "auth-prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "auth-test"
+        else
+            case $branch in
+                env/auth-dev/*)  echo "auth-dev"  ;;
+                env/auth-uat/*)  echo "auth-uat"  ;;
+                env/auth-test/*) echo "auth-test" ;;
+                *)               echo "auth-dev"  ;;
+            esac
+        fi
+    else
+        echo "auth-dev"
+    fi
+}
 
 _get_dev_workspace_name() {
     local input="${1:-$(whoami)}"

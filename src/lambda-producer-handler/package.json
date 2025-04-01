@@ -12,7 +12,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^19.0.2"
+    "sinon": "^20.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-kinesis": "^3.685.0",
