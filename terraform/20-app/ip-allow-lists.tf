@@ -16,10 +16,6 @@ locals {
       "92.234.44.48/32",    # Zesh
       "147.161.225.81/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
-      "80.229.17.164/32",   # Christian Martin
-      "81.108.125.246/32",  # Tom Christian
-      "80.1.216.85/32",     # Kola Olusola
-      "86.145.139.101/32",  # Joe Gasewicz
       "86.130.56.216/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
