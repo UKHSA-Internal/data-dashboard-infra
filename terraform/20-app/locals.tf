@@ -9,12 +9,12 @@ locals {
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing         = contains(["perf", "auth-perf", "pen", "auth-pen", "prod"], local.environment)
+  use_prod_sizing         = contains(["perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"], local.environment)
   add_password_protection = local.environment == "staging"
   auth_enabled            = var.auth_enabled
 
   wke = {
-    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod"]
+    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod", "auth-prod"]
     other   = ["pen", "auth-perf", "perf", "auth-pen", "train"]
   }
 

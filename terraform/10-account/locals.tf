@@ -14,6 +14,7 @@ locals {
     uat       = "uat.ukhsa-dashboard.data.gov.uk"
     train     = "train.ukhsa-dashboard.data.gov.uk"
     auth-uat  = "non-public-uat.ukhsa-dashboard.data.gov.uk"
+    auth-prod = "non-public.ukhsa-dashboard.data.gov.uk"
     prod      = "ukhsa-dashboard.data.gov.uk"
   }
 }

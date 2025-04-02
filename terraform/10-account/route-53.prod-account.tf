@@ -12,12 +12,12 @@ module "route_53_records" {
       ttl     = 300
       records = local.account_states.dev.dns.account.name_servers
     },
-#     {
-#       name    = "auth-dev"
-#       type    = "NS"
-#       ttl     = 300
-#       records = local.account_states.auth-dev.dns.account.name_servers
-#     },
+    {
+      name    = "non-public-dev"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-dev.dns.account.name_servers
+    },
     {
       name    = "test"
       type    = "NS"
@@ -25,7 +25,7 @@ module "route_53_records" {
       records = local.account_states.test.dns.account.name_servers
     },
     {
-      name    = "auth-test"
+      name    = "non-public-test"
       type    = "NS"
       ttl     = 300
       records = local.account_states.auth-test.dns.account.name_servers
@@ -43,7 +43,7 @@ module "route_53_records" {
       records = local.account_states.test.dns.wke.perf.name_servers
     },
     {
-      name    = "auth-perf"
+      name    = "non-public-perf"
       type    = "NS"
       ttl     = 300
       records = local.account_states.auth-test.dns.wke.auth-perf.name_servers
@@ -60,12 +60,18 @@ module "route_53_records" {
       ttl     = 300
       records = local.account_states.uat.dns.wke.train.name_servers
     },
-#     {
-#       name    = "auth-uat"
-#       type    = "NS"
-#       ttl     = 300
-#       records = local.account_states.auth-uat.dns.account.name_servers
-#     },
+    {
+      name    = "non-public-uat"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-uat.dns.account.name_servers
+    },
+    {
+      name    = "non-public"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-prod.dns.account.name_servers
+    },
   ]
 }
 
@@ -83,12 +89,12 @@ module "route_53_records_legacy" {
       ttl     = 300
       records = local.account_states.dev.dns.legacy.name_servers
     },
-#     {
-#       name    = "auth-dev"
-#       type    = "NS"
-#       ttl     = 300
-#       records = local.account_states.auth-dev.dns.legacy.name_servers
-#     },
+    {
+      name    = "non-public-dev"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-dev.dns.legacy.name_servers
+    },
     {
       name    = "test"
       type    = "NS"
@@ -96,7 +102,7 @@ module "route_53_records_legacy" {
       records = local.account_states.test.dns.legacy.name_servers
     },
     {
-      name    = "auth-test"
+      name    = "non-public-test"
       type    = "NS"
       ttl     = 300
       records = local.account_states.auth-test.dns.legacy.name_servers
@@ -107,11 +113,17 @@ module "route_53_records_legacy" {
       ttl     = 300
       records = local.account_states.uat.dns.legacy.name_servers
     },
-#     {
-#       name    = "auth-uat"
-#       type    = "NS"
-#       ttl     = 300
-#       records = local.account_states.auth-uat.dns.legacy.name_servers
-#     }
+    {
+      name    = "non-public-uat"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-uat.dns.legacy.name_servers
+    },
+    {
+      name    = "non-public"
+      type    = "NS"
+      ttl     = 300
+      records = local.account_states.auth-prod.dns.legacy.name_servers
+    },
   ]
 }
