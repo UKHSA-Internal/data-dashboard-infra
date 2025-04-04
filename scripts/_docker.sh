@@ -49,7 +49,7 @@ function _docker_build_with_custom_tag() {
       local env=$env_name
     fi
 
-    if [[ ${{env}} =~ ^auth- ]]; then
+    if [[ ${env} =~ ^auth- ]]; then
       local account="auth-dev"
     else
       local account="dev"
