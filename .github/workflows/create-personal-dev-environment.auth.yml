@@ -22,14 +22,9 @@ jobs:
     name: Validate environment name
     runs-on: ubuntu-latest
     steps:
-      - name: Check if environment name is valid
-        run: |
-          if [[ $name =~ ^auth- ]]; then
-            echo "Target environment name is valid"
-          else
-            echo "Target environment name is invalid, must start with 'auth-'" >&2
-            exit 1
-          fi
+      - uses: ./.github/actions/validate-auth-environment-name
+        with:
+          name: ${{ inputs.name }}
 
   terraform_apply:
     name: Terraform apply
