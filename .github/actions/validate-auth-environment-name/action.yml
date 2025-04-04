@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        if [[ $name =~ ^auth- ]]; then
+        if [[ ${{ inputs.name }} =~ ^auth- ]]; then
           echo "Target environment name is valid"
         else
           echo "Target environment name is invalid, must start with 'auth-'" >&2
