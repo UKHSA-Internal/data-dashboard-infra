@@ -1,15 +1,16 @@
 module "cognito" {
-  source = "../modules/cognito"
-  sns_role_arn = aws_iam_role.cognito_sns_role.arn
+  source            = "../modules/cognito"
+  sns_role_arn      = aws_iam_role.cognito_sns_role.arn
   user_pool_name    = "${local.prefix}-user-pool"
   client_name       = "${local.prefix}-client"
   user_pool_domain  = "${local.prefix}-domain"
+
   callback_urls = concat(
-    ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk/api/auth/callback/cognito"],
+    ["${local.urls.front_end}/api/auth/callback/cognito"],
     local.is_dev ? ["http://localhost:3000/api/auth/callback/cognito", "http://localhost:3001/api/auth/callback/cognito"] : []
   )
   logout_urls = concat(
-    ["https://${terraform.workspace}.dev.ukhsa-dashboard.data.gov.uk"],
+    [local.urls.front_end],
     local.is_dev ? ["http://localhost:3000", "http://localhost:3001"] : []
   )
   region = local.region
