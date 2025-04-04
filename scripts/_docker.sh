@@ -7,7 +7,7 @@ function _docker_help() {
     echo "commands:"
     echo "  help                                     - this help screen"
     echo
-    echo "  build <repo> <!env>                      - build a docker image for the specified repo, env can be used to target an environment"
+    echo "  build <repo> <!env> <!account>           - build a docker image for the specified repo, env can be used to target an environment"
     echo "  update <account> <env>                   - pull the latest source images and push to the specified environment"
     echo "  update-service <account> <env> <service> - pull the latest source image and push to the specified service in environment"
     echo "  get-recent-tag <ecr-repo> <!account>     - gets the latest image tag from the given repo in the current account"
@@ -37,6 +37,7 @@ function _docker() {
 function _docker_build_with_custom_tag() {
     local repo=$1
     local env_name=$2
+    local account_name=$3
 
     if [[ -z ${repo} ]]; then
         echo "Repo is required" >&2
@@ -49,10 +50,14 @@ function _docker_build_with_custom_tag() {
       local env=$env_name
     fi
 
-    local account_name="dev"
-    uhd docker ecr:login ${account_name}
+    if [[ -z ${account_name} ]]; then
+      local account="dev"
+    else
+      local account=account_name
+    fi
 
-    local dev_account_id=$(_get_target_aws_account_id ${account_name})
+    uhd docker ecr:login ${account}
+    local dev_account_id=$(_get_target_aws_account_id ${account})
 
     if [[ ${repo} == "ingestion" ]]; then
       cd $root/../data-dashboard-api
