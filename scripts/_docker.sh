@@ -52,8 +52,11 @@ function _docker_build_with_custom_tag() {
 
     if [[ -z ${account_name} ]]; then
       local account="dev"
+    elif [[ "${account_name}" == "dev" ]] || [[ "${account_name}" == "auth-dev" ]]; then
+      local account="${account_name}"
     else
-      local account=account_name
+      echo "Invalid account name provided ('${account_name}'). Allowed values are 'dev' or 'auth-dev'." >&2
+      exit 1
     fi
 
     uhd docker ecr:login ${account}
