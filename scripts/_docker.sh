@@ -7,7 +7,7 @@ function _docker_help() {
     echo "commands:"
     echo "  help                                     - this help screen"
     echo
-    echo "  build <repo> <!env> <!account>           - build a docker image for the specified repo, env can be used to target an environment"
+    echo "  build <repo> <!env> <!account>           - build a docker image for the specified repo, env can be used to target an environment, target account can be 'dev' or 'auth-dev' only"
     echo "  update <account> <env>                   - pull the latest source images and push to the specified environment"
     echo "  update-service <account> <env> <service> - pull the latest source image and push to the specified service in environment"
     echo "  get-recent-tag <ecr-repo> <!account>     - gets the latest image tag from the given repo in the current account"
