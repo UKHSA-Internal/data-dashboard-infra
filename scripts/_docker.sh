@@ -49,10 +49,14 @@ function _docker_build_with_custom_tag() {
       local env=$env_name
     fi
 
-    local account_name="dev"
-    uhd docker ecr:login ${account_name}
+    if [[ ${env} =~ ^auth- ]]; then
+      local account="auth-dev"
+    else
+      local account="dev"
+    fi
 
-    local dev_account_id=$(_get_target_aws_account_id ${account_name})
+    uhd docker ecr:login ${account}
+    local dev_account_id=$(_get_target_aws_account_id ${account})
 
     if [[ ${repo} == "ingestion" ]]; then
       cd $root/../data-dashboard-api
