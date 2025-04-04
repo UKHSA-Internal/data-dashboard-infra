@@ -123,7 +123,7 @@ jobs:
           if [[ "${{ inputs.frontend_branch }}" == "main" ]]; then
             uhd docker update-service auth-dev ${{ inputs.name }} front-end
           else
-            uhd docker build frontend ${{ inputs.name }} auth-dev
+            uhd docker build frontend ${{ inputs.name }}
           fi
         shell: zsh {0}
 
@@ -173,7 +173,7 @@ jobs:
           if [[ "${{ inputs.backend_branch }}" == "main" ]]; then
             uhd docker update-service auth-dev ${{ inputs.name }} back-end
           else
-            uhd docker build backend ${{ inputs.name }} auth-dev
+            uhd docker build backend ${{ inputs.name }}
           fi
         shell: zsh {0}
 
@@ -223,7 +223,7 @@ jobs:
           if [[ "${{ inputs.ingestion_branch }}" == "main" ]]; then
             uhd docker update-service auth-dev ${{ inputs.name }} ingestion
           else
-            uhd docker build ingestion ${{ inputs.name }} auth-dev
+            uhd docker build ingestion ${{ inputs.name }}
           fi
         shell: zsh {0}
 
