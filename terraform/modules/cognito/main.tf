@@ -38,16 +38,16 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes = ["openid", "email", "profile", "aws.cognito.signin.user.admin"]
 
-  access_token_validity   = 60    # 60 minutes
-  id_token_validity       = 60    # 60 minutes
-  refresh_token_validity  = 30    # 30 days
+  access_token_validity   = 5     # 5 minutes
+  id_token_validity       = 5     # 5 minutes
+  refresh_token_validity  = 60    # 60 minutes
 
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "days"
+    refresh_token = "minutes"
   }
-  
+
   prevent_user_existence_errors = "ENABLED"
 
   explicit_auth_flows = [
