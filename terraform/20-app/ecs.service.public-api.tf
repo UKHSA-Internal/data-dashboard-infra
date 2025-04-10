@@ -57,7 +57,11 @@ module "ecs_service_public_api" {
         {
           name  = "APIENV"
           value = "PROD"
-        }
+        },
+        {
+          name  = "AUTH_ENABLED"
+          value = local.auth_enabled
+        },
       ],
       secrets = [
         {
