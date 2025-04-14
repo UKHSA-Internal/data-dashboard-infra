@@ -21,10 +21,6 @@ on:
         description: "The name of the git branch from the backend which should be deployed to the ingestion service"
         default: "main"
         type: string
-      infra_branch:
-        description: "The name of the git branch from the infra-as-code repo which should be deployed"
-        default: "main"
-        type: string
 
 env:
   AWS_REGION: "eu-west-2"
@@ -40,8 +36,6 @@ jobs:
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.infra_branch }}
 
       - uses: actions/setup-python@v5
 
@@ -70,7 +64,6 @@ jobs:
       - name: Checkout .github/ directory
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.infra_branch }}
           sparse-checkout: |
             .github
 
@@ -93,7 +86,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: data-dashboard-infra
-          ref: ${{ inputs.infra_branch }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -120,7 +112,6 @@ jobs:
       - name: Checkout .github/ directory
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.infra_branch }}
           sparse-checkout: |
             .github
 
@@ -143,7 +134,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: data-dashboard-infra
-          ref: ${{ inputs.infra_branch }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -170,7 +160,6 @@ jobs:
       - name: Checkout .github/ directory
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.infra_branch }}
           sparse-checkout: |
             .github
 
@@ -193,7 +182,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: data-dashboard-infra
-          ref: ${{ inputs.infra_branch }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -224,8 +212,6 @@ jobs:
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.infra_branch }}
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -269,8 +255,6 @@ jobs:
     steps:
       - name: Checkout infra repo
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.infra_branch }}
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
