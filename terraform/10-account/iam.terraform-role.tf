@@ -1,6 +1,6 @@
 module "iam_terraform_role" {
   source      = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version     = "5.44.0"
+  version     = "5.55.0"
   create_role = true
 
   role_name         = "TerraformOperator"
