@@ -1,43 +1,22 @@
-locals {
-  # Define callback and logout URLs
-  env_domain_map = {
-    dev  = "dev.ukhsa-dashboard.data.gov.uk"
-    test = "test.ukhsa-dashboard.data.gov.uk"
-    uat  = "uat.ukhsa-dashboard.data.gov.uk"
-    prod = "ukhsa-dashboard.data.gov.uk"
-  }
-  default_callback_urls = [
-    "https://${lookup(local.env_domain_map, terraform.workspace, "dev.ukhsa-dashboard.data.gov.uk")}/api/auth/callback/cognito"
-  ]
-  default_logout_urls = [
-    "https://${lookup(local.env_domain_map, terraform.workspace, "dev.ukhsa-dashboard.data.gov.uk")}"
-  ]
-
-  dev_callback_urls = terraform.workspace == "dev" ? [
-    "http://localhost:3000/api/auth/callback/cognito",
-    "http://localhost:3001/api/auth/callback/cognito"
-  ] : []
-
-  dev_logout_urls = terraform.workspace == "dev" ? [
-    "http://localhost:3000",
-    "http://localhost:3001"
-  ] : []
-
-  callback_urls = concat(local.default_callback_urls, local.dev_callback_urls)
-  logout_urls   = concat(local.default_logout_urls, local.dev_logout_urls)
-}
-
 module "cognito" {
-  source = "../modules/cognito"
-  sns_role_arn        = aws_iam_role.cognito_sns_role.arn
-  user_pool_name      = "${local.prefix}-user-pool"
-  client_name         = "${local.prefix}-client"
-  user_pool_domain    = "${local.prefix}-domain"
-  callback_urls       = local.callback_urls
-  logout_urls         = local.logout_urls
-  region              = local.region
+  source           = "../modules/cognito"
+  sns_role_arn     = aws_iam_role.cognito_sns_role.arn
+  user_pool_name   = "${local.prefix}-user-pool"
+  client_name      = "${local.prefix}-client"
+  user_pool_domain = "${local.prefix}-domain"
+  region           = local.region
 
-  enable_ukhsa_oidc   = true
+  callback_urls = concat(
+    ["${local.urls.front_end}/api/auth/callback/cognito"],
+      local.is_dev ?
+      ["http://localhost:3000/api/auth/callback/cognito", "http://localhost:3001/api/auth/callback/cognito"] : []
+  )
+  logout_urls = concat(
+    [local.urls.front_end],
+      local.is_dev ? ["http://localhost:3000", "http://localhost:3001"] : []
+  )
+
+  enable_ukhsa_oidc = true
 
   ukhsa_client_id     = var.ukhsa_client_id
   ukhsa_client_secret = var.ukhsa_client_secret
@@ -45,6 +24,6 @@ module "cognito" {
 
   cognito_user_pool_issuer_endpoint = var.cognito_user_pool_issuer_endpoint
 
-  lambda_role_arn     = aws_iam_role.cognito_lambda_role.arn
-  prefix              = local.prefix
+  lambda_role_arn = aws_iam_role.cognito_lambda_role.arn
+  prefix          = local.prefix
 }

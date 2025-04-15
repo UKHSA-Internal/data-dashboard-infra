@@ -3,6 +3,8 @@ locals {
   project = "uhd"
   account = terraform.workspace
 
+  is_dev = contains(["dev", "auth-dev"], local.account)
+
   wke_dns_names = {
     dev       = "dev.ukhsa-dashboard.data.gov.uk"
     auth-dev  = "non-public-dev.ukhsa-dashboard.data.gov.uk"
