@@ -14,14 +14,13 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "147.161.225.104/32", # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
       "86.130.56.216/32",   # Chris Warren
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
       "165.225.17.7/32",    # Declan Barrett
-      "165.225.17.177/32",  # Temi2
+      "147.161.167.110/32", # Manu
     ],
     project_team = [
       "90.196.180.145/32", # Debbie
