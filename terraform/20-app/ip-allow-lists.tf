@@ -20,7 +20,7 @@ locals {
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
       "165.225.17.7/32",    # Declan Barrett
-      "147.161.167.110/32", # Manu
+      "136.226.191.85/32",  # Manu
     ],
     project_team = [
       "90.196.180.145/32", # Debbie
