@@ -58,6 +58,15 @@ resource "random_password" "auth_secret" {
   special     = true
 }
 
+resource "random_password" "revalidate_secret" {
+  length      = 32
+  min_numeric = 1
+  min_lower   = 1
+  min_upper   = 1
+  min_special = 1
+  special     = true
+}
+
 locals {
   feature_flags_x_auth         = random_password.feature_flags_x_auth.result
   feature_flags_client_api_key = "*:production.${random_password.feature_flags_client_api_key.result}"
