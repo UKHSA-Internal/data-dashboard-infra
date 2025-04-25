@@ -42,11 +42,6 @@ module "ecs_service_private_api" {
       mount_points                           = [
         {
           sourceVolume  = "tmp"
-          containerPath = "/tmp"
-          readOnly      = false
-        },
-        {
-          sourceVolume  = "tmp"
           containerPath = "/code/metrics/static"
           readOnly      = false
         }

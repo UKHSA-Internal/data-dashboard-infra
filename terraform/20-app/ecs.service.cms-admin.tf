@@ -40,16 +40,6 @@ module "ecs_service_cms_admin" {
       mount_points                           = [
         {
           sourceVolume  = "tmp"
-          containerPath = "/tmp"
-          readOnly      = false
-        },
-        {
-          sourceVolume  = "tmp"
-          containerPath = "/code/tmp"
-          readOnly      = false
-        },
-        {
-          sourceVolume  = "tmp"
           containerPath = "/code/metrics/static"
           readOnly      = false
         }

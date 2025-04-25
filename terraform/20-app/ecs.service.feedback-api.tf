@@ -40,11 +40,6 @@ module "ecs_service_feedback_api" {
       mount_points                           = [
         {
           sourceVolume  = "tmp"
-          containerPath = "/tmp"
-          readOnly      = false
-        },
-        {
-          sourceVolume  = "tmp"
           containerPath = "/code/metrics/static"
           readOnly      = false
         }
