@@ -9,12 +9,13 @@ locals {
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing         = contains(["perf", "pen", "prod"], local.environment)
+  use_prod_sizing         = contains(["perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"], local.environment)
   add_password_protection = local.environment == "staging"
+  auth_enabled            = var.auth_enabled
 
   wke = {
-    account = ["dev", "test", "uat", "prod"]
-    other   = ["pen", "perf", "train"]
+    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod", "auth-prod"]
+    other   = ["pen", "auth-perf", "perf", "auth-pen", "train"]
   }
 
   needs_alarms = contains(["dev", "uat", "prod"], local.environment)
@@ -25,24 +26,38 @@ locals {
   cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
-  is_dev                                       = var.environment_type == "dev"
+  is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
   is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
 
   use_ip_allow_list = local.environment != "prod"
 
-  scheduled_scaling_policies_for_non_essential_envs = {
+  dpd_dev_env_scheduled_policy = {
     start_of_working_day_scale_out = {
       min_capacity = 1
       max_capacity = 1
-      schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
+      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 6 AM
     }
     end_of_working_day_scale_in = {
       min_capacity = 0
       max_capacity = 0
-      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      schedule     = "cron(0 22 ? * MON-FRI *)" # Run every weekday at 10 PM
     }
   }
+  non_essential_envs_scheduled_policy = {
+    start_of_working_day_scale_out = {
+      min_capacity = 1
+      max_capacity = 1
+      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 7am
+    }
+    end_of_working_day_scale_in = {
+      min_capacity = 0
+      max_capacity = 0
+      schedule     = "cron(0 19 ? * MON-FRI *)" # Run every weekday at 8pm
+    }
+  }
+
+  scheduled_scaling_policies_for_non_essential_envs = local.environment == "dpd" ? local.dpd_dev_env_scheduled_policy : local.non_essential_envs_scheduled_policy
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"

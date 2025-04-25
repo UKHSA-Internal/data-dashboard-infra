@@ -18,8 +18,8 @@ module "cms_admin_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-cms-admin-tg" = {
-      name              = "${local.prefix}-cms-admin-tg"
+    "${local.prefix}-cms-admin" = {
+      name              = "${local.prefix}-cms-admin"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -47,7 +47,7 @@ module "cms_admin_alb" {
       target_group_index = 0
       ssl_policy         = local.alb_security_policy
       forward = {
-        target_group_key = "${local.prefix}-cms-admin-tg"
+        target_group_key = "${local.prefix}-cms-admin"
       }
     }
   }

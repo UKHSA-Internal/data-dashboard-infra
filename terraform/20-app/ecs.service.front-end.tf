@@ -65,7 +65,23 @@ module "ecs_service_front_end" {
         {
           name  = "RUM_APPLICATION_ID"
           value = module.cloudwatch_rum_front_end.rum_application_id
-        }
+        },
+        {
+          name  = "REDIS_HOST"
+          value = "rediss://${aws_elasticache_serverless_cache.front_end_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.front_end_elasticache.endpoint.0.port}"
+        },
+        {
+          name  = "AUTH_ENABLED",
+          value = local.auth_enabled
+        },
+        {
+          name  = "AUTH_DOMAIN"
+          value = module.cognito.cognito_oauth_url
+        },
+        {
+          name  = "NEXTAUTH_URL"
+          value = local.urls.front_end
+        },
       ]
       secrets = [
         {
@@ -99,6 +115,22 @@ module "ecs_service_front_end" {
         {
           name      = "ESRI_CLIENT_SECRET"
           valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "AUTH_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.auth_secret.arn}:auth_secret::"
+        },
+        {
+          name      = "AUTH_CLIENT_URL"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_url::"
+        },
+        {
+          name      = "AUTH_CLIENT_ID"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_id::"
+        },
+        {
+          name      = "AUTH_CLIENT_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_secret::"
         }
       ]
     }
@@ -106,7 +138,7 @@ module "ecs_service_front_end" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end-tg"].arn
+      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end"].arn
       container_name   = "front-end"
       container_port   = 3000
     }
@@ -152,6 +184,13 @@ module "ecs_service_front_end" {
       protocol    = "tcp"
       description = "https to internet"
       cidr_blocks = ["0.0.0.0/0"]
+    },
+    cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.front_end_elasticache_security_group.security_group_id
     }
   }
 }

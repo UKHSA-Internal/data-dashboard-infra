@@ -141,6 +141,42 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
 }
 
 ################################################################################
+# Cognito
+################################################################################
+
+resource "aws_secretsmanager_secret" "cognito_service_credentials" {
+  name        = "${local.prefix}-cognito-service-credentials"
+  description = "These are the credentials required for AWS Congito service."
+  kms_key_id  = module.kms_secrets_app_engineer.key_id
+}
+
+resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
+  secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
+  secret_string = jsonencode({
+    client_url    = module.cognito.cognito_user_pool_issuer_endpoint
+    client_id     = module.cognito.cognito_user_pool_client_id
+    client_secret = module.cognito.cognito_user_pool_client_secret
+  })
+}
+
+################################################################################
+# NextAuth
+################################################################################
+
+resource "aws_secretsmanager_secret" "auth_secret" {
+  name        = "${local.prefix}-auth-secret"
+  description = "Used to encrypt the NextAuth.js JWT"
+  kms_key_id  = module.kms_secrets_app_operator.key_id
+}
+
+resource "aws_secretsmanager_secret_version" "auth_secret" {
+  secret_id     = aws_secretsmanager_secret.auth_secret.id
+  secret_string = jsonencode({
+    auth_secret = local.auth_secret
+  })
+}
+
+################################################################################
 # ESRI maps credentials
 ################################################################################
 

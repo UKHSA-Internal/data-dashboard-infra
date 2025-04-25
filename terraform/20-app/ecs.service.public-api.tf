@@ -76,7 +76,11 @@ module "ecs_service_public_api" {
         {
           name  = "APIENV"
           value = "PROD"
-        }
+        },
+        {
+          name  = "AUTH_ENABLED"
+          value = local.auth_enabled
+        },
       ],
       secrets = [
         {
@@ -97,7 +101,7 @@ module "ecs_service_public_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.public_api_alb.target_groups["${local.prefix}-public-api-tg"].arn
+      target_group_arn = module.public_api_alb.target_groups["${local.prefix}-public-api"].arn
       container_name   = "api"
       container_port   = 80
     }

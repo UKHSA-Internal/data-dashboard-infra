@@ -1,5 +1,5 @@
-name: Flush Caches Workflow
-run-name: Flush caches for `${{ inputs.environment }}` environment
+name: Flush Caches Well-Known Environment Workflow
+run-name: Flush caches for `${{ inputs.environment }}` WKE
 
 on:
   workflow_dispatch:
@@ -14,6 +14,7 @@ on:
           - dpd
           - test
           - staging
+          - perf
 
 env:
   AWS_REGION: "eu-west-2"

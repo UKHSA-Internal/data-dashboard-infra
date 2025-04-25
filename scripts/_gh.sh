@@ -5,11 +5,11 @@ function _gh_help() {
     echo "uhd gh <command> [options]"
     echo
     echo "commands:"
-    echo "  help           - this help screen"
+    echo "  help                       - this help screen"
     echo 
-    echo "  clone          - clone all the repos"
-    echo "  co [repo] [pr] - checkout the specified pull request"
-    echo "  main           - switch to main branch in all repos and pull the latest if possible"
+    echo "  clone                      - clone all the repos"
+    echo "  co [repo] [pr | branch]    - checkout the specified pull request or git branch"
+    echo "  main                       - switch to main branch in all repos and pull the latest if possible"
     echo
 
     return 0
@@ -55,6 +55,17 @@ function _gh_main() {
 }
 
 function _gh_co() {
+   local repo=$1
+   local target=$2
+
+   if [[ $target =~ ^[0-9]+$ ]]; then
+     _gh_checkout_pr $repo $target
+   fi
+
+   _gh_checkout_branch $repo $target
+}
+
+function _gh_checkout_pr() {
     local repo=$1
     local pr=$2
 
@@ -75,6 +86,29 @@ function _gh_co() {
 
     cd $root 
 
+}
+
+function _gh_checkout_branch() {
+    local repo=$1
+    local branch=$2
+
+    if [[ -z ${repo} ]]; then
+        echo "Repo is required" >&2
+        return 1
+    fi
+
+    if [[ -z ${branch} ]]; then
+        echo "Branch is required" >&2
+        return 1
+    fi
+
+    echo "Checking out branch $branch in data-dashboard-$repo"
+
+    cd $root/../data-dashboard-$repo
+    git checkout $branch
+    git pull
+
+    cd $root
 }
 
 function _gh_get_repos() {

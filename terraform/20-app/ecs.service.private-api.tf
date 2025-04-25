@@ -80,7 +80,11 @@ module "ecs_service_private_api" {
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
-        }
+        },
+        {
+          name  = "AUTH_ENABLED"
+          value = local.auth_enabled
+        },
       ],
       secrets = [
         {
@@ -101,7 +105,7 @@ module "ecs_service_private_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api-tg"].arn
+      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api"].arn
       container_name   = "api"
       container_port   = 80
     }

@@ -98,7 +98,7 @@ module "ecs_service_cms_admin" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.cms_admin_alb.target_groups["${local.prefix}-cms-admin-tg"].arn
+      target_group_arn = module.cms_admin_alb.target_groups["${local.prefix}-cms-admin"].arn
       container_name   = "api"
       container_port   = 80
     }

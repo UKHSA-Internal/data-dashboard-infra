@@ -1,34 +1,33 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "89.36.123.55/32",    # Afaan
-      "82.132.229.164/32",  # Afaan 2
+      "84.70.160.114/32",   # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "82.132.247.244/32",  # Rhys
-      "81.78.30.247/32",    # Rhys 2
+      "81.78.9.5/32",       # Rhys Inlaws
+      "82.132.246.253/32",  # Rhys hotspot
+      "86.3.198.35/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "81.108.89.51/32",    # Krishna - Macbook
-      "147.161.236.99/32",  # Krishna - Windows
-      "80.7.227.61/32",     # Kiran
+      "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "51.241.222.137/32",  # Temitope Akinsoto
       "86.177.34.133/32",   # Luke
-      "80.229.17.164/32",   # Christian Martin
-      "86.6.247.91/32",     # Tom Christian
-      "80.1.216.85/32",     # Kola Olusola
-      "86.164.234.203/32",  # Joe Gasewicz
+      "86.130.56.216/32",   # Chris Warren
+      "147.161.236.91/32",  # Jeff Thomas - Windows
+      "81.106.144.243/32",  # Jeff Thomas - Macbook
+      "146.198.70.45/32",   # Mike Elshaw
+      "165.225.17.7/32",    # Declan Barrett
+      "136.226.191.85/32",  # Manu
     ],
     project_team = [
-      "5.68.132.72/32",     # Debbie
+      "90.196.180.145/32", # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "80.5.156.26/32",     # Khawar
+      "109.147.97.65/32",   # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
@@ -36,12 +35,11 @@ locals {
       "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
       "82.68.136.38/32",    # Steve Ryan
-      "90.208.183.134/32",  # Christie
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
-      "167.98.243.140/32",  # Tom Hebbert
+      "147.161.143.88/32",  # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
       "136.226.191.87/32",  # Charlotte Brace
@@ -49,8 +47,8 @@ locals {
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
-      "192.168.0.20/32",    # Alana Firth
-      "62.253.228.56/32",   # Georgina Milne
+      "194.9.109.92/32",    # Jason Deakin 2
+      "194.9.109.118/32",   # Georgina Milne
     ]
     pen_testers = []
   }
