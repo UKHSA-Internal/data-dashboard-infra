@@ -39,7 +39,7 @@ locals {
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
-      "147.161.143.88/32",  # Tom Hebbert Home
+      "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
       "136.226.191.87/32",  # Charlotte Brace
