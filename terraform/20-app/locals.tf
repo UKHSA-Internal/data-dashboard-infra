@@ -12,6 +12,7 @@ locals {
   use_prod_sizing         = contains(["perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"], local.environment)
   add_password_protection = local.environment == "staging"
   auth_enabled            = var.auth_enabled
+  caching_v2_enabled      = false
 
   wke = {
     account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod", "auth-prod"]
