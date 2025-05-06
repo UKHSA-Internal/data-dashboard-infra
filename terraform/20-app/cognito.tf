@@ -16,7 +16,7 @@ module "cognito" {
       local.is_dev ? ["http://localhost:3000", "http://localhost:3001"] : []
   )
 
-  enable_ukhsa_oidc = true
+  enable_ukhsa_oidc = false
 
   ukhsa_client_id     = var.ukhsa_client_id
   ukhsa_client_secret = var.ukhsa_client_secret
