@@ -34,7 +34,28 @@ variable "schedule_expression" {
   type        = string
 }
 
-variable "script_path" {
-  description = "The file path of the script to attach to the canary"
+variable "timeout_in_seconds" {
+  description = "The number of seconds which the canary should run until timing out."
+  type        = number
+}
+
+variable "src_script_path" {
+  description = "The src file path of the script to attach to the canary"
   type        = string
+}
+
+variable "environment_variables" {
+  description = "Map of environment variables to provide to the canary runtime."
+  type        = map(string)
+  default = {}
+}
+
+variable "lambda_function_notification_arn" {
+  description = "The ARN associated with Lambda function used to perform the notification trigger"
+  type = string
+}
+
+variable "lambda_function_notification_name" {
+  description = "The name associated with Lambda function used to perform the notification trigger"
+  type = string
 }
