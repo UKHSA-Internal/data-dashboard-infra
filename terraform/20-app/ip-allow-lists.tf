@@ -1,7 +1,7 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "84.70.142.102/32",   # Afaan
+      "81.79.20.84/32",     # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
@@ -18,7 +18,6 @@ locals {
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
-      "165.225.17.7/32",    # Declan Barrett
       "136.226.191.85/32",  # Manu
     ],
     project_team = [
@@ -30,7 +29,6 @@ locals {
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
-      "217.155.89.135/32",  # Zoe Brass
       "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
       "82.68.136.38/32",    # Steve Ryan
