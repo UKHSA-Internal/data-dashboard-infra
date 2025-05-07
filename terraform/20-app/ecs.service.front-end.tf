@@ -75,6 +75,10 @@ module "ecs_service_front_end" {
           value = local.auth_enabled
         },
         {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
+        },
+        {
           name  = "AUTH_DOMAIN"
           value = module.cognito.cognito_oauth_url
         },
