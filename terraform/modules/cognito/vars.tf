@@ -54,28 +54,27 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "ukhsa_oidc_client_id" {
-  description = "UKHSA OIDC Client ID"
+variable "ukhsa_client_id" {
   type        = string
-  default     = ""
+  description = "Azure UKHSA Application Client ID"
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_client_secret" {
-  description = "UKHSA OIDC Client Secret"
+variable "ukhsa_client_secret" {
   type        = string
-  default     = ""
+  description = "Azure UKHSA Application Client Secret"
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_issuer_url" {
-  description = "UKHSA OIDC Issuer URL"
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
   type        = string
-  default     = ""
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_attributes_url" {
-  description = "UKHSA OIDC Attributes URL"
+variable "cognito_user_pool_issuer_endpoint" {
+  description = "The issuer endpoint for the Cognito user pool (typically provided by Cognito)"
   type        = string
-  default     = ""
 }
 
 variable "enable_ukhsa_oidc" {
@@ -93,3 +92,5 @@ variable "prefix" {
   description = "Prefix for naming resources"
   type        = string
 }
+
+
