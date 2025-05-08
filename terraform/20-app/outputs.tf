@@ -81,7 +81,9 @@ output "ecr" {
 
 output "lambda" {
   value = {
-    ingestion_lambda_arn = module.lambda_ingestion.lambda_function_arn
+    ingestion_lambda_arn  = module.lambda_ingestion.lambda_function_arn
+    revalidate_lambda_arn = module.lambda_front_end_revalidation.lambda_function_arn
   }
+  sensitive = true
 }
 
