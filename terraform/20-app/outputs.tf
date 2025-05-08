@@ -10,11 +10,11 @@ output "ecs" {
       feature_flags = module.ecs_service_feature_flags.name
     }
     task_definitions = {
-      cms_admin     = module.ecs_service_cms_admin.task_definition_family
-      feedback_api  = module.ecs_service_feedback_api.task_definition_family
-      private_api   = module.ecs_service_private_api.task_definition_family
-      public_api    = module.ecs_service_public_api.task_definition_family
-      front_end     = module.ecs_service_front_end.task_definition_family
+      cms_admin    = module.ecs_service_cms_admin.task_definition_family
+      feedback_api = module.ecs_service_feedback_api.task_definition_family
+      private_api  = module.ecs_service_private_api.task_definition_family
+      public_api   = module.ecs_service_public_api.task_definition_family
+      front_end    = module.ecs_service_front_end.task_definition_family
     }
   }
 }
