@@ -58,7 +58,8 @@ function _delete_all_secrets() {
                 "uhd-${env}-esri-maps-service-credentials"
                 "uhd-${env}-slack-webhook-url"
                 "uhd-${env}-cognito-service-credentials"
-                "uhd-${env}-auth-secret")
+                "uhd-${env}-auth-secret"
+                "uhd-${env}-revalidate-secret")
 
     for ((i=1; i<=${#secret_ids[@]}; ++i)); do
         _delete_secret "${secret_ids[i]}"
