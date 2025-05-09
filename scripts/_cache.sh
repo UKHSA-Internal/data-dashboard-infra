@@ -64,7 +64,7 @@ function _cache_flush() {
 
 function _cache_flush_v2() {
     echo "Revalidating the front end ache..."
-    echo $(uhd cache flush-front-end-v2)
+    uhd cache flush-front-end-v2
     echo "Issued revalidation to front end successfully"
 
     echo "Flushing the public api cloud front cache..."
