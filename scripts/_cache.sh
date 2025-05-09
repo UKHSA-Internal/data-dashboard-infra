@@ -30,7 +30,11 @@ function _cache() {
         "fill-front-end") _cache_fill_front_end $args ;;
         "fill-public-api") _cache_fill_public_api $args ;;
         "flush") _cache_flush $args ;;
-        
+
+        "flush-front-end-v2") _cache_flush_front_end_v2 $args ;;
+        "fill-front-end-v2") _cache_fill_front_end_v2 $args ;;
+        "flush-v2") _cache_flush_v2 $args ;;
+
         *) _cache_help ;;
     esac
 }
@@ -50,6 +54,29 @@ function _cache_flush() {
 
     echo "Filling the public api cloud front cache..." 
     uhd cache fill-public-api --wait
+
+    local exit_code=$?
+    if [[ $exit_code = 255 ]]; then
+      echo "Not waiting for cache fill to complete..."
+      return 0
+    fi
+}
+
+function _cache_flush_v2() {
+    echo "Revalidating the front end ache..."
+    echo $(uhd cache flush-front-end-v2)
+    echo "Issued revalidation to front end successfully"
+
+    echo "Flushing the public api cloud front cache..."
+    uhd cache flush-public-api
+
+    echo "Crawling the front end cache now..."
+    uhd cache fill-front-end-v2 --wait
+    echo "Finished crawling the front end"
+
+    echo "Filling the public api cloud front cache..."
+    uhd cache fill-public-api --wait
+    echo "Finished filling the public api cloud front cache..."
 
     local exit_code=$?
     if [[ $exit_code = 255 ]]; then
@@ -100,6 +127,27 @@ function _cache_fill_front_end() {
     fi
 }
 
+function _cache_fill_front_end_v2() {
+    local cluster_name=$(_get_ecs_cluster_name)
+    local waitArg=$1
+
+    echo Starting job....
+    local taskArn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/crawl-front-end.json" | jq -r ".tasks[0].taskArn")
+
+    if [[ $waitArg = "--wait" ]]; then
+        echo "Waiting for task $taskArn to finish..."
+        aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
+    else
+        echo "Waiting for task $taskArn to start..."
+        aws ecs wait tasks-running --cluster $cluster_name --tasks $taskArn
+
+        local env=$(_get_env_name)
+        local taskId=${taskArn##*/}
+
+        aws logs tail "/aws/ecs/uhd-${env}-worker/api" --follow --log-stream-names "ecs/api/$taskId"
+    fi
+}
+
 function _cache_fill_public_api() {
     local cluster_name=$(_get_ecs_cluster_name)
     local waitArg=$1
@@ -127,6 +175,10 @@ function _cache_flush_public_api() {
 
 function _cache_flush_front_end() {
     _flush_cloud_front "front_end"
+}
+
+function _cache_flush_front_end_v2() {
+    uhd lambda invoke-revalidate
 }
 
 function _flush_cloud_front() {
