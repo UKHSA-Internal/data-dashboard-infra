@@ -63,6 +63,12 @@ module "aurora_db_app" {
       protocol                 = "tcp"
       source_security_group_id = module.ecs_service_utility_worker.security_group_id
     },
+    worker_tasks_to_db = {
+      type                     = "ingress"
+      description              = "worker tasks to main db"
+      protocol                 = "tcp"
+      source_security_group_id = module.ecs_service_worker.security_group_id
+    },
     ingestion_lambda_to_db = {
       type                     = "ingress"
       description              = "ingestion lambda to main db"
