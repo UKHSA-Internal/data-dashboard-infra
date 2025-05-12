@@ -85,6 +85,10 @@ module "ecs_service_private_api" {
           name  = "AUTH_ENABLED"
           value = local.auth_enabled
         },
+        {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
+        },
       ],
       secrets = [
         {

@@ -75,6 +75,10 @@ module "ecs_service_front_end" {
           value = local.auth_enabled
         },
         {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
+        },
+        {
           name  = "AUTH_DOMAIN"
           value = module.cognito.cognito_oauth_url
         },
@@ -131,6 +135,10 @@ module "ecs_service_front_end" {
         {
           name      = "AUTH_CLIENT_SECRET"
           valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "REVALIDATE_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.revalidate_secret.arn}:revalidate_secret::"
         }
       ]
     }
