@@ -74,6 +74,11 @@ jobs:
         with:
           function-name: public-api-cloud-front-viewer-request
 
+      - name: Test lambda-front-end-revalidation
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-front-end-revalidation
+
   unit_test_report:
     name: Unit test coverage report
     runs-on: ubuntu-latest
@@ -85,7 +90,7 @@ jobs:
 
     steps:
       - name: Download test coverage
-        uses: actions/download-artifact@v4.2.1
+        uses: actions/download-artifact@v4.3.0
         with:
           path: ./reports
 

@@ -180,6 +180,19 @@ resource "aws_secretsmanager_secret_version" "auth_secret" {
   })
 }
 
+resource "aws_secretsmanager_secret" "revalidate_secret" {
+  name        = "${local.prefix}-revalidate-secret"
+  description = "Used to support secure cache revalidation in NextAuth.js"
+  kms_key_id  = module.kms_secrets_app_operator.key_id
+}
+
+resource "aws_secretsmanager_secret_version" "revalidate_secret" {
+  secret_id     = aws_secretsmanager_secret.revalidate_secret.id
+  secret_string = jsonencode({
+    revalidate_secret = random_password.revalidate_secret.result
+  })
+}
+
 ################################################################################
 # ESRI maps credentials
 ################################################################################

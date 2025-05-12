@@ -1,12 +1,12 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "84.70.160.114/32",   # Afaan
+      "81.79.20.84/32",     # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
       "81.78.9.5/32",       # Rhys Inlaws
-      "82.132.246.253/32",  # Rhys hotspot
+      "82.132.245.244/32",  # Rhys hotspot
       "86.3.198.35/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
@@ -14,14 +14,11 @@ locals {
       "18.133.111.70/32",   # UKHSA test gateway
       "147.161.143.117/32", # Kiran Golla
       "92.234.44.48/32",    # Zesh
-      "147.161.225.104/32", # Temitope Akinsoto
-      "86.177.34.133/32",   # Luke
-      "86.130.56.216/32",   # Chris Warren
+      "86.130.56.139/32",   # Luke
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
-      "165.225.17.7/32",    # Declan Barrett
-      "165.225.17.177/32",  # Temi2
+      "136.226.191.85/32",  # Manu
     ],
     project_team = [
       "90.196.180.145/32", # Debbie
@@ -32,7 +29,6 @@ locals {
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
-      "217.155.89.135/32",  # Zoe Brass
       "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
       "82.68.136.38/32",    # Steve Ryan
@@ -40,10 +36,10 @@ locals {
       "66.249.74.35/32",    # Ciara 2
       "2.25.205.147/32",    # Prince
       "86.128.102.66/32",   # Ester
-      "147.161.143.88/32",  # Tom Hebbert Home
+      "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
-      "136.226.191.87/32",  # Charlotte Brace
+      "136.226.191.116/32", # Charlotte Brace
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter

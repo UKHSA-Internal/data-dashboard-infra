@@ -5,7 +5,7 @@ module "aurora_db_app" {
   name                    = "${local.prefix}-aurora-db-app"
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
-  engine_version          = "15.5"
+  engine_version          = "15.10"
   storage_encrypted       = true
   backup_retention_period = 35
   kms_key_id              = module.kms_app_rds.key_arn
@@ -62,6 +62,12 @@ module "aurora_db_app" {
       description              = "utility worker tasks to main db"
       protocol                 = "tcp"
       source_security_group_id = module.ecs_service_utility_worker.security_group_id
+    },
+    worker_tasks_to_db = {
+      type                     = "ingress"
+      description              = "worker tasks to main db"
+      protocol                 = "tcp"
+      source_security_group_id = module.ecs_service_worker.security_group_id
     },
     ingestion_lambda_to_db = {
       type                     = "ingress"

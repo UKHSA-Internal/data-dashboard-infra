@@ -28,7 +28,7 @@ module "ecs_service_front_end" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_front_end_ecs.image_uri
       port_mappings                          = [
         {
@@ -73,6 +73,10 @@ module "ecs_service_front_end" {
         {
           name  = "AUTH_ENABLED",
           value = local.auth_enabled
+        },
+        {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
         },
         {
           name  = "AUTH_DOMAIN"
@@ -131,6 +135,10 @@ module "ecs_service_front_end" {
         {
           name      = "AUTH_CLIENT_SECRET"
           valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "REVALIDATE_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.revalidate_secret.arn}:revalidate_secret::"
         }
       ]
     }
