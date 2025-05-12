@@ -21,7 +21,7 @@ locals {
       "136.226.191.85/32",  # Manu
     ],
     project_team = [
-      "90.196.180.145/32",  # Debbie
+      "90.196.180.145/32", # Debbie
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -39,7 +39,7 @@ locals {
       "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
-      "136.226.191.87/32",  # Charlotte Brace
+      "136.226.191.116/32", # Charlotte Brace
       "2.221.74.175/32",    # Gareth
       "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
