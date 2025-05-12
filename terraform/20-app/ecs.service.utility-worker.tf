@@ -20,15 +20,34 @@ module "ecs_service_utility_worker" {
     operating_system_family = "LINUX"
   }
 
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
+  }
+
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       cpu                                    = 16384
       memory                                 = 32768
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points                           = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/code/metrics/static"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
