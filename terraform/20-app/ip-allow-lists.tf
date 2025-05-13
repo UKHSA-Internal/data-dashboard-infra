@@ -18,7 +18,7 @@ locals {
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "146.198.70.45/32",   # Mike Elshaw
-      "136.226.191.85/32",  # Manu
+      "86.9.184.205/32",    # Manu
     ],
     project_team = [
       "90.196.180.145/32", # Debbie
