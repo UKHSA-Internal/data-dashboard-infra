@@ -57,24 +57,3 @@ variable "cognito_admin_email" {
   type        = string
   default     = "Christian.Martin@ukhsa.gov.uk"
 }
-
-variable "client_id" {
-  description = "Client ID for Cognito integration"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
-variable "client_secret" {
-  description = "Client Secret for Cognito integration"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
-variable "cognito_user_pool_issuer_endpoint" {
-  description = "The issuer endpoint for the Cognito user pool (e.g. https://cognito-idp.<region>.amazonaws.com/<user_pool_id>)"
-  type        = string
-  default     = ""
-  sensitive   = true
-}

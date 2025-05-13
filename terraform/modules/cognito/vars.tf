@@ -72,11 +72,6 @@ variable "ukhsa_tenant_id" {
   sensitive   = true
 }
 
-variable "cognito_user_pool_issuer_endpoint" {
-  description = "The issuer endpoint for the Cognito user pool (typically provided by Cognito)"
-  type        = string
-}
-
 variable "enable_ukhsa_oidc" {
   description = "Enable UKHSA OIDC Identity Provider"
   type        = bool

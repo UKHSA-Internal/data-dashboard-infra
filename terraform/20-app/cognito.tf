@@ -22,8 +22,6 @@ module "cognito" {
   ukhsa_client_secret = var.ukhsa_client_secret
   ukhsa_tenant_id     = var.ukhsa_tenant_id
 
-  cognito_user_pool_issuer_endpoint = var.cognito_user_pool_issuer_endpoint
-
   lambda_role_arn = aws_iam_role.cognito_lambda_role.arn
   prefix          = local.prefix
 }

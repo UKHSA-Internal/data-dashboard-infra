@@ -153,14 +153,10 @@ resource "aws_secretsmanager_secret" "cognito_service_credentials" {
 resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
   secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
   secret_string = jsonencode({
-    client_url    = var.cognito_user_pool_issuer_endpoint,
-    client_id     = var.client_id,
-    client_secret = var.client_secret
+    client_url    = module.cognito.cognito_user_pool_issuer_endpoint,
+    client_id     = module.cognito.client_id
+    client_secret = module.cognito.client_secret
   })
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
 }
 
 ################################################################################
