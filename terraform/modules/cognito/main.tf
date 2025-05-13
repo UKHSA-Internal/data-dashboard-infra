@@ -25,10 +25,10 @@ resource "aws_cognito_user_pool" "user_pool" {
   }
 
   schema {
-    name                     = "custom:groups"
-    attribute_data_type      = "String"
-    mutable                  = true
-    required                 = false
+    name                = "groups"
+    attribute_data_type = "String"
+    mutable             = true
+    required            = false
   }
 
   lifecycle {
@@ -56,7 +56,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
     id_token      = "minutes"
     refresh_token = "days"
   }
-  
+
   prevent_user_existence_errors = "ENABLED"
 
   explicit_auth_flows = [
