@@ -39,8 +39,8 @@ resource "aws_cognito_user_pool" "user_pool" {
 resource "aws_cognito_user_pool_client" "user_pool_client" {
   depends_on = [aws_cognito_identity_provider.ukhsa_oidc_idp]
 
-  name         = var.client_name
-  user_pool_id = aws_cognito_user_pool.user_pool.id
+  name            = var.client_name
+  user_pool_id    = aws_cognito_user_pool.user_pool.id
   generate_secret = true
 
   allowed_oauth_flows = ["code"]
@@ -80,8 +80,8 @@ resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
 }
 
 resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
-  count        = var.enable_ukhsa_oidc ? 1 : 0
-  user_pool_id = aws_cognito_user_pool.user_pool.id
+  count         = var.enable_ukhsa_oidc ? 1 : 0
+  user_pool_id  = aws_cognito_user_pool.user_pool.id
   provider_name = "UKHSAOIDC"
   provider_type = "OIDC"
 
@@ -94,8 +94,8 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   }
 
   attribute_mapping = {
-    "custom:groups"   = "groups"
-    "username"        = "sub"
+    "custom:groups" = "groups"
+    "username"      = "sub"
   }
 }
 
