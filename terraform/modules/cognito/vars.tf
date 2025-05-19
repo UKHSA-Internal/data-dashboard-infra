@@ -3,16 +3,6 @@ variable "region" {
   type        = string
 }
 
-variable "sns_role_arn" {
-  description = "ARN of the SNS role for MFA"
-  type        = string
-  default     = null
-  validation {
-    condition     = can(regex("^arn:aws:iam::\\d+:role/.+", var.sns_role_arn))
-    error_message = "sns_role_arn must be a valid ARN of an IAM Role."
-  }
-}
-
 variable "callback_urls" {
   description = "List of allowed callback URLs for OAuth flows"
   type        = list(string)
@@ -76,11 +66,6 @@ variable "enable_ukhsa_oidc" {
   description = "Enable UKHSA OIDC Identity Provider"
   type        = bool
   default     = false
-}
-
-variable "lambda_role_arn" {
-  description = "The ARN of the Cognito Lambda execution role"
-  type        = string
 }
 
 variable "prefix" {

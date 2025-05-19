@@ -71,7 +71,7 @@ output "cognito_user_pool_issuer_endpoint" {
 
 output "cognito_lambda_role_arn" {
   description = "The ARN of the Cognito Lambda execution role"
-  value       = var.lambda_role_arn
+  value       = aws_iam_role.cognito_lambda_role.arn
 }
 
 output "tenant_id" {

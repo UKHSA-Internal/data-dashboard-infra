@@ -1,6 +1,5 @@
 module "cognito" {
   source           = "../modules/cognito"
-  sns_role_arn     = aws_iam_role.cognito_sns_role.arn
   user_pool_name   = "${local.prefix}-user-pool"
   client_name      = "${local.prefix}-client"
   user_pool_domain = "${local.prefix}-domain"
@@ -22,6 +21,5 @@ module "cognito" {
   ukhsa_client_secret = var.ukhsa_client_secret
   ukhsa_tenant_id     = var.ukhsa_tenant_id
 
-  lambda_role_arn = aws_iam_role.cognito_lambda_role.arn
   prefix          = local.prefix
 }
