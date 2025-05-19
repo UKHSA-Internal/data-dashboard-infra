@@ -5,7 +5,7 @@ output "api_gateway_id" {
 
 output "api_gateway_url" {
   description = "The invoke URL of the API Gateway"
-  value       = aws_api_gateway_deployment.deployment.invoke_url
+  value       = aws_api_gateway_stage.stage.invoke_url
 }
 
 output "api_gateway_stage_name" {
