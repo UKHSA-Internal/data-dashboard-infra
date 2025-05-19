@@ -22,6 +22,13 @@ module "ecs_service_front_end" {
     operating_system_family = "LINUX"
   }
 
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
+  }
+
   container_definitions = {
     front-end = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
@@ -30,7 +37,14 @@ module "ecs_service_front_end" {
       essential                              = true
       readonly_root_filesystem               = true
       image                                  = module.ecr_front_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/app/.next/cache"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 3000
           hostPort      = 3000
@@ -166,7 +180,7 @@ module "ecs_service_front_end" {
 
   task_exec_iam_statements = {
     kms_keys = {
-      actions   = ["kms:Decrypt"]
+      actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_secrets_app_operator.key_arn,
