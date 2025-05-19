@@ -7,7 +7,7 @@ locals {
       "90.219.251.228/32",  # Phil
       "81.78.9.5/32",       # Rhys Inlaws
       "82.132.245.244/32",  # Rhys hotspot
-      "86.3.198.35/32",     # Rhys Home
+      "86.3.218.23/32",     # Rhys Home
       "35.176.13.254/32",   # UKHSA test EC2
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
