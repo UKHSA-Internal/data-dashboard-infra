@@ -46,7 +46,7 @@ locals {
       "86.11.171.6/32",     # Jason Deakin
       "194.9.109.92/32",    # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
-      "172.28.215.10/32",   # Alana Firth
+      "172.28.215.10/32"    # Alana Firth
     ]
     pen_testers = []
   }
