@@ -25,7 +25,7 @@ locals {
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "109.147.97.65/32",   # Khawar
+      "5.81.132.150/32",    # Khawar
       "86.19.165.183/32",   # Ehsan
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
@@ -46,6 +46,7 @@ locals {
       "86.11.171.6/32",     # Jason Deakin
       "194.9.109.92/32",    # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
+      "172.28.215.10/32"    # Alana Firth
     ]
     pen_testers = []
   }
