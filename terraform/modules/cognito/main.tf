@@ -23,17 +23,6 @@ resource "aws_cognito_user_pool" "user_pool" {
       priority = 1
     }
   }
-
-  schema {
-    name                = "groups"
-    attribute_data_type = "String"
-    mutable             = true
-    required            = false
-  }
-
-  lifecycle {
-    ignore_changes = [schema]
-  }
 }
 
 resource "aws_cognito_user_pool_client" "user_pool_client" {
@@ -94,7 +83,6 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   }
 
   attribute_mapping = {
-    "custom:groups" = "groups"
     "username"      = "sub"
   }
 }
