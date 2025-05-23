@@ -26,12 +26,10 @@ resource "aws_cognito_user_pool" "user_pool" {
 }
 
 resource "aws_cognito_user_pool_client" "user_pool_client" {
-  depends_on = [
-    aws_cognito_identity_provider.ukhsa_oidc_idp
-  ]
+  depends_on = [aws_cognito_identity_provider.ukhsa_oidc_idp]
 
-  name         = var.client_name
-  user_pool_id = aws_cognito_user_pool.user_pool.id
+  name            = var.client_name
+  user_pool_id    = aws_cognito_user_pool.user_pool.id
   generate_secret = true
 
   allowed_oauth_flows = ["code"]
@@ -47,7 +45,8 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
     id_token      = "minutes"
     refresh_token = "days"
   }
-  
+
+  enable_token_revocation       = true
   prevent_user_existence_errors = "ENABLED"
 
   explicit_auth_flows = [
@@ -58,7 +57,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
 
-  supported_identity_providers = var.enable_ukhsa_oidc ? ["COGNITO", "UKHSAOIDC"] : ["COGNITO"]
+  supported_identity_providers = var.enable_ukhsa_oidc ? ["UKHSAOIDC"] : ["COGNITO"]
 }
 
 resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
@@ -71,19 +70,22 @@ resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
 }
 
 resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
-  count        = var.enable_ukhsa_oidc ? 1 : 0
-  user_pool_id = aws_cognito_user_pool.user_pool.id
+  count         = var.enable_ukhsa_oidc ? 1 : 0
+  user_pool_id  = aws_cognito_user_pool.user_pool.id
   provider_name = "UKHSAOIDC"
   provider_type = "OIDC"
 
   provider_details = {
-    client_id                     = var.ukhsa_oidc_client_id
-    client_secret                 = var.ukhsa_oidc_client_secret
-    oidc_issuer                   = var.ukhsa_oidc_issuer_url
-    authorize_scopes              = "openid email"
-    attributes_request_method     = "GET"
-    attributes_url                = var.ukhsa_oidc_attributes_url
-    attributes_url_add_attributes = "true"
+    client_id                 = var.ukhsa_client_id
+    client_secret             = var.ukhsa_client_secret
+    oidc_issuer               = "https://login.microsoftonline.com/${var.ukhsa_tenant_id}/v2.0"
+    authorize_scopes          = "openid email profile"
+    attributes_request_method = "GET"
+  }
+
+  attribute_mapping = {
+    "username"      = "sub"
+    "name"               = "name"
   }
 }
 

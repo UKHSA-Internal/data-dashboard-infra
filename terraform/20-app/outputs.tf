@@ -86,4 +86,3 @@ output "lambda" {
   }
   sensitive = true
 }
-

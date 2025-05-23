@@ -1,19 +1,5 @@
-module "cognito_sns" {
-  source  = "terraform-aws-modules/sns/aws"
-  version = "6.1.2"
-
-  name = "${local.prefix}-cognito-topic"
-
-  subscriptions = [
-    {
-      protocol = "email"
-      endpoint = var.cognito_admin_email
-    }
-  ]
-}
-
 resource "aws_iam_role" "cognito_sns_role" {
-  name = "${local.prefix}-cognito-sns-role"
+  name = "${var.prefix}-cognito-sns"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -30,7 +16,7 @@ resource "aws_iam_role" "cognito_sns_role" {
 }
 
 resource "aws_iam_policy" "cognito_sns_policy" {
-  name        = "${local.prefix}-cognito-sns-policy"
+  name        = "${var.prefix}-cognito-sns"
   description = "Allows Cognito to publish messages to the SNS topic"
 
   policy = jsonencode({
@@ -52,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "cognito_sns_policy_attachment" {
 }
 
 resource "aws_iam_role" "cognito_lambda_role" {
-  name = "${local.prefix}-lambda-execution-role"
+  name = "${var.prefix}-cognito-lambda-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

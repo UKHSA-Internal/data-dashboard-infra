@@ -52,7 +52,12 @@ output "cognito_user_pool_arn" {
   sensitive   = true
 }
 
-output "cognito_user_pool_client_secret" {
+output "client_id" {
+  description = "The Cognito User Pool App Client ID"
+  value       = aws_cognito_user_pool_client.user_pool_client.id
+}
+
+output "client_secret" {
   description = "The Client Secret for Cognito User Pool Client"
   value       = aws_cognito_user_pool_client.user_pool_client.client_secret
   sensitive   = true
@@ -66,5 +71,15 @@ output "cognito_user_pool_issuer_endpoint" {
 
 output "cognito_lambda_role_arn" {
   description = "The ARN of the Cognito Lambda execution role"
-  value       = var.lambda_role_arn
+  value       = aws_iam_role.cognito_lambda_role.arn
+}
+
+output "tenant_id" {
+  description = "The UKHSA tenant ID used for OIDC"
+  value       = var.ukhsa_tenant_id
+  sensitive   = true
+}
+
+output "user_pool_id" {
+  value = aws_cognito_user_pool.user_pool.id
 }
