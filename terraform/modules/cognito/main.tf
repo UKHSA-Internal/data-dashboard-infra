@@ -84,6 +84,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
 
   attribute_mapping = {
     "username"      = "sub"
+    "name"               = "name"
   }
 }
 
