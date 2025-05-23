@@ -46,6 +46,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
     refresh_token = "days"
   }
 
+  enable_token_revocation       = true
   prevent_user_existence_errors = "ENABLED"
 
   explicit_auth_flows = [
