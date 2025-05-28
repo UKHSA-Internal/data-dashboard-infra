@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 resource "aws_cognito_user_pool" "user_pool" {
   name = var.user_pool_name
 
@@ -29,6 +27,10 @@ resource "aws_cognito_user_pool" "user_pool" {
     attribute_data_type = "String"
     mutable             = true
     required            = false
+  }
+
+  lifecycle {
+    ignore_changes = [schema]
   }
 }
 
