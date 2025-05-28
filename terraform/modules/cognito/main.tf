@@ -23,6 +23,13 @@ resource "aws_cognito_user_pool" "user_pool" {
       priority = 1
     }
   }
+
+  schema {
+    name                = "groups"
+    attribute_data_type = "String"
+    mutable             = true
+    required            = false
+  }
 }
 
 resource "aws_cognito_user_pool_client" "user_pool_client" {
@@ -36,9 +43,9 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes = ["openid", "email", "profile", "aws.cognito.signin.user.admin"]
 
-  access_token_validity   = 60    # 60 minutes
-  id_token_validity       = 60    # 60 minutes
-  refresh_token_validity  = 30    # 30 days
+  access_token_validity  = 60
+  id_token_validity      = 60
+  refresh_token_validity = 30
 
   token_validity_units {
     access_token  = "minutes"
@@ -84,8 +91,9 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   }
 
   attribute_mapping = {
+    "custom:groups" = "groups"
+    "name"          = "name"
     "username"      = "sub"
-    "name"               = "name"
   }
 }
 
