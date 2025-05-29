@@ -8,8 +8,8 @@ module "api_gateway" {
   region                 = local.region
   resource_path_part     = "{proxy+}"
 
-  lambda_function_arn    = module.api_gateway_lambda.lambda_function_arn
-  lambda_invoke_arn      = module.api_gateway_lambda.lambda_function_arn
+  lambda_function_arn    = module.lambda_api_gateway.lambda_function_arn
+  lambda_invoke_arn      = module.lambda_api_gateway.lambda_function_arn
 
   prefix                 = local.prefix
   ukhsa_tenant_id        = module.cognito.tenant_id
