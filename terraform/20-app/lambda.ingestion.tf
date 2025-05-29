@@ -62,7 +62,7 @@ module "lambda_ingestion" {
     add_items_to_ingest_archive_bucket = {
       actions   = ["s3:PutObject"]
       effect    = "Allow"
-      resources = ["${module.s3_ingest_archive.s3_bucket_arn}/*"]
+      resources = ["${module.s3_ingest_archive.s3_bucket_arn}/processed/*"]
     }
     get_db_credentials_from_secrets_manager = {
       effect    = "Allow",
