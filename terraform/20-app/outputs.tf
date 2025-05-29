@@ -38,7 +38,7 @@ locals {
     private_api      = "https://${local.dns_names.private_api}"
     public_api       = "https://${local.dns_names.public_api}"
     public_api_lb    = "https://${local.dns_names.public_api_lb}"
-    feature_flags    = module.api_gateway.api_gateway_url
+    feature_flags    = "https://${local.dns_names.feature_flags}"
   }
 }
 
