@@ -100,15 +100,3 @@ variable "prefix" {
     error_message = "Prefix must only contain letters, numbers, hyphens, or underscores."
   }
 }
-
-variable "ukhsa_tenant_id" {
-  description = "UKHSA Entra ID Tenant ID"
-  type        = string
-}
-
-variable "kms_key_id" {
-  description = "KMS key for encrypting secrets"
-  type        = string
-}
-
-
