@@ -60,7 +60,7 @@ module "lambda_ingestion" {
       resources = ["${module.s3_ingest.s3_bucket_arn}/failed/*"]
     }
     add_items_to_ingest_archive_bucket = {
-      actions   = ["s3:PutObject", "s3:HeadObject"]
+      actions   = ["s3:PutObject"]
       effect    = "Allow"
       resources = ["${module.s3_ingest_archive.s3_bucket_arn}/*"]
     }
