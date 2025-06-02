@@ -12,8 +12,6 @@ locals {
       "35.176.178.91/32",   # UKHSA test EC2
       "35.179.30.107/32",   # UKHSA test EC2
       "18.133.111.70/32",   # UKHSA test gateway
-      "147.161.143.117/32", # Kiran Golla
-      "92.234.44.48/32",    # Zesh
       "86.130.56.139/32",   # Luke
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
@@ -21,7 +19,8 @@ locals {
       "136.226.191.85/32",  # Manu
     ],
     project_team = [
-      "90.196.180.145/32", # Debbie
+      "5.64.104.211/32",    # Debbie
+      "147.161.143.117/32", # Kiran Golla
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -30,12 +29,9 @@ locals {
       "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
       "18.135.62.168/32",   # Load test rig
-      "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
-      "82.68.136.38/32",    # Steve Ryan
+      "62.253.228.2/32",    # 10SC
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
-      "2.25.205.147/32",    # Prince
-      "86.128.102.66/32",   # Ester
       "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "51.149.2.8/32",      # Agostinho Sousa
@@ -49,7 +45,9 @@ locals {
       "172.28.215.10/32",   # Alana Firth
       "165.225.17.43/32"    # Maria Tsiko
     ]
-    pen_testers = []
+    pen_testers = [
+      "82.68.136.38/32",    # Steve Ryan
+    ]
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
