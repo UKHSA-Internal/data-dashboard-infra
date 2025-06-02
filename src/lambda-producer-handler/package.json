@@ -15,7 +15,7 @@
     "sinon": "^20.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-kinesis": "^3.685.0",
+    "@aws-sdk/client-kinesis": "^3.821.0",
     "@aws-sdk/client-s3": "^3.685.0",
     "uuid": "^11.0.2"
   }
