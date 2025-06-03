@@ -8,10 +8,6 @@ locals {
       "90.249.120.188/32",  # Rhys Inlaws
       "82.132.245.244/32",  # Rhys hotspot
       "86.3.218.23/32",     # Rhys Home
-      "35.176.13.254/32",   # UKHSA test EC2
-      "35.176.178.91/32",   # UKHSA test EC2
-      "35.179.30.107/32",   # UKHSA test EC2
-      "18.133.111.70/32",   # UKHSA test gateway
       "86.130.56.139/32",   # Luke
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
@@ -20,24 +16,18 @@ locals {
     ],
     project_team = [
       "5.64.104.211/32",    # Debbie
-      "147.161.143.117/32", # Kiran Golla
+      "5.81.132.150/32",    # Khawar
+      "86.19.165.183/32",   # Ehsan
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "5.81.132.150/32",    # Khawar
-      "86.19.165.183/32",   # Ehsan
-      "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
-      "18.135.62.168/32",   # Load test rig
       "62.253.228.2/32",    # 10SC
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
-      "51.149.2.8/32",      # Agostinho Sousa
       "136.226.191.116/32", # Charlotte Brace
-      "2.221.74.175/32",    # Gareth
-      "81.108.143.100/32",  # Ruairidh Villar
       "90.218.199.1/32",    # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
