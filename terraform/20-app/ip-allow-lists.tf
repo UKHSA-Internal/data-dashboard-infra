@@ -28,7 +28,7 @@ locals {
       "147.161.237.1/32",   # Tom Hebbert Home
       "81.105.235.133/32",  # Tom Hebbert 2
       "136.226.191.116/32", # Charlotte Brace
-      "90.218.199.1/32",    # Ruth Baxter
+      "90.213.214.30/32",   # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
