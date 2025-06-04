@@ -3,16 +3,6 @@ variable "region" {
   type        = string
 }
 
-variable "sns_role_arn" {
-  description = "ARN of the SNS role for MFA"
-  type        = string
-  default     = null
-  validation {
-    condition     = can(regex("^arn:aws:iam::\\d+:role/.+", var.sns_role_arn))
-    error_message = "sns_role_arn must be a valid ARN of an IAM Role."
-  }
-}
-
 variable "callback_urls" {
   description = "List of allowed callback URLs for OAuth flows"
   type        = list(string)
@@ -54,28 +44,22 @@ variable "user_pool_domain" {
   type        = string
 }
 
-variable "ukhsa_oidc_client_id" {
-  description = "UKHSA OIDC Client ID"
+variable "ukhsa_client_id" {
   type        = string
-  default     = ""
+  description = "Azure UKHSA Application Client ID"
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_client_secret" {
-  description = "UKHSA OIDC Client Secret"
+variable "ukhsa_client_secret" {
   type        = string
-  default     = ""
+  description = "Azure UKHSA Application Client Secret"
+  sensitive   = true
 }
 
-variable "ukhsa_oidc_issuer_url" {
-  description = "UKHSA OIDC Issuer URL"
+variable "ukhsa_tenant_id" {
+  description = "UKHSA Entra ID Tenant ID"
   type        = string
-  default     = ""
-}
-
-variable "ukhsa_oidc_attributes_url" {
-  description = "UKHSA OIDC Attributes URL"
-  type        = string
-  default     = ""
+  sensitive   = true
 }
 
 variable "enable_ukhsa_oidc" {
@@ -84,12 +68,9 @@ variable "enable_ukhsa_oidc" {
   default     = false
 }
 
-variable "lambda_role_arn" {
-  description = "The ARN of the Cognito Lambda execution role"
-  type        = string
-}
-
 variable "prefix" {
   description = "Prefix for naming resources"
   type        = string
 }
+
+

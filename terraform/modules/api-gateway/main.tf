@@ -17,6 +17,10 @@ resource "aws_api_gateway_method" "proxy" {
   http_method   = "ANY"
   authorization = "COGNITO_USER_POOLS"
   authorizer_id = aws_api_gateway_authorizer.cognito.id
+
+  request_parameters = {
+    "method.request.header.X-Group-ID" = false
+  }
 }
 
 resource "aws_api_gateway_authorizer" "cognito" {
@@ -32,10 +36,12 @@ resource "aws_api_gateway_integration" "proxy_integration" {
   http_method             = aws_api_gateway_method.proxy.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${lookup({
-  "live" = aws_lambda_alias.live.arn,
-  "dev"  = aws_lambda_alias.dev.arn
-}, var.lambda_alias, aws_lambda_alias.live.arn)}/invocations"
+
+  uri = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${var.lambda_function_arn}/invocations"
+
+  request_parameters = {
+    "integration.request.header.X-Group-ID" = "method.request.header.X-Group-ID"
+  }
 }
 
 resource "aws_api_gateway_deployment" "deployment" {

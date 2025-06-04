@@ -71,16 +71,6 @@ variable "resource_path_part" {
   }
 }
 
-variable "lambda_invoke_arn" {
-  description = "The ARN of the Lambda function for API Gateway"
-  type        = string
-
-  validation {
-    condition     = can(regex("^arn:aws:lambda:.*:.*:function:.*$", var.lambda_invoke_arn))
-    error_message = "The 'lambda_invoke_arn' must be a valid Lambda function ARN."
-  }
-}
-
 variable "lambda_role_arn" {
   description = "IAM Role ARN for the Lambda function"
   type        = string

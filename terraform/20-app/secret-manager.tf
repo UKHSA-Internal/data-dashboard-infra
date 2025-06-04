@@ -146,16 +146,16 @@ resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
 
 resource "aws_secretsmanager_secret" "cognito_service_credentials" {
   name        = "${local.prefix}-cognito-service-credentials"
-  description = "These are the credentials required for AWS Congito service."
+  description = "These are the credentials required for AWS Cognito service."
   kms_key_id  = module.kms_secrets_app_engineer.key_id
 }
 
 resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
   secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
   secret_string = jsonencode({
-    client_url    = "..."
-    client_id     = "..."
-    client_secret = "..."
+    client_url    = module.cognito.cognito_user_pool_issuer_endpoint,
+    client_id     = module.cognito.client_id
+    client_secret = module.cognito.client_secret
   })
 }
 
@@ -221,7 +221,6 @@ resource "aws_secretsmanager_secret_version" "esri_maps_service_credentials" {
     client_secret = ""
   })
 }
-
 
 ################################################################################
 # Slack webhook URL
