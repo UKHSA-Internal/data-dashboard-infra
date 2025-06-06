@@ -1,13 +1,15 @@
-module "lambda_db_password_rotation" {
+module "lambda_password_rotation" {
   source        = "terraform-aws-modules/lambda/aws"
   version       = "7.8.1"
   function_name = "${local.prefix}-db-password-rotation"
   description   = "Redeploys services which depend on the main database when the password in secrets manager is rotated"
+  function_name = "${local.prefix}-password-rotation"
+  description   = "Redeploys services which depend on recently rotated passwords in secrets manager"
 
   create_package = true
   runtime        = "nodejs18.x"
   handler        = "index.handler"
-  source_path    = "../../src/lambda-db-password-rotation"
+  source_path    = "../../src/lambda-password-rotation"
 
   architectures          = ["arm64"]
   maximum_retry_attempts = 1
@@ -43,7 +45,7 @@ module "lambda_db_password_rotation" {
   allowed_triggers = {
     allow_eventbridge_trigger = {
       principal  = "events.amazonaws.com"
-      source_arn = module.eventbridge.eventbridge_rule_arns["${local.prefix}-db-password-rotation"]
+      source_arn = module.eventbridge.eventbridge_rule_arns["${local.prefix}-password-rotation"]
     }
   }
 }
