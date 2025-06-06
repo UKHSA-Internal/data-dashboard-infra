@@ -178,7 +178,6 @@ resource "aws_secretsmanager_secret_version" "auth_secret" {
 
 resource "aws_secretsmanager_secret_rotation" "auth_secret" {
   secret_id           = aws_secretsmanager_secret.auth_secret.id
-  rotation_lambda_arn = module.lambda_password_rotation.lambda_function_arn
   rotate_immediately = true
 
   rotation_rules {
