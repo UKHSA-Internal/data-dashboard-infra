@@ -1,8 +1,5 @@
 const {
-    restartECSService,
-    restartMainDbECSServices,
-    restartFeatureFlagsDbECSServices,
-    handler
+    restartECSService, restartMainDbECSServices, restartFeatureFlagsDbECSServices, restartFrontEndECSServices, handler
 } = require('./index.js')
 const {UpdateServiceCommand} = require("@aws-sdk/client-ecs");
 
@@ -60,14 +57,12 @@ describe('restartMainDbECSServices', () => {
         const fakePublicAPIECSServiceName = 'fake-public-api-ecs-service-name'
         const fakeFeedbackAPIECSServiceName = 'fake-feedback-api-ecs-service-name'
 
-        const mockedEnvVar = sinon.stub(process, 'env').value(
-            {
-                CMS_ADMIN_ECS_SERVICE_NAME: fakeCMSAdminECSServiceName,
-                PRIVATE_API_ECS_SERVICE_NAME: fakePrivateAPIECSServiceName,
-                PUBLIC_API_ECS_SERVICE_NAME: fakePublicAPIECSServiceName,
-                FEEDBACK_API_ECS_SERVICE_NAME: fakeFeedbackAPIECSServiceName,
-            }
-        );
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            CMS_ADMIN_ECS_SERVICE_NAME: fakeCMSAdminECSServiceName,
+            PRIVATE_API_ECS_SERVICE_NAME: fakePrivateAPIECSServiceName,
+            PUBLIC_API_ECS_SERVICE_NAME: fakePublicAPIECSServiceName,
+            FEEDBACK_API_ECS_SERVICE_NAME: fakeFeedbackAPIECSServiceName,
+        });
 
         // Injected dependencies to perform spy operations
         const mockedECSClient = sinon.stub()
@@ -102,11 +97,9 @@ describe('restartFeatureFlagsDbECSServices', () => {
     test('Calls the `restartECSService()` for each ECS service name', async () => {
         // Given
         const fakeFeatureFlagsAppECSServiceName = 'fake-feature-flags-ecs-service-name'
-        const mockedEnvVar = sinon.stub(process, 'env').value(
-            {
-                FEATURE_FLAGS_ECS_SERVICE_NAME: fakeFeatureFlagsAppECSServiceName,
-            }
-        );
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            FEATURE_FLAGS_ECS_SERVICE_NAME: fakeFeatureFlagsAppECSServiceName,
+        });
 
         // Injected dependencies to perform spy operations
         const mockedECSClient = sinon.stub()
@@ -128,6 +121,41 @@ describe('restartFeatureFlagsDbECSServices', () => {
 });
 
 
+describe('restartFrontEndECSServices', () => {
+    /**
+     * Given environment variables set for the ECS service names
+     * When `restartFrontEndECSServices()` is called
+     * Then the call is delegated to the `restartECSService()`
+     *  function for the front end ECS service names
+     */
+    test('Calls the `restartECSService()` for each ECS service name', async () => {
+        // Given
+        const fakeFrontEndECSServiceName = 'fake-front-end-ecs-service-name'
+
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            FRONT_END_ECS_SERVICE_NAME: fakeFrontEndECSServiceName,
+        });
+
+        // Injected dependencies to perform spy operations
+        const mockedECSClient = sinon.stub()
+        const restartECSServiceSpy = sinon.stub();
+        const spyDependencies = {
+            restartECSService: restartECSServiceSpy,
+        }
+
+        // When
+        await restartFrontEndECSServices(mockedECSClient, spyDependencies);
+
+        // Then
+        // The function should have been called with each ECS service name
+        expect(restartECSServiceSpy.firstCall.lastArg).toEqual(fakeFrontEndECSServiceName)
+
+        // Restore the environment variable
+        mockedEnvVar.restore();
+    });
+});
+
+
 describe('handler', () => {
     /**
      * Given an event object which matches
@@ -140,18 +168,19 @@ describe('handler', () => {
         // Given
         // Injected dependencies to perform spy operations
         const fakeMatchingSecretARN = 'fake-main-db-secret-arn'
-        const mockedEnvVar = sinon.stub(process, 'env').value(
-            {
-                MAIN_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
-            }
-        );
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            MAIN_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
+        });
         const fakeEvent = {"detail": {"additionalEventData": {"SecretId": fakeMatchingSecretARN}}}
 
         const restartMainDbECSServicesSpy = sinon.stub();
         const restartFeatureFlagsDbECSServicesSpy = sinon.stub();
+        const restartFrontEndECSServicesSpy = sinon.stub();
+
         const spyDependencies = {
             restartMainDbECSServices: restartMainDbECSServicesSpy,
             restartFeatureFlagsDbECSServices: restartFeatureFlagsDbECSServicesSpy,
+            restartFrontEndECSServices: restartFrontEndECSServicesSpy,
         }
 
         // When
@@ -160,6 +189,7 @@ describe('handler', () => {
         // Then
         expect(restartMainDbECSServicesSpy.calledOnce).toBeTruthy();
         expect(restartFeatureFlagsDbECSServicesSpy.notCalled).toBeTruthy();
+        expect(restartFrontEndECSServicesSpy.notCalled).toBeTruthy()
         mockedEnvVar.restore();
     })
 
@@ -174,18 +204,19 @@ describe('handler', () => {
         // Given
         // Injected dependencies to perform spy operations
         const fakeMatchingSecretARN = 'fake-feature-flags-db-secret-arn'
-        const mockedEnvVar = sinon.stub(process, 'env').value(
-            {
-                FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
-            }
-        );
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN: fakeMatchingSecretARN
+        });
         const fakeEvent = {"detail": {"additionalEventData": {"SecretId": fakeMatchingSecretARN}}}
 
         const restartMainDbECSServicesSpy = sinon.stub();
         const restartFeatureFlagsDbECSServicesSpy = sinon.stub();
+        const restartFrontEndECSServicesSpy = sinon.stub();
+
         const spyDependencies = {
             restartMainDbECSServices: restartMainDbECSServicesSpy,
             restartFeatureFlagsDbECSServices: restartFeatureFlagsDbECSServicesSpy,
+            restartFrontEndECSServices: restartFrontEndECSServicesSpy,
         }
 
         // When
@@ -194,7 +225,43 @@ describe('handler', () => {
         // Then
         expect(restartMainDbECSServicesSpy.notCalled).toBeTruthy();
         expect(restartFeatureFlagsDbECSServicesSpy.calledOnce).toBeTruthy();
+        expect(restartFrontEndECSServicesSpy.notCalled).toBeTruthy()
         mockedEnvVar.restore();
     })
 
+    /**
+     * Given an event object which matches
+     *   the `NEXT_AUTH_SECRET_ARN` env var
+     * When the main `handler()` is called
+     * Then the call is delegated to
+     *  `restartFrontEndECSServices()`
+     */
+    test('Orchestrates calls correctly for front end auth secret rotation', async () => {
+        // Given
+        // Injected dependencies to perform spy operations
+        const fakeMatchingSecretARN = 'fake-auth-secret-arn'
+        const mockedEnvVar = sinon.stub(process, 'env').value({
+            NEXT_AUTH_SECRET_ARN: fakeMatchingSecretARN
+        });
+        const fakeEvent = {"detail": {"additionalEventData": {"SecretId": fakeMatchingSecretARN}}}
+
+        const restartMainDbECSServicesSpy = sinon.stub();
+        const restartFeatureFlagsDbECSServicesSpy = sinon.stub();
+        const restartFrontEndECSServicesSpy = sinon.stub();
+
+        const spyDependencies = {
+            restartMainDbECSServices: restartMainDbECSServicesSpy,
+            restartFeatureFlagsDbECSServices: restartFeatureFlagsDbECSServicesSpy,
+            restartFrontEndECSServices: restartFrontEndECSServicesSpy,
+        }
+
+        // When
+        await handler(fakeEvent, sinon.stub(), spyDependencies)
+
+        // Then
+        expect(restartMainDbECSServicesSpy.notCalled).toBeTruthy();
+        expect(restartFeatureFlagsDbECSServicesSpy.notCalled).toBeTruthy();
+        expect(restartFrontEndECSServicesSpy.calledOnce).toBeTruthy()
+        mockedEnvVar.restore();
+    })
 })

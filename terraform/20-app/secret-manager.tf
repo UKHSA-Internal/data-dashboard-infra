@@ -176,6 +176,14 @@ resource "aws_secretsmanager_secret_version" "auth_secret" {
   })
 }
 
+resource "aws_secretsmanager_secret_rotation" "auth_secret" {
+  secret_id           = aws_secretsmanager_secret.auth_secret.id
+  rotation_lambda_arn = module.lambda_password_rotation.lambda_function_arn
+  rotation_rules {
+    automatically_after_days = 7
+  }
+}
+
 resource "aws_secretsmanager_secret" "revalidate_secret" {
   name        = "${local.prefix}-revalidate-secret"
   description = "Used to support secure cache revalidation in NextAuth.js"

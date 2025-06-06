@@ -4,8 +4,8 @@ module "eventbridge" {
   role_name  = "${local.prefix}-eventbridge-role"
 
   rules = {
-    "${local.prefix}-db-password-rotation" = {
-      description   = "Capture db password rotation events"
+    "${local.prefix}-password-rotation" = {
+      description   = "Capture credential rotation events"
       event_pattern = jsonencode({
         source : ["aws.secretsmanager"]
         detail : {
@@ -15,6 +15,7 @@ module "eventbridge" {
             SecretId : [
               local.main_db_aurora_password_secret_arn,
               local.feature_flags_db_aurora_password_secret_arn,
+              aws_secretsmanager_secret.auth_secret.arn,
             ]
           }
         }
@@ -23,10 +24,10 @@ module "eventbridge" {
   }
 
   targets = {
-    "${local.prefix}-db-password-rotation" = [
+    "${local.prefix}-password-rotation" = [
       {
-        name = module.lambda_db_password_rotation.lambda_function_name
-        arn  = module.lambda_db_password_rotation.lambda_function_arn
+        name = module.lambda_password_rotation.lambda_function_name
+        arn  = module.lambda_password_rotation.lambda_function_arn
       },
     ]
   }
