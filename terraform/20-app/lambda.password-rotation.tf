@@ -1,8 +1,6 @@
 module "lambda_password_rotation" {
   source        = "terraform-aws-modules/lambda/aws"
   version       = "7.8.1"
-  function_name = "${local.prefix}-db-password-rotation"
-  description   = "Redeploys services which depend on the main database when the password in secrets manager is rotated"
   function_name = "${local.prefix}-password-rotation"
   description   = "Redeploys services which depend on recently rotated passwords in secrets manager"
 
@@ -15,14 +13,16 @@ module "lambda_password_rotation" {
   maximum_retry_attempts = 1
 
   environment_variables = {
-    ECS_CLUSTER_ARN                      = module.ecs.cluster_arn
     MAIN_DB_PASSWORD_SECRET_ARN          = local.main_db_aurora_password_secret_arn
     FEATURE_FLAGS_DB_PASSWORD_SECRET_ARN = local.feature_flags_db_aurora_password_secret_arn
+    NEXT_AUTH_SECRET_ARN                 = aws_secretsmanager_secret.auth_secret.arn
+    ECS_CLUSTER_ARN                      = module.ecs.cluster_arn
     CMS_ADMIN_ECS_SERVICE_NAME           = module.ecs_service_cms_admin.name
     PRIVATE_API_ECS_SERVICE_NAME         = module.ecs_service_private_api.name
     PUBLIC_API_ECS_SERVICE_NAME          = module.ecs_service_public_api.name
     FEEDBACK_API_ECS_SERVICE_NAME        = module.ecs_service_feedback_api.name
     FEATURE_FLAGS_ECS_SERVICE_NAME       = module.ecs_service_feature_flags.name
+    FRONT_END_ECS_SERVICE_NAME           = module.ecs_service_front_end.name
   }
 
   attach_policy_statements = true
@@ -36,7 +36,7 @@ module "lambda_password_rotation" {
         module.ecs_service_cms_admin.id,
         module.ecs_service_feedback_api.id,
         module.ecs_service_feature_flags.id,
-
+        module.ecs_service_front_end.id,
       ]
     }
   }
