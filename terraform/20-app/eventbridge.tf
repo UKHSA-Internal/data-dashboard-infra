@@ -15,6 +15,7 @@ module "eventbridge" {
             SecretId : [
               local.main_db_aurora_password_secret_arn,
               local.feature_flags_db_aurora_password_secret_arn,
+              aws_secretsmanager_secret.auth_secret.arn,
             ]
           }
         }
