@@ -4,7 +4,7 @@ locals {
 
 module "s3_archive_web_content" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.5.0"
+  version = "4.10.1"
 
   bucket = local.s3_archive_web_content_bucket_name
 
