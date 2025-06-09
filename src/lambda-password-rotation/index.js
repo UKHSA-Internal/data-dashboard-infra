@@ -52,6 +52,22 @@ async function restartFeatureFlagsDbECSServices(ecsClient = new ECSClient(), ove
     console.log(`All required ECS tasks have been restarted for feature flags DB`);
 };
 
+
+/**
+ * Restarts tasks in the Front end ECS service which depend on the auth secret
+ *
+ * @param {ECSClient} ecsClient - An optional instance of the ECSClient to use for sending the command.
+ * @param {Object} overridenDependencies - Object used to override the default dependencies.
+ * @returns {Promise} A promise that resolves once the update service commands have been issued for each ECS service.
+ */
+async function restartFrontEndECSServices(ecsClient = new ECSClient(), overridenDependencies = {}) {
+    const defaultDependencies = {restartECSService};
+    const dependencies = {...defaultDependencies, ...overridenDependencies};
+
+    await dependencies.restartECSService(ecsClient, process.env.FRONT_END_ECS_SERVICE_NAME)
+    console.log(`All front end ECS tasks have been restarted for auth secret rotation`);
+};
+
 /**
  * Lambda handler function for restarting client services after an aurora db password has been rotated
  *
@@ -63,6 +79,7 @@ async function handler(event, context, overridenDependencies = {}) {
     const defaultDependencies = {
         restartMainDbECSServices,
         restartFeatureFlagsDbECSServices,
+        restartFrontEndECSServices
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
@@ -76,6 +93,11 @@ async function handler(event, context, overridenDependencies = {}) {
         console.log('Restarting feature flags db dependant services')
         await dependencies.restartFeatureFlagsDbECSServices()
     }
+
+    if (rotatedSecretARN === process.env.NEXT_AUTH_SECRET_ARN) {
+        console.log('Restarting auth secret dependent service (front end only)')
+        await dependencies.restartFrontEndECSServices()
+    }
 }
 
 module.exports = {
@@ -83,4 +105,5 @@ module.exports = {
     restartECSService,
     restartMainDbECSServices,
     restartFeatureFlagsDbECSServices,
+    restartFrontEndECSServices,
 }
