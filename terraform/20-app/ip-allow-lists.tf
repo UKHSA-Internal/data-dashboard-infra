@@ -11,7 +11,8 @@ locals {
       "86.130.56.139/32",   # Luke
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
-      "10.0.2.131/32",      # AIQ test instance
+      "18.135.62.168/32",   # Load test rig
+      "18.133.111.70/32",   # Test gateway
       "146.198.70.45/32",   # Mike Elshaw
       "165.225.199.116/32", # Manu
     ],
