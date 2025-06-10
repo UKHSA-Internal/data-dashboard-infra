@@ -14,7 +14,7 @@ locals {
       "18.135.62.168/32",   # Load test rig
       "18.133.111.70/32",   # Test gateway
       "146.198.70.45/32",   # Mike Elshaw
-      "165.225.199.116/32", # Manu
+      "165.225.197.40/32", # Manu
     ],
     project_team = [
       "5.64.104.211/32",    # Debbie
