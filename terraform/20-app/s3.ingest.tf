@@ -24,7 +24,7 @@ module "s3_ingest" {
         prefix = "processed/"
       }
       expiration = {
-        days = 30
+        days = 1
       }
     },
     {
