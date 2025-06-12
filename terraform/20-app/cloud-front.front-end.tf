@@ -1,6 +1,6 @@
 locals {
-  fifteen_minutes_in_seconds         = 900
-  managed_caching_disabled_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+  eight_hours_in_seconds              = 28800
+  managed_caching_disabled_policy_id  = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
 }
 
 module "cloudfront_front_end" {
@@ -234,9 +234,9 @@ resource "aws_cloudfront_origin_request_policy" "front_end_auth" {
 resource "aws_cloudfront_cache_policy" "front_end" {
   name = "${local.prefix}-front-end"
 
-  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
-  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
-  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.fifteen_minutes_in_seconds
+  min_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.eight_hours_in_seconds
+  max_ttl     = local.use_prod_sizing ? local.thirty_days_in_seconds : local.eight_hours_in_seconds
+  default_ttl = local.use_prod_sizing ? local.thirty_days_in_seconds : local.eight_hours_in_seconds
 
   parameters_in_cache_key_and_forwarded_to_origin {
     enable_accept_encoding_brotli = true
