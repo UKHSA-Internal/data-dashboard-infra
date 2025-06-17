@@ -9,7 +9,7 @@ module "cloudfront_front_end" {
 
   comment             = "${local.prefix}-front-end"
   enabled             = true
-  wait_for_deployment = truex
+  wait_for_deployment = true
   aliases             = [local.dns_names.front_end]
   web_acl_id          = aws_wafv2_web_acl.front_end.arn
   geo_restriction     = local.cloudfront_geo_restriction
