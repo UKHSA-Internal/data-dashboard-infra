@@ -9,6 +9,7 @@ module "cloudfront_archive_web_content" {
   enabled                      = true
   wait_for_deployment          = true
   web_acl_id                   = aws_wafv2_web_acl.archive_web_content.arn
+  geo_restriction              = local.cloudfront_geo_restriction
 
   custom_error_response = [
     {

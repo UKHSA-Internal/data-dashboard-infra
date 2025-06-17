@@ -10,8 +10,8 @@ module "cloudfront_public_api" {
   enabled             = true
   wait_for_deployment = true
   aliases             = [local.dns_names.public_api]
-
-  web_acl_id = aws_wafv2_web_acl.public_api.arn
+  web_acl_id          = aws_wafv2_web_acl.public_api.arn
+  geo_restriction     = local.cloudfront_geo_restriction
 
   origin = {
     alb = {
