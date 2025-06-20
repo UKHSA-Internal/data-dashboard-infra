@@ -9,12 +9,15 @@ locals {
       "82.132.245.244/32",  # Rhys hotspot
       "86.3.218.23/32",     # Rhys Home
       "86.130.56.139/32",   # Luke
+      "136.226.191.85/32",  # Manu
+      "146.198.70.45/32",   # Mike Elshaw
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "18.135.62.168/32",   # Load test rig
       "18.133.111.70/32",   # Test gateway
-      "146.198.70.45/32",   # Mike Elshaw
-      "136.226.191.85/32", # Manu
+      "35.176.13.254/32",   # Test instance
+      "35.176.178.91/32",   # Test instance
+      "35.179.30.107/32",   # Test instance
     ],
     project_team = [
       "5.64.104.211/32",    # Debbie
