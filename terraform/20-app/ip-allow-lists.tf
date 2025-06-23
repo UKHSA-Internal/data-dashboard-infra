@@ -30,8 +30,7 @@ locals {
       "62.253.228.2/32",    # 10SC
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
-      "147.161.237.1/32",   # Tom Hebbert Home
-      "81.105.235.133/32",  # Tom Hebbert 2
+      "165.225.197.37/32",  # Tom Hebbert Home
       "136.226.191.116/32", # Charlotte Brace
       "90.213.214.30/32",   # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
