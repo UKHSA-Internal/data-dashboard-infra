@@ -10,7 +10,7 @@
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.7.0",
+    "jest": "^30.0.2",
     "jest-junit": "^16.0.0",
     "sinon": "^20.0.0"
   },
