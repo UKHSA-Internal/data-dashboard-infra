@@ -238,3 +238,19 @@ resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
     slack_webhook_url = ""
   })
 }
+
+################################################################################
+# Virtuoso token
+################################################################################
+
+resource "aws_secretsmanager_secret" "virtuoso_token" {
+  name = "${local.prefix}-virtuoso-token"
+}
+
+resource "aws_secretsmanager_secret_version" "virtuoso_token" {
+  secret_id = aws_secretsmanager_secret.virtuoso_token.id
+  secret_string = jsonencode({
+    token = ""
+  })
+}
+
