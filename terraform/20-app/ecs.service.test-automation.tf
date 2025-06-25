@@ -22,7 +22,6 @@ module "ecs_service_test_automation" {
 
   container_definitions = {
     bridge-client = {
-      cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       cpu                                    = 256
       memory                                 = 512
       essential                              = true
@@ -43,18 +42,6 @@ module "ecs_service_test_automation" {
       ]
     }
   }
-
-  tasks_iam_role_statements = [
-    {
-      actions = [
-        "ssmmessages:CreateControlChannel",
-        "ssmmessages:CreateDataChannel",
-        "ssmmessages:OpenControlChannel",
-        "ssmmessages:OpenDataChannel"
-      ]
-      resources = ["*"]
-    }
-  ]
 
   security_group_rules = {
     # egress rules
