@@ -21,7 +21,7 @@ module "ecs_service_test_automation" {
   }
 
   container_definitions = {
-    api = {
+    bridge-client = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       cpu                                    = 256
       memory                                 = 512
