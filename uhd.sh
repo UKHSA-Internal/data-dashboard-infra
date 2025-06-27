@@ -34,6 +34,7 @@ function _uhd_commands_help() {
     echo "  lambda      - aws lambda commands"
     echo "  terraform   - terraform commands"
     echo "  secrets     - aws secrets commands"
+    echo "  tests       - test execution commands"
 
     echo
     echo "  update      - update all the things - infra, containers, etc"
@@ -64,6 +65,7 @@ function uhd() {
         "terraform") _terraform $args ;;
         "secrets") _secrets $args ;;
         "update") _update $args ;;
+        "tests") _tests $args ;;
 
         *) _uhd_commands_help ;;
     esac
