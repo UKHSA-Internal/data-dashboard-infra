@@ -34,8 +34,8 @@ jobs:
       - name: Build base env
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+#          uhd terraform init:layer 20-app
+#          uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
   unit_test_functions:
