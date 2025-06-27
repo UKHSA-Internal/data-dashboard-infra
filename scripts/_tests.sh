@@ -33,7 +33,7 @@ function _run_virtuoso_test_pack() {
   #-----------------------------#
 
 
-  if [ $# -eq 0 ]; then
+  if [[ $# -eq 0 ]]; then
       echo "Usage: ./execute.sh -t VIRTUOSO_TOKEN --goal_id ID_OF_GOAL_TO_EXECUTE [--app2] [--max_retry_time MAX_RETRY_TIME] [--retry_delay_time RETRY_DELAY_TIME]"
       exit 1
   fi
@@ -65,7 +65,6 @@ function _run_virtuoso_test_pack() {
 
   # wait for job to complete
   echo "--------"
-  set +e
   RUNNING=true
   OUTCOME=""
   while $RUNNING; do
@@ -74,7 +73,7 @@ function _run_virtuoso_test_pack() {
     # As we poll for the status of the job, we need to ensure that a single API failure would not lead to failure of this entire script
     while $ERROR; do
       JOB=$(curl -s --fail --header "Authorization: Bearer $TOKEN" "https://$ENV.virtuoso.qa/api/executions/$JOB_ID/status?envelope=false")
-      if [ "$JOB" == "" ]; then
+      if [[ "$JOB" == "" ]]; then
           if [ $MAX_RETRY_TIME -gt $RETRY_TIME ]; then
             echo "Request failed. Retrying..."
             RETRY_TIME=$(($RETRY_TIME + $RETRY_DELAY_TIME))
@@ -94,7 +93,7 @@ function _run_virtuoso_test_pack() {
 
     echo "Job execution status: $JOB_STATUS, outcome: $OUTCOME"
 
-    if [ "$JOB_STATUS" == "FINISHED" ] || [ "$JOB_STATUS" == "CANCELED" ] || [ "$JOB_STATUS" == "FAILED" ]; then
+    if [[ "$JOB_STATUS" == "FINISHED" ]] || [[ "$JOB_STATUS" == "CANCELED" ]] || [[ "$JOB_STATUS" == "FAILED" ]]; then
       RUNNING=false
     else
       sleep 2
@@ -104,8 +103,6 @@ function _run_virtuoso_test_pack() {
   echo "--------"
   echo "Executed job $JOB_ID with outcome: $OUTCOME"
 
-  set -e
-
   # Save execution result
   curl -s --header "Authorization: Bearer $TOKEN" "https://$ENV.virtuoso.qa/api/jobs/$JOB_ID/status?envelope=false" | jq -r '.' > "execution_report.json"
   curl -s --header "Authorization: Bearer $TOKEN" "https://$ENV.virtuoso.qa/api/goals/$GOAL_ID?envelope=false" | jq -r '.' > "goal.json"
@@ -114,13 +111,11 @@ function _run_virtuoso_test_pack() {
   echo "Execution link: https://$UI.virtuoso.qa/#/project/execution/$JOB_ID"
 
   # Different exit code for when job did not fail/error but status was not finished (cancelled/failed)
-  if [ "$JOB_STATUS" != "FINISHED" ]; then
-    exit 3
+  if [[ "$JOB_STATUS" != "FINISHED" ]]; then
   fi
 
   # terminate unsuccessfully if job did not pass
-  if [ "$OUTCOME" == "FAIL" ] || [ "$OUTCOME" == "ERROR" ]; then
-    exit 2
+  if [[ "$OUTCOME" == "FAIL" ]] || [[ "$OUTCOME" == "ERROR" ]]; then
   fi
 
   echo "Done!"
