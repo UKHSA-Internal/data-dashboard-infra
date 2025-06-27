@@ -1,5 +1,6 @@
 module "sqs_sentinel_alb_access_logs" {
-  source = "terraform-aws-modules/sqs/aws"
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "4.3.1"
 
   name = "uhd-sentinel-alb-access-logs"
 
