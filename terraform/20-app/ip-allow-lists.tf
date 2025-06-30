@@ -23,6 +23,8 @@ locals {
       "5.64.104.211/32",    # Debbie
       "5.81.132.150/32",    # Khawar
       "86.19.165.183/32",   # Ehsan
+      "165.225.197.35/32",  # Matt Causer
+      "136.226.167.79/32",  # Kiran Golla
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
