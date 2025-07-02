@@ -38,6 +38,29 @@ jobs:
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout source code
+
+      - uses: terraform-linters/setup-tflint@v4
+        name: Setup TFLint
+        with:
+          tflint_version: latest
+
+      - name: Init TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Lint 10-account layer
+        run: tflint -f compact --chdir=terraform/10-account
+
+      - name: Lint 20-app layer
+        run: tflint -f compact --chdir=terraform/20-app
+
   unit_test_functions:
     name: Unit test functions
     runs-on: ubuntu-latest
