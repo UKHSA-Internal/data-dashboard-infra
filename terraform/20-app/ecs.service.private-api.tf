@@ -79,7 +79,7 @@ module "ecs_service_private_api" {
           name  = "REDIS_HOST"
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
-          value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
+          value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint[0].address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint[0].port}"
         },
         {
           name  = "AUTH_ENABLED"
