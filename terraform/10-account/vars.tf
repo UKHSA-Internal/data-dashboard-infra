@@ -1,36 +1,26 @@
-variable "account_dns_name" {}
+variable "account_dns_name" {
+  type = string
+}
+
 variable "assume_account_id" {
   sensitive = true
+  type      = string
 }
 
 variable "assume_role_name" {
   default = "TerraformOperator"
+  type    = string
 }
 
-variable "legacy_account_dns_name" {}
-
-variable "python_version" {}
+variable "legacy_account_dns_name" {
+  type = string
+}
 
 variable "tools_account_id" {
   sensitive = true
+  type      = string
 }
 
-variable "etl_account_id" {
-  sensitive = true
+variable "halo_account_type" {
+  type = string
 }
-
-variable "ukhsa_tenant_id" {
-  sensitive = true
-}
-
-variable "ukhsa_client_id" {
-  sensitive = true
-}
-
-variable "ukhsa_client_secret" {
-  sensitive = true
-}
-
-variable "halo_account_type" {}
-
-variable "auth_enabled" {}
