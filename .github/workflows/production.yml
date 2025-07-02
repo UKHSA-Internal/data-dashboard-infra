@@ -18,6 +18,28 @@ permissions:
   contents: read
 
 jobs:
+  virtuoso:
+    name: Virtuoso
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Run Virtuoso
+        run: |
+          source uhd.sh
+          uhd tests run-virtuoso-test-pack ${{ secrets.VIRTUOSO_TOKEN }} ${{ secrets.VIRTUOSO_GOAL_ID }}
+        shell: zsh {0}
+
   terraform_plan:
     name: Terraform plan
     runs-on: ubuntu-latest

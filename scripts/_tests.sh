@@ -112,12 +112,13 @@ function _run_virtuoso_test_pack() {
 
   # Different exit code for when job did not fail/error but status was not finished (cancelled/failed)
   if [[ "$JOB_STATUS" != "FINISHED" ]]; then
+    exit 1
   fi
 
   # terminate unsuccessfully if job did not pass
   if [[ "$OUTCOME" == "FAIL" ]] || [[ "$OUTCOME" == "ERROR" ]]; then
+    exit 2
   fi
 
   echo "Done!"
-
 }
