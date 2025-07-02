@@ -133,7 +133,6 @@ function _terraform_plan_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
-    local python_version=$(_get_python_version)
     local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
     local ukhsa_client_id=$(_get_ukhsa_client_id)
     local ukhsa_client_secret=$(_get_ukhsa_client_secret)
@@ -157,7 +156,6 @@ function _terraform_plan_layer() {
     terraform plan \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
-        -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
         -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var "ukhsa_client_id=${ukhsa_client_id}" \
@@ -194,7 +192,6 @@ function _terraform_import_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
-    local python_version=$(_get_python_version)
     local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
     local ukhsa_client_id=$(_get_ukhsa_client_id)
     local ukhsa_client_secret=$(_get_ukhsa_client_secret)
@@ -218,7 +215,6 @@ function _terraform_import_layer() {
     terraform import \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
-        -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
         -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var "ukhsa_client_id=${ukhsa_client_id}" \
@@ -251,7 +247,6 @@ function _terraform_apply_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
-    local python_version=$(_get_python_version)
     local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
     local ukhsa_client_id=$(_get_ukhsa_client_id)
     local ukhsa_client_secret=$(_get_ukhsa_client_secret)
@@ -275,7 +270,6 @@ function _terraform_apply_layer() {
     terraform apply \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
-        -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
         -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var "ukhsa_client_id=${ukhsa_client_id}" \
@@ -378,7 +372,6 @@ function _terraform_destroy_layer() {
     local terraform_dir=$(_get_terraform_dir $layer)
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
-    local python_version=$(_get_python_version)
     local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
     local ukhsa_client_id=$(_get_ukhsa_client_id)
     local ukhsa_client_secret=$(_get_ukhsa_client_secret)
@@ -402,7 +395,6 @@ function _terraform_destroy_layer() {
     terraform destroy \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
-        -var "python_version=${python_version}" \
         -var "etl_account_id=${etl_account_id}" \
         -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
         -var "ukhsa_client_id=${ukhsa_client_id}" \
