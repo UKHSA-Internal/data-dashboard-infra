@@ -93,8 +93,11 @@ locals {
   main_db_aurora_password_secret_arn          = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
   feature_flags_db_aurora_password_secret_arn = try(module.aurora_db_feature_flags.cluster_master_user_secret[0]["secret_arn"], "")
 
-  cloudfront_geo_restriction = local.is_prod ? {} : {
+  cloudfront_geo_restriction = local.is_prod ? {
+    restriction_type = "none"
+    locations = []
+  } : {
     restriction_type = "whitelist"
-    locations        = ["GB"]
+    locations = ["GB"]
   }
 }
