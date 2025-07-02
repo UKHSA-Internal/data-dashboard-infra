@@ -76,7 +76,7 @@ module "cloudfront_archive_web_content" {
     }
 
     front_end = {
-      domain_name = "${local.dns_names.front_end}"
+      domain_name = local.dns_names.front_end
 
       custom_origin_config = {
         http_port              = 80
