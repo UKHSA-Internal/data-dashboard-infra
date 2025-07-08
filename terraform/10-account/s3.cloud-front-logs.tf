@@ -1,6 +1,6 @@
 module "s3_cloud_front_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.5.0"
+  version = "5.2.0"
 
   bucket = "uhd-aws-cloud-front-access-logs-${local.account_id}-${local.region}"
 
