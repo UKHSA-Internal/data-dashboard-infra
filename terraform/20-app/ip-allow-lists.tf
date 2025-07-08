@@ -5,7 +5,7 @@ locals {
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "90.241.34.202/32",   # Rhys Inlaws
+      "90.241.8.192/32",    # Rhys Inlaws
       "82.132.245.244/32",  # Rhys hotspot
       "86.3.218.23/32",     # Rhys Home
       "86.130.56.139/32",   # Luke
