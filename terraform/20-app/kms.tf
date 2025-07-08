@@ -1,6 +1,6 @@
 module "kms_app_rds" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.0"
+  version = "4.0.0"
 
   description             = "RDS encryption key"
   key_usage               = "ENCRYPT_DECRYPT"
@@ -15,7 +15,7 @@ module "kms_app_rds" {
 
 module "kms_secrets_app_engineer" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.0"
+  version = "4.0.0"
 
   description             = "Encryption key secrets needed by application engineers"
   key_usage               = "ENCRYPT_DECRYPT"
@@ -39,7 +39,7 @@ module "kms_secrets_app_engineer" {
 
 module "kms_secrets_app_operator" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.0"
+  version = "4.0.0"
 
   description             = "Encryption key secrets needed by application operator"
   key_usage               = "ENCRYPT_DECRYPT"
