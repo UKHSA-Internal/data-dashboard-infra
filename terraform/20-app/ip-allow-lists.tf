@@ -5,7 +5,7 @@ locals {
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "90.241.8.192/32",    # Rhys Inlaws
+      "90.241.34.202/32",   # Rhys Inlaws
       "82.132.245.244/32",  # Rhys hotspot
       "86.3.218.23/32",     # Rhys Home
       "86.130.56.139/32",   # Luke
@@ -20,7 +20,7 @@ locals {
       "35.179.30.107/32",   # Test instance
     ],
     project_team = [
-      "77.100.107.252/32",  # Laura
+      "5.64.104.211/32",    # Debbie
       "5.81.132.150/32",    # Khawar
       "86.19.165.183/32",   # Ehsan
     ],
@@ -30,13 +30,17 @@ locals {
       "62.253.228.2/32",    # 10SC
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
+      "147.161.237.1/32",   # Tom Hebbert Home
+      "81.105.235.133/32",  # Tom Hebbert 2
       "136.226.191.116/32", # Charlotte Brace
       "90.213.214.30/32",   # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
       "172.28.215.10/32",   # Alana Firth
-      "165.225.17.43/32"    # Maria Tsiko
+      "165.225.17.43/32",   # Maria Tsiko
+      "136.226.167.91/32",  # Emmanuel Ughoo
+      "147.161.224.180/32"  # Osazee Ogunje
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
