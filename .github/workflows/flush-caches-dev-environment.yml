@@ -48,7 +48,7 @@ jobs:
       - name: Update private API cache
         run: |
           source uhd.sh
-          uhd cache flush-redis
+          uhd cache flush-redis --wait
         shell: zsh {0}
 
       - name: Clear front end CDN
@@ -60,7 +60,7 @@ jobs:
       - name: Fill front end CDN
         run: |
           source uhd.sh
-          uhd cache fill-front-end
+          uhd cache fill-front-end --wait
         shell: zsh {0}
 
       - name: Restart front end
@@ -78,5 +78,5 @@ jobs:
       - name: Fill the public API CDN
         run: |
           source uhd.sh
-          uhd cache fill-public-api
+          uhd cache fill-public-api --wait
         shell: zsh {0}
