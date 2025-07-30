@@ -51,13 +51,13 @@ jobs:
           uhd cache flush-redis
         shell: zsh {0}
 
-      - name: Clear front-end CDN
+      - name: Clear front end CDN
         run: |
           source uhd.sh
           uhd cache flush-front-end
         shell: zsh {0}
 
-      - name: Fill front-end CDN
+      - name: Fill front end CDN
         run: |
           source uhd.sh
           uhd cache fill-front-end
