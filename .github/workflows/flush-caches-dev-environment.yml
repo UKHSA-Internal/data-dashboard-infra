@@ -17,8 +17,8 @@ permissions:
   contents: read
 
 jobs:
-  update_caches_for_frontend:
-    name: Update caches for front end
+  update_caches:
+    name: Update caches
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
 
-      - name: Flush private API cache
+      - name: Update private API cache
         run: |
           source uhd.sh
           uhd cache flush-redis
@@ -68,34 +68,6 @@ jobs:
           source uhd.sh
           uhd ecs restart-containers front_end
         shell: zsh {0}
-
-  update_cache_for_public_api:
-    name: Update caches for public API
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-terraform
-      - uses: ./.github/actions/setup-zsh
-
-      - name: Configure AWS credentials for tools account
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
-
-      - name: Terraform output
-        run: |
-          source uhd.sh
-          uhd terraform init:layer 20-app
-          uhd terraform output ${{ inputs.environment }}
-        shell: zsh {0}
-
-      - name: Configure AWS credentials for account
-        uses: ./.github/actions/configure-aws-credentials
-        with:
-          account-name: "dev"
-          aws-region: ${{ env.AWS_REGION }}
-          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
 
       - name: Clear the public API CDN
         run: |
