@@ -201,6 +201,14 @@ jobs:
       branch: env/dev/dpd
     secrets: inherit
 
+  deploy_test:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_test}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/test/test
+    secrets: inherit
+
   deploy_auth-test:
     needs: fast_forward_env_branches
     if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-test}}
