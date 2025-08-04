@@ -24,8 +24,8 @@ permissions:
   contents: read
 
 jobs:
-  flush_caches:
-    name: Flush caches
+  update_caches:
+    name: Update caches
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,14 +55,38 @@ jobs:
           test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
           uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
 
-      - name: Flush caches
+      - name: Update private API cache
         run: |
           source uhd.sh
-          uhd cache flush
+          uhd cache flush-redis --wait
+        shell: zsh {0}
+
+      - name: Clear front end CDN
+        run: |
+          source uhd.sh
+          uhd cache flush-front-end
+        shell: zsh {0}
+
+      - name: Fill front end CDN
+        run: |
+          source uhd.sh
+          uhd cache fill-front-end --wait
         shell: zsh {0}
 
       - name: Restart front end
         run: |
           source uhd.sh
           uhd ecs restart-containers front_end
+        shell: zsh {0}
+
+      - name: Clear the public API CDN
+        run: |
+          source uhd.sh
+          uhd cache flush-public-api
+        shell: zsh {0}
+
+      - name: Fill the public API CDN
+        run: |
+          source uhd.sh
+          uhd cache fill-public-api --wait
         shell: zsh {0}
