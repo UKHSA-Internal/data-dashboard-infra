@@ -5,16 +5,18 @@ function _cache_help() {
     echo "uhd cache <command> [options]"
     echo
     echo "commands:"
-    echo "  help                 - this help screen"
+    echo "  help                            - this help screen"
     echo 
-    echo "  flush-redis      - flush and re-fill the redis (private api) cache"
-    echo "  flush-front-end  - flush the front end (cloud front) cache"
-    echo "  flush-public-api - flush the public api (cloud front) cache"
+    echo "  flush-redis                     - flush and re-fill the redis (private api) cache"
+    echo "  flush-redis-reserved-namespace  - blue-green update the reserved namespace in the redis (private api) cache"
+
+    echo "  flush-front-end                 - flush the front end (cloud front) cache"
+    echo "  flush-public-api                - flush the public api (cloud front) cache"
     echo
-    echo "  fill-front-end   - fill the front end (cloud front) cache"
-    echo "  fill-public-api  - fill the public api (cloud front) cache"
+    echo "  fill-front-end                  - fill the front end (cloud front) cache"
+    echo "  fill-public-api                 - fill the public api (cloud front) cache"
     echo
-    echo "  flush            - flush and refill all the caches"
+    echo "  flush                           - flush and refill all the caches"
 
     return 0
 }
@@ -25,6 +27,7 @@ function _cache() {
 
     case $verb in
         "flush-redis") _cache_flush_redis $args ;;
+        "flush-redis-reserved-namespace") _cache_flush_redis_reserved_namespace $args ;;
         "flush-front-end") _cache_flush_front_end $args ;;
         "flush-public-api") _cache_flush_public_api $args ;;
         "fill-front-end") _cache_fill_front_end $args ;;
@@ -85,14 +88,17 @@ function _cache_flush_v2() {
     fi
 }
 
-function _cache_flush_redis() {
+function _run_backend_ecs_task() {
+    local job_file=$1
+    local log_group=$2
+    local wait_arg=$3
+
     local cluster_name=$(_get_ecs_cluster_name)
-    local waitArg=$1
 
-    echo Starting job....
-    local taskArn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/hydrate-private-api-cache.json" | jq -r ".tasks[0].taskArn")
+    echo "Starting job...."
+    local taskArn=$(aws ecs run-task --cli-input-json "file://$job_file" | jq -r ".tasks[0].taskArn")
 
-    if [[ $waitArg = "--wait" ]]; then
+    if [[ $wait_arg = "--wait" ]]; then
         echo "Waiting for task $taskArn to finish..."
         aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
     else
@@ -102,71 +108,28 @@ function _cache_flush_redis() {
         local env=$(_get_env_name)
         local taskId=${taskArn##*/}
 
-        aws logs tail "/aws/ecs/uhd-${env}-utility-worker/api" --follow --log-stream-names "ecs/api/$taskId"
+        aws logs tail "/aws/ecs/uhd-${env}-${log_group}/api" --follow --log-stream-names "ecs/api/$taskId"
     fi
+}
+
+function _cache_flush_redis() {
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-private-api-cache.json" "utility-worker" "$1"
+}
+
+function _cache_flush_redis_reserved_namespace() {
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-private-api-cache-reserved-namespace" "utility-worker" "$1"
 }
 
 function _cache_fill_front_end() {
-    local cluster_name=$(_get_ecs_cluster_name)
-    local waitArg=$1
-
-    echo Starting job....
-    local taskArn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/hydrate-frontend-cache.json" | jq -r ".tasks[0].taskArn")
-
-    if [[ $waitArg = "--wait" ]]; then
-        echo "Waiting for task $taskArn to finish..."
-        aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
-    else
-        echo "Waiting for task $taskArn to start..."
-        aws ecs wait tasks-running --cluster $cluster_name --tasks $taskArn
-
-        local env=$(_get_env_name)
-        local taskId=${taskArn##*/}
-
-        aws logs tail "/aws/ecs/uhd-${env}-private-api/api" --follow --log-stream-names "ecs/api/$taskId"
-    fi
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-frontend-cache.json" "private-api" "$1"
 }
 
 function _cache_fill_front_end_v2() {
-    local cluster_name=$(_get_ecs_cluster_name)
-    local waitArg=$1
-
-    echo Starting job....
-    local taskArn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/crawl-front-end.json" | jq -r ".tasks[0].taskArn")
-
-    if [[ $waitArg = "--wait" ]]; then
-        echo "Waiting for task $taskArn to finish..."
-        aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
-    else
-        echo "Waiting for task $taskArn to start..."
-        aws ecs wait tasks-running --cluster $cluster_name --tasks $taskArn
-
-        local env=$(_get_env_name)
-        local taskId=${taskArn##*/}
-
-        aws logs tail "/aws/ecs/uhd-${env}-worker/api" --follow --log-stream-names "ecs/api/$taskId"
-    fi
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/crawl-front-end.json" "worker" "$1"
 }
 
 function _cache_fill_public_api() {
-    local cluster_name=$(_get_ecs_cluster_name)
-    local waitArg=$1
-
-    echo Starting job....
-    local taskArn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/hydrate-public-api-cache.json" | jq -r ".tasks[0].taskArn")
-
-    if [[ $waitArg = "--wait" ]]; then
-        echo "Waiting for task $taskArn to finish..."
-        aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
-    else
-        echo "Waiting for task $taskArn to start..."
-        aws ecs wait tasks-running --cluster $cluster_name --tasks $taskArn
-
-        local env=$(_get_env_name)
-        local taskId=${taskArn##*/}
-
-        aws logs tail "/aws/ecs/uhd-${env}-public-api/api" --follow --log-stream-names "ecs/api/$taskId"
-    fi
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-public-api-cache.json" "public-api" "$1"
 }
 
 function _cache_flush_public_api() {
