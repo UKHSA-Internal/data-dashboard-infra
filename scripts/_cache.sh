@@ -101,6 +101,16 @@ function _run_backend_ecs_task() {
     if [[ $wait_arg = "--wait" ]]; then
         echo "Waiting for task $taskArn to finish..."
         aws ecs wait tasks-stopped --cluster $cluster_name --tasks $taskArn
+        local wait_exit_code=$?
+
+        # The AWS CLI returns 255 when wait timeout (10 min) is exceeded
+        # We'll treat this as success since the task may still be running
+        if [[ $wait_exit_code -eq 255 ]]; then
+            echo "Wait timeout exceeded, but continuing..."
+        elif [[ $wait_exit_code -ne 0 ]]; then
+            echo "Error waiting for task to stop (exit code: $wait_exit_code)"
+            return $wait_exit_code
+        fi
     else
         echo "Waiting for task $taskArn to start..."
         aws ecs wait tasks-running --cluster $cluster_name --tasks $taskArn
