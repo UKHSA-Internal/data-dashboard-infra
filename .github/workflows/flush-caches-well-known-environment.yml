@@ -27,7 +27,6 @@ jobs:
   update_caches:
     name: Update caches
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-terraform
@@ -57,6 +56,7 @@ jobs:
           uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
 
       - name: Update private API cache
+        continue-on-error: true
         run: |
           source uhd.sh
           uhd cache flush-redis --wait
