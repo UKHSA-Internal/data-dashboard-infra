@@ -69,6 +69,7 @@ jobs:
         shell: zsh {0}
 
       - name: Fill front end CDN
+        continue-on-error: true
         run: |
           source uhd.sh
           uhd cache fill-front-end --wait
@@ -87,6 +88,7 @@ jobs:
         shell: zsh {0}
 
       - name: Fill the public API CDN
+        continue-on-error: true
         run: |
           source uhd.sh
           uhd cache fill-public-api --wait
