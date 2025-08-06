@@ -27,6 +27,7 @@ jobs:
   update_caches:
     name: Update caches
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-terraform
