@@ -8,8 +8,8 @@ module "cloudfront_legacy_dashboard_redirect" {
   comment             = "${local.prefix}-legacy-dashboard-redirect"
   enabled             = true
   wait_for_deployment = true
-
-  web_acl_id = aws_wafv2_web_acl.legacy_dashboard_redirect.arn
+  web_acl_id          = aws_wafv2_web_acl.legacy_dashboard_redirect.arn
+  geo_restriction     = local.cloudfront_geo_restriction
 
   origin = {
     front_end = {
