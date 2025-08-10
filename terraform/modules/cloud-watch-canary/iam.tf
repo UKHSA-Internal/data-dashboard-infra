@@ -33,16 +33,6 @@ module "iam_canary_policy" {
           Resource = ["*"]
         },
         {
-          Action   = ["cloudwatch:PutMetricData"],
-          Effect   = "Allow",
-          Resource = ["*"],
-          Condition = {
-            StringEquals = {
-              "cloudwatch:namespace" = "CloudWatchSynthetics"
-            }
-          }
-        },
-        {
           Action = [
             "ec2:CreateNetworkInterface",
             "ec2:DescribeNetworkInterfaces",
