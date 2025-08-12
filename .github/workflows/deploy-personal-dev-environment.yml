@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/setup-python@v5
 
@@ -62,7 +62,7 @@ jobs:
     needs: ["terraform_apply"]
     steps:
       - name: Checkout .github/ directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: |
             .github
@@ -76,14 +76,14 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Checkout frontend repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: UKHSA-Internal/data-dashboard-frontend
           path: data-dashboard-frontend
           ref: ${{ inputs.frontend_branch }}
 
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: data-dashboard-infra
 
@@ -110,7 +110,7 @@ jobs:
     needs: [ "terraform_apply" ]
     steps:
       - name: Checkout .github/ directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: |
             .github
@@ -124,14 +124,14 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Checkout backend repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
           ref: ${{ inputs.backend_branch }}
 
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: data-dashboard-infra
 
@@ -158,7 +158,7 @@ jobs:
     needs: [ "terraform_apply" ]
     steps:
       - name: Checkout .github/ directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: |
             .github
@@ -172,14 +172,14 @@ jobs:
       - uses: ./.github/actions/setup-zsh
 
       - name: Checkout backend repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: UKHSA-Internal/data-dashboard-api
           path: data-dashboard-api
           ref: ${{ inputs.ingestion_branch }}
 
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: data-dashboard-infra
 
@@ -211,7 +211,7 @@ jobs:
       ]
     steps:
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -254,7 +254,7 @@ jobs:
     needs: ["restart_services"]
     steps:
       - name: Checkout infra repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh

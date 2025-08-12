@@ -17,7 +17,7 @@ jobs:
     name: Build base env
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.base_ref }}
 
@@ -47,7 +47,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Test lambda-producer-handler
         uses: ./.github/actions/npm-test
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["build_base", "unit_test_functions"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials for tools account
@@ -142,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["build_base", "terraform_plan"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials for tools account
@@ -168,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -190,7 +190,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["push_docker_images"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -234,7 +234,7 @@ jobs:
     if: ${{ always() }}
     needs: ["restart_services"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
 
       - name: Configure AWS credentials for tools account
@@ -260,7 +260,7 @@ jobs:
     if: ${{ always() }}
     needs: ["terraform_destroy"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
