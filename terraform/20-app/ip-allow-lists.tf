@@ -8,9 +8,9 @@ locals {
       "90.241.8.192/32",    # Rhys Inlaws
       "82.132.245.244/32",  # Rhys hotspot
       "86.2.63.107/32",     # Rhys Home
-      "86.164.10.25/32",   # Luke
+      "86.164.10.25/32",    # Luke
       "136.226.191.85/32",  # Manu
-      "146.198.70.45/32",   # Mike Elshaw
+      "147.161.237.10/32",  # Mike Elshaw
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
       "18.135.62.168/32",   # Load test rig
