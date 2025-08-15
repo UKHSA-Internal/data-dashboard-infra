@@ -127,7 +127,7 @@ function _cache_flush_redis() {
 }
 
 function _cache_flush_redis_reserved_namespace() {
-    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-private-api-cache-reserved-namespace" "utility-worker" "$1"
+    _run_backend_ecs_task "terraform/20-app/ecs-jobs/hydrate-private-api-cache-reserved-namespace.json" "utility-worker" "$1"
 }
 
 function _cache_fill_front_end() {
