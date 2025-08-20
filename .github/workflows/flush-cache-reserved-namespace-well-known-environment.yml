@@ -1,5 +1,5 @@
 name: Flush Cache Reserved Namespace Well-Known Environment Workflow
-run-name: Flush cache for reserved namespace only in `${{ inputs.environment }}` WKE
+run-name: Flush cache for reserved namespace in `${{ inputs.environment }}` WKE
 
 on:
   workflow_dispatch:
