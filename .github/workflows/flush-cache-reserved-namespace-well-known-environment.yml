@@ -58,5 +58,5 @@ jobs:
       - name: Flush reserved namespace in cache
         run: |
           source uhd.sh
-          uhd cache flush-redis-reserved-namespace
+          uhd cache flush-redis-reserved-namespace --wait
         shell: zsh {0}
