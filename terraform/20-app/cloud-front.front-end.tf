@@ -261,6 +261,7 @@ resource "aws_cloudfront_cache_policy" "front_end" {
           "areaType",
           "page",
           "search",
+          "geography_type",
         ]
       }
     }
@@ -300,6 +301,7 @@ resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
           "type",
           "v",
           "fid",
+          "geography_type",
         ]
       }
     }
