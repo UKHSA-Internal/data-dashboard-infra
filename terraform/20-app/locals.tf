@@ -12,7 +12,8 @@ locals {
   use_prod_sizing            = contains([
     "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"
   ], local.environment)
-  add_password_protection    = local.environment == "staging"
+  # Temporarily switch off auth challenge in staging
+  add_password_protection    = false
   auth_enabled               = var.auth_enabled
   caching_v2_enabled         = false
   is_front_end_bypassing_cdn = local.auth_enabled || local.caching_v2_enabled
