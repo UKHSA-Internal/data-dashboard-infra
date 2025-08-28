@@ -11,8 +11,8 @@ module "ecs_service_private_api" {
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
-  desired_count            = local.use_prod_sizing ? 3 : 1
-  autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
+  desired_count            = local.use_prod_sizing ? 6 : 1
+  autoscaling_min_capacity = local.use_prod_sizing ? 6 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
   # Temporarily drop scheduled scale in actions for out of hours operation
