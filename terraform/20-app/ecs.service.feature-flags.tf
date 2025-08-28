@@ -21,8 +21,7 @@ module "ecs_service_feature_flags" {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
   }
-  # Temporarily drop scheduled scale in actions for out of hours operation
-  # autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   container_definitions = {
     api = {
