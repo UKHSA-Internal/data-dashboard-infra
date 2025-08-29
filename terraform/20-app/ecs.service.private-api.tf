@@ -15,8 +15,7 @@ module "ecs_service_private_api" {
   autoscaling_min_capacity = local.use_prod_sizing ? 6 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  # Temporarily drop scheduled scale in actions for out of hours operation
-  # autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
