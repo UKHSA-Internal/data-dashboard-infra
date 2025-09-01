@@ -217,13 +217,13 @@ jobs:
       branch: env/auth-test/auth-test
     secrets: inherit
 
-  deploy_auth-perf:
-    needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-perf}}
-    uses: ./.github/workflows/well-known-environment.yml
-    with:
-      branch: env/auth-test/auth-perf
-    secrets: inherit
+#  deploy_auth-perf:
+#    needs: fast_forward_env_branches
+#    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-perf}}
+#    uses: ./.github/workflows/well-known-environment.yml
+#    with:
+#      branch: env/auth-test/auth-perf
+#    secrets: inherit
 
   deploy_staging:
     needs: fast_forward_env_branches
