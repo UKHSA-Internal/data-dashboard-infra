@@ -15,7 +15,7 @@ module "ecs_service_cms_admin" {
   autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 5 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   runtime_platform = {
     cpu_architecture        = "ARM64"

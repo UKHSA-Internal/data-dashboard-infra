@@ -15,7 +15,7 @@ module "ecs_service_private_api" {
   autoscaling_min_capacity = local.use_prod_sizing ? 6 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
@@ -39,7 +39,7 @@ module "ecs_service_private_api" {
       essential                              = true
       readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      mount_points                           = [
+      mount_points = [
         {
           sourceVolume  = "tmp"
           containerPath = "/tmp"
@@ -129,7 +129,7 @@ module "ecs_service_private_api" {
 
   task_exec_iam_statements = {
     kms_keys = {
-      actions   = ["kms:Decrypt"]
+      actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn

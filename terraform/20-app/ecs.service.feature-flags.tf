@@ -21,7 +21,7 @@ module "ecs_service_feature_flags" {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
   }
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   container_definitions = {
     api = {
