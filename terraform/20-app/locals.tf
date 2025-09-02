@@ -34,35 +34,24 @@ locals {
   is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
   is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
+  is_scaled_down_overnight                     = !contains(["prod"], local.environment)
+  timezone_london                              = "Europe/London"
+  use_ip_allow_list                            = local.environment != "prod"
 
-  use_ip_allow_list = local.environment != "prod"
-
-  dpd_dev_env_scheduled_policy = {
-    start_of_working_day_scale_out = {
-      min_capacity = 1
-      max_capacity = 1
-      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 6 AM
-    }
-    end_of_working_day_scale_in = {
-      min_capacity = 0
-      max_capacity = 0
-      schedule     = "cron(0 22 ? * MON-FRI *)" # Run every weekday at 10 PM
-    }
-  }
   non_essential_envs_scheduled_policy = {
     start_of_working_day_scale_out = {
-      min_capacity = 1
-      max_capacity = 1
-      schedule     = "cron(0 06 ? * MON-FRI *)" # Run every weekday at 7am
+      min_capacity  = 1
+      max_capacity  = 1
+      schedule      = "cron(0 08 ? * MON-FRI *)" # Run every weekday at 8am
+      timezone      = local.timezone_london
     }
     end_of_working_day_scale_in = {
-      min_capacity = 0
-      max_capacity = 0
-      schedule     = "cron(0 19 ? * MON-FRI *)" # Run every weekday at 8pm
+      min_capacity  = 0
+      max_capacity  = 0
+      schedule      = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      timezone      = local.timezone_london
     }
   }
-
-  scheduled_scaling_policies_for_non_essential_envs = local.environment == "dpd" ? local.dpd_dev_env_scheduled_policy : local.non_essential_envs_scheduled_policy
 
   dns_names = contains(concat(local.wke.account, local.wke.other), local.environment) ? {
     archive          = "archive.${local.account_layer.dns.wke_dns_names[local.environment]}"
