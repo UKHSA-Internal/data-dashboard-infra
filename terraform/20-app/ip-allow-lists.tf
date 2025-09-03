@@ -9,7 +9,7 @@ locals {
       "82.132.245.244/32",  # Rhys hotspot
       "86.2.63.107/32",     # Rhys Home
       "86.164.10.25/32",    # Luke
-      "136.226.191.85/32",  # Manu
+      "86.9.184.205/32",    # Manu
       "147.161.237.5/32",   # Mike Elshaw
       "147.161.236.91/32",  # Jeff Thomas - Windows
       "81.106.144.243/32",  # Jeff Thomas - Macbook
