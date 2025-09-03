@@ -82,6 +82,10 @@ module "ecs_service_private_api" {
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
         },
         {
+          name  = "REDIS_RESERVED_HOST"
+          value = "rediss://${aws_elasticache_serverless_cache.private_api_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.private_api_elasticache.endpoint.0.port}"
+        },
+        {
           name  = "AUTH_ENABLED"
           value = local.auth_enabled
         },
