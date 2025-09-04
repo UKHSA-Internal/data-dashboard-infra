@@ -111,7 +111,14 @@ module "ecs_service_worker" {
       protocol                 = "tcp"
       source_security_group_id = module.aurora_db_app.security_group_id
     }
-    cache_egress = {
+    default_cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.app_elasticache_security_group.security_group_id
+    }
+    reserved_cache_egress = {
       type                     = "egress"
       from_port                = 6379
       to_port                  = 6379

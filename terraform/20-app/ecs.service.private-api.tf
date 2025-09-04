@@ -173,6 +173,13 @@ module "ecs_service_private_api" {
       protocol                 = "tcp"
       source_security_group_id = module.app_elasticache_security_group.security_group_id
     }
+    reserved_cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.private_api_elasticache_security_group.security_group_id
+    }
     internet_egress = {
       type        = "egress"
       from_port   = 443
