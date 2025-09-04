@@ -31,14 +31,14 @@ module "eventbridge_scheduled_scaling" {
 
   schedules = {
     # Scale up actions
-    "${local.prefix}-scheduled-start-app-db" = {
+    "${local.prefix}-start-app-db" = {
       schedule_expression      = local.db_scale_up_cron_expression
       timezone                 = local.timezone_london
       use_flexible_time_window = false
       arn                      = "arn:aws:scheduler:::aws-sdk:rds:startDBCluster"
       input = jsonencode({ DbClusterIdentifier = module.aurora_db_app.cluster_id })
     }
-    "${local.prefix}-scheduled-start-feature-flags-db" = {
+    "${local.prefix}-start-feature-flags-db" = {
       schedule_expression      = local.db_scale_up_cron_expression
       timezone                 = local.timezone_london
       use_flexible_time_window = false
@@ -47,14 +47,14 @@ module "eventbridge_scheduled_scaling" {
     }
 
     # Scale down actions
-    "${local.prefix}-scheduled-stop-app-db" = {
+    "${local.prefix}-stop-app-db" = {
       schedule_expression      = local.db_scale_down_cron_expression
       timezone                 = local.timezone_london
       use_flexible_time_window = false
       arn                      = "arn:aws:scheduler:::aws-sdk:rds:stopDBCluster"
       input = jsonencode({ DbClusterIdentifier = module.aurora_db_app.cluster_id })
     }
-    "${local.prefix}-scheduled-stop-feature-flags-db" = {
+    "${local.prefix}-stop-feature-flags-db" = {
       schedule_expression      = local.db_scale_down_cron_expression
       timezone                 = local.timezone_london
       use_flexible_time_window = false
