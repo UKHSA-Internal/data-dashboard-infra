@@ -3,11 +3,11 @@ locals {
     rules = [
       {
         rulePriority = 1,
-        description  = "Keep the last 30 images",
+        description  = "Keep the last 5 images",
         selection    = {
           tagStatus   = "any",
           countType   = "imageCountMoreThan",
-          countNumber = 30
+          countNumber = 5
         },
         action = {
           type = "expire"

@@ -5,6 +5,7 @@ module "feedback_api_alb" {
   name = "${local.prefix}-feedback-api"
 
   load_balancer_type = "application"
+  internal           = true
 
   vpc_id                     = module.vpc.vpc_id
   subnets                    = module.vpc.public_subnets
@@ -18,8 +19,8 @@ module "feedback_api_alb" {
   }
 
   target_groups = {
-    "${local.prefix}-feedback-api-tg" = {
-      name              = "${local.prefix}-feedback-api-tg"
+    "${local.prefix}-feedback-api" = {
+      name              = "${local.prefix}-feedback-api"
       backend_protocol  = "HTTP"
       backend_port      = 80
       target_type       = "ip"
@@ -59,7 +60,7 @@ module "feedback_api_alb" {
           actions      = [
             {
               type             = "forward"
-              target_group_key = "${local.prefix}-feedback-api-tg"
+              target_group_key = "${local.prefix}-feedback-api"
             }
           ]
           conditions = [
@@ -76,11 +77,11 @@ module "feedback_api_alb" {
   }
 
   security_group_ingress_rules = {
-    ingress_from_internet = {
-      from_port   = 443
-      to_port     = 443
-      ip_protocol = "tcp"
-      cidr_ipv4   = "0.0.0.0/0"
+    ingress_from_front_end = {
+      from_port                    = 443
+      to_port                      = 443
+      ip_protocol                  = "tcp"
+      referenced_security_group_id = module.ecs_service_front_end.security_group_id
     }
   }
   security_group_egress_rules = {

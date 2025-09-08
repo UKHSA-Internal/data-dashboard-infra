@@ -5,7 +5,7 @@ module "aurora_db_app" {
   name                    = "${local.prefix}-aurora-db-app"
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
-  engine_version          = "15.5"
+  engine_version          = "15.10"
   storage_encrypted       = true
   backup_retention_period = 35
   kms_key_id              = module.kms_app_rds.key_arn
@@ -14,18 +14,19 @@ module "aurora_db_app" {
   database_name               = "cms"
   master_username             = "api_user"
 
-  monitoring_interval = 0
-  apply_immediately   = true
-  skip_final_snapshot = true
-  publicly_accessible = local.enable_public_db
-  deletion_protection = local.use_prod_sizing
+  monitoring_interval             = 0
+  apply_immediately               = true
+  skip_final_snapshot             = true
+  publicly_accessible             = local.enable_public_db
+  deletion_protection             = local.use_prod_sizing
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {
     min_capacity = 1
     max_capacity = 50
   }
-  instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3: {} } : { 1 : {} }
+  instances = local.use_prod_sizing ? { 1 : {}, 2 : {}, 3 : {} } : { 1 : {} }
 
   vpc_id               = module.vpc.vpc_id
   db_subnet_group_name = module.vpc.database_subnet_group_name
@@ -50,11 +51,23 @@ module "aurora_db_app" {
       protocol                 = "tcp"
       source_security_group_id = module.ecs_service_cms_admin.security_group_id
     },
+    feedback_api_tasks_to_db = {
+      type                     = "ingress"
+      description              = "feedback api tasks to main db"
+      protocol                 = "tcp"
+      source_security_group_id = module.ecs_service_feedback_api.security_group_id
+    },
     utility_worker_tasks_to_db = {
       type                     = "ingress"
       description              = "utility worker tasks to main db"
       protocol                 = "tcp"
       source_security_group_id = module.ecs_service_utility_worker.security_group_id
+    },
+    worker_tasks_to_db = {
+      type                     = "ingress"
+      description              = "worker tasks to main db"
+      protocol                 = "tcp"
+      source_security_group_id = module.ecs_service_worker.security_group_id
     },
     ingestion_lambda_to_db = {
       type                     = "ingress"
@@ -72,11 +85,7 @@ locals {
         db_name = module.aurora_db_app.cluster_database_name
         address = module.aurora_db_app.cluster_endpoint
       }
-      public_api_replica = {
-        db_name = module.aurora_db_app.cluster_database_name
-        address = module.aurora_db_app.cluster_reader_endpoint
-      }
-      private_api_replica = {
+      secondary = {
         db_name = module.aurora_db_app.cluster_database_name
         address = module.aurora_db_app.cluster_reader_endpoint
       }

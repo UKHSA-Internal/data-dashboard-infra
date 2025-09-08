@@ -1,0 +1,22 @@
+{
+  "name": "lambda-api-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch",
+    "test:ci": "jest --ci --coverage"
+  },
+  "author": "UKHSA Data Dashboard",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "sinon": "^17.0.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.637.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.0.1"
+  }
+}

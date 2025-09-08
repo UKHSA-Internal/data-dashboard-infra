@@ -15,11 +15,18 @@ module "ecs_service_feedback_api" {
   autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   runtime_platform = {
     cpu_architecture        = "ARM64"
     operating_system_family = "LINUX"
+  }
+
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
   }
 
   container_definitions = {
@@ -28,9 +35,21 @@ module "ecs_service_feedback_api" {
       cpu                                    = local.use_prod_sizing ? 1024 : 512
       memory                                 = local.use_prod_sizing ? 2048 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points                           = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/code/metrics/static"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -43,22 +62,34 @@ module "ecs_service_feedback_api" {
           value = "FEEDBACK_API"
         },
         {
-          name  = "APIENV"
-          value = "STANDALONE"
+          name  = "POSTGRES_DB"
+          value = local.aurora.app.secondary.db_name
         },
+        {
+          name  = "POSTGRES_HOST"
+          value = local.aurora.app.secondary.address
+        },
+        {
+          name  = "APIENV"
+          value = "PROD"
+        },
+        {
+          name  = "FEEDBACK_EMAIL_SENDER_ADDRESS"
+          value = "feedback@${aws_ses_domain_mail_from.sender.mail_from_domain}"
+        }
       ],
       secrets = [
         {
+          name      = "POSTGRES_USER"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
+        },
+        {
+          name      = "POSTGRES_PASSWORD"
+          valueFrom = "${local.main_db_aurora_password_secret_arn}:password::"
+        },
+        {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
-        },
-        {
-          name      = "EMAIL_HOST_USER",
-          valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_user::"
-        },
-        {
-          name      = "EMAIL_HOST_PASSWORD",
-          valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:email_host_password::"
         },
         {
           name      = "FEEDBACK_EMAIL_RECIPIENT_ADDRESS",
@@ -70,7 +101,7 @@ module "ecs_service_feedback_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.feedback_api_alb.target_groups["${local.prefix}-feedback-api-tg"].arn
+      target_group_arn = module.feedback_api_alb.target_groups["${local.prefix}-feedback-api"].arn
       container_name   = "api"
       container_port   = 80
     }
@@ -85,8 +116,19 @@ module "ecs_service_feedback_api" {
         "ssmmessages:OpenDataChannel"
       ]
       resources = ["*"]
+    },
+    {
+      actions   = ["ses:SendEmail", "ses:SendRawEmail"]
+      resources = [aws_ses_domain_identity.sender.arn]
     }
   ]
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [module.kms_secrets_app_engineer.key_arn]
+    }
+  }
 
   security_group_rules = {
     # ingress rules
@@ -105,6 +147,13 @@ module "ecs_service_feedback_api" {
       to_port     = 587
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+    }
+    db_egress = {
+      type                     = "egress"
+      from_port                = 5432
+      to_port                  = 5432
+      protocol                 = "tcp"
+      source_security_group_id = module.aurora_db_app.security_group_id
     }
     internet_egress = {
       type        = "egress"

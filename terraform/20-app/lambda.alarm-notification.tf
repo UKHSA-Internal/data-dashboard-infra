@@ -4,6 +4,10 @@ module "lambda_alarm_notification" {
   function_name = "${local.prefix}-alarm-notification"
   description   = "Sends notifications when Cloudwatch alarms from key services are raised."
 
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_alarm_notification_security_group.security_group_id]
+  attach_network_policy  = true
+
   create_package = true
   runtime        = "nodejs18.x"
   handler        = "index.handler"
@@ -48,7 +52,7 @@ module "lambda_alarm_notification" {
 
 module "lambda_alarm_notification_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.3.0"
 
   name   = "${local.prefix}-lambda-alarm-notification"
   vpc_id = module.vpc.vpc_id

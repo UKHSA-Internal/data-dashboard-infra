@@ -9,6 +9,7 @@ function _lambda_help() {
     echo 
     echo "  restart-functions         - restarts all the lambda functions, pulling most recent images in the process"
     echo "  logs <env> <lambda name>  - tail logs for the specified lambda"
+    echo "  invoke-revalidate         - invokes the front end revalidation lambda"
 
     return 0
 }
@@ -20,6 +21,7 @@ function _lambda() {
     case $verb in
         "restart-functions") _lambda_restart_functions $args ;;
         "logs") _lambda_logs $args ;;
+        "invoke-revalidate") _lambda_invoke_revalidate $args ;;
 
         *) _lambda_help ;;
     esac
@@ -42,6 +44,10 @@ function _lambda_logs() {
    aws logs tail "/aws/lambda/uhd-${env}-${lambda_name}" --follow
 }
 
+function _lambda_invoke_revalidate() {
+    local revalidate_lambda_arn=$(_get_revalidate_lambda_arn)
+    local result=$(aws lambda invoke --function-name ${revalidate_lambda_arn} /dev/null)
+}
 
 function _lambda_restart_functions() {
     local ingestion_image_uri=$(_get_most_recent_ingestion_image_uri)
@@ -75,4 +81,10 @@ function _get_ingestion_lambda_arn() {
     local terraform_output_file=terraform/20-app/output.json
     local ingestion_lambda_arn=$(jq -r '.lambda.value.ingestion_lambda_arn'  $terraform_output_file)
     echo $ingestion_lambda_arn
+}
+
+function _get_revalidate_lambda_arn() {
+    local terraform_output_file=terraform/20-app/output.json
+    local revalidate_lambda_arn=$(jq -r '.lambda.value.revalidate_lambda_arn'  $terraform_output_file)
+    echo $revalidate_lambda_arn
 }

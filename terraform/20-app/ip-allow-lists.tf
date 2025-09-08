@@ -1,55 +1,47 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "89.36.123.55/32",    # Afaan
-      "82.132.232.163/32",  # Afaan 2
+      "90.250.132.232/32",  # Afaan
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "81.78.13.149/32",    # Rhys
-      "35.176.13.254/32",   # UKHSA test EC2
-      "35.176.178.91/32",   # UKHSA test EC2
-      "35.179.30.107/32",   # UKHSA test EC2
-      "18.133.111.70/32",   # UKHSA test gateway
-      "81.108.89.51/32",    # Krishna - Macbook
-      "165.225.199.78/32",  # Krishna - Windows
-      "80.7.227.61/32",     # Kiran
-      "92.234.44.48/32",    # Zesh
-      "51.241.222.137/32",  # Temitope Akinsoto
-      "86.177.34.133/32"    # Luke
+      "90.241.8.192/32",    # Rhys Inlaws
+      "82.132.245.244/32",  # Rhys hotspot
+      "86.2.63.107/32",     # Rhys Home
+      "86.173.151.83/32",    # Luke
+      "86.9.184.205/32",    # Manu
+      "147.161.237.5/32",   # Mike Elshaw
+      "147.161.236.91/32",  # Jeff Thomas - Windows
+      "81.106.144.243/32",  # Jeff Thomas - Macbook
+      "18.135.62.168/32",   # Load test rig
+      "18.133.111.70/32",   # Test gateway
+      "35.176.13.254/32",   # Test instance
+      "35.176.178.91/32",   # Test instance
+      "35.179.30.107/32",   # Test instance
     ],
     project_team = [
-      "90.206.168.235/32",  # Debbie
-      "86.19.42.86/32",     # Debbie 2
+      "77.100.107.252/32",  # Laura
+      "5.81.132.150/32",    # Khawar
+      "86.19.165.183/32",   # Ehsan
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
-      "80.5.156.26/32",     # Khawar
-      "86.19.165.183/32",   # Ehsan
-      "90.196.35.64/32",    # Kelly
       "86.159.135.80/32",   # Asad
-      "217.155.89.135/32",  # Zoe Brass
-      "18.135.62.168/32",   # Load test rig
-      "62.253.228.2/32",    # Office ? / UKHSA ? / Asad
-      "82.68.136.38/32",    # Steve Ryan
-      "90.208.183.134/32",  # Christie
+      "62.253.228.2/32",    # 10SC
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
-      "2.25.205.147/32",    # Prince
-      "86.128.102.66/32",   # Ester
-      "167.98.243.140/32",  # Tom H
-      "81.105.235.133/32",  # Tom H 2
-      "51.149.2.8/32",      # Agostinho Sousa
-      "86.29.186.201/32",   # Charlotte Brace
-      "2.221.74.175/32",    # Gareth
-      "81.108.143.100/32",  # Ruairidh Villar
-      "90.218.199.1/32",    # Ruth Baxter
+      "136.226.191.116/32", # Charlotte Brace
+      "90.213.214.30/32",   # Ruth Baxter
+      "86.11.171.6/32",     # Jason Deakin
+      "147.161.236.110/32", # Jason Deakin 2
+      "194.9.109.118/32",   # Georgina Milne
+      "172.28.215.10/32",   # Alana Firth
+      "165.225.17.43/32",   # Maria Tsiko
+      "136.226.167.91/32",  # Emmanuel Ughoo
+      "147.161.224.180/32"  # Osazee Ogunje
     ]
-    ncc = [
-      "5.148.69.16/28",
-      "167.98.200.192/27",
-      "195.95.131.0/24",
-      "5.148.32.192/26",
+    pen_testers = [
+      "82.68.136.38/32",    # Steve Ryan
     ]
   }
   complete_ip_allow_list = tolist(
@@ -66,8 +58,8 @@ locals {
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
-        # Add NCC IP addresses only for the `pen` test environment
-        local.environment == "pen" ? local.ip_allow_list.ncc : []
+        # Add pen testers IP addresses only for the `pen` test environment
+        local.environment == "pen" ? local.ip_allow_list.pen_testers : []
       )
     )
   )

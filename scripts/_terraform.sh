@@ -30,6 +30,7 @@ function _terraform_help() {
     echo "  force-unlock <layer> <lock id>                  - releases the lock on a workspace"
     echo "  workspace-list                                  - lists all terraform workspaces"
     echo "  state-rm                                        - Removes the given item from the Terraform state"
+    echo "  get-dev-workspace-name <!username>              - Generates the personal dev env ID of the current user"
     echo
     return 1
 }
@@ -55,6 +56,7 @@ function _terraform() {
         "force-unlock") _terraform_force_unlock $args ;;
         "workspace-list") _terraform_workspace_list $args ;;
         "state-rm") _terraform_state_rm $args ;;
+        "get-dev-workspace-name") _get_dev_workspace_name $args ;;
 
         "cleanup") _terraform_cleanup $args ;;
 
@@ -132,6 +134,9 @@ function _terraform_plan_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -142,6 +147,8 @@ function _terraform_plan_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -151,6 +158,10 @@ function _terraform_plan_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file || return 1
 }
 
@@ -184,6 +195,9 @@ function _terraform_import_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform import for address '$address' and id '$id' into layer '$layer', workspace '$workspace', and account '$target_account_name'..."
 
@@ -194,6 +208,8 @@ function _terraform_import_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -203,6 +219,10 @@ function _terraform_import_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         $address \
         $id || return 0
@@ -232,6 +252,9 @@ function _terraform_apply_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -242,6 +265,8 @@ function _terraform_apply_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -251,6 +276,10 @@ function _terraform_apply_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -267,7 +296,8 @@ function _terraform_output() {
 
     uhd terraform output:layer 20-app $workspace
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_frontend_cache 
-    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache 
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache_reserved_namespace
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_public_api_cache
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_bootstrap_env
 }
@@ -350,6 +380,9 @@ function _terraform_destroy_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
+    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
+    local ukhsa_client_id=$(_get_ukhsa_client_id)
+    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
 
     echo "Running terraform destroy for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -360,6 +393,8 @@ function _terraform_destroy_layer() {
         return 1
     fi
 
+    local etl_account_id=$(_get_etl_sibling_aws_account_id $target_account_name)
+
     local var_file="etc/${target_account_name}.tfvars"
 
     cd $terraform_dir
@@ -369,6 +404,10 @@ function _terraform_destroy_layer() {
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
+        -var "etl_account_id=${etl_account_id}" \
+        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+        -var "ukhsa_client_id=${ukhsa_client_id}" \
+        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
         -auto-approve || return 1
 
@@ -456,6 +495,8 @@ function _terraform_cleanup() {
                 echo "Environment $env is a test environment.  It will be destroyed... "
                 echo
                 uhd terraform destroy:layer 20-app $env
+            elif [[ $env == etl-ci-* ]]; then
+                echo "Environment $env is a CI environment belonging to the ETL infra. Skipping this. "
             else
                 echo "Environment $env is an engineer's dev or well known environment."
             fi
@@ -480,27 +521,90 @@ function _get_target_aws_account_id() {
   aws secretsmanager get-secret-value --secret-id "aws/account-id/$account" --query SecretString --output text
 }
 
+function _get_etl_sibling_aws_account_id() {
+  local account=$1
+
+  local account_name=${account#auth-}
+
+  aws secretsmanager get-secret-value \
+    --secret-id "aws/account-id/etl-$account_name" \
+    --query SecretString \
+    --output text
+}
+
+function _get_ukhsa_tenant_id() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-tenant-id" --query SecretString --output text
+}
+
+function _get_ukhsa_client_id() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-id" --query SecretString --output text
+}
+
+function _get_ukhsa_client_secret() {
+  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-secret" --query SecretString --output text
+}
+
 function _get_target_aws_account_name() {
     local layer=$1
-    local workspace=$2 
+    local workspace=$2
 
     if [[ $layer == "10-account" ]]; then
-        echo $workspace
+        echo "$workspace"
+        return
+    fi
+
+    if [[ $workspace == *"auth"* ]]; then
+        _get_auth_target_aws_account_name "$workspace"
     else
-        if [[ $workspace == "prod" ]]; then
-            echo "prod"
-        elif [[ $CI == "true" ]]; then
-            if [[ $branch == "env/dev/"* ]]; then
-                echo "dev"
-            elif [[ $branch == "env/uat/"* ]]; then
-                echo "uat"
-            else
-                echo "test"
-            fi    
+        _get_main_target_aws_account_name "$workspace"
+    fi
+}
+
+function _get_main_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "prod" ]]; then
+        echo "prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "test"
         else
-            echo "dev"
+            case $branch in
+                env/dev/*)  echo "dev"  ;;
+                env/uat/*)  echo "uat"  ;;
+                env/test/*) echo "test" ;;
+                *)          echo "dev"  ;; # Default to dev
+            esac
         fi
-    fi 
+    else
+        echo "dev"
+    fi
+}
+
+function _get_auth_target_aws_account_name() {
+    local workspace=$1
+
+    if [[ $workspace == "auth-prod" ]]; then
+        echo "auth-prod"
+    elif [[ $CI == "true" ]]; then
+        if [[ $workspace == ci-* ]]; then
+            echo "auth-test"
+        else
+            case $branch in
+                env/auth-dev/*)  echo "auth-dev"  ;;
+                env/auth-uat/*)  echo "auth-uat"  ;;
+                env/auth-test/*) echo "auth-test" ;;
+                *)               echo "auth-dev"  ;;
+            esac
+        fi
+    else
+        echo "auth-dev"
+    fi
+}
+
+_get_dev_workspace_name() {
+    local input="${1:-$(whoami)}"
+    echo "$input" | openssl dgst -sha1 -binary | xxd -p | cut -c1-8
 }
 
 _get_workspace_name() {
@@ -510,7 +614,7 @@ _get_workspace_name() {
         # This creates a hash of your username on your machine.  We use this as your
         # dev env name to ensure everyone has their own isolated environment to break 🔥
         # For example janesmith evaluates to 4279cbe8
-        echo $(whoami | openssl dgst -sha1 -binary | xxd -p | cut -c1-8)
+        echo $(_get_dev_workspace_name)
     else
         echo $workspace
     fi

@@ -10,7 +10,8 @@ function _ecs_help() {
     echo "  restart-services                   - restarts all the ecs services after deploying the most recent images"
     echo "  restart-containers <service_name>  - restarts the containers for a given ECS service with the same image"
     echo
-    echo "  run <job name>                     - run the specified job"
+    echo "  run <job name>                     - run the specified job in a fire and forget fashion"
+    echo "  run-and-wait <job name>            - run the specified job and wait for it to complete"
     echo "  logs <env> <task id>               - tail logs for the specified task"
     echo "  ssh <task id> <container name>     - ssh into a container"
     echo
@@ -24,6 +25,7 @@ function _ecs() {
 
     case $verb in
         "run") _ecs_run $args ;;
+        "run-and-wait") _ecs_run_and_wait $args ;;
         "restart-services") _ecs_restart_services $args ;;
         "restart-containers") _ecs_restart_containers $args ;;
         "help") _ecs_help ;;
@@ -45,6 +47,31 @@ function _ecs_run() {
     echo Starting job....
 
     aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/${job}.json" | jq ".tasks[0].taskArn"
+}
+
+function _ecs_run_and_wait() {
+    local job=$1
+
+    if [[ -z ${job} ]]; then
+        echo "Job is required" >&2
+        return 1
+    fi
+
+    echo Starting job....
+
+    current_cluster_name=$(_get_current_cluster)
+
+    task_arn=$(aws ecs run-task --cli-input-json "file://terraform/20-app/ecs-jobs/${job}.json" | jq -r ".tasks[0].taskArn")
+    echo "Job (${task_arn}) is now running, waiting for completion..."
+
+    aws ecs wait tasks-stopped --tasks ${task_arn} --cluster ${current_cluster_name}
+
+    echo "Job (${task_arn}) completed successfully"
+}
+
+function _get_current_cluster() {
+  local terraform_output_file=terraform/20-app/output.json
+  jq -r '.ecs.value.cluster_name' ${terraform_output_file}
 }
 
 function _ecs_logs() {
@@ -168,7 +195,7 @@ function _ecs_register_new_image_for_service() {
     --service ${service_name} \
     --task-definition ${new_task_definition_arn} > /dev/null
 
-  _ecs_deregister_stale_task_definitions
+  _ecs_deregister_stale_task_definitions ${service_name}
 
   echo "${service_name}"
 }

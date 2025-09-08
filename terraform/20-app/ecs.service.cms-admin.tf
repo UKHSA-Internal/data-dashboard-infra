@@ -15,11 +15,18 @@ module "ecs_service_cms_admin" {
   autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 5 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   runtime_platform = {
     cpu_architecture        = "ARM64"
     operating_system_family = "LINUX"
+  }
+
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
   }
 
   container_definitions = {
@@ -28,9 +35,21 @@ module "ecs_service_cms_admin" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points                           = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/code/metrics/static"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -74,7 +93,7 @@ module "ecs_service_cms_admin" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.cms_admin_alb.target_groups["${local.prefix}-cms-admin-tg"].arn
+      target_group_arn = module.cms_admin_alb.target_groups["${local.prefix}-cms-admin"].arn
       container_name   = "api"
       container_port   = 80
     }
@@ -91,6 +110,17 @@ module "ecs_service_cms_admin" {
       resources = ["*"]
     }
   ]
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn,
+        module.kms_app_rds.key_arn,
+        module.kms_secrets_app_operator.key_arn,
+      ]
+    }
+  }
 
   security_group_rules = {
     # ingress rules
