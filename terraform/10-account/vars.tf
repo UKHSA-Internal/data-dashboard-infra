@@ -15,4 +15,22 @@ variable "tools_account_id" {
   sensitive = true
 }
 
+variable "etl_account_id" {
+  sensitive = true
+}
+
+variable "ukhsa_tenant_id" {
+  sensitive = true
+}
+
+variable "ukhsa_client_id" {
+  sensitive = true
+}
+
+variable "ukhsa_client_secret" {
+  sensitive = true
+}
+
 variable "halo_account_type" {}
+
+variable "auth_enabled" {}

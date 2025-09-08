@@ -2,7 +2,7 @@ module "cloudfront_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "3.4.0"
 
-  create_distribution = !contains(["train", "staging", "perf"], local.environment)
+  create_distribution = !contains(["pen", "staging", "perf", "auth-pen", "auth-perf"], local.environment)
 
   aliases             = [local.dns_names.legacy_dashboard]
   comment             = "${local.prefix}-legacy-dashboard-redirect"
@@ -13,7 +13,7 @@ module "cloudfront_legacy_dashboard_redirect" {
 
   origin = {
     front_end = {
-      domain_name = "${local.dns_names.front_end}"
+      domain_name = local.dns_names.front_end
 
       custom_origin_config = {
         http_port              = 80

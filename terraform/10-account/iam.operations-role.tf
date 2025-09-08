@@ -16,11 +16,9 @@ module "iam_operations_role" {
     local.sso_role_arns.administrator,
     local.sso_role_arns.developer,
     local.sso_role_arns.operations,
-    module.iam_data_ingestion_automation_user.iam_user_arn
     ] : [
     local.sso_role_arns.administrator,
     local.sso_role_arns.operations,
-    module.iam_data_ingestion_automation_user.iam_user_arn
   ]
 }
 
@@ -37,7 +35,7 @@ module "iam_operations_policy" {
         {
           Action   = ["s3:PutObject"],
           Effect   = "Allow",
-          Resource = "arn:aws:s3:::uhd-*-ingest/in/*"
+          Resource = "arn:aws:s3:::uhd-*-ingest/in/*.json"
         },
         {
           Action   = ["s3:DeleteObject"],
@@ -56,7 +54,6 @@ module "iam_operations_policy" {
             "ecs:DescribeTasks",
             "ecs:ExecuteCommand",
             "ecs:RunTask",
-            "iam:PassRole",
             "logs:StartLiveTail",
             "logs:StopLiveTail"
           ],

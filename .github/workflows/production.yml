@@ -102,6 +102,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
+      - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
 
       - name: Terraform output
@@ -149,10 +150,12 @@ jobs:
       contents: write
     outputs:
       deploy_dev: ${{ steps.fast_forward_merge.outputs.deploy_dev }}
+      deploy_auth-sandbox: ${{ steps.fast_forward_merge.outputs.deploy_auth-sandbox }}
       deploy_dpd: ${{ steps.fast_forward_merge.outputs.deploy_dpd }}
       deploy_test: ${{ steps.fast_forward_merge.outputs.deploy_test }}
+      deploy_auth-test: ${{ steps.fast_forward_merge.outputs.deploy_auth-test }}
       deploy_staging: ${{ steps.fast_forward_merge.outputs.deploy_staging }}
-      deploy_perf: ${{ steps.fast_forward_merge.outputs.deploy_perf }}
+      deploy_auth-perf: ${{ steps.fast_forward_merge.outputs.deploy_auth-perf }}
 
     steps:
       - uses: actions/checkout@v4
@@ -169,12 +172,25 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+  deploy_auth-prod:
+    needs: fast_forward_env_branches
+    uses: ./.github/workflows/production.auth.yml
+    secrets: inherit
+
   deploy_dev:
     needs: fast_forward_env_branches
     if: ${{needs.fast_forward_env_branches.outputs.deploy_dev}}
     uses: ./.github/workflows/well-known-environment.yml
     with:
       branch: env/dev/dev
+    secrets: inherit
+
+  deploy_auth-sandbox:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-sandbox}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/auth-dev/auth-sandbox
     secrets: inherit
 
   deploy_dpd:
@@ -193,12 +209,20 @@ jobs:
       branch: env/test/test
     secrets: inherit
 
-  deploy_perf:
+  deploy_auth-test:
     needs: fast_forward_env_branches
-    if: ${{needs.fast_forward_env_branches.outputs.deploy_perf}}
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-test}}
     uses: ./.github/workflows/well-known-environment.yml
     with:
-      branch: env/test/perf
+      branch: env/auth-test/auth-test
+    secrets: inherit
+
+  deploy_auth-perf:
+    needs: fast_forward_env_branches
+    if: ${{needs.fast_forward_env_branches.outputs.deploy_auth-perf}}
+    uses: ./.github/workflows/well-known-environment.yml
+    with:
+      branch: env/auth-test/auth-perf
     secrets: inherit
 
   deploy_staging:

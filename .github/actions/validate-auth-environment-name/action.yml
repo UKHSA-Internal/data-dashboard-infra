@@ -1,0 +1,20 @@
+name: "Validate auth environment name"
+
+description: "Checks and validates if the target non-public environment starts with `auth-`"
+
+inputs:
+  name:
+    required: true
+    description: The target environment name
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        if [[ ${{ inputs.name }} =~ ^auth- ]]; then
+          echo "Target environment name is valid"
+        else
+          echo "Target environment name is invalid, must start with 'auth-'" >&2
+          exit 1
+        fi
+      shell: bash

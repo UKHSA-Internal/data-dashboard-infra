@@ -96,7 +96,7 @@ region = eu-west-2
 
 #### Updating the config files directly
 
-The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://digitaltools.phe.org.uk/confluence/display/DPD/Configuring+the+AWS+CLI).
+The `~/.aws/config` should be updated with the profile names we use. Please follow the [instructions in Confluence](https://confluence.collab.test-and-trace.nhs.uk/display/DPD/Configuring+the+AWS+CLI).
 
 ### Login to the GitHub CLI
 
@@ -228,6 +228,7 @@ uhd docker ecr:login <account>
 ```
 
 For example:
+
 ```
 uhd docker ecr:login dev
 ```
@@ -485,10 +486,54 @@ uhd terraform destroy:layer 20-app foo
 ```
 
 > Note that production-grade environments, which are set via the `use_prod_sizing` variable,
-have deletion protection enabled on the main db cluster. 
+> have deletion protection enabled on the main db cluster.
 
-To destroy the infra for these environments, you must switch `use_prod_sizing` off 
+To destroy the infra for these environments, you must switch `use_prod_sizing` off
 for that environment prior to running the above.
+
+### Refreshing your Dev Databases
+
+> [!CAUTION]
+> Refreshing Databases should only be performed on your DEV AWS instances. Do not perform a refresh on the named pre-production environments.
+
+#### Dropping your old Dev Databases
+
+When you are actively developing features or testing on your deployed development environment it may be necessary for you to drop and rebuild your databases.
+At the time of writing the two databases we make use of are:
+
+1. App DB - named something like `uhd-<environmentId>-aurora-db-app`
+2. Feature Flag DB - named something like `uhd-<environmentId>-aurora-db-feature-flags
+`
+
+To Drop these DBs in the AWS console select the DB instance and select "Delete" from the "Actions" Menu.
+
+- You will need to delete the DB instance before you can delete the DB cluster.
+
+Once the DBs have been deleted then you can create new ones.
+
+#### Creating New Databases
+
+To spin up new versions of the databases you will need to first create the DBs and the infrastructure prior to populating the DB.
+
+- Assume the tools role
+
+  `uhd aws use uhd-tools`
+
+- Create the new DBs and update secrets within the secrets manager.
+
+  `uhd terraform apply`
+
+- Assume the Dev role
+
+  `uhd aws use uhd-dev`
+
+- Restart your services
+
+  `uhd ecs restart-services`
+
+- Populate the new DBs
+
+  `uhd ecs run bootstrap-env`
 
 ### Remove secrets
 
@@ -510,3 +555,7 @@ These repos contain the app source code:
 
 - [UKHSA-Internal/data-dashboard-frontend](https://github.com/UKHSA-Internal/data-dashboard-frontend)
 - [UKHSA-Internal/data-dashboard-api](https://github.com/UKHSA-Internal/data-dashboard-api)
+
+This repo contains the infra for the part of the ETL pipeline which sits within AWS:
+
+- [data-dashboard-etl-infra](https://github.com/UKHSA-Internal/data-dashboard-etl-infra)

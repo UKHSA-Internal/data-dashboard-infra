@@ -31,12 +31,12 @@ jobs:
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 
-#      - name: Build base env
-#        run: |
-#          source uhd.sh
-#          uhd terraform init:layer 20-app
-#          uhd terraform apply:layer 20-app ci-$SHORT_SHA
-#        shell: zsh {0}
+      - name: Build base env
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform apply:layer 20-app ci-$SHORT_SHA
+        shell: zsh {0}
 
   unit_test_functions:
     name: Unit test functions
@@ -74,6 +74,11 @@ jobs:
         with:
           function-name: public-api-cloud-front-viewer-request
 
+      - name: Test lambda-front-end-revalidation
+        uses: ./.github/actions/npm-test
+        with:
+          function-name: lambda-front-end-revalidation
+
   unit_test_report:
     name: Unit test coverage report
     runs-on: ubuntu-latest
@@ -85,7 +90,7 @@ jobs:
 
     steps:
       - name: Download test coverage
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.3.0
         with:
           path: ./reports
 
@@ -193,6 +198,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
+      - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/short-sha
 

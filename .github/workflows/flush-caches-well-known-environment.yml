@@ -1,0 +1,95 @@
+name: Flush Caches Well-Known Environment Workflow
+run-name: Flush caches for `${{ inputs.environment }}` WKE
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        type: choice
+        description: Select a well known environment to flush all caches for.
+        options:
+          - prod
+          - dev
+          - dpd
+          - test
+          - staging
+          - perf
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  update_caches:
+    name: Update caches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output ${{ inputs.environment }}
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: ${{ inputs.environment }}
+          aws-region: ${{ env.AWS_REGION }}
+          prod-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_PROD }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
+
+      - name: Update private API cache
+        continue-on-error: true
+        run: |
+          source uhd.sh
+          uhd cache flush-redis --wait
+        shell: zsh {0}
+
+      - name: Clear front end CDN
+        run: |
+          source uhd.sh
+          uhd cache flush-front-end
+        shell: zsh {0}
+
+      - name: Fill front end CDN
+        continue-on-error: true
+        run: |
+          source uhd.sh
+          uhd cache fill-front-end --wait
+        shell: zsh {0}
+
+      - name: Restart front end
+        run: |
+          source uhd.sh
+          uhd ecs restart-containers front_end
+        shell: zsh {0}
+
+      - name: Clear the public API CDN
+        run: |
+          source uhd.sh
+          uhd cache flush-public-api
+        shell: zsh {0}
+
+      - name: Fill the public API CDN
+        continue-on-error: true
+        run: |
+          source uhd.sh
+          uhd cache fill-public-api --wait
+        shell: zsh {0}

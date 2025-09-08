@@ -1,5 +1,5 @@
-name: Flush Caches Workflow
-run-name: Flush caches for `${{ inputs.environment }}` environment
+name: Flush Cache Reserved Namespace Well-Known Environment Workflow
+run-name: Flush cache for reserved namespace in `${{ inputs.environment }}` WKE
 
 on:
   workflow_dispatch:
@@ -7,13 +7,14 @@ on:
       environment:
         required: true
         type: choice
-        description: Select a well known environment to flush all caches for.
+        description: Select a well known environment to flush the reserved namespace cache for.
         options:
           - prod
           - dev
           - dpd
           - test
           - staging
+          - perf
 
 env:
   AWS_REGION: "eu-west-2"
@@ -54,14 +55,8 @@ jobs:
           test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
           uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
 
-      - name: Flush caches
+      - name: Flush reserved namespace in cache
         run: |
           source uhd.sh
-          uhd cache flush
-        shell: zsh {0}
-
-      - name: Restart front end
-        run: |
-          source uhd.sh
-          uhd ecs restart-containers front_end
+          uhd cache flush-redis-reserved-namespace --wait
         shell: zsh {0}

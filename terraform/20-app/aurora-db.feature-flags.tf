@@ -5,18 +5,20 @@ module "aurora_db_feature_flags" {
   name              = "${local.prefix}-aurora-db-feature-flags"
   engine            = "aurora-postgresql"
   engine_mode       = "provisioned"
-  engine_version    = "15.5"
+  engine_version    = "15.10"
   storage_encrypted = true
 
-  publicly_accessible = true
+  publicly_accessible = local.enable_public_db
+  deletion_protection = local.use_prod_sizing
 
   manage_master_user_password = true
   database_name               = "unleash"
   master_username             = "unleash_user"
 
-  monitoring_interval = 60
-  apply_immediately   = true
-  skip_final_snapshot = true
+  monitoring_interval             = 60
+  apply_immediately               = true
+  skip_final_snapshot             = true
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 
   instance_class = "db.serverless"
   serverlessv2_scaling_configuration = {

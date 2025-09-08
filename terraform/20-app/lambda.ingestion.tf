@@ -33,6 +33,7 @@ module "lambda_ingestion" {
 
   environment_variables = {
     INGESTION_BUCKET_NAME              = module.s3_ingest.s3_bucket_id
+    INGESTION_ARCHIVE_BUCKET_NAME      = module.s3_ingest_archive.s3_bucket_id
     POSTGRES_DB                        = module.aurora_db_app.cluster_database_name
     POSTGRES_HOST                      = module.aurora_db_app.cluster_endpoint
     POSTGRES_USER                      = module.aurora_db_app.cluster_master_username
@@ -58,6 +59,11 @@ module "lambda_ingestion" {
       effect    = "Allow"
       resources = ["${module.s3_ingest.s3_bucket_arn}/failed/*"]
     }
+    add_items_to_ingest_archive_bucket = {
+      actions   = ["s3:PutObject"]
+      effect    = "Allow"
+      resources = ["${module.s3_ingest_archive.s3_bucket_arn}/processed/*"]
+    }
     get_db_credentials_from_secrets_manager = {
       effect    = "Allow",
       actions   = ["secretsmanager:GetSecretValue"],
@@ -81,7 +87,7 @@ module "lambda_ingestion" {
 
 module "lambda_ingestion_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.3.0"
 
   name   = "${local.prefix}-lambda-ingestion"
   vpc_id = module.vpc.vpc_id

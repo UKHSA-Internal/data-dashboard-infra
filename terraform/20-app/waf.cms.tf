@@ -3,40 +3,42 @@ resource "aws_wafv2_web_acl" "cms_admin" {
   description = "Web ACL for CMS application"
   scope       = "REGIONAL"
 
-  default_action {
-    allow {}
+  lifecycle {
+    create_before_destroy = true
   }
 
-  dynamic "rule" {
-    for_each = local.waf_cms_admin.rules
-
-    content {
-      name     = rule.value.name
-      priority = rule.value.priority
-
-      override_action {
-        none {}
+  default_action {
+    dynamic "block" {
+      for_each = [""]
+      content {
       }
-
-      statement {
-        managed_rule_group_statement {
-          name        = rule.value.name
-          vendor_name = "AWS"
-        }
-      }
-
-      visibility_config {
-        metric_name                = rule.value.name
-        cloudwatch_metrics_enabled = true
-        sampled_requests_enabled   = true
+    }
+    dynamic "allow" {
+      for_each = []
+      content {
       }
     }
   }
 
-  visibility_config {
-    metric_name                = "${local.prefix}-cms"
-    cloudwatch_metrics_enabled = true
-    sampled_requests_enabled   = true
+  rule {
+    name     = "ip-allowlist"
+    priority = 0
+
+    action {
+      allow {}
+    }
+
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.ip_allow_list_regional.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "IPAllowListRule"
+      sampled_requests_enabled   = true
+    }
   }
 
   rule {
@@ -86,6 +88,38 @@ resource "aws_wafv2_web_acl" "cms_admin" {
       metric_name                = "RateLimitRule"
       sampled_requests_enabled   = true
     }
+  }
+
+  dynamic "rule" {
+    for_each = local.waf_cms_admin.rules
+
+    content {
+      name     = rule.value.name
+      priority = rule.value.priority
+
+      override_action {
+        none {}
+      }
+
+      statement {
+        managed_rule_group_statement {
+          name        = rule.value.name
+          vendor_name = "AWS"
+        }
+      }
+
+      visibility_config {
+        metric_name                = rule.value.name
+        cloudwatch_metrics_enabled = true
+        sampled_requests_enabled   = true
+      }
+    }
+  }
+
+  visibility_config {
+    metric_name                = "${local.prefix}-cms"
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
   }
 }
 

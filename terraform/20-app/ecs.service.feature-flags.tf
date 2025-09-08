@@ -21,7 +21,7 @@ module "ecs_service_feature_flags" {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
   }
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   container_definitions = {
     api = {
@@ -83,9 +83,16 @@ module "ecs_service_feature_flags" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.feature_flags_alb.target_groups["${local.prefix}-feature-flags-tg"].arn
+      target_group_arn = module.feature_flags_alb.target_groups["${local.prefix}-feature-flags"].arn
       container_name   = "api"
       container_port   = 4242
+    }
+  }
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions   = ["kms:Decrypt"]
+      resources = [module.kms_secrets_app_operator.key_arn]
     }
   }
 

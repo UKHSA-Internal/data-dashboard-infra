@@ -5,15 +5,22 @@ locals {
   prefix      = "${local.project}-${local.environment}"
 
   account_id                    = var.assume_account_id
+  etl_account_id                = var.etl_account_id
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing         = contains(["perf", "prod"], local.environment)
-  add_password_protection = local.environment == "staging"
+  use_prod_sizing            = contains([
+    "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"
+  ], local.environment)
+  # Temporarily switch off auth challenge in staging
+  add_password_protection    = false
+  auth_enabled               = var.auth_enabled
+  caching_v2_enabled         = false
+  is_front_end_bypassing_cdn = local.auth_enabled || local.caching_v2_enabled
 
   wke = {
-    account = ["dev", "test", "uat", "prod"]
-    other   = ["pen", "perf", "train"]
+    account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod", "auth-prod"]
+    other   = ["pen", "auth-perf", "perf", "auth-pen", "train"]
   }
 
   needs_alarms = contains(["dev", "uat", "prod"], local.environment)
@@ -24,21 +31,25 @@ locals {
   cloud_front_certificate_arn                  = contains(local.wke.other, local.environment) ? local.account_layer.acm.wke[local.environment].cloud_front_certificate_arn : local.account_layer.acm.account.cloud_front_certificate_arn
   cloud_front_legacy_dashboard_certificate_arn = local.account_layer.acm.legacy.cloud_front_certificate_arn
   enable_public_db                             = local.is_dev
-  is_dev                                       = var.environment_type == "dev"
+  is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
+  is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
+  is_scaled_down_overnight                     = !contains(["prod"], local.environment)
+  timezone_london                              = "Europe/London"
+  use_ip_allow_list                            = local.environment != "prod"
 
-  use_ip_allow_list = local.environment != "prod"
-
-  scheduled_scaling_policies_for_non_essential_envs = {
+  non_essential_envs_scheduled_policy = {
     start_of_working_day_scale_out = {
-      min_capacity = local.use_prod_sizing ? 3 : 1
-      max_capacity = local.use_prod_sizing ? 3 : 1
-      schedule     = "cron(0 07 ? * MON-FRI *)" # Run every weekday at 7am
+      min_capacity  = 1
+      max_capacity  = 1
+      schedule      = "cron(0 08 ? * MON-FRI *)" # Run every weekday at 8am
+      timezone      = local.timezone_london
     }
     end_of_working_day_scale_in = {
-      min_capacity = 0
-      max_capacity = 0
-      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      min_capacity  = 0
+      max_capacity  = 0
+      schedule      = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      timezone      = local.timezone_london
     }
   }
 
@@ -53,7 +64,7 @@ locals {
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
-    } : {
+  } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"

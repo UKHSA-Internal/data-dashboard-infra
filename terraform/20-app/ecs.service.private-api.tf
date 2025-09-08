@@ -11,11 +11,11 @@ module "ecs_service_private_api" {
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
-  desired_count            = local.use_prod_sizing ? 3 : 1
-  autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
+  desired_count            = local.use_prod_sizing ? 6 : 1
+  autoscaling_min_capacity = local.use_prod_sizing ? 6 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   security_group_ids = [module.app_elasticache_security_group.security_group_id]
 
@@ -24,15 +24,34 @@ module "ecs_service_private_api" {
     operating_system_family = "LINUX"
   }
 
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
+  }
+
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/tmp"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/code/metrics/static"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -46,11 +65,11 @@ module "ecs_service_private_api" {
         },
         {
           name  = "POSTGRES_DB"
-          value = local.aurora.app.private_api_replica.db_name
+          value = local.aurora.app.secondary.db_name
         },
         {
           name  = "POSTGRES_HOST"
-          value = local.aurora.app.private_api_replica.address
+          value = local.aurora.app.secondary.address
         },
         {
           name  = "APIENV"
@@ -61,7 +80,15 @@ module "ecs_service_private_api" {
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
-        }
+        },
+        {
+          name  = "AUTH_ENABLED"
+          value = local.auth_enabled
+        },
+        {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
+        },
       ],
       secrets = [
         {
@@ -82,7 +109,7 @@ module "ecs_service_private_api" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api-tg"].arn
+      target_group_arn = module.private_api_alb.target_groups["${local.prefix}-private-api"].arn
       container_name   = "api"
       container_port   = 80
     }
@@ -99,6 +126,16 @@ module "ecs_service_private_api" {
       resources = ["*"]
     }
   ]
+
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn,
+        module.kms_app_rds.key_arn
+      ]
+    }
+  }
 
   security_group_rules = {
     # ingress rules

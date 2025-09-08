@@ -45,8 +45,12 @@ module "cloudfront_public_api" {
   }
 
   default_cache_behavior = {
-    allowed_methods          = ["GET", "HEAD", "OPTIONS"]
-    cache_policy_id          = aws_cloudfront_cache_policy.public_api.id
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id = (
+      local.auth_enabled ?
+      local.managed_caching_disabled_policy_id :
+      aws_cloudfront_cache_policy.public_api.id
+    )
     cached_methods           = ["GET", "HEAD"]
     compress                 = true
     origin_request_policy_id = aws_cloudfront_origin_request_policy.public_api.id
@@ -66,7 +70,7 @@ module "cloudfront_public_api" {
     {
       path_pattern               = ".well-known/health-check/"
       allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-      cache_policy_id            = aws_cloudfront_cache_policy.public_api_health_check.id
+      cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.public_api_health_check.id
@@ -206,5 +210,5 @@ resource "aws_cloudwatch_log_group" "cloud_front_function_public_api_viewer_requ
 module "cloudfront_password_protection_public_api" {
   source = "../modules/cloud-front-basic-password-protection"
   create = local.add_password_protection
-  name = "${local.prefix}-public-api-password-protection"
+  name   = "${local.prefix}-public-api-password-protection"
 }

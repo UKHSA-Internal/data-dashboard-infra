@@ -126,6 +126,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
 
+      - uses: ./.github/actions/setup-terraform
       - uses: ./.github/actions/setup-zsh
       - uses: ./.github/actions/well-known-environment-name
         with:
@@ -146,8 +147,11 @@ jobs:
           account-name: ${{ env.TARGET_ACCOUNT_NAME }}
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
           test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+          auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
           uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_UAT }}
+          auth-uat-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_UAT }}
 
       - name: Restart ECS services
         run: |

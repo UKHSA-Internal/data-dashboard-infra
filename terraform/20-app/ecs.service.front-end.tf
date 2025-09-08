@@ -11,15 +11,22 @@ module "ecs_service_front_end" {
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
-  desired_count            = local.use_prod_sizing ? 3 : 1
-  autoscaling_min_capacity = local.use_prod_sizing ? 3 : 1
+  desired_count            = local.use_prod_sizing ? 6 : 1
+  autoscaling_min_capacity = local.use_prod_sizing ? 6 : 1
   autoscaling_max_capacity = local.use_prod_sizing ? 20 : 1
 
-  autoscaling_scheduled_actions = local.use_prod_sizing ? {} : local.scheduled_scaling_policies_for_non_essential_envs
+  autoscaling_scheduled_actions = local.is_scaled_down_overnight ? local.non_essential_envs_scheduled_policy : {}
 
   runtime_platform = {
     cpu_architecture        = "ARM64"
     operating_system_family = "LINUX"
+  }
+
+  ephemeral_storage = {
+    size_in_gib = 21
+  }
+  volume = {
+    tmp = {}
   }
 
   container_definitions = {
@@ -28,9 +35,16 @@ module "ecs_service_front_end" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonly_root_filesystem               = true
       image                                  = module.ecr_front_end_ecs.image_uri
-      port_mappings                          = [
+      mount_points = [
+        {
+          sourceVolume  = "tmp"
+          containerPath = "/app/.next/cache"
+          readOnly      = false
+        }
+      ]
+      port_mappings = [
         {
           containerPort = 3000
           hostPort      = 3000
@@ -65,7 +79,27 @@ module "ecs_service_front_end" {
         {
           name  = "RUM_APPLICATION_ID"
           value = module.cloudwatch_rum_front_end.rum_application_id
-        }
+        },
+        {
+          name  = "REDIS_HOST"
+          value = "rediss://${aws_elasticache_serverless_cache.front_end_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.front_end_elasticache.endpoint.0.port}"
+        },
+        {
+          name  = "AUTH_ENABLED",
+          value = local.auth_enabled
+        },
+        {
+          name  = "CACHING_V2_ENABLED",
+          value = local.caching_v2_enabled
+        },
+        {
+          name  = "AUTH_DOMAIN"
+          value = module.cognito.cognito_oauth_url
+        },
+        {
+          name  = "NEXTAUTH_URL"
+          value = local.urls.front_end
+        },
       ]
       secrets = [
         {
@@ -99,6 +133,26 @@ module "ecs_service_front_end" {
         {
           name      = "ESRI_CLIENT_SECRET"
           valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "AUTH_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.auth_secret.arn}:auth_secret::"
+        },
+        {
+          name      = "AUTH_CLIENT_URL"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_url::"
+        },
+        {
+          name      = "AUTH_CLIENT_ID"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_id::"
+        },
+        {
+          name      = "AUTH_CLIENT_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.cognito_service_credentials.arn}:client_secret::"
+        },
+        {
+          name      = "REVALIDATE_SECRET"
+          valueFrom = "${aws_secretsmanager_secret.revalidate_secret.arn}:revalidate_secret::"
         }
       ]
     }
@@ -106,7 +160,7 @@ module "ecs_service_front_end" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end-tg"].arn
+      target_group_arn = module.front_end_alb.target_groups["${local.prefix}-front-end"].arn
       container_name   = "front-end"
       container_port   = 3000
     }
@@ -124,6 +178,16 @@ module "ecs_service_front_end" {
     }
   ]
 
+  task_exec_iam_statements = {
+    kms_keys = {
+      actions = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn,
+        module.kms_secrets_app_operator.key_arn,
+      ]
+    }
+  }
+
   security_group_rules = {
     # ingress rules
     alb_ingress = {
@@ -135,13 +199,6 @@ module "ecs_service_front_end" {
       source_security_group_id = module.front_end_alb.security_group_id
     }
     # egress rules
-    private_api_egress = {
-      type        = "egress"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
     internet_egress = {
       type        = "egress"
       from_port   = 443
@@ -149,6 +206,13 @@ module "ecs_service_front_end" {
       protocol    = "tcp"
       description = "https to internet"
       cidr_blocks = ["0.0.0.0/0"]
+    },
+    cache_egress = {
+      type                     = "egress"
+      from_port                = 6379
+      to_port                  = 6379
+      protocol                 = "tcp"
+      source_security_group_id = module.front_end_elasticache_security_group.security_group_id
     }
   }
 }

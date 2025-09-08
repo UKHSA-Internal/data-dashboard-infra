@@ -2,7 +2,7 @@ module "route_53_records_legacy_dashboard_redirect" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
   version = "3.1.0"
 
-  create = !contains(["train", "staging", "perf"], local.environment)
+  create = !contains(["pen", "staging", "perf", "auth-pen", "auth-perf"], local.environment)
 
   zone_id = local.account_layer.dns.legacy.zone_id
 
@@ -22,7 +22,7 @@ module "route_53_records_legacy_dashboard_redirect_wke_account" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
   version = "3.1.0"
 
-  create  = contains(local.wke.account, local.environment) && !contains(["train", "staging", "perf"], local.environment)
+  create  = contains(local.wke.account, local.environment) && !contains(["pen", "staging", "perf", "auth-pen", "auth-perf"], local.environment)
   zone_id = local.account_layer.dns.legacy.zone_id
 
   records = [
