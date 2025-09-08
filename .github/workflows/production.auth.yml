@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.branch }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.branch }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
