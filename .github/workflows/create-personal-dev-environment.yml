@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -69,7 +69,7 @@ jobs:
     needs: ["push_docker_images"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
