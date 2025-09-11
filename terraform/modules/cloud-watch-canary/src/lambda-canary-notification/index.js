@@ -161,7 +161,9 @@ function buildSlackClient(token) {
  */
 async function getFileUploadURLToSlack(slackClient, filename, length) {
     return slackClient.files.getUploadURLExternal({
-        token: slackClient.token, filename: filename, length: length
+        token: slackClient.token,
+        filename: filename,
+        length: length
     });
 };
 
