@@ -272,21 +272,22 @@ function extractReportKey(keys, keyToSearchFor) {
  * @returns {array} - An array of JSON objects which can be used to post to the Slack channel with.
  */
 function buildSlackPostPayload(target, startTime, endTime, brokenLinks) {
-    return [{
-        "type": "header", "text": {
-            "type": "plain_text", "text": ":alert: Canary run failed", "emoji": true
-        }
-    }, {
-        "type": "divider"
-    }, {
-        "type": "section", "text": {
-            "type": "mrkdwn", "text": `*Alarm name:*\n${target}`
-        }
-    }, buildBrokenLinksList(brokenLinks), {
-        "type": "context", "elements": [{
-            "type": "plain_text", "text": `Canary started at ${startTime} and failed at ${endTime}`
-        }]
-    },]
+    return [
+        {
+            "type": "header",
+            "text": {"type": "plain_text", "text": ":alert: Canary run failed", "emoji": true}
+        },
+        {"type": "divider"},
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": `*Alarm name:*\n${target}`}
+        },
+        buildBrokenLinksList(brokenLinks),
+        {
+            "type": "context",
+            "elements": [{"type": "plain_text", "text": `Canary started at ${startTime} and failed at ${endTime}`}]
+        },
+    ]
 }
 
 /**
@@ -298,20 +299,24 @@ function buildSlackPostPayload(target, startTime, endTime, brokenLinks) {
  */
 function buildBrokenLinksList(brokenLinks) {
     const blocks = {
-        "type": "rich_text", "elements": [{
-            "type": "rich_text_section", "elements": [{
-                "type": "text", "text": "Detected broken link(s):\n"
-            },]
-        }, {
-            "type": "rich_text_list", "style": "bullet", "indent": 0, "border": 0, "elements": []
-        }]
+        "type": "rich_text",
+        "elements": [
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "text", "text": "Detected broken link(s):\n"}]
+            },
+            {
+                "type": "rich_text_list", "style": "bullet", "indent": 0, "border": 0, "elements": []
+            }
+        ]
     }
     brokenLinks.forEach(brokenLink => {
-        blocks.elements[1].elements.push({
-            "type": "rich_text_section", "elements": [{
-                "type": "link", "url": brokenLink
-            }]
-        },);
+        blocks.elements[1].elements.push(
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "link", "url": brokenLink}]
+            }
+        );
     });
 
     return blocks
