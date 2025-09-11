@@ -6,8 +6,6 @@ const syntheticsLogHelper = require('SyntheticsLogHelper');
 const syntheticsConfiguration = synthetics.getConfiguration();
 
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 function extractUrlsFromSitemap(xml) {
     const urlRegex = /<loc>(.*?)<\/loc>/g;
     const urls = [];
@@ -36,9 +34,6 @@ async function fetchAndParseSitemap(url) {
 // maximum number of links that would be followed
 const limit = null;
 
-// Captures source page annotated screenshot for each link followed on a page.
-const captureSourcePageScreenshot = true;
-
 // Captures destination page screenshot after loading a link successfully.
 const captureDestinationPageScreenshotOnSuccess = false;
 
@@ -47,7 +42,7 @@ const captureDestinationPageScreenshotOnFailure = true;
 
 // Close and Re-launch browser after checking these many links. This clears up /tmp disk storage occupied by chromium and launches a new browser for next set of links.
 // Increase or decrease based on complexity of your website.
-const numOfLinksToReLaunchBrowser = 50;
+const numOfLinksToReLaunchBrowser = 100;
 
 // Take synthetics screenshot
 const takeScreenshot = async function (fileName, suffix) {
@@ -171,7 +166,8 @@ const webCrawlerBlueprint = async function () {
         }
 
         try {
-            // Adds this link to broken link checker report. Link with status code >= 400 is considered broken. Use addLink(link, isBrokenLink) to override this default behavior.
+            // Adds this link to broken link checker report. Link with status code >= 400 is considered broken.
+            // Use addLink(link, isBrokenLink) to override this default behavior.
             brokenLinkCheckerReport.addLink(link);
         } catch (e) {
             synthetics.addExecutionError('Unable to add link to broken link checker report.', e);
@@ -187,7 +183,7 @@ const webCrawlerBlueprint = async function () {
     log.info("Total links checked: " + brokenLinkCheckerReport.getTotalLinksChecked());
 
     // Fail canary if 1 or more broken links found.
-    if (brokenLinkCheckerReport.getTotalBrokenLinks() !== 0) {
+    if (brokenLinkCheckerReport.getTotalBrokenLinks() > 0) {
         brokenLinkError = brokenLinkCheckerReport.getTotalBrokenLinks() + " broken link(s) detected. " + brokenLinkError;
         log.error(brokenLinkError);
         canaryError = canaryError ? (brokenLinkError + " " + canaryError) : brokenLinkError;
