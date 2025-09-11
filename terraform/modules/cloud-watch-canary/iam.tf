@@ -45,7 +45,12 @@ module "iam_canary_policy" {
           ]
           Effect = "Allow"
           Resource = ["*"]
-        }
+        },
+        {
+          Action = ["cloudwatch:PutMetricData"]
+          Effect = "Allow"
+          Resource = ["*"]
+        },
       ]
     }
   )

@@ -46,10 +46,7 @@ module "lambda_canary_notification" {
     kms_decrypt = {
       effect    = "Allow"
       actions   = ["kms:Decrypt"]
-      resources = [
-        var.kms_key_arn
-        # module.kms_secrets_app_engineer.key_arn
-      ]
+      resources = [var.kms_key_arn]
     }
   }
 
