@@ -1,6 +1,6 @@
 module "cloudwatch_canary_front_end_screenshots" {
   source = "../modules/cloud-watch-canary"
-  name   = "${local.prefix}-display"
+  name   = "${local.prefix}-front-end"
 
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.private_subnets
