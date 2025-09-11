@@ -134,7 +134,7 @@ const webCrawlerBlueprint = async function () {
                 domcontentloaded: It's fired as soon as the page DOM has been loaded, without waiting for resources to finish loading. If needed add explicit wait with await new Promise(r => setTimeout(r, milliseconds))
             */
 
-            response = await page.goto(nav_url, {waitUntil: ['load', 'networkidle0'], timeout: 30000});
+            response = await page.goto(nav_url, {waitUntil: ['load'], timeout: 30000});
             if (!response) {
                 brokenLinkError = "Failed to receive network response for url: " + sanitized_url;
                 log.error(brokenLinkError);
