@@ -6,7 +6,7 @@ resource "aws_synthetics_canary" "this" {
   execution_role_arn   = module.iam_canary_role.iam_role_arn
   zip_file             = data.archive_file.canary_script.output_path
   handler              = "index.handler"
-  runtime_version      = "syn-nodejs-puppeteer-9.0"
+  runtime_version      = "syn-nodejs-puppeteer-11.0"
   start_canary         = true
   delete_lambda        = true
 
