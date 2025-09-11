@@ -107,7 +107,6 @@ const webCrawlerBlueprint = async function () {
     });
 
     while (synLinks.length > 0) {
-        await delay(500)
         let link = synLinks.shift();
         let nav_url = link.getUrl();
         let sanitized_url = syntheticsLogHelper.getSanitizedUrl(nav_url);
