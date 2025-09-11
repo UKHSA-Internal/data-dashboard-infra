@@ -25,5 +25,5 @@ resource "aws_synthetics_canary" "this" {
   }
 
   success_retention_period = 1
-  failure_retention_period = 14
+  failure_retention_period = 7
 }
