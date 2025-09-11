@@ -42,7 +42,7 @@ const captureDestinationPageScreenshotOnFailure = true;
 
 // Close and Re-launch browser after checking these many links. This clears up /tmp disk storage occupied by chromium and launches a new browser for next set of links.
 // Increase or decrease based on complexity of your website.
-const numOfLinksToReLaunchBrowser = 100;
+const numOfLinksToReLaunchBrowser = 1000;
 
 // Take synthetics screenshot
 const takeScreenshot = async function (fileName, suffix) {
@@ -87,12 +87,12 @@ const webCrawlerBlueprint = async function () {
     let brokenLinkCheckerReport = new BrokenLinkCheckerReport();
 
     syntheticsConfiguration.setConfig({
-        includeRequestHeaders: true, // Enable if headers should be displayed in HAR
-        includeResponseHeaders: true, // Enable if headers should be displayed in HAR
+        harFile: false,
+        includeRequestHeaders: true,
+        includeResponseHeaders: true,
         restrictedHeaders: [], // Value of these headers will be redacted from logs and reports
         restrictedUrlParameters: [] // Values of these url parameters will be redacted from logs and reports
     });
-
 
     // Synthetics Puppeteer page instance
     let page = await synthetics.getPage();
