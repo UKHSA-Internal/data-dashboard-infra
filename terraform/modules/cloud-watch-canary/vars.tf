@@ -1,3 +1,9 @@
+variable "create" {
+  description = "Whether to create the synthetic canary and its associated components"
+  type        = bool
+  default     = true
+}
+
 variable "name" {
   description = "The name to associate with the synthetic canary components"
   type        = string

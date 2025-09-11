@@ -1,8 +1,10 @@
 module "eventbridge_canary" {
   source     = "terraform-aws-modules/eventbridge/aws"
   version    = "3.17.1"
+  create     = var.create
   create_bus = false
-  role_name  = "${var.name}-eventbridge-role"
+
+  role_name = "${var.name}-eventbridge-role"
 
   rules = {
     (var.name) = {

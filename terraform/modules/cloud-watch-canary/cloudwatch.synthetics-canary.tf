@@ -1,5 +1,7 @@
 resource "aws_synthetics_canary" "this" {
-  name                 = var.name
+  count = var.create ? 1 : 0
+  name  = var.name
+
   artifact_s3_location = "s3://${module.s3_canary_logs.s3_bucket_id}"
   execution_role_arn   = module.iam_canary_role.iam_role_arn
   zip_file             = data.archive_file.canary_script.output_path

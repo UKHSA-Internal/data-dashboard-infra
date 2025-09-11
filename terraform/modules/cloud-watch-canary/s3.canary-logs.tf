@@ -1,6 +1,7 @@
 module "s3_canary_logs" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.5.0"
+  source        = "terraform-aws-modules/s3-bucket/aws"
+  version       = "4.5.0"
+  create_bucket = var.create
 
   bucket = "${var.name}-canary-logs"
 

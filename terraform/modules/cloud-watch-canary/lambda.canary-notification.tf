@@ -1,6 +1,8 @@
 module "lambda_canary_notification" {
-  source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.7.0"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.7.0"
+  create  = var.create
+
   function_name = "${var.name}-canary-notification"
   description   = "Sends notifications when a synthetics canary run fails."
 
