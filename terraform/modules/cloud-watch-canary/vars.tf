@@ -48,3 +48,7 @@ variable "environment_variables" {
 variable "slack_webhook_url_secret_arn" {
   description = "The ARN of the secret containing the slack webhook URL"
 }
+
+variable "kms_key_arn" {
+  description = "The KMS key ARN used to decrypt the slack secret"
+}

@@ -43,6 +43,14 @@ module "lambda_canary_notification" {
       actions = ["synthetics:GetCanaryRuns"]
       resources = [aws_synthetics_canary.this[0].arn]
     }
+    kms_decrypt = {
+      effect    = "Allow"
+      actions   = ["kms:Decrypt"]
+      resources = [
+        var.kms_key_arn
+        # module.kms_secrets_app_engineer.key_arn
+      ]
+    }
   }
 
   create_current_version_allowed_triggers = false

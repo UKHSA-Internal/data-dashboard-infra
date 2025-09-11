@@ -15,4 +15,5 @@ module "cloudwatch_canary_front_end_screenshots" {
   }
 
   slack_webhook_url_secret_arn = aws_secretsmanager_secret.slack_webhook_url.arn
+  kms_key_arn                  = module.kms_secrets_app_engineer.key_arn
 }
