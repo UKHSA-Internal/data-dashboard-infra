@@ -8,7 +8,7 @@ module "iam_canary_role" {
   role_requires_mfa    = false
 
   custom_role_policy_arns = [module.iam_canary_policy.arn]
-  trusted_role_services   = ["lambda.amazonaws.com"]
+  trusted_role_services = ["lambda.amazonaws.com"]
 }
 
 module "iam_canary_policy" {
@@ -20,16 +20,16 @@ module "iam_canary_policy" {
 
   policy = jsonencode(
     {
-      Version   = "2012-10-17",
+      Version = "2012-10-17",
       Statement = [
         {
-          Action   = ["s3:PutObject"],
-          Effect   = "Allow",
-          Resource = ["${var.s3_logs_destination.bucket_arn}/*"]
+          Action = ["s3:PutObject"]
+          Effect = "Allow"
+          Resource = ["${module.s3_canary_logs.s3_bucket_arn}/*"]
         },
         {
-          Action   = ["s3:ListAllMyBuckets"],
-          Effect   = "Allow",
+          Action = ["s3:ListAllMyBuckets"]
+          Effect = "Allow"
           Resource = ["*"]
         },
         {
@@ -38,8 +38,8 @@ module "iam_canary_policy" {
             "ec2:DescribeNetworkInterfaces",
             "ec2:DeleteNetworkInterface",
           ]
-          Effect   = "Allow",
-          Resource = ["*"],
+          Effect = "Allow"
+          Resource = ["*"]
         }
       ]
     }

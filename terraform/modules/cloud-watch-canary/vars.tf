@@ -1,9 +1,3 @@
-variable "create" {
-  description = "Whether to create the synthetic canary and its associated components"
-  type        = bool
-  default     = true
-}
-
 variable "name" {
   description = "The name to associate with the synthetic canary components"
   type        = string
@@ -19,14 +13,9 @@ variable "s3_access_logs_id" {
   type        = string
 }
 
-variable "s3_logs_destination" {
-  description = "Map containing the ID and the ARN of the S3 bucket where the results of the canary are to be sent."
-  type        = map(string)
-}
-
 variable "subnet_ids" {
   description = "The IDs of the subnets where this canary is to run."
-  type        = list(string)
+  type = list(string)
 }
 
 variable "schedule_expression" {
@@ -39,23 +28,17 @@ variable "timeout_in_seconds" {
   type        = number
 }
 
-variable "src_script_path" {
-  description = "The src file path of the script to attach to the canary"
+variable "src_script_filename" {
+  description = "The file name of the script to attach to the canary"
   type        = string
 }
 
 variable "environment_variables" {
   description = "Map of environment variables to provide to the canary runtime."
-  type        = map(string)
+  type = map(string)
   default = {}
 }
 
-variable "lambda_function_notification_arn" {
-  description = "The ARN associated with Lambda function used to perform the notification trigger"
-  type = string
-}
-
-variable "lambda_function_notification_name" {
-  description = "The name associated with Lambda function used to perform the notification trigger"
-  type = string
+variable "slack_webhook_url_secret_arn" {
+  description = "The ARN of the secret containing the slack webhook URL"
 }

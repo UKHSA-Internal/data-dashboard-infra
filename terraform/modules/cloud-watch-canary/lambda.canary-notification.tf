@@ -1,45 +1,45 @@
 module "lambda_canary_notification" {
   source        = "terraform-aws-modules/lambda/aws"
   version       = "7.7.0"
-  function_name = "${local.prefix}-canary-notification"
+  function_name = "${var.name}-canary-notification"
   description   = "Sends notifications when a synthetics canary run fails."
 
   create_package = true
   runtime        = "nodejs18.x"
   handler        = "index.handler"
-  source_path    = "../../src/lambda-canary-notification"
+  source_path    = "../modules/cloud-watch-canary/src/lambda-canary-notification"
 
   timeout = 120
 
-  architectures          = ["arm64"]
+  architectures = ["arm64"]
   maximum_retry_attempts = 1
 
   environment_variables = {
-    SECRETS_MANAGER_SLACK_WEBHOOK_URL_ARN = aws_secretsmanager_secret.slack_webhook_url.arn
+    SECRETS_MANAGER_SLACK_WEBHOOK_URL_ARN = var.slack_webhook_url_secret_arn
     S3_CANARY_LOGS_BUCKET_NAME            = module.s3_canary_logs.s3_bucket_id
   }
 
   attach_policy_statements = true
   policy_statements = {
     get_screenshots_from_s3_bucket = {
-      effect    = "Allow",
-      actions   = ["s3:GetObject"]
+      effect = "Allow"
+      actions = ["s3:GetObject"]
       resources = ["${module.s3_canary_logs.s3_bucket_arn}/*"]
     }
     list_objects_in_s3_bucket = {
-      effect    = "Allow",
-      actions   = ["s3:ListBucket"]
+      effect = "Allow"
+      actions = ["s3:ListBucket"]
       resources = [module.s3_canary_logs.s3_bucket_arn]
     }
     get_slack_webhook_url_from_secrets_manager = {
-      effect    = "Allow",
-      actions   = ["secretsmanager:GetSecretValue"],
-      resources = [aws_secretsmanager_secret.slack_webhook_url.arn]
+      effect = "Allow"
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [var.slack_webhook_url_secret_arn]
     }
     get_recent_canary_runs = {
-      effect    = "Allow",
-      actions   = ["synthetics:GetCanaryRuns"],
-      resources = [module.cloudwatch_canary_front_end_screenshots.canary_arn]
+      effect = "Allow"
+      actions = ["synthetics:GetCanaryRuns"]
+      resources = [aws_synthetics_canary.this.arn]
     }
   }
 
@@ -47,7 +47,7 @@ module "lambda_canary_notification" {
   allowed_triggers = {
     eventbridge = {
       principal  = "events.amazonaws.com"
-      source_arn = module.cloudwatch_canary_front_end_screenshots.eventbridge_rule_arn
+      source_arn = module.eventbridge_canary.eventbridge_rule_arns[var.name]
     }
   }
 }
@@ -57,8 +57,8 @@ module "lambda_canary_notification_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
 
-  name   = "${local.prefix}-lambda-canary-notification"
-  vpc_id = module.vpc.vpc_id
+  name   = "${var.name}-lambda-canary-notification"
+  vpc_id = var.vpc_id
 
   egress_with_cidr_blocks = [
     {
