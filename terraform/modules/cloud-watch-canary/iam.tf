@@ -28,9 +28,9 @@ module "iam_canary_policy" {
           Resource = ["${module.s3_canary_logs.s3_bucket_arn}/*"]
         },
         {
-          Action = ["s3:ListAllMyBuckets"]
+          Action = ["s3:ListAllMyBuckets", "s3:GetBucketLocation"]
           Effect = "Allow"
-          Resource = ["*"]
+          Resource = [module.s3_canary_logs.s3_bucket_arn]
         },
         {
           Action = [
