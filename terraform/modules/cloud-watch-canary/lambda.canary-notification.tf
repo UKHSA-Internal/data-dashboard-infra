@@ -7,7 +7,7 @@ module "lambda_canary_notification" {
   description   = "Sends notifications when a synthetics canary run fails."
 
   create_package = true
-  runtime        = "nodejs18.x"
+  runtime        = "nodejs22.x"
   handler        = "index.handler"
   source_path    = "../modules/cloud-watch-canary/src/lambda-canary-notification"
 
