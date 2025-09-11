@@ -3,7 +3,7 @@ output "name" {
 }
 
 output "artifact_s3_location" {
-  value = aws_synthetics_canary.this.artifact_s3_location
+  value = aws_synthetics_canary.this[0].artifact_s3_location
 }
 
 output "eventbridge_rule_arn" {
@@ -11,5 +11,5 @@ output "eventbridge_rule_arn" {
 }
 
 output "canary_arn" {
-  value = aws_synthetics_canary.this.arn
+  value = aws_synthetics_canary.this[0].arn
 }

@@ -41,7 +41,7 @@ module "lambda_canary_notification" {
     get_recent_canary_runs = {
       effect = "Allow"
       actions = ["synthetics:GetCanaryRuns"]
-      resources = [aws_synthetics_canary.this.arn]
+      resources = [aws_synthetics_canary.this[0].arn]
     }
   }
 

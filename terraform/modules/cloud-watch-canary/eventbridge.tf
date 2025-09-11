@@ -12,7 +12,7 @@ module "eventbridge_canary" {
       event_pattern = jsonencode({
         source : ["aws.synthetics"],
         detail : {
-          "canary-name" : [aws_synthetics_canary.this.name]
+          "canary-name" : [aws_synthetics_canary.this[0].name]
           "test-run-status" : ["FAILED"]
         }
       })
