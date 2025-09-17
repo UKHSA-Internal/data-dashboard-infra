@@ -5,10 +5,6 @@ locals {
       "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "90.241.8.192/32",    # Rhys Inlaws
-      "82.132.245.244/32",  # Rhys hotspot
-      "86.2.63.107/32",     # Rhys Home
-      "86.173.151.83/32",   # Luke
       "86.9.184.205/32",    # Manu
     ],
     project_team = [
