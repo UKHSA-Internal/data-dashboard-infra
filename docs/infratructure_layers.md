@@ -74,12 +74,12 @@ Summarising this, we have something that looks like the following:
 │  │ ┌─────────────────────────────┐ │  │      │  │  │    configuration            ││  │
 │  │ │  Personal Dev Environments  │ │  │      │  │  │  • Enhanced monitoring      ││  │
 │  │ │                             │ │  │      │  │  │    & alerting               ││  │
-│  │ │  • Dynamic/Ephemeral        │ │  │      │  │  │  • High availability setup  ││  │
+│  │ │  • Developer-specific       │ │  │      │  │  │  • High availability setup  ││  │
 │  │ │    environments             │ │  │      │  │  │  • Backup & disaster        ││  │
-│  │ │  • Developer-specific       │ │  │      │  │  │    recovery                 ││  │
+│  │ │  • Feature branch testing   │ │  │      │  │  │    recovery                 ││  │
 │  │ │    instances                │ │  │      │  │  │  • Stricter security        ││  │
-│  │ │  • Feature branch testing   │ │  │      │  │  │    controls                 ││  │
-│  │ └─────────────────────────────┘ │  │      │  │  └─────────────────────────────┘│  │
+│  │ └─────────────────────────────┘ │  │      │  │  │    controls                 ││  │
+│  │                                 │  │      │  │  └─────────────────────────────┘│  │
 │  │                                 │  │      │  |                                 |  │
 │  └─────────────────────────────────┘  │      │  └─────────────────────────────────┘  │
 └───────────────────────────────────────┘      └───────────────────────────────────────┘
