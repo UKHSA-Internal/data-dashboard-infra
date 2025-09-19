@@ -3,7 +3,7 @@
 ## Login process
 
 The system uses AWS Cognito to federate authentication with the upstream UKHSA Azure AD.
-The upstream UKHSA Azure AD is the only identity provider which the non-public dashboard *knows* about.
+The upstream UKHSA Azure AD is the only identity provider that the non-public dashboard *knows* about.
 
 In summary:
 1. User navigates to the non-public app.
@@ -35,14 +35,14 @@ At the time of writing (Sep 2025) this was still out of the hands of the enginee
 
 ### Automating creation of user groups in Azure AD <-> Django admin 
 
-There is also piece missing around managing user groups in the UKHSA Azure AD and the backend django admin panel.
+There is also piece missing around managing user groups in the UKHSA Azure AD and the backend Django admin panel.
 Currently, the process is very manually-intensive. 
 It will require personnel to:
 - Login to Azure AD.
 - Assign a user to a new user group.
-- Make note of the user group guid.
-- Go to the django admin panel
-- Create new RBAC permissions and assign the requisite datasets to that user group guid.
+- Make note of the user group GUID.
+- Go to the Django admin panel
+- Create new RBAC permissions and assign the requisite datasets to that user group GUID.
 
 We were aware of this limitation and this was included in the roadmap after the COVER work in Sep 2025.
 Unfortunately we did not get round to this piece of work so it is left outstanding.

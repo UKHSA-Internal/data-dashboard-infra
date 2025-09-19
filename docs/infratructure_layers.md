@@ -3,7 +3,7 @@
 ## Deploying infrastructure
 
 Hand-rolled / click-ops via the AWS console should be avoided.
-The system is deployed in to AWS via terraform only.
+The system is deployed into AWS via terraform only.
 
 The CLI module which can be accessed via:
 ```
@@ -20,11 +20,11 @@ See the README at the root of this repo for more information on this.
 
 The infrastructure is split into 2 main layers:
 
-- `10-acccount` - Account level components which are deployed into the account.
-This includes things foundational services which are shared across the account
+- `10-account` - Account level components which are deployed into the account.
+This includes foundational services which are shared across the account
 like IAM assumable roles and DNS configurations.
-This is only done a per-account basis.
-- `20-app` - Environment level components which are deployed in to the account on a per-environment basis. 
+This is only done on a per-account basis.
+- `20-app` - Environment level components which are deployed into the account on a per-environment basis. 
 We can and often do have multiple environments in the same account which are logically seperate.
 
 For the most part you will likely be interested in deploying changes to the `20-app` layer.
