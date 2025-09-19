@@ -90,3 +90,8 @@ so that you can revalidate data in the cache depending on what it is you want to
 In most scenarios you will only want to revalidate ephemeral data 
 like the charts, tables, downloads that are seen across most of the topic pages.
 You wouldn't want to or be interested in revalidating the maps data for COVER which changes only once year.
+
+## CLI 
+
+Note that in the `uhd cache` CLI module, only the current v1 cache flush workflows
+are shown in the help text. This is by design, since v2 is still in a testing phase.
