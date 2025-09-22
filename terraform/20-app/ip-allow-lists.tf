@@ -3,7 +3,6 @@ locals {
     engineers = [
       "90.250.132.232/32",  # Afaan
       "154.51.68.102/32",   # Burendo Leeds
-      "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
       "86.9.184.205/32",    # Manu
     ],
