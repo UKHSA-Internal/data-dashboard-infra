@@ -98,7 +98,7 @@ function buildSlackPostFromSNSMessage(event) {
  */
 async function submitMessageToSlack(slackMessage, webhookURL) {
     const webhook = new IncomingWebhook(webhookURL, {
-        icon_emoji: ':alert:', channel: '#ukhsa-data-dashboard-alerts'
+        icon_emoji: ':alert:', channel: '#data-dashboard-alerts'
     });
     await webhook.send(slackMessage)
 }
