@@ -1,6 +1,6 @@
 module "ecs_service_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.4"
+  version = "6.4.0"
 
   name                   = "${local.prefix}-worker"
   cluster_arn            = module.ecs.cluster_arn
@@ -84,46 +84,41 @@ module "ecs_service_worker" {
     }
   ]
 
-  task_exec_iam_statements = {
-    kms_keys = {
+  task_exec_iam_statements = [
+    {
       actions   = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn,
       ]
     }
-  }
+  ]
 
-  security_group_rules = {
-    # egress rules
-    internet_egress = {
-      type        = "egress"
+  security_group_egress_rules = {
+    internet = {
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_ipv4 = "0.0.0.0/0"
     }
-    db_egress = {
-      type                     = "egress"
+    db = {
       from_port                = 5432
       to_port                  = 5432
       protocol                 = "tcp"
-      source_security_group_id = module.aurora_db_app.security_group_id
+      referenced_security_group_id = module.aurora_db_app.security_group_id
     }
-    default_cache_egress = {
-      type                     = "egress"
+    default_cache = {
       from_port                = 6379
       to_port                  = 6379
       protocol                 = "tcp"
-      source_security_group_id = module.app_elasticache_security_group.security_group_id
+      referenced_security_group_id = module.app_elasticache_security_group.security_group_id
     }
-    reserved_cache_egress = {
-      type                     = "egress"
+    reserved_cache = {
       from_port                = 6379
       to_port                  = 6379
       protocol                 = "tcp"
-      source_security_group_id = module.private_api_elasticache_security_group.security_group_id
+      referenced_security_group_id = module.private_api_elasticache_security_group.security_group_id
     }
   }
 }

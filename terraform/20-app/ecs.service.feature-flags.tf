@@ -1,6 +1,6 @@
 module "ecs_service_feature_flags" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.4"
+  version = "6.4.0"
 
   name                   = "${local.prefix}-feature-flags"
   cluster_arn            = module.ecs.cluster_arn
@@ -29,9 +29,9 @@ module "ecs_service_feature_flags" {
       cpu                                    = 256
       memory                                 = 512
       essential                              = true
-      readonly_root_filesystem               = false
+      readonlyRootFilesystem                = false
       image                                  = "unleashorg/unleash-server:5.10.1"
-      port_mappings                          = [
+      portMappings                           = [
         {
           containerPort = 4242
           hostPort      = 4242
@@ -89,38 +89,35 @@ module "ecs_service_feature_flags" {
     }
   }
 
-  task_exec_iam_statements = {
-    kms_keys = {
+  task_exec_iam_statements = [
+    {
       actions   = ["kms:Decrypt"]
       resources = [module.kms_secrets_app_operator.key_arn]
     }
-  }
+  ]
 
-  security_group_rules = {
-    # ingress rules
-    alb_ingress = {
-      type                     = "ingress"
+  security_group_ingress_rules = {
+    alb = {
       from_port                = 4242
       to_port                  = 4242
       protocol                 = "tcp"
       description              = "lb to tasks"
-      source_security_group_id = module.feature_flags_alb.security_group_id
+      referenced_security_group_id = module.feature_flags_alb.security_group_id
     }
-    # egress rules
-    db_egress = {
-      type                     = "egress"
+  }
+   security_group_egress_rules = {
+    db = {
       from_port                = 5432
       to_port                  = 5432
       protocol                 = "tcp"
-      source_security_group_id = module.aurora_db_feature_flags.security_group_id
+      referenced_security_group_id = module.aurora_db_feature_flags.security_group_id
     }
-    internet_egress = {
-      type        = "egress"
+    internet = {
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_ipv4 = "0.0.0.0/0"
     }
   }
 }

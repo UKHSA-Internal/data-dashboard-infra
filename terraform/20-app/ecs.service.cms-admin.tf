@@ -1,6 +1,6 @@
 module "ecs_service_cms_admin" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.4"
+  version = "6.4.0"
 
   name                   = "${local.prefix}-cms-admin"
   cluster_arn            = module.ecs.cluster_arn
@@ -35,9 +35,9 @@ module "ecs_service_cms_admin" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = true
+      readonlyRootFilesystem                = true
       image                                  = module.ecr_back_end_ecs.image_uri
-      mount_points                           = [
+      mountPoints = [
         {
           sourceVolume  = "tmp"
           containerPath = "/tmp"
@@ -49,7 +49,7 @@ module "ecs_service_cms_admin" {
           readOnly      = false
         }
       ]
-      port_mappings = [
+      portMappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -111,42 +111,39 @@ module "ecs_service_cms_admin" {
     }
   ]
 
-  task_exec_iam_statements = {
-    kms_keys = {
-      actions   = ["kms:Decrypt"]
+  task_exec_iam_statements = [
+    {
+      actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn,
         module.kms_secrets_app_operator.key_arn,
       ]
     }
-  }
+  ]
 
-  security_group_rules = {
-    # ingress rules
-    alb_ingress = {
-      type                     = "ingress"
-      from_port                = 80
-      to_port                  = 80
-      protocol                 = "tcp"
-      description              = "lb to tasks"
-      source_security_group_id = module.cms_admin_alb.security_group_id
+  security_group_ingress_rules = {
+    alb = {
+      from_port                    = 80
+      to_port                      = 80
+      protocol                     = "tcp"
+      description                  = "lb to tasks"
+      referenced_security_group_id = module.cms_admin_alb.security_group_id
     }
-    # egress rules
-    db_egress = {
-      type                     = "egress"
-      from_port                = 5432
-      to_port                  = 5432
-      protocol                 = "tcp"
-      source_security_group_id = module.aurora_db_app.security_group_id
+  }
+  security_group_egress_rules = {
+    db = {
+      from_port                    = 5432
+      to_port                      = 5432
+      protocol                     = "tcp"
+      referenced_security_group_id = module.aurora_db_app.security_group_id
     }
-    internet_egress = {
-      type        = "egress"
+    internet = {
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_ipv4 = "0.0.0.0/0"
     }
   }
 }
