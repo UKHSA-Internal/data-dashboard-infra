@@ -29,9 +29,9 @@ module "ecs_service_feature_flags" {
       cpu                                    = 256
       memory                                 = 512
       essential                              = true
-      readonlyRootFilesystem                = false
+      readonlyRootFilesystem                 = false
       image                                  = "unleashorg/unleash-server:5.10.1"
-      portMappings                           = [
+      portMappings = [
         {
           containerPort = 4242
           hostPort      = 4242
@@ -91,25 +91,34 @@ module "ecs_service_feature_flags" {
 
   task_exec_iam_statements = [
     {
-      actions   = ["kms:Decrypt"]
+      actions = ["kms:Decrypt"]
       resources = [module.kms_secrets_app_operator.key_arn]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        local.feature_flags_db_aurora_password_secret_arn,
+        aws_secretsmanager_secret.feature_flags_api_keys.arn,
+        aws_secretsmanager_secret.feature_flags_admin_user_credentials.arn,
+
+      ]
     }
   ]
 
   security_group_ingress_rules = {
     alb = {
-      from_port                = 4242
-      to_port                  = 4242
-      protocol                 = "tcp"
-      description              = "lb to tasks"
+      from_port                    = 4242
+      to_port                      = 4242
+      protocol                     = "tcp"
+      description                  = "lb to tasks"
       referenced_security_group_id = module.feature_flags_alb.security_group_id
     }
   }
-   security_group_egress_rules = {
+  security_group_egress_rules = {
     db = {
-      from_port                = 5432
-      to_port                  = 5432
-      protocol                 = "tcp"
+      from_port                    = 5432
+      to_port                      = 5432
+      protocol                     = "tcp"
       referenced_security_group_id = module.aurora_db_feature_flags.security_group_id
     }
     internet = {
@@ -117,7 +126,7 @@ module "ecs_service_feature_flags" {
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_ipv4 = "0.0.0.0/0"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 }

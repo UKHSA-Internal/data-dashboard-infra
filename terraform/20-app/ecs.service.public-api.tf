@@ -35,7 +35,7 @@ module "ecs_service_public_api" {
       cpu                                    = local.use_prod_sizing ? 1024 : 512
       memory                                 = local.use_prod_sizing ? 2048 : 1024
       essential                              = true
-      readonlyRootFilesystem                = true
+      readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri
       mountPoints = [
         {
@@ -126,23 +126,30 @@ module "ecs_service_public_api" {
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn
       ]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        local.main_db_aurora_password_secret_arn,
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+      ]
     }
   ]
 
   security_group_ingress_rules = {
     alb = {
-      from_port                = 80
-      to_port                  = 80
-      protocol                 = "tcp"
-      description              = "lb to tasks"
+      from_port                    = 80
+      to_port                      = 80
+      protocol                     = "tcp"
+      description                  = "lb to tasks"
       referenced_security_group_id = module.public_api_alb.security_group_id
     }
   }
   security_group_egress_rules = {
     db = {
-      from_port                = 5432
-      to_port                  = 5432
-      protocol                 = "tcp"
+      from_port                    = 5432
+      to_port                      = 5432
+      protocol                     = "tcp"
       referenced_security_group_id = module.aurora_db_app.security_group_id
     }
     internet = {
@@ -150,7 +157,7 @@ module "ecs_service_public_api" {
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_ipv4 = "0.0.0.0/0"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 }

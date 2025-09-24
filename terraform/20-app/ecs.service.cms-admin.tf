@@ -35,7 +35,7 @@ module "ecs_service_cms_admin" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonlyRootFilesystem                = true
+      readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri
       mountPoints = [
         {
@@ -119,6 +119,13 @@ module "ecs_service_cms_admin" {
         module.kms_app_rds.key_arn,
         module.kms_secrets_app_operator.key_arn,
       ]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        local.main_db_aurora_password_secret_arn,
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
+      ]
     }
   ]
 
@@ -143,7 +150,7 @@ module "ecs_service_cms_admin" {
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_ipv4 = "0.0.0.0/0"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 }

@@ -37,7 +37,7 @@ module "ecs_service_private_api" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonlyRootFilesystem                = true
+      readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri
       mountPoints = [
         {
@@ -138,42 +138,49 @@ module "ecs_service_private_api" {
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn
       ]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        local.main_db_aurora_password_secret_arn,
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+      ]
     }
   ]
 
   security_group_ingress_rules = {
     alb = {
-      from_port                = 80
-      to_port                  = 80
-      protocol                 = "tcp"
-      description              = "lb to tasks"
+      from_port                    = 80
+      to_port                      = 80
+      protocol                     = "tcp"
+      description                  = "lb to tasks"
       referenced_security_group_id = module.private_api_alb.security_group_id
     }
     bastion = {
-      from_port                = 80
-      to_port                  = 80
-      protocol                 = "tcp"
+      from_port                    = 80
+      to_port                      = 80
+      protocol                     = "tcp"
       referenced_security_group_id = module.ecs_service_bastion.security_group_id
     }
   }
 
   security_group_egress_rules = {
     db = {
-      from_port                = 5432
-      to_port                  = 5432
-      protocol                 = "tcp"
+      from_port                    = 5432
+      to_port                      = 5432
+      protocol                     = "tcp"
       referenced_security_group_id = module.aurora_db_app.security_group_id
     }
     cache = {
-      from_port                = 6379
-      to_port                  = 6379
-      protocol                 = "tcp"
+      from_port                    = 6379
+      to_port                      = 6379
+      protocol                     = "tcp"
       referenced_security_group_id = module.app_elasticache_security_group.security_group_id
     }
     reserved_cache = {
-      from_port                = 6379
-      to_port                  = 6379
-      protocol                 = "tcp"
+      from_port                    = 6379
+      to_port                      = 6379
+      protocol                     = "tcp"
       referenced_security_group_id = module.private_api_elasticache_security_group.security_group_id
     }
     internet = {
@@ -181,7 +188,7 @@ module "ecs_service_private_api" {
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_ipv4 = "0.0.0.0/0"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 }

@@ -26,7 +26,7 @@ module "ecs_service_worker" {
       essential                              = true
       readonly_root_filesystem               = false
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings                          = [
+      port_mappings = [
         {
           containerPort = 80
           hostPort      = 80
@@ -86,10 +86,17 @@ module "ecs_service_worker" {
 
   task_exec_iam_statements = [
     {
-      actions   = ["kms:Decrypt"]
+      actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_app_rds.key_arn,
+      ]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        local.main_db_aurora_password_secret_arn,
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
       ]
     }
   ]
@@ -100,24 +107,24 @@ module "ecs_service_worker" {
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_ipv4 = "0.0.0.0/0"
+      cidr_ipv4   = "0.0.0.0/0"
     }
     db = {
-      from_port                = 5432
-      to_port                  = 5432
-      protocol                 = "tcp"
+      from_port                    = 5432
+      to_port                      = 5432
+      protocol                     = "tcp"
       referenced_security_group_id = module.aurora_db_app.security_group_id
     }
     default_cache = {
-      from_port                = 6379
-      to_port                  = 6379
-      protocol                 = "tcp"
+      from_port                    = 6379
+      to_port                      = 6379
+      protocol                     = "tcp"
       referenced_security_group_id = module.app_elasticache_security_group.security_group_id
     }
     reserved_cache = {
-      from_port                = 6379
-      to_port                  = 6379
-      protocol                 = "tcp"
+      from_port                    = 6379
+      to_port                      = 6379
+      protocol                     = "tcp"
       referenced_security_group_id = module.private_api_elasticache_security_group.security_group_id
     }
   }
