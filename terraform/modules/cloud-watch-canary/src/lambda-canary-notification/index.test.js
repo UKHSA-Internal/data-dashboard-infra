@@ -374,7 +374,7 @@ describe('buildSlackPostPayload', () => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `*Alarm name:*\n${target}`
+                    "text": `@channel\n*Alarm name:*\n${target}`
                 }
             },
             {

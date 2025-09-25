@@ -281,7 +281,7 @@ function buildSlackPostPayload(target, endTime, brokenLinks) {
         {"type": "divider"},
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": `*Alarm name:*\n${target}`}
+            "text": {"type": "mrkdwn", "text": `@channel\n*Alarm name:*\n${target}`}
         },
         buildBrokenLinksList(brokenLinks),
         {
