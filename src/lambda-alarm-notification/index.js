@@ -49,7 +49,7 @@ function buildSlackPostFromSNSMessage(event) {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":alert: Alarm triggered",
+                    "text": ":x: Alarm triggered",
                     "emoji": true
                 }
             },
@@ -98,7 +98,7 @@ function buildSlackPostFromSNSMessage(event) {
  */
 async function submitMessageToSlack(slackMessage, webhookURL) {
     const webhook = new IncomingWebhook(webhookURL, {
-        icon_emoji: ':alert:', channel: '#ukhsa-data-dashboard-alerts'
+        icon_emoji: ':x:', channel: '#ukhsa-data-dashboard-alerts'
     });
     await webhook.send(slackMessage)
 }
