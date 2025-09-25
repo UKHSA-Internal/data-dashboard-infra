@@ -351,45 +351,82 @@ describe('buildSlackPostPayload', () => {
     test('Builds the Slack post payload', () => {
         // Given
         const target = 'uhd-test-env-display'
-        const startTime = 'fake-start-time'
         const endTime = 'fake-end-time'
         const brokenLinks = ['fake-link-1.com', 'fake-link-2.com']
 
         // When
-        const result = index.buildSlackPostPayload(target, startTime, endTime, brokenLinks);
+        const result = index.buildSlackPostPayload(target, endTime, brokenLinks);
 
         // Then
-        const expectedPayload = [{
-            "type": "header", "text": {
-                "type": "plain_text", "text": ":alert: Canary run failed", "emoji": true
+        const expectedPayload = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": ":alert: Canary run failed",
+                    "emoji": true
+                }
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `*Alarm name:*\n${target}`
+                }
+            },
+            {
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "text": "Detected broken link(s):\n",
+                                "type": "text"
+                            }
+                        ]
+                    },
+                    {
+                        "border": 0,
+                        "elements": [
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "type": "link",
+                                        "url": brokenLinks[0]
+                                    }
+                                ]
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "link",
+                                        "url": brokenLinks[1]
+                                    }
+                                ],
+                                "type": "rich_text_section"
+                            }
+                        ],
+                        "indent": 0,
+                        "style": "bullet",
+                        "type": "rich_text_list"
+                    }
+                ],
+                "type": "rich_text"
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "plain_text",
+                        "text": `Canary failed at ${endTime}`
+                    }
+                ]
             }
-        }, {
-            "type": "divider"
-        }, {
-            "type": "section", "text": {
-                "type": "mrkdwn", "text": `*Alarm name:*\n${target}`
-            }
-        }, {
-            "elements": [{
-                "elements": [{
-                    "text": "Detected broken link(s):\n", "type": "text"
-                }], "type": "rich_text_section"
-            }, {
-                "border": 0, "elements": [{
-                    "elements": [{
-                        "type": "link", "url": "fake-link-1.com"
-                    }], "type": "rich_text_section"
-                }, {
-                    "elements": [{
-                        "type": "link", "url": "fake-link-2.com"
-                    }], "type": "rich_text_section"
-                }], "indent": 0, "style": "bullet", "type": "rich_text_list"
-            }], "type": "rich_text"
-        }, {
-            "type": "context", "elements": [{
-                "type": "plain_text", "text": `Canary started at ${startTime} and failed at ${endTime}`
-            }]
-        },]
+        ]
         expect(result).toEqual(expectedPayload);
     });
 });

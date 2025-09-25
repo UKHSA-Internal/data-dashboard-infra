@@ -267,13 +267,12 @@ function extractReportKey(keys, keyToSearchFor) {
  * Builds the `blocks` to be sent to the Slack API to post the primary message.
  *
  * @param {string} target - The name of the canary from which the alarm was raised.
- * @param {string} startTime - The time which the canary started its run.
  * @param {string} endTime - The time which the canary completed its run.
  * @param {array} brokenLinks - Array of strings, each of which represents a broken link
  *
  * @returns {array} - An array of JSON objects which can be used to post to the Slack channel with.
  */
-function buildSlackPostPayload(target, startTime, endTime, brokenLinks) {
+function buildSlackPostPayload(target, endTime, brokenLinks) {
     return [
         {
             "type": "header",
@@ -287,7 +286,7 @@ function buildSlackPostPayload(target, startTime, endTime, brokenLinks) {
         buildBrokenLinksList(brokenLinks),
         {
             "type": "context",
-            "elements": [{"type": "plain_text", "text": `Canary started at ${startTime} and failed at ${endTime}`}]
+            "elements": [{"type": "plain_text", "text": `Canary failed at ${endTime}`}]
         },
     ]
 }
@@ -480,7 +479,7 @@ async function handler(event, context, overriddenDependencies = {}) {
     const syntheticsReport = await dependencies.extractReport(folderContents, 'SyntheticsReport', bucketName)
     const brokenLinksReport = await dependencies.extractReport(folderContents, 'BrokenLinkCheckerReport', bucketName)
 
-    const slackPayload = dependencies.buildSlackPostPayload(syntheticsReport.canaryName, syntheticsReport.startTime, syntheticsReport.endTime, brokenLinksReport.brokenLinks)
+    const slackPayload = dependencies.buildSlackPostPayload(syntheticsReport.canaryName, syntheticsReport.endTime, brokenLinksReport.brokenLinks)
     const slackPostResponse = await dependencies.sendSlackPost(slackClient, slackPayload, slackSecret.slack_channel_id)
 
     const extractedSnapshotKeys = dependencies.extractFailedScreenshotKeys(folderContents)
