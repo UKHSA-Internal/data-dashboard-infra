@@ -363,7 +363,7 @@ describe('buildSlackPostPayload', () => {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":alert: Canary run failed",
+                    "text": ":x: Canary run failed",
                     "emoji": true
                 }
             },
