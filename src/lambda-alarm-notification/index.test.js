@@ -94,7 +94,7 @@ describe('submitMessageToSlack', () => {
         // Then
         const expectedDefaultConstructorArgs = {
             icon_emoji: ':rotating_light:',
-            channel: '#ukhsa-data-dashboard-alerts'
+            channel: '#data-dashboard-alerts'
         }
         expect(IncomingWebhook).toHaveBeenCalledWith(fakeSlackWebhookURL, expectedDefaultConstructorArgs);
         expect(sendMock).toHaveBeenCalledWith(fakeSlackMessage);
