@@ -276,7 +276,7 @@ function buildSlackPostPayload(target, endTime, brokenLinks) {
     return [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": ":x: Canary run failed", "emoji": true}
+            "text": {"type": "plain_text", "text": ":rotating_light: Canary run failed", "emoji": true}
         },
         {"type": "divider"},
         {
