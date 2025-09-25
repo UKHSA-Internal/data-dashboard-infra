@@ -24,9 +24,9 @@ module "ecs_service_worker" {
       cpu                                    = 512
       memory                                 = 1024
       essential                              = true
-      readonly_root_filesystem               = false
+      readonlyRootFilesystem                 = false
       image                                  = module.ecr_back_end_ecs.image_uri
-      port_mappings = [
+      portMappings = [
         {
           containerPort = 80
           hostPort      = 80
