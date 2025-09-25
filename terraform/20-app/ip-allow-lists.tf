@@ -31,6 +31,7 @@ locals {
       "165.225.17.43/32",   # Maria Tsiko
       "136.226.167.91/32",  # Emmanuel Ughoo
       "147.161.224.180/32"  # Osazee Ogunje
+      "147.161.236.80/32",  # Jayne Gilbert
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
