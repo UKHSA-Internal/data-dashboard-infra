@@ -1,6 +1,6 @@
 module "front_end_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.9.0"
+  version = "10.0.0"
 
   name = "${local.prefix}-front-end"
 
@@ -56,8 +56,9 @@ module "front_end_alb" {
           priority     = 1
           actions      = [
             {
-              type             = "forward"
-              target_group_key = "${local.prefix}-front-end"
+              forward = {
+                target_group_key = "${local.prefix}-front-end"
+              }
             }
           ]
           conditions = [
