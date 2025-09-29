@@ -1,6 +1,6 @@
 module "ecs_service_front_end" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.11.4"
+  version = "6.4.0"
 
   name                   = "${local.prefix}-front-end"
   cluster_arn            = module.ecs.cluster_arn
@@ -35,16 +35,16 @@ module "ecs_service_front_end" {
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
-      readonly_root_filesystem               = true
+      readonlyRootFilesystem                 = true
       image                                  = module.ecr_front_end_ecs.image_uri
-      mount_points = [
+      mountPoints = [
         {
           sourceVolume  = "tmp"
           containerPath = "/app/.next/cache"
           readOnly      = false
         }
       ]
-      port_mappings = [
+      portMappings = [
         {
           containerPort = 3000
           hostPort      = 3000
@@ -178,41 +178,51 @@ module "ecs_service_front_end" {
     }
   ]
 
-  task_exec_iam_statements = {
-    kms_keys = {
+  task_exec_iam_statements = [
+    {
       actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_secrets_app_operator.key_arn,
       ]
+    },
+    {
+      actions = ["secretsmanager:GetSecretValue"]
+      resources = [
+        aws_secretsmanager_secret.private_api_key.arn,
+        aws_secretsmanager_secret.google_analytics_credentials.arn,
+        aws_secretsmanager_secret.feature_flags_api_keys.arn,
+        aws_secretsmanager_secret.esri_api_key.arn,
+        aws_secretsmanager_secret.esri_maps_service_credentials.arn,
+        aws_secretsmanager_secret.auth_secret.arn,
+        aws_secretsmanager_secret.cognito_service_credentials.arn,
+        aws_secretsmanager_secret.revalidate_secret.arn,
+      ]
+    }
+  ]
+
+  security_group_ingress_rules = {
+    alb = {
+      from_port                    = 3000
+      to_port                      = 3000
+      protocol                     = "tcp"
+      description                  = "lb to tasks"
+      referenced_security_group_id = module.front_end_alb.security_group_id
     }
   }
-
-  security_group_rules = {
-    # ingress rules
-    alb_ingress = {
-      type                     = "ingress"
-      from_port                = 3000
-      to_port                  = 3000
-      protocol                 = "tcp"
-      description              = "lb to tasks"
-      source_security_group_id = module.front_end_alb.security_group_id
-    }
-    # egress rules
-    internet_egress = {
-      type        = "egress"
+  security_group_egress_rules = {
+    internet = {
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
       description = "https to internet"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_ipv4   = "0.0.0.0/0"
     },
-    cache_egress = {
-      type                     = "egress"
-      from_port                = 6379
-      to_port                  = 6379
-      protocol                 = "tcp"
-      source_security_group_id = module.front_end_elasticache_security_group.security_group_id
+    cache = {
+      from_port                    = 6379
+      to_port                      = 6379
+      protocol                     = "tcp"
+      referenced_security_group_id = module.front_end_elasticache_security_group.security_group_id
     }
   }
 }

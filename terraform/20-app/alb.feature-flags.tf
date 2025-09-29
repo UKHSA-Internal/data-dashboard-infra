@@ -1,6 +1,6 @@
 module "feature_flags_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.9.0"
+  version = "10.0.0"
 
   name = "${local.prefix}-feature-flags"
 
@@ -56,8 +56,9 @@ module "feature_flags_alb" {
           priority     = 1
           actions      = [
             {
-              type             = "forward"
-              target_group_key = "${local.prefix}-feature-flags"
+              forward = {
+                target_group_key = "${local.prefix}-feature-flags"
+              }
             }
           ]
           conditions = [

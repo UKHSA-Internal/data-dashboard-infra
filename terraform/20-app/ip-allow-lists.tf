@@ -1,23 +1,13 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "90.250.132.232/32",  # Afaan
-      "109.144.222.28/32",  # Burendo Leeds
+      "84.67.69.81/32",     # Afaan
+      "154.51.68.102/32",   # Burendo Leeds
       "167.98.124.170/32",  # Burendo London
       "90.219.251.228/32",  # Phil
-      "90.241.8.192/32",    # Rhys Inlaws
-      "82.132.245.244/32",  # Rhys hotspot
-      "86.2.63.107/32",     # Rhys Home
-      "86.173.151.83/32",    # Luke
+      "86.2.63.107/32",     # Rhys
+      "86.173.151.83/32",   # Luke
       "86.9.184.205/32",    # Manu
-      "147.161.237.5/32",   # Mike Elshaw
-      "147.161.236.91/32",  # Jeff Thomas - Windows
-      "81.106.144.243/32",  # Jeff Thomas - Macbook
-      "18.135.62.168/32",   # Load test rig
-      "18.133.111.70/32",   # Test gateway
-      "35.176.13.254/32",   # Test instance
-      "35.176.178.91/32",   # Test instance
-      "35.179.30.107/32",   # Test instance
     ],
     project_team = [
       "77.100.107.252/32",  # Laura
@@ -38,7 +28,8 @@ locals {
       "172.28.215.10/32",   # Alana Firth
       "165.225.17.43/32",   # Maria Tsiko
       "136.226.167.91/32",  # Emmanuel Ughoo
-      "147.161.224.180/32"  # Osazee Ogunje
+      "147.161.224.180/32", # Osazee Ogunje
+      "147.161.236.80/32",  # Jayne Gilbert
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
