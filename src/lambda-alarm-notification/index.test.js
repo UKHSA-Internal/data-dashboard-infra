@@ -93,8 +93,8 @@ describe('submitMessageToSlack', () => {
 
         // Then
         const expectedDefaultConstructorArgs = {
-            icon_emoji: ':alert:',
-            channel: '#ukhsa-data-dashboard-alerts'
+            icon_emoji: ':rotating_light:',
+            channel: '#data-dashboard-alerts'
         }
         expect(IncomingWebhook).toHaveBeenCalledWith(fakeSlackWebhookURL, expectedDefaultConstructorArgs);
         expect(sendMock).toHaveBeenCalledWith(fakeSlackMessage);
@@ -140,7 +140,7 @@ describe('buildSlackPostFromSNSMessage', () => {
                     'type': 'header',
                     'text': {
                         'type': 'plain_text',
-                        'text': ':alert: Alarm triggered',
+                        'text': ':rotating_light: Alarm triggered',
                         'emoji': true
                     }
                 },
