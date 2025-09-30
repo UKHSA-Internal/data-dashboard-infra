@@ -1,6 +1,6 @@
 module "route_53_records" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
-  version = "3.1.0"
+  version = "6.1.0"
 
   create  = local.account == "prod"
   zone_id = module.route_53_zone_account.route53_zone_zone_id[var.account_dns_name]
@@ -77,7 +77,7 @@ module "route_53_records" {
 
 module "route_53_records_legacy" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
-  version = "3.1.0"
+  version = "6.1.0"
 
   create  = local.account == "prod"
   zone_id = module.route_53_zone_account.route53_zone_zone_id[var.legacy_account_dns_name]
