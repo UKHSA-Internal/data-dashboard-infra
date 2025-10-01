@@ -8,6 +8,12 @@ locals {
       "86.2.63.107/32",     # Rhys
       "86.173.151.83/32",   # Luke
       "86.9.184.205/32",    # Manu
+      "147.161.237.5/32",   # Mike Elshaw
+      "18.135.62.168/32",   # Load test rig
+      "18.133.111.70/32",   # Test gateway
+      "35.176.13.254/32",   # Test instance
+      "35.176.178.91/32",   # Test instance
+      "35.179.30.107/32",   # Test instance
     ],
     project_team = [
       "77.100.107.252/32",  # Laura
