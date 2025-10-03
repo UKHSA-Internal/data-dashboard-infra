@@ -8,7 +8,7 @@ module "iam_canary_role" {
   role_requires_mfa    = false
 
   custom_role_policy_arns = [module.iam_canary_policy.arn]
-  trusted_role_services = ["lambda.amazonaws.com"]
+  trusted_role_services = ["lambda.amazonaws.com", "synthetics.amazonaws.com"]
 }
 
 module "iam_canary_policy" {
