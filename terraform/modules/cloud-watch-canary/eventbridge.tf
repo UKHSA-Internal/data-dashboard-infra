@@ -1,8 +1,10 @@
 module "eventbridge_canary" {
-  source     = "terraform-aws-modules/eventbridge/aws"
-  version    = "3.17.1"
-  create     = var.create
-  create_bus = false
+  source         = "terraform-aws-modules/eventbridge/aws"
+  version        = "3.17.1"
+  create         = var.create
+  create_rules   = var.create
+  create_targets = var.create
+  create_bus     = false
 
   role_name = "${var.name}-eventbridge-role"
 
@@ -12,7 +14,7 @@ module "eventbridge_canary" {
       event_pattern = jsonencode({
         source : ["aws.synthetics"],
         detail : {
-          "canary-name" : [aws_synthetics_canary.this[0].name]
+          "canary-name" : [try(aws_synthetics_canary.this[0].arn, null)]
           "test-run-status" : ["FAILED"]
         }
       })

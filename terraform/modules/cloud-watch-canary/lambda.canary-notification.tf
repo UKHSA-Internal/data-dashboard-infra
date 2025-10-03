@@ -1,12 +1,14 @@
 module "lambda_canary_notification" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "7.7.0"
-  create  = var.create
+  source          = "terraform-aws-modules/lambda/aws"
+  version         = "7.7.0"
+  create          = var.create
+  create_role     = var.create
+  create_function = var.create
 
   function_name = "${var.name}-canary-notification"
   description   = "Sends notifications when a synthetics canary run fails."
 
-  create_package = true
+  create_package = var.create
   runtime        = "nodejs22.x"
   handler        = "index.handler"
   source_path    = "../modules/cloud-watch-canary/src/lambda-canary-notification"
@@ -21,7 +23,7 @@ module "lambda_canary_notification" {
     S3_CANARY_LOGS_BUCKET_NAME            = module.s3_canary_logs.s3_bucket_id
   }
 
-  attach_policy_statements = true
+  attach_policy_statements = var.create
   policy_statements = {
     get_screenshots_from_s3_bucket = {
       effect = "Allow"
@@ -41,11 +43,11 @@ module "lambda_canary_notification" {
     get_recent_canary_runs = {
       effect = "Allow"
       actions = ["synthetics:GetCanaryRuns"]
-      resources = [aws_synthetics_canary.this[0].arn]
+      resources = [try(aws_synthetics_canary.this[0].arn, null)]
     }
     kms_decrypt = {
-      effect    = "Allow"
-      actions   = ["kms:Decrypt"]
+      effect = "Allow"
+      actions = ["kms:Decrypt"]
       resources = [var.kms_key_arn]
     }
   }
@@ -54,7 +56,7 @@ module "lambda_canary_notification" {
   allowed_triggers = {
     eventbridge = {
       principal  = "events.amazonaws.com"
-      source_arn = module.eventbridge_canary.eventbridge_rule_arns[var.name]
+      source_arn = try(module.eventbridge_canary.eventbridge_rule_arns[var.name], null)
     }
   }
 }
@@ -63,6 +65,7 @@ module "lambda_canary_notification" {
 module "lambda_canary_notification_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
+  create  = var.create
 
   name   = "${var.name}-lambda-canary-notification"
   vpc_id = var.vpc_id
