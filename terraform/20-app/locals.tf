@@ -10,7 +10,7 @@ locals {
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   use_prod_sizing            = contains([
-    "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod"
+    "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod", "staging",
   ], local.environment)
   # Temporarily switch off auth challenge in staging
   add_password_protection    = false
