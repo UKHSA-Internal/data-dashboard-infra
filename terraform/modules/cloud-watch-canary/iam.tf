@@ -42,6 +42,9 @@ module "iam_canary_policy" {
             "ec2:CreateNetworkInterface",
             "ec2:DescribeNetworkInterfaces",
             "ec2:DeleteNetworkInterface",
+            "ec2:DescribeInstances",
+            "ec2:AssignPrivateIpAddresses",
+            "ec2:UnassignPrivateIpAddresses"
           ]
           Effect = "Allow"
           Resource = ["*"]
