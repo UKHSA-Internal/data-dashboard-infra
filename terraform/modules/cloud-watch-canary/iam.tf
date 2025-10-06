@@ -44,7 +44,10 @@ module "iam_canary_policy" {
             "ec2:DeleteNetworkInterface",
             "ec2:DescribeInstances",
             "ec2:AssignPrivateIpAddresses",
-            "ec2:UnassignPrivateIpAddresses"
+            "ec2:UnassignPrivateIpAddresses",
+            "ec2:DescribeSubnets",
+            "ec2:DescribeSecurityGroups",
+            "ec2:DescribeVpcs",
           ]
           Effect = "Allow"
           Resource = ["*"]
@@ -54,6 +57,15 @@ module "iam_canary_policy" {
           Effect = "Allow"
           Resource = ["*"]
         },
+        {
+          Action = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ]
+          Effect = "Allow"
+          Resource = ["*"]
+        }
       ]
     }
   )
