@@ -1,6 +1,6 @@
 module "ecs_service_bastion" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "6.4.0"
+  version = "6.6.1"
 
   name                   = "${local.prefix}-bastion"
   cluster_arn            = module.ecs.cluster_arn
