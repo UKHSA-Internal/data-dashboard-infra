@@ -69,7 +69,7 @@ const getFileName = function (url, defaultName = 'loaded') {
 // Reset the page in-between to force a network event in case of a single page app
 const resetPage = async function (page) {
     try {
-        await page.goto('about:blank', {waitUntil: ['load', 'networkidle0'], timeout: 30000});
+        await page.goto('about:blank', {waitUntil: ['load'], timeout: 30000});
     } catch (e) {
         synthetics.addExecutionError('Unable to open a blank page ', e);
     }
