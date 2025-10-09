@@ -143,8 +143,8 @@ jobs:
         id: generate-auth-token
         uses: actions/create-github-app-token@v2
         with:
-          app-id: ${{ secrets.GITHUB_TOKEN_FACTORY_APP_ID }}
-          private-key: ${{ secrets.GITHUB_TOKEN_FACTORY_PRIVATE_KEY }}
+          app-id: ${{ secrets.DEPLOYMENT_TOKEN_FACTORY_APP_ID }}
+          private-key: ${{ secrets.DEPLOYMENT_TOKEN_FACTORY_PRIVATE_KEY }}
           skip-token-revoke: false
           repositories: "data-dashboard-frontend"
       - uses: ./.github/actions/trigger-smoke-tests
