@@ -15,7 +15,7 @@ locals {
   # Temporarily switch off auth challenge in staging
   add_password_protection    = false
   auth_enabled               = var.auth_enabled
-  caching_v2_enabled         = false
+  caching_v2_enabled         = true
   is_front_end_bypassing_cdn = local.auth_enabled || local.caching_v2_enabled
 
   wke = {
