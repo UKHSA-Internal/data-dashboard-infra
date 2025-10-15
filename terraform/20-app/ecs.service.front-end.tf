@@ -40,7 +40,7 @@ module "ecs_service_front_end" {
       mountPoints = [
         {
           sourceVolume  = "tmp"
-          containerPath = "/tmp"
+          containerPath = "/app/.next/cache"
           readOnly      = false
         }
       ]
