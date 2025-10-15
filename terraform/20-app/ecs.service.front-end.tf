@@ -37,6 +37,7 @@ module "ecs_service_front_end" {
       essential                              = true
       readonlyRootFilesystem                 = true
       image                                  = module.ecr_front_end_ecs.image_uri
+      command = ["/bin/sh", "-c", "chown -R nextjs:nodejs /app/.next/cache && exec node server.js"]
       mountPoints = [
         {
           sourceVolume  = "tmp"
