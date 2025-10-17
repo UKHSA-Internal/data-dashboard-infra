@@ -36,7 +36,6 @@ module "ecs_service_front_end" {
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
       readonlyRootFilesystem                 = true
-      user                                   = 0
       image                                  = module.ecr_front_end_ecs.image_uri
       mountPoints = [
         {
