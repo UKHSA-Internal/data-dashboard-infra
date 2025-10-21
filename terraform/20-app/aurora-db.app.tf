@@ -5,7 +5,7 @@ module "aurora_db_app" {
   name                    = "${local.prefix}-aurora-db-app"
   engine                  = "aurora-postgresql"
   engine_mode             = "provisioned"
-  engine_version          = "15.10"
+  engine_version          = "15.12"
   storage_encrypted       = true
   backup_retention_period = 35
   kms_key_id              = module.kms_app_rds.key_arn
