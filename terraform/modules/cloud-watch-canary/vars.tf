@@ -19,14 +19,9 @@ variable "s3_access_logs_id" {
   type        = string
 }
 
-variable "s3_logs_destination" {
-  description = "Map containing the ID and the ARN of the S3 bucket where the results of the canary are to be sent."
-  type        = map(string)
-}
-
 variable "subnet_ids" {
   description = "The IDs of the subnets where this canary is to run."
-  type        = list(string)
+  type = list(string)
 }
 
 variable "schedule_expression" {
@@ -34,7 +29,26 @@ variable "schedule_expression" {
   type        = string
 }
 
-variable "script_path" {
-  description = "The file path of the script to attach to the canary"
+variable "timeout_in_seconds" {
+  description = "The number of seconds which the canary should run until timing out."
+  type        = number
+}
+
+variable "src_script_filename" {
+  description = "The file name of the script to attach to the canary"
   type        = string
+}
+
+variable "environment_variables" {
+  description = "Map of environment variables to provide to the canary runtime."
+  type = map(string)
+  default = {}
+}
+
+variable "slack_webhook_url_secret_arn" {
+  description = "The ARN of the secret containing the slack webhook URL"
+}
+
+variable "kms_key_arn" {
+  description = "The KMS key ARN used to decrypt the slack secret"
 }

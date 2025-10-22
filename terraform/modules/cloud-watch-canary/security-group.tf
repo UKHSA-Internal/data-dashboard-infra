@@ -1,9 +1,12 @@
 module "canary_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
+  create  = var.create
 
   name   = var.name
   vpc_id = var.vpc_id
+
+  revoke_rules_on_delete = true
 
   egress_with_cidr_blocks = [
     {

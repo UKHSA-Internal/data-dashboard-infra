@@ -1,0 +1,25 @@
+{
+  "name": "lambda-canary-notification",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watch",
+    "test:ci": "jest --ci --coverage"
+  },
+  "author": "UKHSA Data Dashboard",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "sinon": "^17.0.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.556.0",
+    "@aws-sdk/client-secrets-manager": "^3.624.0",
+    "@aws-sdk/client-synthetics": "^3.632.0",
+    "@slack/web-api": "^7.3.1",
+    "axios": "^1.7.2",
+    "form-data": "^4.0.0"
+  }
+}
