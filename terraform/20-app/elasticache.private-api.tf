@@ -1,6 +1,6 @@
 module "app_elasticache_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.0"
+  version = "5.3.1"
 
   name   = "${local.prefix}-app-elasticache"
   vpc_id = module.vpc.vpc_id
@@ -31,7 +31,7 @@ resource "aws_elasticache_serverless_cache" "app_elasticache" {
 
 module "private_api_elasticache_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.0"
+  version = "5.3.1"
 
   name   = "${local.prefix}-private-api-elasticache"
   vpc_id = module.vpc.vpc_id
