@@ -5,7 +5,7 @@ locals {
 
 module "eventbridge_scheduled_scaling" {
   source  = "terraform-aws-modules/eventbridge/aws"
-  version = "3.17.1"
+  version = "4.2.2"
   create  = local.is_scaled_down_overnight
 
   create_bus         = false
