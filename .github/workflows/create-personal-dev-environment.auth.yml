@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: "The name of the auth dev environment you wish to deploy to e.g. auth-abcd1234"
+        description: "The name of the auth dev environment you wish to deploy to e.g. auth-abcd1234. Note this must be lowercased."
         required: true
         type: string
 
