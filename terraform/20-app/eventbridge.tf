@@ -1,5 +1,5 @@
 module "eventbridge" {
-  version    = "4.2.2"
+  version    = "3.17.1"
   source     = "terraform-aws-modules/eventbridge/aws"
   create_bus = false
   role_name  = "${local.prefix}-eventbridge-role"
