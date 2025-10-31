@@ -1,0 +1,103 @@
+name: Teardown Ancillary Test Environment
+
+run-name: Teardown of `${{ inputs.name }}` test environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "The ancillary test environment which you want to teardown."
+        options:
+          - pen
+          - perf
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  remove_db_deletion_protections:
+    name: Remove DB deletion protections
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          role-duration-seconds: "7200"
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output ${{ inputs.environment }}
+        shell: zsh {0}
+
+      - name: Remove deletion protection on DB clusters
+        run: |
+          source uhd.sh
+          uhd rds remove-deletion-protection-current-clusters
+
+  terraform_destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+    needs: ["remove_db_deletion_protections"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform destroy
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform destroy:layer 20-app ${{ inputs.environment }}
+        shell: zsh {0}
+
+  clean_up_remaining_resources:
+    name: Clean up remaining resources
+    runs-on: ubuntu-latest
+    needs: ["terraform_destroy"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Configure AWS credentials for test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: "test"
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+
+      - name: Delete secrets
+        run: |
+          source uhd.sh
+          uhd secrets delete-all-secrets ${{ inputs.environment }}
+        shell: zsh {0}
