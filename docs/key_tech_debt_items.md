@@ -44,3 +44,20 @@ However, there are a handful of environments which hang indefinitely until timin
 This appears to be a flaky dependency violation around Elasticache, its security groups and subnets.
 We've spoken to AWS engineers about this. 
 And unfortunately they could not give us an answer as to why this was happening.
+
+
+### Duplication across GitHub actions workflows
+
+At the time of writing (October 2025) we have a number of Github actions workflows 
+which largely fall under the following categories:
+
+- Create environments
+- Flush caches
+- Deploy to environments
+- Teardown environments
+
+There is an opportunity to reduce duplication across these workflows but we'd need to consider the following:
+
+- Differences between personal dev environments & well known environments.
+- Preventing catastrophic / disruptive events such as accidentally tearing down an environment someone else is using.
+- Environments being located in different AWS accounts.
