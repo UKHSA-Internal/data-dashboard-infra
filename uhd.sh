@@ -32,6 +32,7 @@ function _uhd_commands_help() {
     echo "  ecs         - aws ecs commands"
     echo "  gh          - github commands"
     echo "  lambda      - aws lambda commands"
+    echo "  rds         - aws rds/aurora commands"
     echo "  terraform   - terraform commands"
     echo "  secrets     - aws secrets commands"
 
@@ -61,6 +62,7 @@ function uhd() {
         "ecs") _ecs $args ;;
         "gh") _gh $args ;;
         "lambda") _lambda $args ;;
+        "rds") _rds $args ;;
         "terraform") _terraform $args ;;
         "secrets") _secrets $args ;;
         "update") _update $args ;;
