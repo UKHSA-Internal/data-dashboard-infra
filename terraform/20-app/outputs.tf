@@ -86,3 +86,10 @@ output "lambda" {
   }
   sensitive = true
 }
+
+output "rds" {
+  value = {
+    main_db_cluster_id          = module.aurora_db_app.cluster_id
+    feature_flags_db_cluster_id = module.aurora_db_feature_flags.cluster_id
+  }
+}
