@@ -566,7 +566,7 @@ function _get_main_target_aws_account_name() {
     if [[ $workspace == "prod" ]]; then
         echo "prod"
     elif [[ $CI == "true" ]]; then
-        if [[ $workspace == ci-* ]]; then
+        if [[ $workspace == ci-* ]] || [[ $workspace == perf ]] || [[ $workspace == pen ]]; then
             echo "test"
         else
             case $branch in
