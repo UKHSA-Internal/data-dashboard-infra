@@ -7,6 +7,7 @@ on:
     inputs:
       name:
         description: "The ancillary test environment which you want to create."
+        type: choice
         options:
           - pen
           - perf
