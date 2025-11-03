@@ -1,6 +1,6 @@
 name: Teardown Ancillary Test Environment
 
-run-name: Teardown of `${{ inputs.name }}` test environment
+run-name: Teardown of `${{ inputs.environment }}` test environment
 
 on:
   workflow_dispatch:
@@ -43,6 +43,13 @@ jobs:
           uhd terraform init:layer 20-app
           uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
+
+      - name: Configure AWS credentials for test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: "test"
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
 
       - name: Remove deletion protection on DB clusters
         run: |
