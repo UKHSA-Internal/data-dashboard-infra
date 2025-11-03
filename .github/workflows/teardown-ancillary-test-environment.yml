@@ -44,6 +44,13 @@ jobs:
           uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
 
+      - name: Configure AWS credentials for test account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: "test"
+          aws-region: ${{ env.AWS_REGION }}
+          test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_TEST }}
+
       - name: Remove deletion protection on DB clusters
         run: |
           source uhd.sh
