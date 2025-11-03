@@ -1,12 +1,12 @@
 name: Create Ancillary Test Environment
 
-run-name: Creation of `${{ inputs.name }}` test environment
+run-name: Creation of `${{ inputs.environment }}` test environment
 
 on:
   workflow_dispatch:
     inputs:
-      name:
-        description: "The ancillary test environment which you want to create."
+      environment:
+        description: "The name of the ancillary test environment which you want to create."
         type: choice
         options:
           - pen
@@ -41,7 +41,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ${{ inputs.name }}
+          uhd terraform apply:layer 20-app ${{ inputs.environment }}
         shell: zsh {0}
 
   push_docker_images:
@@ -62,7 +62,7 @@ jobs:
       - name: Pull / push docker images
         run: |
           source uhd.sh
-          uhd docker update test ${{ inputs.name }}
+          uhd docker update test ${{ inputs.environment }}
         shell: zsh {0}
 
   terraform_re_apply:
@@ -86,7 +86,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform apply:layer 20-app ${{ inputs.name }}
+          uhd terraform apply:layer 20-app ${{ inputs.environment }}
         shell: zsh {0}
 
   restart_services:
@@ -109,7 +109,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output:layer 20-app ${{ inputs.name }}
+          uhd terraform output:layer 20-app ${{ inputs.environment }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for test account
@@ -151,7 +151,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output ${{ inputs.name }}
+          uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for test account
@@ -186,7 +186,7 @@ jobs:
         run: |
           source uhd.sh
           uhd terraform init:layer 20-app
-          uhd terraform output ${{ inputs.name }}
+          uhd terraform output ${{ inputs.environment }}
         shell: zsh {0}
 
       - name: Configure AWS credentials for account

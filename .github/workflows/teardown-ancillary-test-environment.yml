@@ -1,6 +1,6 @@
 name: Teardown Ancillary Test Environment
 
-run-name: Teardown of `${{ inputs.name }}` test environment
+run-name: Teardown of `${{ inputs.environment }}` test environment
 
 on:
   workflow_dispatch:
