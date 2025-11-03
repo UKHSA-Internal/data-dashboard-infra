@@ -587,7 +587,7 @@ function _get_auth_target_aws_account_name() {
     if [[ $workspace == "auth-prod" ]]; then
         echo "auth-prod"
     elif [[ $CI == "true" ]]; then
-        if [[ $workspace == ci-* ]]; then
+        if [[ $workspace == ci-* ]]|| [[ $workspace == perf ]] || [[ $workspace == pen ]]; then
             echo "auth-test"
         else
             case $branch in
