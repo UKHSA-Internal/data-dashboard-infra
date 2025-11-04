@@ -32,6 +32,11 @@ jobs:
         with:
           name: ${{ inputs.name }}
 
+      - uses: ./.github/actions/validate-environment-name
+        with:
+          environment: ${{ inputs.name }}
+
+
   terraform_apply:
     name: Terraform apply
     runs-on: ubuntu-latest

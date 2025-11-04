@@ -1,0 +1,27 @@
+name: "Validate environment name"
+
+description: "Checks and validates if the target environment is suitable"
+
+inputs:
+  environment:
+    required: true
+    description: The target environment name
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        environment="${{ inputs.environment }}"
+
+        if [[ ! "$environment" =~ ^[a-z0-9]+$ ]]; then
+          echo "Environment name is invalid. It must contain only lowercase letters and numbers."
+          exit 1
+        fi
+
+        if (( ${#environment} > 14 )); then
+          echo "Environment name is invalid. It must not be longer than 14 characters."
+          exit 1
+        fi
+
+        echo "Target environment name is valid"
+      shell: bash
