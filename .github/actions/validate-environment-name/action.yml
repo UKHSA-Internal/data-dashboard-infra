@@ -13,8 +13,8 @@ runs:
     - run: |
         environment="${{ inputs.environment }}"
 
-        if [[ ! "$environment" =~ ^[a-z0-9]+$ ]]; then
-          echo "Environment name is invalid. It must contain only lowercase letters and numbers."
+        if [[ ! "$environment" =~ ^[a-z0-9-]+$ ]]; then
+          echo "Environment name is invalid. It must contain only lowercase letters, numbers, and hyphens."
           exit 1
         fi
 
