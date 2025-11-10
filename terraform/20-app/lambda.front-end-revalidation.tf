@@ -1,6 +1,6 @@
 module "lambda_front_end_revalidation" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "8.1.2"
   function_name = "${local.prefix}-front-end-revalidation"
 
   vpc_subnet_ids         = module.vpc.private_subnets

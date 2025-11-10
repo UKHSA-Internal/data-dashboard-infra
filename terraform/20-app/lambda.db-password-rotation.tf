@@ -1,6 +1,6 @@
 module "lambda_db_password_rotation" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "8.1.2"
   function_name = "${local.prefix}-db-password-rotation"
   description   = "Redeploys services which depend on the main database when the password in secrets manager is rotated"
 

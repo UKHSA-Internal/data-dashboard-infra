@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 module "lambda_api_gateway" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "8.1.2"
   function_name = "${local.prefix}-api-gateway-auth-lambda"
   description   = "Handles API Gateway authentication requests."
 
