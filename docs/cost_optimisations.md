@@ -68,6 +68,9 @@ However, this would need considerable testing to ensure that the DNS records are
 We would also need to make sure that enough time is allowed for the ALBs, then the db, then containers to spin up
 before the working day starts so as to minimize any disruption to the people using these environments.
 
+>There is however the risk that creation and setting of the ALBs fails, 
+in which case a fresh deployment will likely need to be made to the target environment.
+
 Note that consolidating the ALBs would introduce single points of failure and would require significant rework
 from an engineering perspective as we currently pair an ALB with each application service.
 
