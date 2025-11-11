@@ -68,6 +68,9 @@ However, this would need considerable testing to ensure that the DNS records are
 We would also need to make sure that enough time is allowed for the ALBs, then the db, then containers to spin up
 before the working day starts so as to minimize any disruption to the people using these environments.
 
+Note that consolidating the ALBs would introduce single points of failure and would require significant rework
+from an engineering perspective as we currently pair an ALB with each application service.
+
 ### Decrease number of frontend & private API ECS tasks
 
 The number of frontend and private API ECS tasks was increased from 3 -> 6 in Aug 2025.
