@@ -59,6 +59,21 @@ For personal development environments this may be deemed acceptable, but likely 
 One way around this could be to take a snapshot of `Elasticache` at the point of closing it down.
 And then restore it from that snapshot in the morning.
 
+### ALBs
+
+Application load balancers cost considerably more than our other services.
+It may be possible for non-production environments to tear them down overnight 
+and spin them back up again in the morning.
+However, this would need considerable testing to ensure that the DNS records are assigned correctly in the morning.
+We would also need to make sure that enough time is allowed for the ALBs, then the db, then containers to spin up
+before the working day starts so as to minimize any disruption to the people using these environments.
+
+>There is however the risk that creation and setting of the ALBs fails, 
+in which case a fresh deployment will likely need to be made to the target environment.
+
+Note that consolidating the ALBs would introduce single points of failure and would require significant rework
+from an engineering perspective as we currently pair an ALB with each application service.
+
 ### Decrease number of frontend & private API ECS tasks
 
 The number of frontend and private API ECS tasks was increased from 3 -> 6 in Aug 2025.
@@ -73,3 +88,19 @@ As a short-term fix the base number of container workloads was increased from 3 
 This represents an area of potential cost savings. 
 Once the frontend memory leak is fixed it should be possible to reduce the number of frontend and private API 
 ECS tasks back down to the baseline of 3 replicas.
+
+### Monitoring of personal development environments
+
+We make use of personal development environments in the dev account. 
+We often spin up new environments when testing pull requests.
+
+At the time of writing (November 2025), there is no targeted monitoring on this.
+So it is feasible for an engineer to create an environment to test a specific PR but forget to tear it down afterwards.
+
+It could be worth adding monitoring to the personal development environments.
+Perhaps a report that gets published to slack regularly to say which environments are currently deployed 
+and how long it has been since they were last deployed to.
+
+This might at least bring about more awareness of the personal dev / PR testing environments.
+Enforcing a hard deletion of these environments after a set period of time could also be useful 
+but might also feel a little draconian.
