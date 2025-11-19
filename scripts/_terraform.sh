@@ -273,6 +273,7 @@ function _terraform_apply_layer() {
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
     terraform apply \
+        -parallelism=20 \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
@@ -401,6 +402,7 @@ function _terraform_destroy_layer() {
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
     terraform destroy \
+        -parallelism=20 \
         -var "assume_account_id=${assume_account_id}" \
         -var "tools_account_id=${tools_account_id}" \
         -var "python_version=${python_version}" \
