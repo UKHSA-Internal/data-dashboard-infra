@@ -9,6 +9,7 @@ module "iam_operations_role" {
 
   custom_role_policy_arns = [
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AmazonAthenaFullAccess",
     module.iam_operations_policy.arn
   ]
 
