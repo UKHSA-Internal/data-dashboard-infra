@@ -1,6 +1,6 @@
 module "ecs_service_cms_admin" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "6.7.0"
+  version = "6.9.0"
 
   name                   = "${local.prefix}-cms-admin"
   cluster_arn            = module.ecs.cluster_arn

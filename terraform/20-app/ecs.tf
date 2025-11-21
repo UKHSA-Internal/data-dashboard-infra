@@ -1,6 +1,6 @@
 module "ecs" {
   source  = "terraform-aws-modules/ecs/aws"
-  version = "6.7.0"
+  version = "6.9.0"
 
   cluster_name = "${local.prefix}-cluster"
 }
