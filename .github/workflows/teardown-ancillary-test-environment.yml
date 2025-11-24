@@ -24,7 +24,7 @@ jobs:
     name: Remove DB deletion protections
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["remove_db_deletion_protections"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_destroy"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials

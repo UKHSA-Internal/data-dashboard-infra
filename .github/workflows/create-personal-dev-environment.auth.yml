@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout .github/ directory
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             .github
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["validate_environment_name"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["push_docker_images"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
 
       - name: Configure AWS credentials for tools account
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_re_apply"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ "restart_services" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
