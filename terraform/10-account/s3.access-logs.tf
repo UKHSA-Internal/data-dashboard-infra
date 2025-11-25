@@ -1,6 +1,6 @@
 module "s3_access_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.8.2"
+  version = "5.9.0"
 
   bucket = "uhd-aws-s3-access-logs-${local.account_id}-${local.region}"
 
