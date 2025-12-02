@@ -1,6 +1,6 @@
 module "acm_wke_auth_perf" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.1"
+  version = "6.2.0"
 
   create_certificate = local.account == "auth-test"
 
