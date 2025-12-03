@@ -1,6 +1,6 @@
 module "acm_cloud_front" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.1"
+  version = "6.2.0"
 
   domain_name = var.account_dns_name
   zone_id     = module.route_53_zone_account.route53_zone_zone_id[var.account_dns_name]
@@ -19,7 +19,7 @@ module "acm_cloud_front" {
 
 module "acm_cloud_front_legacy_dashboard" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.1"
+  version = "6.2.0"
 
   domain_name = var.legacy_account_dns_name
   zone_id     = module.route_53_zone_account.route53_zone_zone_id[var.legacy_account_dns_name]
