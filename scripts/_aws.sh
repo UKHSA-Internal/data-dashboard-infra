@@ -36,6 +36,9 @@ function _aws_login() {
     local profile_name=$1
     if [[ -z ${profile_name} ]]; then
         uhd aws login uhd-dev
+
+        # If using the auth infra you can enable this profile and comment out the uhd-dev command above.
+        # uhd aws login uhd-auth-dev
         uhd aws login uhd-tools
         
         return 0
@@ -46,7 +49,7 @@ function _aws_login() {
     echo
 
     case $profile_name in
-        "uhd-dev" | "uhd-dev:ops" | "uhd-test" | "uhd-uat" | "uhd-prod" | "uhd-tools" | "uhd-tools:ops" )
+        "uhd-dev" | "uhd-auth-dev" | "uhd-dev:ops" | "uhd-test" | "uhd-uat" | "uhd-prod" | "uhd-tools" | "uhd-tools:ops" )
             echo "Logged into AWS using profile '$profile_name', and switched to profile '${profile_name}/assumed-role'"
             export AWS_PROFILE=${profile_name}/assumed-role ;;
 

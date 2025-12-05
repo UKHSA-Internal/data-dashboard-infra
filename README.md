@@ -549,6 +549,82 @@ uhd secrets delete-all-secrets <env>
 
 > **This command must be run from the `dev` account**
 
+## Deploy Auth Infrastructure to Auth Accounts
+
+Create an auth environment in AWS using github actions
+
+populate the auth environment using github action for non-public
+
+update .aws config file to include a role for uhd-auth-dev
+
+```
+[profile uhd-auth-dev]
+region = eu-west-2
+sso_start_url = https://halopr.awsapps.com/start
+sso_region = eu-west-2
+sso_account_id = <account-number>
+sso_role_name = Developer
+
+[profile auth-uhd-dev/assumed-role]
+role_arn = arn:aws:iam::<account-number>:role/Developer
+source_profile = uhd-auth-dev
+region = eu-west-2
+```
+
+- Load the uhd shell script
+
+  `source uhd.sh`
+
+- Login to the aws dev and tools accounts, this will assume the tools role
+
+  `uhd aws login`
+
+- Confirm which role and account are assumed.
+
+  `uhd aws whoami`
+
+  output will look like:
+
+  ```
+  Using profile uhd-tools/assumed-role:
+  {
+  "UserId": "###################:botocore-session-1764694225",
+  "Account": "<Account Number>",
+  "Arn": "arn:aws:sts::<Account Number>:assumed-role/Developer/botocore-session-1764694225"
+  }
+
+  Connected to auth-03f38a2a environment:
+  {
+  "cms_admin": "https://<workspaceId>-cms.non-public-dev.ukhsa-dashboard.data.gov.uk",
+  "front_end": "https://<workspaceId>.non-public-dev.ukhsa-dashboard.data.gov.uk",
+  "public_api": "https://<workspaceId>-api.non-public-dev.ukhsa-dashboard.data.gov.uk"
+  }
+
+  ```
+
+- Assume the tools role
+
+`uhd aws use uhd-tools`
+
+- Init the terraform specifically for your workspace name - This will be "auth-<unique identifier>"
+
+`uhd terraform init:layer 20-app <Workspace name> e.g. auth-03f38a2a`
+
+- Update the terraform outputs
+  `uhd terraform output <Workspace name>`
+
+- List the updated terraform output file to confirm that the terraform outputs have been updated to reflect the new environment. You will be able to identify this because all of the output urls should start with your workspace name
+
+`jq .urls terraform/20-app/output.json`
+
+- Run a terraform plan for deploying your changes to your AWS workspace
+
+`uhd terraform plan:layer 20-app <Workspace name>`
+
+- Run a terraform apply for deploying your changes to your AWS workspace
+
+`uhd terraform apply:layer 20-app <Workspace name>`
+
 ## Related repos
 
 These repos contain the app source code:
@@ -559,3 +635,7 @@ These repos contain the app source code:
 This repo contains the infra for the part of the ETL pipeline which sits within AWS:
 
 - [data-dashboard-etl-infra](https://github.com/UKHSA-Internal/data-dashboard-etl-infra)
+
+```
+
+```
