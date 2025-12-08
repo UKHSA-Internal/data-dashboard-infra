@@ -575,9 +575,9 @@ region = eu-west-2
 
   `source uhd.sh`
 
-- Login to the aws dev and tools accounts, this will assume the tools role
+- Login to the aws auth-dev and tools accounts, this will initially assume the tools role.
 
-  `uhd aws login`
+  `uhd aws login-auth`
 
 - Confirm which role and account are assumed.
 
@@ -635,7 +635,3 @@ These repos contain the app source code:
 This repo contains the infra for the part of the ETL pipeline which sits within AWS:
 
 - [data-dashboard-etl-infra](https://github.com/UKHSA-Internal/data-dashboard-etl-infra)
-
-```
-
-```
