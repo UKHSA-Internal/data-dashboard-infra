@@ -565,7 +565,7 @@ sso_region = eu-west-2
 sso_account_id = <account-number>
 sso_role_name = Developer
 
-[profile auth-uhd-dev/assumed-role]
+[profile uhd-auth-dev/assumed-role]
 role_arn = arn:aws:iam::<account-number>:role/Developer
 source_profile = uhd-auth-dev
 region = eu-west-2
