@@ -9,6 +9,7 @@ function _aws_help() {
     echo "  help            - this help screen"
     echo
     echo "  login           - login to the dev and tools accounts as a developer"
+    echo "  login-auth      - login to the auth-dev and tools accounts as a developer"
     echo "  login <profile> - login and assume the configured role"
     echo
     echo "  use <profile>   - switch to the specified profile"
@@ -25,6 +26,7 @@ function _aws() {
 
     case $verb in
         "login") _aws_login $args ;;
+        "login-auth") _aws_login_auth $args ;;
         "use") _aws_use $args ;;
         "whoami") _aws_whoami $args ;;
 
@@ -36,6 +38,9 @@ function _aws_login() {
     local profile_name=$1
     if [[ -z ${profile_name} ]]; then
         uhd aws login uhd-dev
+
+        # If using the auth infra you can enable this profile and comment out the uhd-dev command above.
+        # uhd aws login uhd-auth-dev
         uhd aws login uhd-tools
         
         return 0
@@ -46,7 +51,7 @@ function _aws_login() {
     echo
 
     case $profile_name in
-        "uhd-dev" | "uhd-dev:ops" | "uhd-test" | "uhd-uat" | "uhd-prod" | "uhd-tools" | "uhd-tools:ops" )
+        "uhd-dev" | "uhd-auth-dev" | "uhd-dev:ops" | "uhd-test" | "uhd-uat" | "uhd-prod" | "uhd-tools" | "uhd-tools:ops" )
             echo "Logged into AWS using profile '$profile_name', and switched to profile '${profile_name}/assumed-role'"
             export AWS_PROFILE=${profile_name}/assumed-role ;;
 
@@ -54,6 +59,17 @@ function _aws_login() {
             echo "Logged into AWS using profile '$profile_name'"
             export AWS_PROFILE=$profile_name ;;
     esac
+}
+
+function _aws_login_auth() {
+    local profile_name=$1
+    if [[ -z ${profile_name} ]]; then
+
+        uhd aws login uhd-auth-dev
+        uhd aws login uhd-tools
+        
+        return 0
+    fi
 }
 
 function _aws_use() {
