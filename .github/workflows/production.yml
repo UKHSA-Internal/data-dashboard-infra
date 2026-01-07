@@ -10,6 +10,10 @@ on:
     types: [trigger-deployments]
   workflow_dispatch:
 
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: false
+
 env:
   AWS_REGION: "eu-west-2"
 
