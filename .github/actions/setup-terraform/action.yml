@@ -12,6 +12,8 @@ runs:
       shell: bash
 
     - id: install-terraform
+      env:
+        TFENV_DEBUG=1
       run: |
         tfenv install 1.14.3
         terraform --version
