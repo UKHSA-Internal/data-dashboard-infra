@@ -1,5 +1,6 @@
 module "sns_topic_alarms" {
   source = "terraform-aws-modules/sns/aws"
+  version = "7.0.0"
   name   = "${local.prefix}-alarms"
 
   subscriptions = {
