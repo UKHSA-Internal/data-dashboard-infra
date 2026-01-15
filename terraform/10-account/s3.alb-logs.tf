@@ -1,6 +1,6 @@
 module "s3_elb_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.9.0"
+  version = "5.10.0"
 
   bucket = "uhd-aws-elb-access-logs-${local.account_id}-${local.region}"
 
@@ -11,7 +11,7 @@ module "s3_elb_logs" {
 
 module "elb_logs_new_object" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
-  version = "5.9.0"
+  version = "5.10.0"
 
   bucket = module.s3_elb_logs.s3_bucket_id
 
