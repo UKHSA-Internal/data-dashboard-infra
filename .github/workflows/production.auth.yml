@@ -3,6 +3,10 @@ name: Production Workflow Non-public
 on:
   workflow_call:
 
+concurrency:
+  group: prod-auth-deploy
+  cancel-in-progress: false
+
 env:
   AWS_REGION: "eu-west-2"
   branch: "env/auth-prod/auth-prod"
