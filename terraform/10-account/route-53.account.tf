@@ -1,6 +1,6 @@
 module "route_53_zone_account" {
   source  = "terraform-aws-modules/route53/aws//modules/zones"
-  version = "3.1.0"
+  version = "6.4.0"
 
   create = true
 
