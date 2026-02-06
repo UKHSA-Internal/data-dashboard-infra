@@ -32,12 +32,8 @@ resource "aws_cognito_user_pool" "user_pool" {
   schema {
     name                = "entra_oid"
     attribute_data_type = "String"
-    mutable             = false
+    mutable             = true
     required            = false
-    string_attribute_constraints {
-      min_length = 1
-      max_length = 256
-    }
   }
 
   lifecycle {
