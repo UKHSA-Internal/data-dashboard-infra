@@ -32,6 +32,13 @@ resource "aws_cognito_user_pool" "user_pool" {
   lifecycle {
     ignore_changes = [schema]
   }
+
+  lambda_config {
+    pre_token_generation_config { 
+      lambda_arn = var.pre_token_generation_lambda
+      lambda_version = "V3_0"
+    }
+  }
 }
 
 resource "aws_cognito_user_pool_client" "user_pool_client" {

@@ -184,3 +184,6 @@ junit.xml
 
 # Intelli J IDE project settings directory
 .idea
+
+# Output from calling lambda function for testing
+src/lambda-retrieve-user-permission-set/response.json
