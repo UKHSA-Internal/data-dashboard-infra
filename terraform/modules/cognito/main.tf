@@ -29,6 +29,13 @@ resource "aws_cognito_user_pool" "user_pool" {
     required            = false
   }
 
+  schema {
+    name                = "entra_oid"
+    attribute_data_type = "String"
+    mutable             = true
+    required            = false
+  }
+
   lifecycle {
     ignore_changes = [schema]
   }
@@ -94,6 +101,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
 
   attribute_mapping = {
     "custom:groups" = "groups"
+    "custom:entra_oid" = "oid"
     "name"          = "name"
     "username"      = "sub"
   }
