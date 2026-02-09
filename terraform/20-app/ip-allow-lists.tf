@@ -42,6 +42,7 @@ locals {
       "165.225.199.111/32", # Jayne Gilbert
       "90.252.15.44/32",    # Andrew Williams
       "172.27.130.67/32",   # Dan Jendrissek
+      "194.9.111.78/32",    # Alexandra Yearbridge
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
