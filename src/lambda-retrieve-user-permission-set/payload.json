@@ -1,0 +1,32 @@
+{
+    "callerContext": {
+        "awsSdkVersion": "aws-sdk-unknown-unknown",
+        "clientId": "4upd8frv3eo2cl9v746pc7b6aq"
+    },
+    "region": "eu-west-2",
+    "request": {
+        "groupConfiguration": {
+            "groupsToOverride": [],
+            "iamRolesToOverride": [],
+            "preferredRole": null
+        },
+        "scopes": [
+            "openid",
+            "profile",
+            "email"
+        ],
+        "userAttributes": {
+            "cognito:user_status": "CONFIRMED",
+            "email": "test.email@ukhsa.gov.uk",
+            "email_verified": "true",
+            "sub": "e6429214-e051-7098-998d-414acc8730a1"
+        }
+    },
+    "response": {
+        "claimsAndScopeOverrideDetails": null
+    },
+    "triggerSource": "TokenGeneration_HostedAuth",
+    "userName": "e6429214-e051-7098-998d-414acc8730a1",
+    "userPoolId": "eu-west-2_85TtaeD4r",
+    "version": "3"
+}

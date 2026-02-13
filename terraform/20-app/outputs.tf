@@ -83,6 +83,7 @@ output "lambda" {
   value = {
     ingestion_lambda_arn  = module.lambda_ingestion.lambda_function_arn
     revalidate_lambda_arn = module.lambda_front_end_revalidation.lambda_function_arn
+    user_permission_lambda_arn = module.lambda_retrieve_user_permission_set.lambda_function_arn
   }
   sensitive = true
 }
