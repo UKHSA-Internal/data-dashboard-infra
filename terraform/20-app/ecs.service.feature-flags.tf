@@ -1,6 +1,6 @@
 module "ecs_service_feature_flags" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "6.10.0"
+  version = "7.2.0"
 
   name                   = "${local.prefix}-feature-flags"
   cluster_arn            = module.ecs.cluster_arn
