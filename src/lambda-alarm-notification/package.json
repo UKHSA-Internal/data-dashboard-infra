@@ -12,7 +12,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^17.0.1"
+    "sinon": "^21.0.1"
   },
   "dependencies": {
       "@aws-sdk/client-secrets-manager": "^3.637.0",
