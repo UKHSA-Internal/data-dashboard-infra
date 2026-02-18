@@ -1,6 +1,6 @@
 module "lambda_retrieve_user_permission_set" {
   source        = "terraform-aws-modules/lambda/aws"
-  version       = "7.8.1"
+  version       = "8.7.0"
   function_name = "${local.prefix}-retrieve-user-permission-set"
   description   = "Populate cognito token with user permission sets"
 
