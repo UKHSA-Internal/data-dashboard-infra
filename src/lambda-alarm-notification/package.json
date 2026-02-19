@@ -10,12 +10,12 @@
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.7.0",
+    "jest": "^30.2.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^17.0.1"
+    "sinon": "^21.0.1"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.637.0",
-      "@slack/webhook": "^7.0.2"
+      "@aws-sdk/client-secrets-manager": "^3.993.0",
+      "@slack/webhook": "^7.0.7"
   }
 }
