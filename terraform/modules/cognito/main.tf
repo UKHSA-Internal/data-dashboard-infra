@@ -90,6 +90,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   user_pool_id  = aws_cognito_user_pool.user_pool.id
   provider_name = "UKHSAOIDC"
   provider_type = "OIDC"
+  depends_on = [ aws_cognito_user_pool.user_pool ]
 
   provider_details = {
     client_id                 = var.ukhsa_client_id
