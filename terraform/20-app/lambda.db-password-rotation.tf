@@ -5,7 +5,7 @@ module "lambda_db_password_rotation" {
   description   = "Redeploys services which depend on the main database when the password in secrets manager is rotated"
 
   create_package = true
-  runtime        = "nodejs18.x"
+  runtime        = "nodejs24.x"
   handler        = "index.handler"
   source_path    = "../../src/lambda-db-password-rotation"
 
