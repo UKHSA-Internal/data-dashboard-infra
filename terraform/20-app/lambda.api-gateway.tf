@@ -6,7 +6,7 @@ module "lambda_api_gateway" {
   function_name = "${local.prefix}-api-gateway-auth-lambda"
   description   = "Handles API Gateway authentication requests."
 
-  runtime       = "nodejs18.x"
+  runtime       = "nodejs24.x"
   architectures = ["arm64"]
   handler       = "index.handler"
 
