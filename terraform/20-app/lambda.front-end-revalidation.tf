@@ -8,7 +8,7 @@ module "lambda_front_end_revalidation" {
   attach_network_policy  = true
 
   create_package = true
-  runtime        = "nodejs18.x"
+  runtime        = "nodejs24.x"
   handler        = "index.handler"
   source_path    = "../../src/lambda-front-end-revalidation"
 

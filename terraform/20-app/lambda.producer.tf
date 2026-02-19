@@ -7,7 +7,7 @@ module "lambda_producer" {
   cloudwatch_logs_retention_in_days = local.default_log_retention_in_days
 
   create_package = true
-  runtime        = "nodejs18.x"
+  runtime        = "nodejs24.x"
   handler        = "index.handler"
   source_path    = "../../src/lambda-producer-handler"
 
