@@ -34,7 +34,7 @@ jobs:
       - name: Build base env
         run: |
           source uhd.sh
-          uhd terraform init:layer 20-app
+          uhd terraform init
           uhd terraform apply:layer 20-app ci-auth-$SHORT_SHA
         shell: zsh {0}
 
@@ -212,7 +212,7 @@ jobs:
       - name: Configure AWS credentials for auth-test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          account-name: 'auth-test'
+          account-name: "auth-test"
           aws-region: ${{ env.AWS_REGION }}
           auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
@@ -274,7 +274,7 @@ jobs:
       - name: Configure AWS credentials for auth-test account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          account-name: 'auth-test'
+          account-name: "auth-test"
           aws-region: ${{ env.AWS_REGION }}
           auth-test-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_TEST }}
 
