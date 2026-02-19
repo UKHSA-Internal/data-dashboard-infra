@@ -1,6 +1,6 @@
-const {S3Client, GetObjectCommand} = require("@aws-sdk/client-s3");
-const {KinesisClient, PutRecordCommand} = require("@aws-sdk/client-kinesis");
-const uuid = require('uuid');
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { KinesisClient, PutRecordCommand } from "@aws-sdk/client-kinesis";
+import * as uuid from 'uuid';
 
 
 /**
@@ -149,7 +149,7 @@ async function handler(event, context, overridenDependencies = {}) {
     console.log(logMessage);
 }
 
-module.exports = {
+export {
     extractBucketAndObjectKey,
     downloadFileFromS3,
     calculateJitteredBackoffPeriod,
