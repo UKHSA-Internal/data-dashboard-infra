@@ -1,6 +1,6 @@
 module "cognito" {
   source           = "../modules/cognito"
-  user_pool_name   = "${local.prefix}-user-pool"
+  user_pool_name   = "${local.prefix}-non-public-user-pool"
   client_name      = "${local.prefix}-client"
   user_pool_domain = "${local.prefix}-domain"
   region           = local.region
