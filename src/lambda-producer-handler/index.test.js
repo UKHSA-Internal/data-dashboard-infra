@@ -1,16 +1,17 @@
-const {
-    extractBucketAndObjectKey,
-    downloadFileFromS3,
-    constructPayload,
+import {
     calculateJitteredBackoffPeriod,
+    constructPayload,
+    downloadFileFromS3,
+    extractBucketAndObjectKey,
+    handler,
     writeDataToKinesis,
-    writeDataToKinesisWithRetry,
-    handler
-} = require('./index.js')
-const {GetObjectCommand} = require("@aws-sdk/client-s3");
-const {PutRecordCommand} = require("@aws-sdk/client-kinesis");
-const sinon = require('sinon');
-const uuid = require('uuid');
+    writeDataToKinesisWithRetry
+} from './index.js';
+import {GetObjectCommand} from "@aws-sdk/client-s3";
+import {PutRecordCommand} from "@aws-sdk/client-kinesis";
+import sinon from 'sinon';
+import * as uuid from 'uuid';
+import {describe, expect, jest, test} from '@jest/globals';
 
 
 const fakeFileContents = {
@@ -355,5 +356,4 @@ describe('handler', () => {
         const expectedLogStatement = `Record for '${key}' published to Kinesis`
         expect(logSpy).toHaveBeenCalledWith(expectedLogStatement);
     })
-
 })
