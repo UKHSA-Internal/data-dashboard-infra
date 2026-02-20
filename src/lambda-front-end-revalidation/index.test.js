@@ -1,12 +1,7 @@
-const {
-    sendRevalidateRequest,
-    getRevalidateSecretFromSecretsManager,
-    getSecret,
-    handler,
-} = require('./index.js')
-const sinon = require('sinon');
-
-const {GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
+import {getRevalidateSecretFromSecretsManager, getSecret, handler, sendRevalidateRequest,} from './index.js';
+import sinon from 'sinon';
+import {describe, expect, jest, test} from '@jest/globals';
+import {GetSecretValueCommand} from "@aws-sdk/client-secrets-manager";
 
 describe('getSecret', () => {
     /**
