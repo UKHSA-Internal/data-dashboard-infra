@@ -73,4 +73,9 @@ variable "prefix" {
   type        = string
 }
 
+variable "pre_token_generation_lambda" {
+  description = "ARN for lambda to populate token with permission sets"
+  type        = string
+}
+
 

@@ -20,8 +20,9 @@ function _lambda() {
 
     case $verb in
         "restart-functions") _lambda_restart_functions $args ;;
-        "logs") _lambda_logs $args ;;
+        "logs") _lambda_logs ${args[*]} ;;
         "invoke-revalidate") _lambda_invoke_revalidate $args ;;
+        "invoke-user-permission") _lambda_invoke_user_permission ${args[*]} ;;
 
         *) _lambda_help ;;
     esac
@@ -47,6 +48,18 @@ function _lambda_logs() {
 function _lambda_invoke_revalidate() {
     local revalidate_lambda_arn=$(_get_revalidate_lambda_arn)
     local result=$(aws lambda invoke --function-name ${revalidate_lambda_arn} /dev/null)
+}
+
+function _lambda_invoke_user_permission() {
+    local user_permission_lambda_arn=$(_get_user_permission_lambda_arn)
+    local result
+    local exit_code
+    result=$(aws lambda invoke --function-name ${user_permission_lambda_arn} --cli-binary-format raw-in-base64-out --payload file://src/lambda-retrieve-user-permission-set/payload.json src/lambda-retrieve-user-permission-set/response.json ${args[*]})
+    exit_code=$?
+    echo $result
+    if [[ $exit_code -eq 0 ]]; then
+        cat src/lambda-retrieve-user-permission-set/response.json
+    fi
 }
 
 function _lambda_restart_functions() {
@@ -87,4 +100,10 @@ function _get_revalidate_lambda_arn() {
     local terraform_output_file=terraform/20-app/output.json
     local revalidate_lambda_arn=$(jq -r '.lambda.value.revalidate_lambda_arn'  $terraform_output_file)
     echo $revalidate_lambda_arn
+}
+
+function _get_user_permission_lambda_arn() {
+    local terraform_output_file=terraform/20-app/output.json
+    local user_permission_lambda_arn=$(jq -r '.lambda.value.user_permission_lambda_arn'  $terraform_output_file)
+    echo $user_permission_lambda_arn
 }

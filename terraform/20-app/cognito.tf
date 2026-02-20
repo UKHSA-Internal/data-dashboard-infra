@@ -22,4 +22,6 @@ module "cognito" {
   ukhsa_tenant_id     = var.ukhsa_tenant_id
 
   prefix          = local.prefix
+
+  pre_token_generation_lambda = module.lambda_retrieve_user_permission_set.lambda_function_arn
 }
