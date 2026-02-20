@@ -30,10 +30,15 @@ resource "aws_cognito_user_pool" "user_pool" {
   }
 
   schema {
-    name                = "entra_oid"
+    name                = "entraid"
     attribute_data_type = "String"
     mutable             = true
     required            = false
+
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
   }
 
   # lifecycle {
@@ -102,7 +107,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
 
   attribute_mapping = {
     "custom:groups" = "groups"
-    "custom:entra_oid" = "oid"
+    "custom:entraid" = "oid"
     "name"          = "name"
     "username"      = "sub"
   }
