@@ -15,7 +15,7 @@
     "sinon": "^17.0.1"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.637.0",
+      "@aws-sdk/client-secrets-manager": "^3.995.0",
       "@slack/webhook": "^7.0.2"
   }
 }
