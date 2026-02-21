@@ -15,9 +15,9 @@
     "sinon": "^17.0.1"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.556.0",
-    "@aws-sdk/client-secrets-manager": "^3.624.0",
-    "@aws-sdk/client-synthetics": "^3.632.0",
+    "@aws-sdk/client-s3": "^3.995.0",
+    "@aws-sdk/client-secrets-manager": "^3.995.0",
+    "@aws-sdk/client-synthetics": "^3.995.0",
     "@slack/web-api": "^7.3.1",
     "axios": "^1.13.5",
     "form-data": "^4.0.0"
