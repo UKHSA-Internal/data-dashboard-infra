@@ -625,6 +625,20 @@ region = eu-west-2
 
 `uhd terraform apply:layer 20-app <Workspace name>`
 
+### Pre-commit Hooks
+
+This repository uses **pre-commit** to automatically scan for hardcoded secrets before allowing commits.
+
+#### Setup (one-time)
+
+1. Install Python (if not already installed)
+
+2. Install pre-commit:
+
+```bash
+pip install pre-commit
+```
+
 ## Related repos
 
 These repos contain the app source code:
