@@ -274,7 +274,7 @@ function _terraform_apply_layer() {
 
     # Check if a Cognito User Pool exists and if it's missing the custom attribute
     local user_pool_resource=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
-    local replace_flag=""
+    local replace_flags=()
     
     if [[ -n ${user_pool_resource} ]]; then
         echo "Found existing user pool: $user_pool_resource"
@@ -296,10 +296,10 @@ function _terraform_apply_layer() {
                 
                 if [[ -n ${domain_resource} ]]; then
                     echo "Found domain resource: $domain_resource"
-                    replace_flag="-replace=${domain_resource} -replace=${user_pool_resource}"
+                    replace_flags=("-replace=${domain_resource}" "-replace=${user_pool_resource}")
                 else
                     echo "No domain resource found, replacing only user pool"
-                    replace_flag="-replace=${user_pool_resource}"
+                    replace_flags=("-replace=${user_pool_resource}")
                 fi
             else
                 echo "Custom attribute 'entraObjectId' already exists. No replacement needed."
@@ -319,7 +319,7 @@ function _terraform_apply_layer() {
         -var "ukhsa_client_id=${ukhsa_client_id}" \
         -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
-        ${replace_flag} \
+        "${replace_flags[@]}" \
         -auto-approve || return 1
 
     terraform output -json > output.json
