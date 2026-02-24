@@ -272,6 +272,33 @@ function _terraform_apply_layer() {
     cd $terraform_dir
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
+    # Check if a Cognito User Pool exists and if it's missing the custom attribute
+    local user_pool_resource=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
+    local replace_flag=""
+    
+    if [[ -n ${user_pool_resource} ]]; then
+        echo "Found existing user pool: $user_pool_resource"
+        
+        # Get the user pool ID from terraform state
+        local user_pool_id=$(terraform state show "$user_pool_resource" 2>/dev/null | grep "^[[:space:]]*id[[:space:]]*=" | awk -F'"' '{print $2}')
+        
+        if [[ -n ${user_pool_id} ]]; then
+            echo "Checking if user pool $user_pool_id has custom attribute 'entraObjectId'..."
+            
+            # Check if the custom attribute exists in the user pool
+            local has_custom_attribute=$(aws cognito-idp describe-user-pool --user-pool-id "$user_pool_id" --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" --output text 2>/dev/null)
+            
+            if [[ -z ${has_custom_attribute} ]]; then
+                echo "Custom attribute 'entraObjectId' not found. User pool will be replaced."
+                replace_flag="-replace=${user_pool_resource}"
+            else
+                echo "Custom attribute 'entraObjectId' already exists. No replacement needed."
+            fi
+        else
+            echo "Warning: Could not determine user pool ID from state" >&2
+        fi
+    fi
+
     terraform apply \
         -parallelism=20 \
         -var "assume_account_id=${assume_account_id}" \
@@ -282,6 +309,7 @@ function _terraform_apply_layer() {
         -var "ukhsa_client_id=${ukhsa_client_id}" \
         -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
+        ${replace_flag} \
         -auto-approve || return 1
 
     terraform output -json > output.json

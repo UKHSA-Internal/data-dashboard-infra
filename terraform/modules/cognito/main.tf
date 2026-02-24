@@ -36,9 +36,9 @@ resource "aws_cognito_user_pool" "user_pool" {
     required            = false
   }
 
-  # lifecycle {
-  #   ignore_changes = [schema]
-  # }
+  lifecycle {
+    ignore_changes = [schema]
+  }
 
   lambda_config {
     pre_token_generation_config { 
