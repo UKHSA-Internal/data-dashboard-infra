@@ -289,8 +289,18 @@ function _terraform_apply_layer() {
             local has_custom_attribute=$(aws cognito-idp describe-user-pool --user-pool-id "$user_pool_id" --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" --output text 2>/dev/null)
             
             if [[ -z ${has_custom_attribute} ]]; then
-                echo "Custom attribute 'entraObjectId' not found. User pool will be replaced."
-                replace_flag="-replace=${user_pool_resource}"
+                echo "Custom attribute 'entraObjectId' not found. User pool and domain will be replaced."
+                
+                # Find the domain resource associated with this user pool
+                local domain_resource=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool_domain" | head -n 1)
+                
+                if [[ -n ${domain_resource} ]]; then
+                    echo "Found domain resource: $domain_resource"
+                    replace_flag="-replace=${domain_resource} -replace=${user_pool_resource}"
+                else
+                    echo "No domain resource found, replacing only user pool"
+                    replace_flag="-replace=${user_pool_resource}"
+                fi
             else
                 echo "Custom attribute 'entraObjectId' already exists. No replacement needed."
             fi
