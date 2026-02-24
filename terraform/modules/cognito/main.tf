@@ -108,6 +108,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
 
   attribute_mapping = {
     "custom:groups" = "groups"
+    "custom:entraObjectId" = "oid"
     "name"          = "name"
     "username"      = "sub"
   }
