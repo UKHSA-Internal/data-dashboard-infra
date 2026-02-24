@@ -1,5 +1,5 @@
-const {SecretsManagerClient, GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
-const {IncomingWebhook} = require('@slack/webhook');
+import {SecretsManagerClient, GetSecretValueCommand} from "@aws-sdk/client-secrets-manager";
+import {IncomingWebhook} from '@slack/webhook';
 
 /**
  * Gets the secret for the Slack webhook URL from secrets Manager
@@ -122,6 +122,6 @@ async function handler(event, overridenDependencies = {}) {
     await dependencies.submitMessageToSlack(slackMessage, webhookURL)
 }
 
-module.exports = {
+export {
     handler, getSecret, getSlackWebhookURLFromSecretsManager, submitMessageToSlack, buildSlackPostFromSNSMessage
 }
