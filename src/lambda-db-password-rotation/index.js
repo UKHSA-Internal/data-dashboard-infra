@@ -1,4 +1,4 @@
-const {ECSClient, UpdateServiceCommand} = require("@aws-sdk/client-ecs");
+import {ECSClient, UpdateServiceCommand} from "@aws-sdk/client-ecs";
 
 /**
  * Restart the tasks associated with the given ECS service
@@ -78,7 +78,7 @@ async function handler(event, context, overridenDependencies = {}) {
     }
 }
 
-module.exports = {
+export {
     handler,
     restartECSService,
     restartMainDbECSServices,
