@@ -296,7 +296,27 @@ function _terraform_apply_layer() {
                 
                 if [[ -n ${domain_resource} ]]; then
                     echo "Found domain resource: $domain_resource"
-                    replace_flags=("-replace=${domain_resource}" "-replace=${user_pool_resource}")
+                    echo "Step 1: Destroying domain and user pool..."
+                    
+                    # First, explicitly destroy both resources
+                    terraform destroy \
+                        -var "assume_account_id=${assume_account_id}" \
+                        -var "tools_account_id=${tools_account_id}" \
+                        -var "python_version=${python_version}" \
+                        -var "etl_account_id=${etl_account_id}" \
+                        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+                        -var "ukhsa_client_id=${ukhsa_client_id}" \
+                        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
+                        -var-file=$var_file \
+                        -target="${domain_resource}" \
+                        -target="${user_pool_resource}" \
+                        -auto-approve || return 1
+                    
+                    echo "Step 2: Waiting 10 seconds for domain deletion to propagate..."
+                    sleep 20
+                    
+                    # Clear the replace flags since we've already destroyed
+                    replace_flags=()
                 else
                     echo "No domain resource found, replacing only user pool"
                     replace_flags=("-replace=${user_pool_resource}")
