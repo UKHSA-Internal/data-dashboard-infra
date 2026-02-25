@@ -272,61 +272,22 @@ function _terraform_apply_layer() {
     cd $terraform_dir
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
-    # Check if a Cognito User Pool exists and if it's missing the custom attribute
-    local user_pool_resource=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
+    # Check if a Cognito User Pool exists and if it's missing the custom attribute - This functionality should be deleted once all user pools have been migrated to new schema.
+    local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
     local replace_flags=()
-    
-    if [[ -n ${user_pool_resource} ]]; then
-        echo "Found existing user pool: $user_pool_resource"
-        
-        # Get the user pool ID from terraform state
-        local user_pool_id=$(terraform state show "$user_pool_resource" 2>/dev/null | grep "^[[:space:]]*id[[:space:]]*=" | awk -F'"' '{print $2}')
-        
-        if [[ -n ${user_pool_id} ]]; then
-            echo "Checking if user pool $user_pool_id has custom attribute 'entraObjectId'..."
-            
-            # Check if the custom attribute exists in the user pool
-            local has_custom_attribute=$(aws cognito-idp describe-user-pool --user-pool-id "$user_pool_id" --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" --output text 2>/dev/null)
-            
-            if [[ -z ${has_custom_attribute} ]]; then
-                echo "Custom attribute 'entraObjectId' not found. User pool and domain will be replaced."
-                
-                # Find the domain resource associated with this user pool
-                local domain_resource=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool_domain" | head -n 1)
-                
-                if [[ -n ${domain_resource} ]]; then
-                    echo "Found domain resource: $domain_resource"
-                    echo "Step 1: Destroying domain and user pool..."
-                    
-                    # First, explicitly destroy both resources
-                    terraform destroy \
-                        -var "assume_account_id=${assume_account_id}" \
-                        -var "tools_account_id=${tools_account_id}" \
-                        -var "python_version=${python_version}" \
-                        -var "etl_account_id=${etl_account_id}" \
-                        -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
-                        -var "ukhsa_client_id=${ukhsa_client_id}" \
-                        -var "ukhsa_client_secret=${ukhsa_client_secret}" \
-                        -var-file=$var_file \
-                        -target="${domain_resource}" \
-                        -target="${user_pool_resource}" \
-                        -auto-approve || return 1
-                    
-                    echo "Step 2: Waiting 10 seconds for domain deletion to propagate..."
-                    sleep 20
-                    
-                    # Clear the replace flags since we've already destroyed
-                    replace_flags=()
-                else
-                    echo "No domain resource found, replacing only user pool"
-                    replace_flags=("-replace=${user_pool_resource}")
-                fi
-            else
-                echo "Custom attribute 'entraObjectId' already exists. No replacement needed."
-            fi
-        else
-            echo "Warning: Could not determine user pool ID from state" >&2
-        fi
+
+    if [[ -n ${user_pool} ]]; then
+        _migrate_cognito_user_pool_schema \
+            "$user_pool" \
+            "$assume_account_id" \
+            "$tools_account_id" \
+            "$python_version" \
+            "$etl_account_id" \
+            "$ukhsa_tenant_id" \
+            "$ukhsa_client_id" \
+            "$ukhsa_client_secret" \
+            "$var_file" \
+            replace_flags || return 1
     fi
 
     terraform apply \
@@ -562,6 +523,76 @@ function _terraform_cleanup() {
             fi
         fi
     done
+}
+
+function _migrate_cognito_user_pool_schema() {
+    local user_pool_resource=$1
+    local assume_account_id=$2
+    local tools_account_id=$3
+    local python_version=$4
+    local etl_account_id=$5
+    local ukhsa_tenant_id=$6
+    local ukhsa_client_id=$7
+    local ukhsa_client_secret=$8
+    local var_file=$9
+    local -n flags=${10}  # Reference to replace_flags array in parent scope
+    
+    echo "Checking Cognito User Pool for schema migration..."
+    
+    # Extract user pool ID from Terraform state
+    local pool_id=$(terraform state show "$user_pool_resource" 2>/dev/null | \
+                    grep "^[[:space:]]*id[[:space:]]*=" | \
+                    awk -F'"' '{print $2}')
+    
+    if [[ -z ${pool_id} ]]; then
+        echo "Warning: Could not determine user pool ID. Skipping migration check." >&2
+        return 0
+    fi
+    
+    # Check if the entraObjectId attribute already exists
+    local has_attribute=$(aws cognito-idp describe-user-pool \
+                         --user-pool-id "$pool_id" \
+                         --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" \
+                         --output text 2>/dev/null)
+    
+    if [[ -n ${has_attribute} ]]; then
+        echo "Custom attribute 'entraObjectId' already exists. No migration needed."
+        return 0
+    fi
+    
+    echo "Custom attribute 'entraObjectId' missing. Starting migration..."
+    
+    # Find associated domain resource
+    local domain_resource=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_pool_domain" | \
+                           head -n 1)
+    
+    if [[ -n ${domain_resource} ]]; then
+        echo "  → Destroying domain: $domain_resource"
+        echo "  → Destroying user pool: $user_pool_resource"
+        
+        terraform destroy \
+            -var "assume_account_id=${assume_account_id}" \
+            -var "tools_account_id=${tools_account_id}" \
+            -var "python_version=${python_version}" \
+            -var "etl_account_id=${etl_account_id}" \
+            -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+            -var "ukhsa_client_id=${ukhsa_client_id}" \
+            -var "ukhsa_client_secret=${ukhsa_client_secret}" \
+            -var-file="$var_file" \
+            -target="$domain_resource" \
+            -target="$user_pool_resource" \
+            -auto-approve || return 1
+        
+        echo "Waiting 20s for AWS to propagate domain deletion..."
+        sleep 20
+        echo "Migration preparation complete. Resources will be recreated with new schema."
+    else
+        echo "No domain found. Using replace strategy for user pool only."
+        flags=("-replace=${user_pool_resource}")
+    fi
+    
+    return 0
 }
 
 function _get_terraform_dir() {
