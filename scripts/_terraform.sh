@@ -665,23 +665,22 @@ function _migrate_cognito_user_pool_schema() {
     if [[ ${#resources_to_replace[@]} -gt 0 ]]; then
         echo "Destroying ${#resources_to_replace[@]} Cognito resources..."
         
-        local destroy_cmd="terraform destroy"
-        destroy_cmd="$destroy_cmd -var \"assume_account_id=${assume_account_id}\""
-        destroy_cmd="$destroy_cmd -var \"tools_account_id=${tools_account_id}\""
-        destroy_cmd="$destroy_cmd -var \"python_version=${python_version}\""
-        destroy_cmd="$destroy_cmd -var \"etl_account_id=${etl_account_id}\""
-        destroy_cmd="$destroy_cmd -var \"ukhsa_tenant_id=${ukhsa_tenant_id}\""
-        destroy_cmd="$destroy_cmd -var \"ukhsa_client_id=${ukhsa_client_id}\""
-        destroy_cmd="$destroy_cmd -var \"ukhsa_client_secret=${ukhsa_client_secret}\""
-        destroy_cmd="$destroy_cmd -var-file=\"$var_file\""
-        
+        local target_flags=()
         for resource in "${resources_to_replace[@]}"; do
-            destroy_cmd="$destroy_cmd -target=\"$resource\""
+            target_flags+=("-target=$resource")
         done
         
-        destroy_cmd="$destroy_cmd -auto-approve"
-        
-        eval $destroy_cmd || return 1
+        terraform destroy \
+            -var "assume_account_id=${assume_account_id}" \
+            -var "tools_account_id=${tools_account_id}" \
+            -var "python_version=${python_version}" \
+            -var "etl_account_id=${etl_account_id}" \
+            -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+            -var "ukhsa_client_id=${ukhsa_client_id}" \
+            -var "ukhsa_client_secret=${ukhsa_client_secret}" \
+            -var-file="$var_file" \
+            "${target_flags[@]}" \
+            -auto-approve || return 1
         
         echo "Waiting 60s for AWS to propagate deletions..."
         sleep 60
