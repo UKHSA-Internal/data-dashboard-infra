@@ -18,7 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.999.0",
     "jsonwebtoken": "^9.0.3",
-    "jwks-rsa": "^3.2.2"
+    "jwks-rsa": "^4.0.0"
   },
   "engines": {
     "node": "=24.x"
