@@ -83,6 +83,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: './.nvmrc'
+
       - name: Test lambda-producer-handler
         uses: ./.github/actions/npm-test
         with:
