@@ -273,12 +273,13 @@ function _terraform_apply_layer() {
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
     # Check if a Cognito User Pool exists and if it's missing the custom attribute - This functionality should be deleted once all user pools have been migrated to new schema.
-    local replace_flags=()
 
     echo "Checking for user pool"
     local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
 
     if [[ -n ${user_pool} ]]; then
+        echo "User pool found"
+
         local migration_result=$(_migrate_cognito_user_pool_schema \
             "$user_pool" \
             "$assume_account_id" \
@@ -298,12 +299,6 @@ function _terraform_apply_layer() {
             echo "Migration check failed. Aborting." >&2
             return 1
         fi
-        
-        # Extract the last line which contains the replace flag (if any)
-        local last_line=$(echo "$migration_result" | tail -n 1)
-        if [[ "$last_line" == -replace=* ]]; then
-            replace_flags=("$last_line")
-        fi
     else
         echo "No user pool found in Terraform state. Skipping migration check."
     fi
@@ -318,7 +313,6 @@ function _terraform_apply_layer() {
         -var "ukhsa_client_id=${ukhsa_client_id}" \
         -var "ukhsa_client_secret=${ukhsa_client_secret}" \
         -var-file=$var_file \
-        "${replace_flags[@]}" \
         -auto-approve || return 1
 
     terraform output -json > output.json
@@ -560,6 +554,8 @@ function _migrate_cognito_user_pool_schema() {
     local pool_id=$(terraform state show "$user_pool_resource" 2>/dev/null | \
                     grep "^[[:space:]]*id[[:space:]]*=" | \
                     awk -F'"' '{print $2}')
+
+    echo "User pool ID found: ${pool_id}"
     
     if [[ -z ${pool_id} ]]; then
         echo "Warning: Could not determine user pool ID. Skipping migration check." >&2
@@ -580,44 +576,97 @@ function _migrate_cognito_user_pool_schema() {
         echo "Skipping migration to avoid accidental user loss." >&2
         return 1
     fi
+
+    local needs_user_pool_migration=false
+    local needs_idp_migration=false
     
-    if [[ -n ${has_attribute} ]]; then
-        echo "Custom attribute 'entraObjectId' already exists. No migration needed."
+    if [[ -z ${has_attribute} ]]; then
+        echo "Custom attribute 'entraObjectId' missing in user pool."
+        needs_user_pool_migration=true
+    else
+        echo "✓ Custom attribute 'entraObjectId' exists in user pool."
+    fi
+
+    # Check if identity provider needs the attribute mapping
+    local idp_resource=$(terraform state list 2>/dev/null | \
+                        grep "aws_cognito_identity_provider.ukhsa_oidc_idp" | \
+                        head -n 1)
+
+    if [[ -n ${idp_resource} ]]; then
+        echo "Checking identity provider attribute mappings..."
+        
+        # Get the identity provider details from state
+        local idp_state=$(terraform state show "$idp_resource" 2>/dev/null)
+        
+        # Check if custom:entraObjectId mapping exists
+        if echo "$idp_state" | grep -q '"custom:entraObjectId"'; then
+            echo "✓ Identity provider already has 'custom:entraObjectId' mapping."
+        else
+            echo "✗ Identity provider missing 'custom:entraObjectId' mapping."
+            needs_idp_migration=true
+        fi
+    fi
+
+    # Determine what needs to be migrated
+    if [[ "$needs_user_pool_migration" == false ]] && [[ "$needs_idp_migration" == false ]]; then
+        echo "✓ No migration needed. All resources are up to date."
         return 0
     fi
-    
-    echo "Custom attribute 'entraObjectId' missing. Starting migration..."
-    
-    # Find associated domain resource
-    local domain_resource=$(terraform state list 2>/dev/null | \
-                           grep "aws_cognito_user_pool_domain" | \
-                           head -n 1)
-    
-    if [[ -n ${domain_resource} ]]; then
-        echo "Destroying domain: $domain_resource"
-        echo "Destroying user pool: $user_pool_resource"
+
+    # Build list of resources to destroy and recreate
+    local resources_to_replace=()
+
+    if [[ "$needs_user_pool_migration" == true ]]; then
+        echo "Starting user pool schema migration..."
         
-        terraform destroy \
-            -var "assume_account_id=${assume_account_id}" \
-            -var "tools_account_id=${tools_account_id}" \
-            -var "python_version=${python_version}" \
-            -var "etl_account_id=${etl_account_id}" \
-            -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
-            -var "ukhsa_client_id=${ukhsa_client_id}" \
-            -var "ukhsa_client_secret=${ukhsa_client_secret}" \
-            -var-file="$var_file" \
-            -target="$domain_resource" \
-            -target="$user_pool_resource" \
-            -auto-approve || return 1
+        # Find associated domain resource
+        local domain_resource=$(terraform state list 2>/dev/null | \
+                               grep "aws_cognito_user_pool_domain" | \
+                               head -n 1)
         
-        echo "Waiting 20s for AWS to propagate domain deletion..."
-        sleep 20
-        echo "Migration preparation complete. Resources will be recreated with new schema."
-        echo ""
-    else
-        echo "No domain found. Using replace strategy for user pool only."
-        echo "-replace=${user_pool_resource}"
+        if [[ -n ${domain_resource} ]]; then
+            echo "  → Will destroy: $domain_resource"
+            resources_to_replace+=("$domain_resource")
+        fi
+        
+        echo "  → Will destroy: $user_pool_resource"
+        resources_to_replace+=("$user_pool_resource")
     fi
+
+    if [[ "$needs_idp_migration" == true ]]; then
+        echo "Starting identity provider migration..."
+        echo "  → Will destroy: $idp_resource"
+        resources_to_replace+=("$idp_resource")
+    fi
+
+    # Build terraform destroy command with all targets
+    if [[ ${#resources_to_replace[@]} -gt 0 ]]; then
+        echo "Destroying resources: ${resources_to_replace[*]}"
+        
+        local destroy_cmd="terraform destroy"
+        destroy_cmd="$destroy_cmd -var \"assume_account_id=${assume_account_id}\""
+        destroy_cmd="$destroy_cmd -var \"tools_account_id=${tools_account_id}\""
+        destroy_cmd="$destroy_cmd -var \"python_version=${python_version}\""
+        destroy_cmd="$destroy_cmd -var \"etl_account_id=${etl_account_id}\""
+        destroy_cmd="$destroy_cmd -var \"ukhsa_tenant_id=${ukhsa_tenant_id}\""
+        destroy_cmd="$destroy_cmd -var \"ukhsa_client_id=${ukhsa_client_id}\""
+        destroy_cmd="$destroy_cmd -var \"ukhsa_client_secret=${ukhsa_client_secret}\""
+        destroy_cmd="$destroy_cmd -var-file=\"$var_file\""
+        
+        for resource in "${resources_to_replace[@]}"; do
+            destroy_cmd="$destroy_cmd -target=\"$resource\""
+        done
+        
+        destroy_cmd="$destroy_cmd -auto-approve"
+        
+        eval $destroy_cmd || return 1
+        
+        echo "Waiting 20s for AWS to propagate deletions..."
+        sleep 20
+        echo "✓ Migration preparation complete. Resources will be recreated with new configuration."
+        echo ""
+    fi
+
     return 0
 }
 
