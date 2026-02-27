@@ -577,12 +577,12 @@ function _migrate_cognito_user_pool_schema() {
         return 1
     fi
 
-    local needs_user_pool_migration=false
-    local needs_idp_migration=false
+    local needs_migration=false
     
+    # Check user pool schema
     if [[ -z ${has_attribute} ]]; then
-        echo "Custom attribute 'entraObjectId' missing in user pool."
-        needs_user_pool_migration=true
+        echo "✗ Custom attribute 'entraObjectId' missing in user pool."
+        needs_migration=true
     else
         echo "✓ Custom attribute 'entraObjectId' exists in user pool."
     fi
@@ -603,45 +603,67 @@ function _migrate_cognito_user_pool_schema() {
             echo "✓ Identity provider already has 'custom:entraObjectId' mapping."
         else
             echo "✗ Identity provider missing 'custom:entraObjectId' mapping."
-            needs_idp_migration=true
+            echo "⚠️  To add attribute mapping, entire user pool stack must be recreated."
+            needs_migration=true
         fi
     fi
 
-    # Determine what needs to be migrated
-    if [[ "$needs_user_pool_migration" == false ]] && [[ "$needs_idp_migration" == false ]]; then
+    # If no migration needed, exit early
+    if [[ "$needs_migration" == false ]]; then
         echo "✓ No migration needed. All resources are up to date."
         return 0
     fi
 
-    # Build list of resources to destroy and recreate
+    # Build list of all Cognito resources to destroy
+    echo "Starting Cognito stack migration..."
+    echo "⚠️  WARNING: This will delete all users in the user pool."
+    
     local resources_to_replace=()
-
-    if [[ "$needs_user_pool_migration" == true ]]; then
-        echo "Starting user pool schema migration..."
-        
-        # Find associated domain resource
-        local domain_resource=$(terraform state list 2>/dev/null | \
-                               grep "aws_cognito_user_pool_domain" | \
-                               head -n 1)
-        
-        if [[ -n ${domain_resource} ]]; then
-            echo "  → Will destroy: $domain_resource"
-            resources_to_replace+=("$domain_resource")
-        fi
-        
-        echo "  → Will destroy: $user_pool_resource"
-        resources_to_replace+=("$user_pool_resource")
+    
+    # Find and add domain
+    local domain_resource=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_pool_domain" | \
+                           head -n 1)
+    
+    if [[ -n ${domain_resource} ]]; then
+        echo "  → Will destroy: $domain_resource"
+        resources_to_replace+=("$domain_resource")
     fi
-
-    if [[ "$needs_idp_migration" == true ]]; then
-        echo "Starting identity provider migration..."
+    
+    # Add user pool
+    echo "  → Will destroy: $user_pool_resource"
+    resources_to_replace+=("$user_pool_resource")
+    
+    # Add identity provider if it exists
+    if [[ -n ${idp_resource} ]]; then
         echo "  → Will destroy: $idp_resource"
         resources_to_replace+=("$idp_resource")
+    fi
+    
+    # Add user pool client
+    local client_resource=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_pool_client.user_pool_client" | \
+                           head -n 1)
+    
+    if [[ -n ${client_resource} ]]; then
+        echo "  → Will destroy: $client_resource"
+        resources_to_replace+=("$client_resource")
+    fi
+    
+    # Add user groups
+    local group_resources=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_group.cognito_user_groups")
+    
+    if [[ -n ${group_resources} ]]; then
+        while IFS= read -r group; do
+            echo "  → Will destroy: $group"
+            resources_to_replace+=("$group")
+        done <<< "$group_resources"
     fi
 
     # Build terraform destroy command with all targets
     if [[ ${#resources_to_replace[@]} -gt 0 ]]; then
-        echo "Destroying resources: ${resources_to_replace[*]}"
+        echo "Destroying ${#resources_to_replace[@]} Cognito resources..."
         
         local destroy_cmd="terraform destroy"
         destroy_cmd="$destroy_cmd -var \"assume_account_id=${assume_account_id}\""
@@ -661,12 +683,12 @@ function _migrate_cognito_user_pool_schema() {
         
         eval $destroy_cmd || return 1
         
-        echo "Waiting 20s for AWS to propagate deletions..."
-        sleep 20
+        echo "Waiting 60s for AWS to propagate deletions..."
+        sleep 60
         echo "✓ Migration preparation complete. Resources will be recreated with new configuration."
         echo ""
     fi
-
+    
     return 0
 }
 
