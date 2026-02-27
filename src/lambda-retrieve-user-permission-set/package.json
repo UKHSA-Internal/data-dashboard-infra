@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest --watch",
-    "test:ci": "jest --ci --coverage"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage --silent"
   },
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
@@ -15,5 +16,8 @@
   },
   "dependencies": {
     "uuid": "^13.0.0"
+  },
+  "engines": {
+    "node": "=24.x"
   }
 }
