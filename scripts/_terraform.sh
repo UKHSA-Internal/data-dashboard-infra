@@ -273,11 +273,11 @@ function _terraform_apply_layer() {
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
     # Check if a Cognito User Pool exists and if it's missing the custom attribute - This functionality should be deleted once all user pools have been migrated to new schema.
-    local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
     local replace_flags=()
+    local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
 
     if [[ -n ${user_pool} ]]; then
-        _migrate_cognito_user_pool_schema \
+        local migtation_result=$(_migrate_cognito_user_pool_schema \
             "$user_pool" \
             "$assume_account_id" \
             "$tools_account_id" \
@@ -286,8 +286,22 @@ function _terraform_apply_layer() {
             "$ukhsa_tenant_id" \
             "$ukhsa_client_id" \
             "$ukhsa_client_secret" \
-            "$var_file" \
-            replace_flags || return 1
+            "$var_file" 2>&1)
+
+        local migration_exit=$?
+
+        echo "$migration_result"
+
+        if [[ ${migration_exit} -ne 0 ]]; then
+            echo "Migration check failed. Aborting." >&2
+            return 1
+        fi
+        
+        # Extract the last line which contains the replace flag (if any)
+        local last_line=$(echo "$migration_result" | tail -n 1)
+        if [[ "$last_line" == -replace=* ]]; then
+            replace_flags=("$last_line")
+        fi
     fi
 
     terraform apply \
@@ -535,7 +549,6 @@ function _migrate_cognito_user_pool_schema() {
     local ukhsa_client_id=$7
     local ukhsa_client_secret=$8
     local var_file=$9
-    local -n flags=${10}  # Reference to replace_flags array in parent scope
     
     echo "Checking Cognito User Pool for schema migration..."
     
@@ -553,7 +566,16 @@ function _migrate_cognito_user_pool_schema() {
     local has_attribute=$(aws cognito-idp describe-user-pool \
                          --user-pool-id "$pool_id" \
                          --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" \
-                         --output text 2>/dev/null)
+                         --output text 2>&1)
+
+    local aws_exit_code=$?
+
+    if [[ ${aws_exit_code} -ne 0 ]]; then
+        echo "Error: Failed to query user pool attributes. AWS CLI output:" >&2
+        echo "$has_attribute" >&2
+        echo "Skipping migration to avoid accidental user loss." >&2
+        return 1
+    fi
     
     if [[ -n ${has_attribute} ]]; then
         echo "Custom attribute 'entraObjectId' already exists. No migration needed."
@@ -568,8 +590,8 @@ function _migrate_cognito_user_pool_schema() {
                            head -n 1)
     
     if [[ -n ${domain_resource} ]]; then
-        echo "  → Destroying domain: $domain_resource"
-        echo "  → Destroying user pool: $user_pool_resource"
+        echo "Destroying domain: $domain_resource"
+        echo "Destroying user pool: $user_pool_resource"
         
         terraform destroy \
             -var "assume_account_id=${assume_account_id}" \
@@ -587,11 +609,11 @@ function _migrate_cognito_user_pool_schema() {
         echo "Waiting 20s for AWS to propagate domain deletion..."
         sleep 20
         echo "Migration preparation complete. Resources will be recreated with new schema."
+        echo ""
     else
         echo "No domain found. Using replace strategy for user pool only."
-        flags=("-replace=${user_pool_resource}")
+        echo "-replace=${user_pool_resource}"
     fi
-    
     return 0
 }
 
