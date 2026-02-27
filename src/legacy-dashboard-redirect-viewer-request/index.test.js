@@ -1,5 +1,5 @@
-const originRequest = require("./index");
-const handler = originRequest.__get__("handler");
+import {expect, test} from "@jest/globals";
+import handler from "./index.js";
 
 test.each([
   {
