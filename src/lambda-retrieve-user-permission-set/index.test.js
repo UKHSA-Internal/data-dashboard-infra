@@ -1,8 +1,6 @@
-const {
-    handler
-} = require('./index.js')
-const uuid = require('uuid');
-
+import {describe, expect, jest, test} from '@jest/globals';
+import handler from "./index.js";
+import {validate} from 'uuid';
 
 const fakeInputToken = {
     "callerContext": {
@@ -52,7 +50,7 @@ describe('handler', () => {
         const result = await handler(inputToken);
 
         // Then
-        expect(uuid.validate(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.claim_uuid)).toBeTruthy();
+        expect(validate(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.claim_uuid)).toBeTruthy();
     })
 
     /**
