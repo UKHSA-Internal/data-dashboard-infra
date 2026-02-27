@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage"
@@ -18,5 +19,8 @@
     "@aws-sdk/client-secrets-manager": "^3.993.0",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^3.2.2"
+  },
+  "engines": {
+    "node": "=24.x"
   }
 }
