@@ -274,10 +274,12 @@ function _terraform_apply_layer() {
 
     # Check if a Cognito User Pool exists and if it's missing the custom attribute - This functionality should be deleted once all user pools have been migrated to new schema.
     local replace_flags=()
+
+    echo "Checking for user pool"
     local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
 
     if [[ -n ${user_pool} ]]; then
-        local migtation_result=$(_migrate_cognito_user_pool_schema \
+        local migration_result=$(_migrate_cognito_user_pool_schema \
             "$user_pool" \
             "$assume_account_id" \
             "$tools_account_id" \
@@ -302,6 +304,8 @@ function _terraform_apply_layer() {
         if [[ "$last_line" == -replace=* ]]; then
             replace_flags=("$last_line")
         fi
+    else
+        echo "No user pool found in Terraform state. Skipping migration check."
     fi
 
     terraform apply \
