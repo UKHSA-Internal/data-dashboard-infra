@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --watch",
-    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage --silent"
+    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage"
   },
   "author": "",
   "license": "ISC",
