@@ -581,10 +581,10 @@ function _migrate_cognito_user_pool_schema() {
     
     # Check user pool schema
     if [[ -z ${has_attribute} ]]; then
-        echo "✗ Custom attribute 'entraObjectId' missing in user pool."
+        echo "Custom attribute 'entraObjectId' missing in user pool."
         needs_migration=true
     else
-        echo "✓ Custom attribute 'entraObjectId' exists in user pool."
+        echo "Custom attribute 'entraObjectId' exists in user pool."
     fi
 
     # Check if identity provider needs the attribute mapping
@@ -600,23 +600,23 @@ function _migrate_cognito_user_pool_schema() {
         
         # Check if custom:entraObjectId mapping exists
         if echo "$idp_state" | grep -q '"custom:entraObjectId"'; then
-            echo "✓ Identity provider already has 'custom:entraObjectId' mapping."
+            echo "Identity provider already has 'custom:entraObjectId' mapping."
         else
-            echo "✗ Identity provider missing 'custom:entraObjectId' mapping."
-            echo "⚠️  To add attribute mapping, entire user pool stack must be recreated."
+            echo "Identity provider missing 'custom:entraObjectId' mapping."
+            echo "To add attribute mapping, entire user pool stack must be recreated."
             needs_migration=true
         fi
     fi
 
     # If no migration needed, exit early
     if [[ "$needs_migration" == false ]]; then
-        echo "✓ No migration needed. All resources are up to date."
+        echo "No migration needed. All resources are up to date."
         return 0
     fi
 
     # Build list of all Cognito resources to destroy
     echo "Starting Cognito stack migration..."
-    echo "⚠️  WARNING: This will delete all users in the user pool."
+    echo "WARNING: This will delete all users in the user pool."
     
     local resources_to_replace=()
     
@@ -636,7 +636,7 @@ function _migrate_cognito_user_pool_schema() {
     
     # Add identity provider if it exists
     if [[ -n ${idp_resource} ]]; then
-        echo "  → Will destroy: $idp_resource"
+        echo "Will destroy: $idp_resource"
         resources_to_replace+=("$idp_resource")
     fi
     
@@ -646,7 +646,7 @@ function _migrate_cognito_user_pool_schema() {
                            head -n 1)
     
     if [[ -n ${client_resource} ]]; then
-        echo "  → Will destroy: $client_resource"
+        echo "Will destroy: $client_resource"
         resources_to_replace+=("$client_resource")
     fi
     
@@ -656,7 +656,7 @@ function _migrate_cognito_user_pool_schema() {
     
     if [[ -n ${group_resources} ]]; then
         while IFS= read -r group; do
-            echo "  → Will destroy: $group"
+            echo "Will destroy: $group"
             resources_to_replace+=("$group")
         done <<< "$group_resources"
     fi
@@ -684,7 +684,7 @@ function _migrate_cognito_user_pool_schema() {
         
         echo "Waiting 60s for AWS to propagate deletions..."
         sleep 60
-        echo "✓ Migration preparation complete. Resources will be recreated with new configuration."
+        echo "Migration preparation complete. Resources will be recreated with new configuration."
         echo ""
     fi
     
