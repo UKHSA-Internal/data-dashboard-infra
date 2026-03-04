@@ -16,6 +16,6 @@
   },
   "dependencies": {
       "@aws-sdk/client-secrets-manager": "^3.637.0",
-      "@slack/webhook": "^7.0.2"
+      "@slack/webhook": "^7.0.7"
   }
 }
