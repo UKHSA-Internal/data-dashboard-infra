@@ -1,9 +1,11 @@
 name: Pull Request Workflow
 
-on:
+on: 
   pull_request:
+    types: [opened, synchronize, reopened]
+  push:
     branches:
-      - "*"
+      - main
 
 env:
   AWS_REGION: "eu-west-2"
@@ -13,8 +15,40 @@ permissions:
   contents: read
 
 jobs:
+  secret-scan:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-22.04-arm
+
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_arm64.tar.gz -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+          gitleaks version
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.sha }}
+
+      - name: Run Gitleaks
+        run: |
+          echo "Scanning commits from base -> PR head"
+          gitleaks detect \
+            --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" \
+            --exit-code 1 \
+            --verbose
+
   build_base:
     name: Build base env
+    needs: [secret-scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
