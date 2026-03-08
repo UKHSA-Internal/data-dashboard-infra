@@ -13,12 +13,12 @@
   "devDependencies": {
     "jest": "^30.2.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^21.0.1"
+    "sinon": "^21.0.2"
   },
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.999.0",
+    "@aws-sdk/client-secrets-manager": "^3.1004.0",
     "jsonwebtoken": "^9.0.3",
-    "jwks-rsa": "^4.0.0"
+    "jwks-rsa": "^4.0.1"
   },
   "engines": {
     "node": "=24.x"
