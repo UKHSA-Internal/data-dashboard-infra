@@ -15,11 +15,13 @@ module "cognito" {
       local.is_dev ? ["http://localhost:3000", "http://localhost:3001"] : []
   )
 
-  enable_ukhsa_oidc = false
+  enable_ukhsa_oidc = true
 
   ukhsa_client_id     = var.ukhsa_client_id
   ukhsa_client_secret = var.ukhsa_client_secret
   ukhsa_tenant_id     = var.ukhsa_tenant_id
 
   prefix          = local.prefix
+
+  pre_token_generation_lambda = module.lambda_retrieve_user_permission_set.lambda_function_arn
 }

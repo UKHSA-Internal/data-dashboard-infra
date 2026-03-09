@@ -21,6 +21,32 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "npm"
+    directory: "/src/lambda-db-password-rotation"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/src/lambda-alarm-notification"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/src/legacy-dashboard-redirect-viewer-request"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
     directory: "/src/public-api-cloud-front-viewer-request"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/src/lambda-front-end-revalidation"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/src/lambda-retrieve-user-permission-set"
+    schedule:
+      interval: "weekly"
+

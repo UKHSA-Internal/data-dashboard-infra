@@ -625,6 +625,46 @@ region = eu-west-2
 
 `uhd terraform apply:layer 20-app <Workspace name>`
 
+
+### Pre-commit Hooks
+
+This repository uses **pre-commit** to automatically scan for hardcoded secrets before allowing commits.
+
+We recommend using **prek**, a faster drop-in replacement for pre-commit. It works with the existing configuration and requires no changes to the config files.
+
+---
+
+#### Setup (one-time)
+
+1. Install `uv` (if not already installed)
+
+On macOS:
+
+```bash
+brew install uv
+```
+
+2. Install `prek` globally:
+
+```bash
+uv tool install prek
+```
+
+3. Install Git Hooks(required)
+
+Run this once per repository
+```bash
+prek install
+```
+This install the git hooks so secret scanning runs automatically before every commit
+
+4. Run Manually(Optional)
+
+To scan all files manually
+```bash
+prek run --all-files
+```
+
 ## Related repos
 
 These repos contain the app source code:

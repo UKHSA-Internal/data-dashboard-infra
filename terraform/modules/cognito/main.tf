@@ -29,8 +29,22 @@ resource "aws_cognito_user_pool" "user_pool" {
     required            = false
   }
 
+  schema {
+    name                = "entraObjectId"
+    attribute_data_type = "String"
+    mutable             = true
+    required            = false
+  }
+
   lifecycle {
     ignore_changes = [schema]
+  }
+
+  lambda_config {
+    pre_token_generation_config { 
+      lambda_arn = var.pre_token_generation_lambda
+      lambda_version = "V3_0"
+    }
   }
 }
 
@@ -94,6 +108,7 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
 
   attribute_mapping = {
     "custom:groups" = "groups"
+    "custom:entraObjectId" = "oid"
     "name"          = "name"
     "username"      = "sub"
   }

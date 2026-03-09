@@ -272,6 +272,37 @@ function _terraform_apply_layer() {
     cd $terraform_dir
     terraform workspace select "$workspace" || terraform workspace new "$workspace" || return 1
 
+    # Check if a Cognito User Pool exists and if it's missing the custom attribute - This functionality should be deleted once all user pools have been migrated to new schema.
+
+    echo "Checking for user pool"
+    local user_pool=$(terraform state list 2>/dev/null | grep "aws_cognito_user_pool\." | grep -v "client" | grep -v "domain" | head -n 1)
+
+    if [[ -n ${user_pool} ]]; then
+        echo "User pool found"
+
+        local migration_result=$(_migrate_cognito_user_pool_schema \
+            "$user_pool" \
+            "$assume_account_id" \
+            "$tools_account_id" \
+            "$python_version" \
+            "$etl_account_id" \
+            "$ukhsa_tenant_id" \
+            "$ukhsa_client_id" \
+            "$ukhsa_client_secret" \
+            "$var_file" 2>&1)
+
+        local migration_exit=$?
+
+        echo "$migration_result"
+
+        if [[ ${migration_exit} -ne 0 ]]; then
+            echo "Migration check failed. Aborting." >&2
+            return 1
+        fi
+    else
+        echo "No user pool found in Terraform state. Skipping migration check."
+    fi
+
     terraform apply \
         -parallelism=20 \
         -var "assume_account_id=${assume_account_id}" \
@@ -504,6 +535,160 @@ function _terraform_cleanup() {
             fi
         fi
     done
+}
+
+function _migrate_cognito_user_pool_schema() {
+    local user_pool_resource=$1
+    local assume_account_id=$2
+    local tools_account_id=$3
+    local python_version=$4
+    local etl_account_id=$5
+    local ukhsa_tenant_id=$6
+    local ukhsa_client_id=$7
+    local ukhsa_client_secret=$8
+    local var_file=$9
+    
+    echo "Checking Cognito User Pool for schema migration..."
+    
+    # Extract user pool ID from Terraform state
+    local pool_id=$(terraform state show "$user_pool_resource" 2>/dev/null | \
+                    grep "^[[:space:]]*id[[:space:]]*=" | \
+                    awk -F'"' '{print $2}')
+
+    echo "User pool ID found: ${pool_id}"
+    
+    if [[ -z ${pool_id} ]]; then
+        echo "Warning: Could not determine user pool ID. Skipping migration check." >&2
+        return 0
+    fi
+    
+    # Check if the entraObjectId attribute already exists
+    local has_attribute=$(aws cognito-idp describe-user-pool \
+                         --user-pool-id "$pool_id" \
+                         --query "UserPool.SchemaAttributes[?Name=='custom:entraObjectId'].Name" \
+                         --output text 2>&1)
+
+    local aws_exit_code=$?
+
+    if [[ ${aws_exit_code} -ne 0 ]]; then
+        echo "Error: Failed to query user pool attributes. AWS CLI output:" >&2
+        echo "$has_attribute" >&2
+        echo "Skipping migration to avoid accidental user loss." >&2
+        return 1
+    fi
+
+    local needs_migration=false
+    
+    # Check user pool schema
+    if [[ -z ${has_attribute} ]]; then
+        echo "Custom attribute 'entraObjectId' missing in user pool."
+        needs_migration=true
+    else
+        echo "Custom attribute 'entraObjectId' exists in user pool."
+    fi
+
+    # Check if identity provider needs the attribute mapping
+    local idp_resource=$(terraform state list 2>/dev/null | \
+                        grep "aws_cognito_identity_provider.ukhsa_oidc_idp" | \
+                        head -n 1)
+
+    if [[ -n ${idp_resource} ]]; then
+        echo "Checking identity provider attribute mappings..."
+        
+        # Get the identity provider details from state
+        local idp_state=$(terraform state show "$idp_resource" 2>/dev/null)
+        
+        # Check if custom:entraObjectId mapping exists
+        if echo "$idp_state" | grep -q '"custom:entraObjectId"'; then
+            echo "Identity provider already has 'custom:entraObjectId' mapping."
+        else
+            echo "Identity provider missing 'custom:entraObjectId' mapping."
+            echo "To add attribute mapping, entire user pool stack must be recreated."
+            needs_migration=true
+        fi
+    fi
+
+    # If no migration needed, exit early
+    if [[ "$needs_migration" == false ]]; then
+        echo "No migration needed. All resources are up to date."
+        return 0
+    fi
+
+    # Build list of all Cognito resources to destroy
+    echo "Starting Cognito stack migration..."
+    echo "WARNING: This will delete all users in the user pool."
+    
+    local resources_to_replace=()
+    
+    # Find and add domain
+    local domain_resource=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_pool_domain" | \
+                           head -n 1)
+    
+    if [[ -n ${domain_resource} ]]; then
+        echo "  → Will destroy: $domain_resource"
+        resources_to_replace+=("$domain_resource")
+    fi
+    
+    # Add user pool
+    echo "  → Will destroy: $user_pool_resource"
+    resources_to_replace+=("$user_pool_resource")
+    
+    # Add identity provider if it exists
+    if [[ -n ${idp_resource} ]]; then
+        echo "Will destroy: $idp_resource"
+        resources_to_replace+=("$idp_resource")
+    fi
+    
+    # Add user pool client
+    local client_resource=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_pool_client.user_pool_client" | \
+                           head -n 1)
+    
+    if [[ -n ${client_resource} ]]; then
+        echo "Will destroy: $client_resource"
+        resources_to_replace+=("$client_resource")
+    fi
+    
+    # Add user groups
+    local group_resources=$(terraform state list 2>/dev/null | \
+                           grep "aws_cognito_user_group.cognito_user_groups")
+    
+    if [[ -n ${group_resources} ]]; then
+        while IFS= read -r group; do
+            echo "Will destroy: $group"
+            resources_to_replace+=("$group")
+        done <<< "$group_resources"
+    fi
+
+    # Build terraform destroy command with all targets
+    if [[ ${#resources_to_replace[@]} -gt 0 ]]; then
+        echo "Destroying ${#resources_to_replace[@]} Cognito resources..."
+        
+        local target_flags=()
+        for resource in "${resources_to_replace[@]}"; do
+            target_flags+=("-target=$resource")
+        done
+        
+        terraform destroy \
+            -var "assume_account_id=${assume_account_id}" \
+            -var "tools_account_id=${tools_account_id}" \
+            -var "python_version=${python_version}" \
+            -var "etl_account_id=${etl_account_id}" \
+            -var "ukhsa_tenant_id=${ukhsa_tenant_id}" \
+            -var "ukhsa_client_id=${ukhsa_client_id}" \
+            -var "ukhsa_client_secret=${ukhsa_client_secret}" \
+            -var-file="$var_file" \
+            "${target_flags[@]}" \
+            -auto-approve || return 1
+        
+        echo "Waiting 60s for AWS to propagate deletions..."
+        sleep 60
+        echo "Migration preparation complete. Resources will be recreated with new configuration."
+        echo ""
+    fi
+    
+    return 0
 }
 
 function _get_terraform_dir() {
