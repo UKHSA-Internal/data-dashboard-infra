@@ -17,8 +17,8 @@
     "sinon": "^21.0.2"
   },
   "dependencies": {
-    "@aws-sdk/client-kinesis": "^3.1004.0",
-    "@aws-sdk/client-s3": "^3.1004.0",
+    "@aws-sdk/client-kinesis": "^3.1005.0",
+    "@aws-sdk/client-s3": "^3.1005.0",
     "uuid": "^13.0.0"
   },
   "engine": {
