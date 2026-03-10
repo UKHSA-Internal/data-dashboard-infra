@@ -16,21 +16,23 @@ permissions:
 
 jobs:
   secret-scan:
-      name: Gitleaks Secret Scan
-      runs-on: ubuntu-22.04-arm
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-22.04-arm
 
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Run Gitleaks
-          uses: gitleaks/gitleaks-action@v2
-          with:
-            args: >
-              detect
-              --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
-              --exit-code 1
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITLEAKS_ARGS: >
+            detect
+            --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+            --exit-code=1
 
   build_base:
     name: Build base env
