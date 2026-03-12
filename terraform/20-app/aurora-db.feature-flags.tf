@@ -8,7 +8,6 @@ module "aurora_db_feature_flags" {
   engine_version    = "15.12"
   storage_encrypted = true
 
-  publicly_accessible = local.enable_public_db
   deletion_protection = local.use_prod_sizing
 
   manage_master_user_password = true

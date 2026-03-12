@@ -12,9 +12,6 @@ module "vpc" {
   elasticache_subnets = ["10.0.200.0/26", "10.0.200.64/26", "10.0.200.128/26"]  #  64 IPs in each subnet
   database_subnets    = ["10.0.201.0/24", "10.0.202.0/24", "10.0.203.0/24"]     # 256 IPs in each subnet
 
-  create_database_subnet_route_table     = local.enable_public_db
-  create_database_internet_gateway_route = local.enable_public_db
-
   enable_dns_hostnames = true
   enable_dns_support   = true
 
