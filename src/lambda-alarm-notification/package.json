@@ -20,7 +20,7 @@
       "@aws-sdk/client-secrets-manager": "^3.1005.0",
       "@slack/webhook": "^7.0.7"
   },
-  "engine": {
+  "engines": {
     "node": "=24.x"
   }
 }
