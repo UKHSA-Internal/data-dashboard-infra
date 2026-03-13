@@ -41,9 +41,10 @@ jobs:
       - name: Configure AWS credentials for account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          account-name: "dev"
+          account-name: ${{ case(startsWith(inputs.environment, 'auth-'), 'auth-dev', 'dev') }}
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
 
       - name: Update private API cache
         continue-on-error: true
