@@ -11,8 +11,8 @@ module "cognito" {
       ["http://localhost:3000/api/auth/callback/cognito", "http://localhost:3001/api/auth/callback/cognito"] : []
   )
   logout_urls = concat(
-    [local.urls.front_end],
-      local.is_dev ? ["http://localhost:3000", "http://localhost:3001"] : []
+    [local.urls.front_end, "${local.urls.front_end}/start"],
+      local.is_dev ? ["http://localhost:3000", "http://localhost:3001", "http://localhost:3000/start", "http://localhost:3001/start"] : []
   )
 
   enable_ukhsa_oidc = true
