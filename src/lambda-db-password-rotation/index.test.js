@@ -1,12 +1,7 @@
-const {
-    restartECSService,
-    restartMainDbECSServices,
-    restartFeatureFlagsDbECSServices,
-    handler
-} = require('./index.js')
-const {UpdateServiceCommand} = require("@aws-sdk/client-ecs");
-
-const sinon = require('sinon');
+import {describe, expect, test} from "@jest/globals";
+import {handler, restartECSService, restartFeatureFlagsDbECSServices, restartMainDbECSServices,} from './index.js';
+import {UpdateServiceCommand} from "@aws-sdk/client-ecs";
+import sinon from 'sinon';
 
 
 describe('restartECSService', () => {
