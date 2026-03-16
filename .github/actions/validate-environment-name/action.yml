@@ -22,6 +22,13 @@ runs:
           echo "Environment name is invalid. It must not be longer than 14 characters."
           exit 1
         fi
+        
+        well_known=("prod" "dpd" "test" "staging" "perf")
+        if [[ " ${well_known[*]} " =~ " ${environment} " ]]; then
+          echo "Environment name is invalid. This workflow is only to be used for dev environments."
+          exit 1
+        fi
+
 
         echo "Target environment name is valid"
       shell: bash
