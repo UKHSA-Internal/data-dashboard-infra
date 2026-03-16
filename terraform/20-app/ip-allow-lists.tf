@@ -48,7 +48,10 @@ locals {
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
-    ]
+    ],
+    perf_testers = [
+      "172.25.173.128/26",   # Mike Elshaw's perf runners
+    ],
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
@@ -65,7 +68,9 @@ locals {
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
         # Add pen testers IP addresses only for the `pen` test environment
-        local.environment == "pen" ? local.ip_allow_list.pen_testers : []
+        local.environment == "pen" ? local.ip_allow_list.pen_testers : [],
+        # add perf testers IP addresses only for the `perf` test environment
+        local.environment == "perf" ? local.ip_allow_list.perf_testers: [],
       )
     )
   )
