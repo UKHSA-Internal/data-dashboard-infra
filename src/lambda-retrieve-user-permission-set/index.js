@@ -11,6 +11,7 @@ async function handler(event) {
             accessTokenGeneration: {
                 claimsToAddOrOverride: {
                     claim_uuid: dummy_claim,
+                    entraObjectId: event.request.userAttributes['custom:entraObjectId'],
                 },
             },
         },

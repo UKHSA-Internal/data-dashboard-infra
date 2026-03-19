@@ -22,6 +22,7 @@ const fakeInputToken = {
             "email"
         ],
         "userAttributes": {
+            "custom:entraObjectId": "f6104f72-fe57-4726-a426-332e986be696",
             "cognito:user_status": "CONFIRMED",
             "email": "user.name@ukhsa.gov.uk",
             "email_verified": "true",
@@ -53,6 +54,7 @@ describe('handler', () => {
 
         // Then
         expect(uuid.validate(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.claim_uuid)).toBeTruthy();
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.entraObjectId).toBe(inputToken.request.userAttributes['custom:entraObjectId'])
     })
 
     /**
