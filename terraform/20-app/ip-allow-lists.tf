@@ -33,7 +33,7 @@ locals {
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "136.226.191.116/32", # Charlotte Brace
-      "90.213.214.30/32",   # Ruth Baxter
+      "194.9.112.198/32",   # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
