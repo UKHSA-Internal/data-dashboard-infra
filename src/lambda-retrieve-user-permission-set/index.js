@@ -1,6 +1,6 @@
 import {v4} from 'uuid';
 
-export default async function handler(event) {
+async function handler(event) {
     const logMessage = `Received event: '${JSON.stringify(event)}'`;
     console.log(logMessage);
 
@@ -20,3 +20,8 @@ export default async function handler(event) {
     console.log(logMessage2);
     return event;
 }
+
+export {
+    handler
+}
+

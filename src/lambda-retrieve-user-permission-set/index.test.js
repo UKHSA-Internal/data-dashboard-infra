@@ -1,5 +1,5 @@
 import {describe, expect, jest, test} from '@jest/globals';
-import handler from "./index.js";
+import {handler} from "./index.js";
 import {validate} from 'uuid';
 
 const fakeInputToken = {
