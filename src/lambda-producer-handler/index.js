@@ -42,6 +42,31 @@ async function downloadFileFromS3(bucket, key, s3Client = new S3Client()) {
 
 
 /**
+ * The prefix that says a file contains NON-PUBLIC (official sensitive) data
+ */
+const OFFICIAL_SENSITIVE_PREFIX = "OFF-SENS_";
+
+/**
+ * Determines whether the file represented by the given S3 object key contains
+ * NON-PUBLIC (official sensitive) data or PUBLIC data, logs the result, and
+ * returns a boolean indicating whether the file is official sensitive.
+ *
+ * @param {string} key - The full S3 object key for the data file
+ */
+function logFileSensitivity(key) {
+    // Extract file name from full S3 key path
+    const fileName = key.split('/').pop();  // S3 always uses / regardless of OS
+    const isOfficialSensitive = fileName.startsWith(OFFICIAL_SENSITIVE_PREFIX);
+
+    if (isOfficialSensitive) {
+        console.log(`NON-PUBLIC DATA in file '${key}' detected which is being processed the OFFICIAL-SENSITIVE way.`);
+    } else {
+        console.log(`PUBLIC DATA in file '${key}' detected which is being processed the normal way.`);
+    }
+}
+
+
+/**
  * Builds a serialized payload which can be written as a record to Kinesis
  *
  * @param {string} key - The full S3 object key for the data
@@ -134,11 +159,15 @@ async function handler(event, context, overridenDependencies = {}) {
         extractBucketAndObjectKey,
         downloadFileFromS3,
         constructPayload,
-        writeDataToKinesisWithRetry
+        writeDataToKinesisWithRetry,
+        logFileSensitivity
     };
     const dependencies = {...defaultDependencies, ...overridenDependencies};
 
     const {bucket, key} = dependencies.extractBucketAndObjectKey(event)
+
+    dependencies.logFileSensitivity(key)
+
     const fileContents = await dependencies.downloadFileFromS3(bucket, key)
 
     const payload = dependencies.constructPayload(key, fileContents)
@@ -156,5 +185,6 @@ module.exports = {
     writeDataToKinesis,
     writeDataToKinesisWithRetry,
     constructPayload,
+    logFileSensitivity,
     handler,
 }
