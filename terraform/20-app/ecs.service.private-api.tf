@@ -93,6 +93,14 @@ module "ecs_service_private_api" {
           name  = "CACHING_V2_ENABLED",
           value = local.caching_v2_enabled
         },
+        {
+          name  = "COGNITO_AWS_REGION",
+          value = local.region
+        },
+        {
+          name  = "COGNITO_USER_POOL",
+          value = module.cognito.user_pool_id
+        },
       ],
       secrets = [
         {
