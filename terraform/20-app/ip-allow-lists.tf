@@ -50,6 +50,7 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "86.177.109.255/32",  # Jean-Pierre Fouche
       "147.161.237.115/32", # Hashim Malik
+      "86.134.220.148/32",  # Hassan Hashmi
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
