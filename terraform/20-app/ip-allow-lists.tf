@@ -58,6 +58,9 @@ locals {
     perf_testers = [
       "172.25.173.128/26",   # Mike Elshaw's perf runners
       "18.133.90.54/32",     # Mike Elshaw's perf runner
+      "165.225.197.15/32",   # Mike Elshaw
+      "165.225.197.22/32",   # Mike Elshaw
+      "35.176.13.254/32",    # Mike Elshaw
     ],
   }
   complete_ip_allow_list = tolist(
