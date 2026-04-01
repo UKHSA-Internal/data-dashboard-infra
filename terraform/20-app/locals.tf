@@ -33,7 +33,7 @@ locals {
   is_dev                                       = contains(["dev", "auth-dev"], var.environment_type)
   is_prod                                      = local.environment == "prod"
   is_ready_for_etl                             = contains(["dev", "test", "dpd", "staging", "prod"], local.environment)
-  is_scaled_down_overnight                     = !contains(["prod", "staging"], local.environment)
+  is_scaled_down_overnight                     = !contains(["prod"], local.environment)
   timezone_london                              = "Europe/London"
   use_ip_allow_list                            = local.environment != "prod"
 
