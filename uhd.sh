@@ -33,7 +33,7 @@ function _uhd_commands_help() {
     echo "  gh          - github commands"
     echo "  lambda      - aws lambda commands"
     echo "  rds         - aws rds/aurora commands"
-    echo "  seed-random - run API random seeding ECS job"
+    echo "  seed-random - generate random metric ingestion JSON and upload to S3"
     echo "  terraform   - terraform commands"
     echo "  secrets     - aws secrets commands"
 

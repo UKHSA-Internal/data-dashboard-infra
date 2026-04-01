@@ -32,9 +32,18 @@ function _data_upload() {
         return 1
     fi
 
-    local bucket_id=$(_get_ingest_bucket_id)
+    if [[ ! -d "${folder}" ]]; then
+        echo "Folder not found: ${folder}" >&2
+        return 1
+    fi
 
-    aws s3 cp $folder s3://$bucket_id/in/ --recursive
+    local bucket_id=$(_get_ingest_bucket_id)
+    if [[ -z "${bucket_id}" ]] || [[ "${bucket_id}" == "null" ]]; then
+        echo "Unable to resolve ingest bucket id from terraform/20-app/output.json" >&2
+        return 1
+    fi
+
+    aws s3 cp "${folder}" "s3://${bucket_id}/in/" --recursive
 }
 
 function _get_ingest_bucket_id() {
