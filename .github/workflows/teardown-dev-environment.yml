@@ -1,0 +1,126 @@
+name: Teardown Personal Development Environment
+
+run-name: Teardown of `${{ inputs.name }}` development environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "The name of the development environment which you want to teardown. E.g abcd1234 or auth-abcd1234. Note this must be lowercased."
+        required: true
+        type: string
+
+env:
+  AWS_REGION: "eu-west-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate_environment_name:
+    name: Validate environment name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout .github/ directory
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+
+      - uses: ./.github/actions/validate-environment-name
+        with:
+          environment: ${{ inputs.name }}
+
+  remove_db_deletion_protections:
+    name: Remove DB deletion protections
+    runs-on: ubuntu-latest
+    needs: [ "validate_environment_name" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+          role-duration-seconds: "7200"
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+
+      - name: Terraform output
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform output ${{ inputs.name }}
+        shell: zsh {0}
+
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: ${{ case(startsWith(inputs.name, 'auth-'), 'auth-dev', 'dev') }}
+          aws-region: ${{ env.AWS_REGION }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
+
+      - name: Remove deletion protection on DB clusters
+        run: |
+          source uhd.sh
+          uhd rds remove-deletion-protection-current-clusters
+
+  terraform_destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+    needs: ["remove_db_deletion_protections"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-terraform
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Terraform destroy
+        run: |
+          source uhd.sh
+          uhd terraform init:layer 20-app
+          uhd terraform destroy:layer 20-app ${{ inputs.name }}
+        shell: zsh {0}
+
+  clean_up_remaining_resources:
+    name: Clean up remaining resources
+    runs-on: ubuntu-latest
+    needs: ["terraform_destroy"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials for tools account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          tools-account-role: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
+
+      - uses: ./.github/actions/setup-zsh
+      - uses: ./.github/actions/short-sha
+
+      - name: Configure AWS credentials for account
+        uses: ./.github/actions/configure-aws-credentials
+        with:
+          account-name: ${{ case(startsWith(inputs.name, 'auth-'), 'auth-dev', 'dev') }}
+          aws-region: ${{ env.AWS_REGION }}
+          dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
+          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
+
+      - name: Delete secrets
+        run: |
+          source uhd.sh
+          uhd secrets delete-all-secrets ${{ inputs.name }}
+        shell: zsh {0}

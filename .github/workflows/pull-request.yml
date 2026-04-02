@@ -1,9 +1,11 @@
 name: Pull Request Workflow
 
-on:
+on: 
   pull_request:
+    types: [opened, synchronize, reopened]
+  push:
     branches:
-      - "*"
+      - main
 
 env:
   AWS_REGION: "eu-west-2"
@@ -13,8 +15,25 @@ permissions:
   contents: read
 
 jobs:
+  secret-scan:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-22.04-arm
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        if: github.actor != 'dependabot[bot]'
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
   build_base:
     name: Build base env
+    needs: [secret-scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

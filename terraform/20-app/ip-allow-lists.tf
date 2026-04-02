@@ -6,7 +6,7 @@ locals {
       "90.219.251.228/32",  # Phil
       "82.28.94.171/32",    # Phil 2
       "86.2.63.107/32",     # Rhys
-      "86.177.243.129/32", # Luke
+      "95.144.23.208/32",   # Luke
       "81.98.116.189/32",   # Manu
       "143.58.138.253/32",  # Josh
       "2.98.245.215/32",    # Matt R
@@ -14,6 +14,12 @@ locals {
       "191.101.81.106/32",  # Shahrukh
       "176.35.199.118/32",  # Aidan
       "82.68.5.88/32",      # Kathryn
+      "92.234.124.180/32",  # Kathryn 2
+      "109.154.72.115/32",   # Yomi
+      "92.21.57.49/32",     # Pete
+      "102.129.155.34/32",  # Dan
+      "82.33.136.192/32",   # marco
+      "149.107.78.78/32",   # scott
     ],
     project_team = [
       "77.100.107.252/32",  # Laura
@@ -30,7 +36,7 @@ locals {
       "109.153.151.195/32", # Ciara
       "66.249.74.35/32",    # Ciara 2
       "136.226.191.116/32", # Charlotte Brace
-      "90.213.214.30/32",   # Ruth Baxter
+      "194.9.112.198/32",   # Ruth Baxter
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
@@ -43,10 +49,19 @@ locals {
       "172.27.130.67/32",   # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
       "86.177.109.255/32",  # Jean-Pierre Fouche
+      "147.161.237.115/32", # Hashim Malik
+      "86.134.220.148/32",  # Hassan Hashmi
+      "165.225.197.15/32",  # Mike Elshaw
+      "165.225.197.22/32",  # Mike Elshaw
+      "35.176.13.254/32",   # Mike Elshaw
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
-    ]
+    ],
+    perf_testers = [
+      "172.25.173.128/26",   # Mike Elshaw's perf runners
+      "18.133.90.54/32",     # Mike Elshaw's perf runner
+    ],
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
@@ -63,7 +78,9 @@ locals {
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
         # Add pen testers IP addresses only for the `pen` test environment
-        local.environment == "pen" ? local.ip_allow_list.pen_testers : []
+        local.environment == "pen" ? local.ip_allow_list.pen_testers : [],
+        # add perf testers IP addresses only for the `perf` test environment
+        local.environment == "perf" ? local.ip_allow_list.perf_testers: [],
       )
     )
   )

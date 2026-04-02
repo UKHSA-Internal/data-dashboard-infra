@@ -17,7 +17,6 @@ module "aurora_db_app" {
   monitoring_interval             = 0
   apply_immediately               = true
   skip_final_snapshot             = true
-  publicly_accessible             = local.enable_public_db
   deletion_protection             = local.use_prod_sizing
   enabled_cloudwatch_logs_exports = ["postgresql"]
 
