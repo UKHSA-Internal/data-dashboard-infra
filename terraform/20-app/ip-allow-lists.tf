@@ -15,9 +15,11 @@ locals {
       "176.35.199.118/32",  # Aidan
       "82.68.5.88/32",      # Kathryn
       "92.234.124.180/32",  # Kathryn 2
-      "86.158.200.57/32",   # Yomi
+      "109.154.72.115/32",   # Yomi
       "92.21.57.49/32",     # Pete
       "102.129.155.34/32",  # Dan
+      "82.33.136.192/32",   # marco
+      "149.107.78.78/32",   # scott
     ],
     project_team = [
       "77.100.107.252/32",  # Laura
@@ -48,6 +50,10 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "86.177.109.255/32",  # Jean-Pierre Fouche
       "147.161.237.115/32", # Hashim Malik
+      "86.134.220.148/32",  # Hassan Hashmi
+      "165.225.197.15/32",  # Mike Elshaw
+      "165.225.197.22/32",  # Mike Elshaw
+      "35.176.13.254/32",   # Mike Elshaw
     ]
     pen_testers = [
       "82.68.136.38/32",    # Steve Ryan
