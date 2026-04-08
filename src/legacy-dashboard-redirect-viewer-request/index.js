@@ -1,4 +1,4 @@
-function handler(event) {
+export default function handler(event) {
   const requestUrl = getRequestUrl(event.request);
   const redirectUrl = getRedirectUrl(event.request);
 
@@ -34,5 +34,3 @@ function getRequestUrl(request) {
 
   return `${host}${uri}`;
 }
-
-handler;

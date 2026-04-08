@@ -3,18 +3,23 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest --watch",
-    "test:ci": "jest --ci --coverage"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage"
   },
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.7.0",
+    "@jest/globals": "^30.3.0",
+    "jest": "^30.3.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^17.0.1"
+    "sinon": "^21.0.3"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.637.0"
+      "@aws-sdk/client-secrets-manager": "^3.1014.0"
+  },
+  "engine": {
+    "node": "=24.x"
   }
 }

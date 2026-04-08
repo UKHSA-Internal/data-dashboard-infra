@@ -1,4 +1,4 @@
-const {SecretsManagerClient, GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
+import {SecretsManagerClient, GetSecretValueCommand} from "@aws-sdk/client-secrets-manager";
 
 /**
  * Gets the secret for the revalidate secret from secrets manager
@@ -65,7 +65,7 @@ async function handler(event, overridenDependencies = {}) {
     return data
 }
 
-module.exports = {
+export {
     handler,
     getSecret,
     getRevalidateSecretFromSecretsManager,
