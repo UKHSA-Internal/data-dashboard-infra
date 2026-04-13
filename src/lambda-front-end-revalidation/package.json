@@ -14,10 +14,10 @@
     "@jest/globals": "^30.3.0",
     "jest": "^30.3.0",
     "jest-junit": "^16.0.0",
-    "sinon": "^21.0.3"
+    "sinon": "^21.1.2"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.1014.0"
+      "@aws-sdk/client-secrets-manager": "^3.1029.0"
   },
   "engine": {
     "node": "=24.x"
