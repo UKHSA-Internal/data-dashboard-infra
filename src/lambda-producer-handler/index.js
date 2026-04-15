@@ -47,11 +47,9 @@ async function downloadFileFromS3(bucket, key, s3Client = new S3Client()) {
 const OFFICIAL_SENSITIVE_PREFIX = "OFF-SENS_";
 
 /**
- * Determines whether the file represented by the given S3 object key contains
- * NON-PUBLIC (official sensitive) data or PUBLIC data, logs the result, and
- * returns a boolean indicating whether the file is official sensitive.
+ * Logs whether the S3 object key (= file) contains NON-PUBLIC (official sensitive) data or PUBLIC data
  *
- * @param {string} key - The full S3 object key for the data file
+ * @param {string} key - The full S3 object key (including path)
  */
 function logFileSensitivity(key) {
     // Extract file name from full S3 key path
