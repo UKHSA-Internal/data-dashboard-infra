@@ -76,7 +76,7 @@ module "ecs_service_private_api" {
           value = "PROD"
         },
         {
-          name  = "REDIS_HOST"
+          name = "REDIS_HOST"
           # The `rediss` prefix is not a typo
           # this is the redis-py native URL notation for an SSL wrapped TCP connection to redis
           value = "rediss://${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.address}:${aws_elasticache_serverless_cache.app_elasticache.endpoint.0.port}"
@@ -94,6 +94,14 @@ module "ecs_service_private_api" {
           value = local.caching_v2_enabled
         },
         {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
+          name  = "PAGE_PREVIEWS_TOKEN_TTL_SECONDS"
+          value = local.page_previews_token_ttl_seconds
+        },
+        {
           name  = "COGNITO_AWS_REGION",
           value = local.region
         },
@@ -103,6 +111,10 @@ module "ecs_service_private_api" {
         },
       ],
       secrets = [
+        {
+          name      = "PAGE_PREVIEWS_TOKEN_SALT"
+          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
+        },
         {
           name      = "POSTGRES_USER"
           valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"

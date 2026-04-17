@@ -9,14 +9,16 @@ locals {
   default_log_retention_in_days = 30
   alb_security_policy           = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
-  use_prod_sizing            = contains([
+  use_prod_sizing = contains([
     "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod", "staging",
   ], local.environment)
   # Temporarily switch off auth challenge in staging
-  add_password_protection    = false
-  auth_enabled               = var.auth_enabled
-  caching_v2_enabled         = false
-  is_front_end_bypassing_cdn = local.auth_enabled || local.caching_v2_enabled
+  add_password_protection         = false
+  page_previews_enabled           = var.page_previews_enabled
+  page_previews_token_ttl_seconds = var.page_previews_token_ttl_seconds
+  auth_enabled                    = var.auth_enabled
+  caching_v2_enabled              = false
+  is_front_end_bypassing_cdn      = local.auth_enabled || local.caching_v2_enabled
 
   wke = {
     account = ["dev", "auth-dev", "test", "auth-test", "uat", "auth-uat", "prod", "auth-prod"]
@@ -39,16 +41,16 @@ locals {
 
   non_essential_envs_scheduled_policy = {
     start_of_working_day_scale_out = {
-      min_capacity  = 1
-      max_capacity  = 1
-      schedule      = "cron(0 08 ? * MON-FRI *)" # Run every weekday at 8am
-      timezone      = local.timezone_london
+      min_capacity = 1
+      max_capacity = 1
+      schedule     = "cron(0 08 ? * MON-FRI *)" # Run every weekday at 8am
+      timezone     = local.timezone_london
     }
     end_of_working_day_scale_in = {
-      min_capacity  = 0
-      max_capacity  = 0
-      schedule      = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
-      timezone      = local.timezone_london
+      min_capacity = 0
+      max_capacity = 0
+      schedule     = "cron(0 20 ? * MON-FRI *)" # Run every weekday at 8pm
+      timezone     = local.timezone_london
     }
   }
 
@@ -63,7 +65,7 @@ locals {
     public_api       = "api.${local.account_layer.dns.wke_dns_names[local.environment]}"
     public_api_lb    = "api-lb.${local.account_layer.dns.wke_dns_names[local.environment]}"
     feature_flags    = "feature-flags.${local.account_layer.dns.wke_dns_names[local.environment]}"
-  } : {
+    } : {
     archive          = "${local.environment}-archive.${local.account_layer.dns.account.dns_name}"
     cms_admin        = "${local.environment}-cms.${local.account_layer.dns.account.dns_name}"
     feedback_api     = "${local.environment}-feedback-api.${local.account_layer.dns.account.dns_name}"

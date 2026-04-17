@@ -81,8 +81,20 @@ module "ecs_service_public_api" {
           name  = "AUTH_ENABLED"
           value = local.auth_enabled
         },
+        {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
+          name  = "PAGE_PREVIEWS_TOKEN_TTL_SECONDS"
+          value = local.page_previews_token_ttl_seconds
+        }
       ],
       secrets = [
+        {
+          name      = "PAGE_PREVIEWS_TOKEN_SALT"
+          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
+        },
         {
           name      = "POSTGRES_USER"
           valueFrom = "${local.main_db_aurora_password_secret_arn}:username::"
