@@ -46,6 +46,10 @@ variable "halo_account_type" {}
 
 variable "auth_enabled" {}
 
+variable "page_previews_enabled" {}
+
+variable "page_previews_token_ttl_seconds" {}
+
 variable "api_gateway_stage_name" {
   description = "The stage name for API Gateway (e.g. dev or live)"
   type        = string
