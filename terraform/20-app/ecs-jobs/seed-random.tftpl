@@ -1,0 +1,41 @@
+{
+  "cluster": "${cluster_arn}",
+  "count": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ${jsonencode([for subnet_id in subnet_ids : "${subnet_id}"])},
+      "securityGroups": [
+        "${security_group_id}"
+      ]
+    }
+  },
+  "overrides": {
+    "containerOverrides": [
+      {
+        "name": "api",
+        "command": [
+          "python",
+          "manage.py",
+          "seed_random",
+          "--dataset",
+          "both",
+          "--scale",
+          "small",
+          "--truncate-first"
+        ],
+        "environment": [
+          {
+            "name": "POSTGRES_HOST",
+            "value": "${aurora_writer_endpoint}"
+          },
+          {
+            "name": "FRONTEND_URL",
+            "value": "${frontend_url}"
+          }
+        ]
+      }
+    ]
+  },
+  "taskDefinition": "${task_arn}"
+}

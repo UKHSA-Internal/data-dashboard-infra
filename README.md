@@ -354,6 +354,74 @@ Flushing the caches one by one, and waiting for each one to finish before starti
 uhd cache flush
 ```
 
+## Seed Random Metric Data via S3
+
+Use `uhd seed-random` to generate random metric ingestion JSON and upload it to the current target environment ingest bucket (`s3://<ingest-bucket>/in/`).
+
+This flow is S3-only and intentionally does not perform direct DB writes.
+
+### Safety guardrails
+
+- Only personal dev workspaces are allowed.
+- The command blocks shared and protected environments, including `prod`, `staging`, `test`, `uat`, `dev`, `ci-*`, `etl-ci-*`, and `auth-*`.
+- Invalid targets fail fast with clear errors.
+
+### Local examples
+
+Generate and upload timeseries data:
+
+```bash
+source uhd.sh
+uhd seed-random \
+  --target abcd1234 \
+  --data-type timeseries \
+  --topic "COVID-19" \
+  --theme infectious_disease \
+  --sub-theme respiratory \
+  --geography England \
+  --geography-type Nation \
+  --metric-name covid_cases_rate \
+  --metric-min 0 \
+  --metric-max 100 \
+  --points 120 \
+  --relative-span "3 years" \
+  --include-null-points true \
+  --seed 42
+```
+
+Generate locally only (no upload):
+
+```bash
+source uhd.sh
+uhd seed-random \
+  --target abcd1234 \
+  --data-type headline \
+  --topic "Flu" \
+  --theme infectious_disease \
+  --sub-theme respiratory \
+  --geography England \
+  --geography-type Nation \
+  --metric-name flu_headline \
+  --metric-min 1 \
+  --metric-max 20 \
+  --start-date 2025-01-01 \
+  --end-date 2025-06-30 \
+  --include-erroneous-points true \
+  --include-non-public-points true \
+  --dry-run
+```
+
+Use `uhd seed-random --help` for the full option list.
+
+### GitHub Action trigger
+
+Run `.github/workflows/seed-random-metric-data-dev-environment.yml` from the Actions tab and provide the same input options as the CLI command.
+
+The workflow:
+- Resolves Terraform outputs for the selected workspace.
+- Runs `uhd seed-random` with your supplied inputs.
+- Uploads via `uhd data upload` unless `dry_run=true`.
+
 ## Testing a feature branch in your dev environment
 
 There are a few steps to test feature branch in your dev environment:

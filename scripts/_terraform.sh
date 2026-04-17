@@ -332,6 +332,7 @@ function _terraform_output() {
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_private_api_cache_reserved_namespace
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_hydrate_public_api_cache
     uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_bootstrap_env
+    uhd terraform output-file:layer 20-app $workspace local_sensitive_file.ecs_job_seed_random
 }
 
 function _terraform_output_layer() {

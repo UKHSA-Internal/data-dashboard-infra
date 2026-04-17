@@ -67,6 +67,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+
+      - name: Test scripts seed-random generator
+        run: python -m unittest tests/test_seed_random_generate.py
 
       - name: Test lambda-producer-handler
         uses: ./.github/actions/npm-test
