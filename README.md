@@ -665,6 +665,18 @@ To scan all files manually
 prek run --all-files
 ```
 
+---
+
+## Lambda Functions
+
+In the `src/` directory are several lambda functions used for various tasks.
+Each of these functions has their own `package.json` to manage its dependencies, however, they all have a shared
+`.nvmrc` at the top level of this repository which defines the NodeJS version in use.
+
+To install nvm, please follow the instructions in the [nvm repository](https://github.com/nvm-sh/nvm).
+
+Then from the root of this repository, run `nvm use` to switch to the correct NodeJS version.
+
 ## Related repos
 
 These repos contain the app source code:
