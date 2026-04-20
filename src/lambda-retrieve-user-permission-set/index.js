@@ -20,8 +20,8 @@ async function getPermissionSets(apiKey, userId) {
     const headers = { Authorization: apiKey,  'content-type': 'application/json' };
     const response = await fetch(targetURL, {method: 'GET', headers})
     const data = await response.json()
-    const { permission_set_hierarchy } = data;
-    return permission_set_hierarchy;
+    const { permission_sets } = data;
+    return permission_sets;
 }
 
 
