@@ -1,17 +1,44 @@
-const uuid = require('uuid');
+const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
+
+const secretsClient = new SecretsManagerClient({});
+let cachedSecrets = null;
+
+
+async function getSecretApiKey() {
+  if (cachedSecrets) return cachedSecrets;
+  const credentials = await secretsClient.send(
+    new GetSecretValueCommand({ SecretId: process.env.SECRETS_MANAGER_PRIVATE_API_KEY_ARN })
+  );
+  return credentials.SecretString;
+}
+
+
+async function getPermissionSets(apiKey, userId) {
+    const baseURL = process.env.PRIVATE_API_URL;
+    const targetURL = new URL(`/api/user/${userId}/permissions/hierarchy`, baseURL);
+    const headers = { Authorization: apiKey,  'content-type': 'application/json' };
+    const response = await fetch(targetURL, {method: 'GET', headers})
+    const data = await response.json()
+    const { permission_set_hierarchy } = data;
+    return permission_set_hierarchy;
+}
+
 
 async function handler(event) {
     const logMessage = `Received event: '${JSON.stringify(event)}'`;
     console.log(logMessage);
 
-    let dummy_claim = uuid.v4();
+    const entraObjectId = event.request.userAttributes['custom:entraObjectId'];
+    const apiKey = await getSecretApiKey();
+
+    const permissionSets = await getPermissionSets(apiKey, entraObjectId);
 
     event.response = {
         claimsAndScopeOverrideDetails: {
             accessTokenGeneration: {
                 claimsToAddOrOverride: {
-                    claim_uuid: dummy_claim,
-                    entraObjectId: event.request.userAttributes['custom:entraObjectId'],
+                    entraObjectId,
+                    permissionSets,
                 },
             },
         },
@@ -23,4 +50,5 @@ async function handler(event) {
 
 module.exports = {
     handler,
+    getPermissionSets,
 }
