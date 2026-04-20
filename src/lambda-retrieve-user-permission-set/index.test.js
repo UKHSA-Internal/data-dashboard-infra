@@ -1,6 +1,43 @@
 import {describe, expect, jest, test} from '@jest/globals';
-import {handler} from "./index.js";
-import {validate} from 'uuid';
+import {mockClient} from 'aws-sdk-client-mock';
+// import 'aws-sdk-client-mock-jest';
+import {GetSecretValueCommand, SecretsManagerClient} from '@aws-sdk/client-secrets-manager';
+import {getPermissionSets, handler} from './index.js';
+import sinon from 'sinon';
+
+
+const secretsMock = mockClient(SecretsManagerClient);
+const fakeAPIKey = 'API_KEY';
+const fakeAPIURL = 'https://fake-api.gov.uk'
+const fakePermissionSet = [
+    { "set_1": "data1" },
+    { "set_2": "data2" },
+] 
+const fakeAPIResp = {
+    "permission_set_hierarchy": fakePermissionSet,
+}
+let mockedFetch;
+let mockedEnvVar; 
+beforeEach(() => {
+    secretsMock.reset();
+    secretsMock.on(GetSecretValueCommand).resolves({
+        SecretString: fakeAPIKey,
+    });
+    mockedFetch = jest.fn(
+        () => Promise.resolve(
+            {
+                json: () => Promise.resolve(fakeAPIResp), 
+            }
+        ), 
+    );
+    global.fetch = mockedFetch;
+    mockedEnvVar = sinon.stub(process, 'env').value({PRIVATE_API_URL: fakeAPIURL});
+});
+afterEach(() => {
+    jest.clearAllMocks();
+    // Restore the environment variable
+    mockedEnvVar.restore();
+});
 
 const fakeInputToken = {
     "callerContext": {
@@ -35,13 +72,38 @@ const fakeInputToken = {
     "version": "3"
 }
 
+describe('getPermissionSets', () => {
+    const userId = 'abc123'
+    const apiKey = 'apikey'
+
+
+    test('Calls fetch with the correct args', async () => {
+        // Given
+
+        // When
+        const response = await getPermissionSets(apiKey, userId);
+
+        // Then
+        expect(mockedFetch).toHaveBeenCalledTimes(1);
+
+        const mockedCall = mockedFetch.mock.lastCall
+        const calledUrl = mockedCall[0];
+        const expectedURL = `${fakeAPIURL}/api/user/${userId}/permissions/hierarchy`
+        const headers = { Authorization: apiKey,  'content-type': 'application/json' };
+        expect(calledUrl.toString()).toEqual(expectedURL);
+        expect(mockedCall[1]).toEqual({"method": "GET", headers})
+        expect(response).toEqual(fakePermissionSet)
+
+    });
+});
+
 
 describe('handler', () => {
     /**
      * Given an input jwt
      * When `handler()` is called
-     * Then the returned payload has a valid uuid added to 
-     *   claim_uuid in response...claimsToAddOrOverride 
+     * Then the returned payload has an entraObjectId and permissionSets
+     * added to response...claimsToAddOrOverride 
      */
     test('Token added to claims override', async () => {
         // Given
@@ -50,7 +112,8 @@ describe('handler', () => {
         const result = await handler(inputToken);
 
         // Then
-        expect(validate(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.claim_uuid)).toBeTruthy();
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.entraObjectId).toBe(inputToken.request.userAttributes['custom:entraObjectId'])
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.permissionSets).toBe(fakePermissionSet)
     })
 
     /**

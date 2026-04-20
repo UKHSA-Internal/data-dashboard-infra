@@ -15,6 +15,28 @@ module "lambda_retrieve_user_permission_set" {
   timeout                = 60 # Timeout after 1 minute
 
   architectures = ["arm64"]
+
+  environment_variables = {
+    SECRETS_MANAGER_PRIVATE_API_KEY_ARN = aws_secretsmanager_secret.private_api_key.arn
+    PRIVATE_API_URL                     = local.urls.private_api
+  }
+
+  attach_policy_statements = true
+  policy_statements = {
+    get_private_api_key_from_secrets_manager = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.private_api_key.arn]
+    }
+    kms_decrypt = {
+      effect    = "Allow"
+      actions   = ["kms:Decrypt"]
+      resources = [
+        module.kms_secrets_app_engineer.key_arn
+      ]
+    }
+  }
+
 }
 
 resource "aws_lambda_permission" "lambda_retrieve_user_permission_set" {
