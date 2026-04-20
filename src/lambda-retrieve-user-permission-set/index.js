@@ -9,7 +9,8 @@ async function getSecretApiKey() {
   const credentials = await secretsClient.send(
     new GetSecretValueCommand({ SecretId: process.env.SECRETS_MANAGER_PRIVATE_API_KEY_ARN })
   );
-  return credentials.SecretString;
+  cachedSecrets = credentials.SecretString;
+  return cachedSecrets;
 }
 
 
