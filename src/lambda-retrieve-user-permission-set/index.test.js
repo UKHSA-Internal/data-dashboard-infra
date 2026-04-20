@@ -30,7 +30,7 @@ beforeEach(() => {
             }
         ), 
     );
-    global.fetch = mockedFetch;
+    globalThis.fetch = mockedFetch;
     mockedEnvVar = sinon.stub(process, 'env').value({PRIVATE_API_URL: fakeAPIURL});
 });
 afterEach(() => {
