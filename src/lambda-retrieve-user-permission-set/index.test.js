@@ -14,7 +14,7 @@ const fakePermissionSet = [
     { "set_2": "data2" },
 ] 
 const fakeAPIResp = {
-    "permission_set_hierarchy": fakePermissionSet,
+    "permission_sets": fakePermissionSet,
 }
 let mockedFetch;
 let mockedEnvVar; 
