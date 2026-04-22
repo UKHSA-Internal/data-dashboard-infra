@@ -6,15 +6,17 @@ const sinon = require('sinon');
 
 
 // Mocks AWS SecretsManager
+let mockedSecretSend = jest.fn((command) => {
+    return Promise.resolve({
+        SecretString: "API_KEY"
+    });
+})
+
 jest.mock("@aws-sdk/client-secrets-manager", () => {
   const actual = jest.requireActual("@aws-sdk/client-secrets-manager");
   return {
     SecretsManagerClient: jest.fn(() => ({
-      send: jest.fn((command) => {
-        return Promise.resolve({
-          SecretString: "API_KEY"
-        });
-      })
+      send: () => mockedSecretSend()
     })),
     GetSecretValueCommand: actual.GetSecretValueCommand
   };
@@ -109,6 +111,23 @@ describe('getPermissionSets', () => {
 
 
 describe('handler', () => {
+    /**
+     * Given an input jwt
+     * When `handler()` is called multiple times
+     * Then the secretsManager is only called once and the results are cached
+     */
+    test('Cached Secrets are used for subsequent requests', async () => {
+        // Given
+        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        // When
+        const result = await handler(inputToken);
+        const result2 = await handler(inputToken);
+        const result3 = await handler(inputToken);
+
+        // Then
+        expect(mockedSecretSend).toHaveBeenCalledTimes(1);
+    })
+
     /**
      * Given an input jwt
      * When `handler()` is called
