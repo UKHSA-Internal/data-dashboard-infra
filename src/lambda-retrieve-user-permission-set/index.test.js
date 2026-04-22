@@ -1,6 +1,5 @@
 import {describe, expect, jest, test} from '@jest/globals';
 import {mockClient} from 'aws-sdk-client-mock';
-// import 'aws-sdk-client-mock-jest';
 import {GetSecretValueCommand, SecretsManagerClient} from '@aws-sdk/client-secrets-manager';
 import {getPermissionSets, handler} from './index.js';
 import sinon from 'sinon';
@@ -23,6 +22,7 @@ beforeEach(() => {
     secretsMock.on(GetSecretValueCommand).resolves({
         SecretString: fakeAPIKey,
     });
+    // mockedSecretSend = secretsMock.send;
     mockedFetch = jest.fn(
         () => Promise.resolve(
             {
@@ -99,6 +99,23 @@ describe('getPermissionSets', () => {
 
 
 describe('handler', () => {
+    /**
+     * Given an input jwt
+     * When `handler()` is called multiple times
+     * Then the secretsManager is only called once and the results are cached
+     */
+    test('Cached Secrets are used for subsequent requests', async () => {
+        // Given
+        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        // When
+        const result = await handler(inputToken);
+        const result2 = await handler(inputToken);
+        const result3 = await handler(inputToken);
+
+        // Then
+        expect(secretsMock.commandCalls(GetSecretValueCommand)).toHaveLength(1);
+    })
+
     /**
      * Given an input jwt
      * When `handler()` is called
