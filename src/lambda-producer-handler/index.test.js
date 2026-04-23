@@ -5,6 +5,7 @@ const {
     calculateJitteredBackoffPeriod,
     writeDataToKinesis,
     writeDataToKinesisWithRetry,
+    logFileSensitivity,
     handler
 } = require('./index.js')
 const {GetObjectCommand} = require("@aws-sdk/client-s3");
@@ -29,7 +30,11 @@ const fakeFileContents = {
     'time_series': [{'epiweek': 45, 'date': '2022-11-08', 'metric_value': 136.62, 'embargo': null}],
     'refresh_date': '2023-11-09'
 }
+
 const fakeObjectKey = "in/COVID-19_cases_rateRollingMean_CTRY_E92000001_40-44_all_default.json"
+const fakeNonPublicObjectKey = "in/OFF-SENS_COVID-19_cases_rateRollingMean_CTRY_E92000001_40-44_all_default.json"
+const fakeNonPublicPrefixInWrongPlace = "OFF-SENS_folder/COVID-19_cases_rateRollingMean_CTRY_E92000001_40-44_all_default.json";
+
 const fakeBucket = "fake-test-ingest-bucket"
 const fakeEvent = {
     "Records": [{
@@ -208,6 +213,69 @@ describe('constructPayload', () => {
     });
 })
 
+/**
+ * Public vs non-public files (eg the "OFF-SENS_" prefix)
+ */
+describe('logFileSensitivity', () => {
+    let logSpy;
+
+    beforeEach(() => {
+        logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        logSpy.mockRestore();
+    });
+
+    /**
+     * Given a timeseries file with the "OFF-SENS_" prefix
+     * When `logFileSensitivity()` is called
+     * Then it returns `true` and logs that non-public data is being processed
+     */
+    test('Logs non-public message for official sensitive timeseries file', () => {
+        // Given
+        const file = fakeNonPublicObjectKey;
+
+        // When
+        logFileSensitivity(file);
+
+        // Then
+        expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/NON-PUBLIC/i));
+    });
+
+    /**
+     * Given a timeseries file with no prefix
+     * When `logFileSensitivity()` is called
+     * Then it returns `false` and logs that public data is being processed
+     */
+    test('Logs public message for public timeseries file', () => {
+        // Given
+        const file = fakeObjectKey;
+
+        // When
+         logFileSensitivity(file);
+
+        // Then
+        expect(logSpy).toHaveBeenCalledWith(expect.not.stringMatching(/NON-PUBLIC/i));
+    });
+
+    /**
+     * Given a file where "OFF-SENS_" appears in a directory name but not the file name
+     * When `logFileSensitivity()` is called
+     * Then it returns `false` and treats the file as public data
+     */
+    test('Logs public message OFF-SENS_ prefix appears only in the path, not the file name', () => {
+        // Given
+        const file = fakeNonPublicPrefixInWrongPlace;
+
+        // When
+        logFileSensitivity(file);
+
+        // Then
+        expect(logSpy).toHaveBeenCalledWith(expect.not.stringMatching(/NON-PUBLIC/i));
+    });
+})
+
 
 describe('calculateJitteredBackoffPeriod', () => {
     /**
@@ -310,11 +378,13 @@ describe('handler', () => {
         const downloadFileFromS3Spy = sinon.stub().resolves(expectedFileContents);
         const constructPayloadSpy = sinon.stub().returns(expectedConstructedPayload);
         const writeDataToKinesisWithRetrySpy = sinon.stub().resolves();
+        const determineFileVisibilitySpy = sinon.stub().returns(false);
         const spyDependencies = {
             extractBucketAndObjectKey: extractBucketAndObjectKeySpy,
             downloadFileFromS3: downloadFileFromS3Spy,
             constructPayload: constructPayloadSpy,
-            writeDataToKinesisWithRetry: writeDataToKinesisWithRetrySpy
+            writeDataToKinesisWithRetry: writeDataToKinesisWithRetrySpy,
+            logFileSensitivity: determineFileVisibilitySpy
         }
 
         // When
@@ -322,6 +392,7 @@ describe('handler', () => {
 
         // Then
         expect(extractBucketAndObjectKeySpy.calledWith(lambdaEvent)).toBeTruthy()
+        expect(determineFileVisibilitySpy.calledWith(expectedObjectKey)).toBeTruthy()
         expect(downloadFileFromS3Spy.calledWith(expectedBucket, expectedObjectKey)).toBeTruthy()
         expect(constructPayloadSpy.calledWith(expectedObjectKey, expectedFileContents)).toBeTruthy()
         expect(writeDataToKinesisWithRetrySpy.calledWith(expectedConstructedPayload)).toBeTruthy()
@@ -345,7 +416,8 @@ describe('handler', () => {
             extractBucketAndObjectKey: sinon.stub().returns({bucket, key}),
             downloadFileFromS3: sinon.stub(),
             constructPayload: sinon.stub(),
-            writeDataToKinesisWithRetry: sinon.stub()
+            writeDataToKinesisWithRetry: sinon.stub(),
+            logFileSensitivity: sinon.stub()
         }
 
         // When
