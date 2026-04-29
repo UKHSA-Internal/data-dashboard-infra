@@ -62,10 +62,6 @@ module "ecs_service_public_api" {
           value = "PUBLIC_API"
         },
         {
-          name  = "FRONTEND_URL"
-          value = local.urls.front_end
-        },
-        {
           name  = "POSTGRES_DB"
           value = local.aurora.app.secondary.db_name
         },
@@ -81,6 +77,18 @@ module "ecs_service_public_api" {
           name  = "AUTH_ENABLED"
           value = local.auth_enabled
         },
+        {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
+          name  = "PAGE_PREVIEWS_TOKEN_TTL_SECONDS"
+          value = local.page_previews_token_ttl_seconds
+        },
+        {
+          name  = "FRONTEND_URL"
+          value = local.urls.front_end
+        },
       ],
       secrets = [
         {
@@ -94,7 +102,11 @@ module "ecs_service_public_api" {
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
-        }
+        },
+        {
+          name      = "PAGE_PREVIEWS_TOKEN_SALT"
+          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
+        },
       ]
     }
   }
@@ -131,7 +143,8 @@ module "ecs_service_public_api" {
       actions = ["secretsmanager:GetSecretValue"]
       resources = [
         local.main_db_aurora_password_secret_arn,
-        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
+        aws_secretsmanager_secret.page_previews_token_salt.arn,
       ]
     }
   ]

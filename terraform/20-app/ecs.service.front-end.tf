@@ -57,6 +57,10 @@ module "ecs_service_front_end" {
           value = local.urls.private_api
         },
         {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
           name  = "BASE_URL"
           value = local.urls.front_end
         },

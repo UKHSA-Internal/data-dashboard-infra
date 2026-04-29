@@ -100,7 +100,6 @@ module "ecs_service_feature_flags" {
         local.feature_flags_db_aurora_password_secret_arn,
         aws_secretsmanager_secret.feature_flags_api_keys.arn,
         aws_secretsmanager_secret.feature_flags_admin_user_credentials.arn,
-
       ]
     }
   ]
