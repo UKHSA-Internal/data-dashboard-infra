@@ -305,6 +305,11 @@ The update command will perform the following tasks:
 9. Restart lambda functions
 10. Switch back to tools account
 
+## Additional commands
+
+See the section [Deploy Auth Infrastructure to Auth Accounts](#deploy-auth-infrastructure-to-auth-accounts) for further usefule commands - e.g. running terraform output to obtain information about deployed resources.
+
+
 ## Flushing caches
 
 We cache very aggressively in the app to maximize performance. The trade off is that at the moment we must flush the caches if we make changes to CMS content or metric data. We have three caches:
