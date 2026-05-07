@@ -20,8 +20,8 @@ async function getPermissionSets(apiKey, userId) {
     const targetURL = new URL(`/api/user/${userId}/permissions/hierarchy`, baseURL);
     const headers = { Authorization: apiKey,  'content-type': 'application/json' };
     const response = await fetch(targetURL, {method: 'GET', headers})
-    console.log("🕵️‍♀️ Raw Response: ", response)
-    console.log("🕵️‍♀️ json Response: ", response.json)
+    console.log("🕵️‍♀️ Raw Response body: ", response.body)
+    console.log("🕵️‍♀️ Raw Response status: ", response.status)
     const data = await response.json()
     console.log("Data: ", data)
     const { permission_sets } = data;
