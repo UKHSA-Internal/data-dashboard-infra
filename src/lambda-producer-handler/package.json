@@ -21,7 +21,7 @@
     "@aws-sdk/client-s3": "^3.1030.0",
     "uuid": "^13.0.0"
   },
-  "engine": {
+  "engines": {
     "node": "=24.x"
   }
 }
