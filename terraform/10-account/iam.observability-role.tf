@@ -12,7 +12,7 @@ module "iam_observability_role" {
   ]
 
   trusted_role_arns = compact([
-    "arn:aws:iam::943339978990:role/ObservabilityReadOnlyRole"
+    "arn:aws:iam::943339978990:role/observability-bridge-role"
   ])
 }
 
