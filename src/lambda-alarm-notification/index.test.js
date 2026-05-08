@@ -1,17 +1,22 @@
+import {afterEach, beforeEach, describe, expect, jest, test} from "@jest/globals";
+import sinon from 'sinon';
+import {GetSecretValueCommand} from "@aws-sdk/client-secrets-manager";
+
+// we're using ESM so we have to use `jest.unstable_mockModule` and this has to be done before any imports we want to be
+// impacted by the mocking
+jest.unstable_mockModule('@slack/webhook', () => ({
+    IncomingWebhook: jest.fn(),
+}));
+// these and the slack import below are the ones we want to be impacted by our mocking in the above line, hence they are
+// below the above line and also use dynamic imports
 const {
     buildSlackPostFromSNSMessage,
     getSecret,
     getSlackWebhookURLFromSecretsManager,
-    submitMessageToSlack,
     handler,
-} = require('./index.js')
-
-const {IncomingWebhook} = require('@slack/webhook');
-const sinon = require('sinon');
-
-const {GetSecretValueCommand} = require("@aws-sdk/client-secrets-manager");
-
-jest.mock('@slack/webhook');
+    submitMessageToSlack,
+} = await import('./index.js');
+const {IncomingWebhook} = await import('@slack/webhook');
 
 const fakeSlackBaseURL = 'https://hooks.slack.com'
 const fakeSlackWebhookURLPath = '/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
@@ -82,7 +87,7 @@ describe('submitMessageToSlack', () => {
      * And a webhook URL
      * When the main `submitMessageToSlack()` is called
      * Then the call is delegated to the
-     *  `IncomingWebhook` object from the `slack/webhook` library
+     *  `IncomingWebhook` object from the `slack/webhook` library (mocked)
      */
     test('should send a message to Slack', async () => {
         // Given

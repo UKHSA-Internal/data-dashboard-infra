@@ -1,10 +1,10 @@
-const uuid = require('uuid');
+import {v4} from 'uuid';
 
 async function handler(event) {
     const logMessage = `Received event: '${JSON.stringify(event)}'`;
     console.log(logMessage);
 
-    let dummy_claim = uuid.v4();
+    let dummy_claim = v4();
 
     event.response = {
         claimsAndScopeOverrideDetails: {
@@ -21,6 +21,7 @@ async function handler(event) {
     return event;
 }
 
-module.exports = {
-    handler,
+export {
+    handler
 }
+

@@ -15,38 +15,20 @@ updates:
     schedule:
       interval: "weekly"
 
+  # group each package update that is common across all the lambdas together into a single PR to control the number of
+  # PRs created by dependabot
   - package-ecosystem: "npm"
-    directory: "/src/lambda-producer-handler"
+    directories:
+      - "/src/lambda-alarm-notification"
+      - "/src/lambda-api-gateway"
+      - "/src/lambda-db-password-rotation"
+      - "/src/lambda-front-end-revalidation"
+      - "/src/lambda-producer-handler"
+      - "/src/lambda-retrieve-user-permission-set"
+      - "/src/legacy-dashboard-redirect-viewer-request"
+      - "/src/public-api-cloud-front-viewer-request"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/lambda-db-password-rotation"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/lambda-alarm-notification"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/legacy-dashboard-redirect-viewer-request"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/public-api-cloud-front-viewer-request"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/lambda-front-end-revalidation"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/src/lambda-retrieve-user-permission-set"
-    schedule:
-      interval: "weekly"
-
+    groups:
+      monorepo-dependencies:
+        group-by: "dependency-name"
