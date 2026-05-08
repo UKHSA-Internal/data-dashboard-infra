@@ -12,10 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "jest": "^30.3.0",
-    "jest-junit": "^16.0.0"
+    "jest-junit": "^17.0.0"
   },
   "dependencies": {
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "engines": {
     "node": "=24.x"
