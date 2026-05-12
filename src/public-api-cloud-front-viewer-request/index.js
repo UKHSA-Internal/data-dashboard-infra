@@ -1,4 +1,4 @@
-export default function handler(event) {
+function handler(event) {
   const request = event.request;
 
   const acceptHeader = request.headers.accept
