@@ -1,10 +1,14 @@
-import {expect, test} from "@jest/globals";
+import {expect, test} from '@jest/globals';
+import {readFileSync} from 'fs';
+import {resolve} from 'path';
+import vm from 'vm';
 
 // import the handler function from the index.js file - we can't use an export in the index.js file because of the
-// limited keywords available in the cloudfront function runtime, so we essentially just eval it to get it into scope
-import fs from "fs";
-const src = fs.readFileSync(new URL("./index.js", import.meta.url), "utf8");
-const handler = new Function(`${src}\nreturn handler;`)();
+// limited keywords available in the cloudfront function runtime, so we execute it using the vm module in this scope
+// and associate it with the original file it came from to ensure jest can associate it correctly for coverage
+const filename = resolve('./index.js');
+const code = readFileSync(filename, 'utf-8');
+const { handler } = vm.runInThisContext(`(function() {\n${code}\nreturn { handler };\n})()`, {filename});
 
 
 test.each([
