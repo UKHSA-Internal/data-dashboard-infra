@@ -1,4 +1,4 @@
-export default function handler(event) {
+function handler(event) {
   const requestUrl = getRequestUrl(event.request);
   const redirectUrl = getRedirectUrl(event.request);
 

@@ -1,0 +1,22 @@
+name: "Lints JavaScript src code"
+
+description: "Runs npm-lint in a node project"
+
+inputs:
+  function-name:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: NPM Install
+      run: npm ci --no-audit --no-fund
+      shell: bash
+      working-directory: ./src/${{inputs.function-name}}
+
+    - name: Lint source code
+      run: npm run lint
+      shell: bash
+      working-directory: ./src/${{inputs.function-name}}

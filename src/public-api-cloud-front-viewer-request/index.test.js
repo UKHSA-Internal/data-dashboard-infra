@@ -1,5 +1,15 @@
 import {expect, test} from '@jest/globals';
-import handler from "./index.js";
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import vm from 'node:vm';
+
+// import the handler function from the index.js file - we can't use an export in the index.js file because of the
+// limited keywords available in the cloudfront function runtime, so we execute it using the vm module in this scope
+// and associate it with the original file it came from to ensure jest can associate it correctly for coverage
+const filename = resolve('./index.js');
+const code = readFileSync(filename, 'utf-8');
+const { handler } = vm.runInThisContext(`(function() {\n${code}\nreturn { handler };\n})()`, {filename}); // NOSONAR
+
 
 test("Headers should not be removed", () => {
   const event = {

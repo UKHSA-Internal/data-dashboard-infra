@@ -57,6 +57,32 @@ jobs:
           uhd terraform apply:layer 20-app ci-$SHORT_SHA
         shell: zsh {0}
 
+  lint_cloudfront_functions:
+    name: Lint cloudfront functions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: './.nvmrc'
+
+      - name: Lint public-api-cloud-front-viewer-request
+        uses: ./.github/actions/npm-lint
+        with:
+          function-name: public-api-cloud-front-viewer-request
+
+      - name: Lint legacy-dashboard-redirect-viewer-request
+        uses: ./.github/actions/npm-lint
+        with:
+          function-name: legacy-dashboard-redirect-viewer-request
+
   unit_test_functions:
     name: Unit test functions
     runs-on: ubuntu-latest
