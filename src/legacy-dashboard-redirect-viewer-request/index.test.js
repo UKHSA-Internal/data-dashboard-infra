@@ -1,7 +1,7 @@
 import {expect, test} from '@jest/globals';
-import {readFileSync} from 'fs';
-import {resolve} from 'path';
-import vm from 'vm';
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import vm from 'node:vm';
 
 // import the handler function from the index.js file - we can't use an export in the index.js file because of the
 // limited keywords available in the cloudfront function runtime, so we execute it using the vm module in this scope
