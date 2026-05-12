@@ -1,5 +1,11 @@
 import {expect, test} from "@jest/globals";
-import handler from "./index.js";
+
+// import the handler function from the index.js file - we can't use an export in the index.js file because of the
+// limited keywords available in the cloudfront function runtime, so we essentially just eval it to get it into scope
+import fs from "fs";
+const src = fs.readFileSync(new URL("./index.js", import.meta.url), "utf8");
+const handler = new Function(`${src}\nreturn handler;`)();
+
 
 test.each([
   {
