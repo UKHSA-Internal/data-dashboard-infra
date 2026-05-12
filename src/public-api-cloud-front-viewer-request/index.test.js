@@ -8,8 +8,7 @@ import vm from 'node:vm';
 // and associate it with the original file it came from to ensure jest can associate it correctly for coverage
 const filename = resolve('./index.js');
 const code = readFileSync(filename, 'utf-8');
-// NOSONAR
-const { handler } = vm.runInThisContext(`(function() {\n${code}\nreturn { handler };\n})()`, {filename});
+const { handler } = vm.runInThisContext(`(function() {\n${code}\nreturn { handler };\n})()`, {filename}); // NOSONAR
 
 
 test("Headers should not be removed", () => {
