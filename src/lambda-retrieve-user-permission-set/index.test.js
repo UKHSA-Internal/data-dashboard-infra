@@ -22,10 +22,10 @@ beforeEach(() => {
     secretsMock.on(GetSecretValueCommand).resolves({
         SecretString: fakeAPIKey,
     });
-    // mockedSecretSend = secretsMock.send;
     mockedFetch = jest.fn(
         () => Promise.resolve(
             {
+                ok: true,
                 json: () => Promise.resolve(fakeAPIResp), 
             }
         ), 
@@ -81,7 +81,10 @@ describe('getPermissionSets', () => {
         // Given
 
         // When
-        const response = await getPermissionSets(apiKey, userId);
+        // const result = await getPermissionSets(apiKey, userId);
+        // console.log(`Result: '${JSON.stringify(result)}'`);
+        // const {error, permissionSets} = result;
+        const {error, permissionSets} = await getPermissionSets(apiKey, userId);
 
         // Then
         expect(mockedFetch).toHaveBeenCalledTimes(1);
@@ -92,7 +95,7 @@ describe('getPermissionSets', () => {
         const headers = { Authorization: apiKey,  'content-type': 'application/json' };
         expect(calledUrl.toString()).toEqual(expectedURL);
         expect(mockedCall[1]).toEqual({"method": "GET", headers})
-        expect(response).toEqual(fakePermissionSet)
+        expect(permissionSets).toEqual(fakePermissionSet)
 
     });
 });
@@ -114,6 +117,64 @@ describe('handler', () => {
 
         // Then
         expect(secretsMock.commandCalls(GetSecretValueCommand)).toHaveLength(1);
+    })
+
+    /**
+     * Given an input jwt
+     * When `handler()` is called and getPermissionSets receives a 401 error
+     * Then the secretsManager is called again to update the API_KEY and 
+     * getPermissionSets is called again with the update API_KEY
+     */
+    test('401 triggers updating API key and retry', async () => {
+        // Given
+        let mockedFetch401 = jest.fn(
+            () => Promise.resolve(
+                {
+                    ok: false,
+                    status: 401, 
+                }
+            ) 
+        )
+        globalThis.fetch = mockedFetch401;
+        const logSpy = jest.spyOn(console, 'log');
+        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+
+        // When
+        const result = await handler(inputToken);
+
+        // Then
+        const expectedFirstLogStatement = `API key invalid, updating cached key...`
+        expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
+    })
+    /**
+     * Given an input jwt
+     * When `handler()` is called and getPermissionSets receives a 401 error
+     * Then the secretsManager is called again to update the API_KEY and 
+     * getPermissionSets is called again with the update API_KEY
+     */
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+    test('404 triggers sleep and retry', async () => {
+        // Given
+        let mockedFetch404 = jest.fn(
+            () => Promise.resolve(
+                {
+                    ok: false,
+                    status: 404, 
+                }
+            ) 
+        )
+        globalThis.fetch = mockedFetch404;
+        const logSpy = jest.spyOn(console, 'log');
+        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+
+        // When
+        const result = await handler(inputToken);
+
+        // Then
+        const expectedFirstLogStatement = `Error fetching permission sets, wait and retry:`
+        expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
     })
 
     /**
