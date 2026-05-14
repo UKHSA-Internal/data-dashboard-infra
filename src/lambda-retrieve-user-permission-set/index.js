@@ -20,13 +20,13 @@ async function getPermissionSets(apiKey, userId) {
     return fetch(targetURL, {method: 'GET', headers})
         .then(response => response?.ok
             ? response.json()
-            : Promise.reject(response)) //throw if not 200-OK
+            : Promise.reject(new Error(`Fetch error ${response.status}: ${response.statusText}`, { cause: response }))) //throw if not 200-OK
         .then(json => {
             const { permission_sets } = json;
             return { permissionSets: permission_sets };
         }) //all good
         .catch(error => {
-            console.log(`Error getting permission sets: ${error.status}: '${error.statusText}' for '${targetURL}'`);
+            console.log(`Error getting permission sets: '${error.message}' for '${targetURL}'`);
             return { error };
         }) //handle errors
 }
@@ -39,15 +39,15 @@ async function handler(event) {
     let apiKey = await getSecretApiKey();
 
     let {error, permissionSets} = await getPermissionSets(apiKey, entraObjectId);
-    if (error?.status == 401){
-        console.log(`API key invalid, updating cached key...`);
+    if (error?.cause?.status == 401){
         apiKey = await getSecretApiKey(false);
-        let {error, permissionSets} = await getPermissionSets(apiKey, entraObjectId);
-    } else if (error && error?.status != 200){
-        console.log(`Error fetching permission sets, wait and retry:`);
+        console.log(`Error '${error.message}' while fetching permission sets, retrying with updated API key...`);
+        ({error, permissionSets} = await getPermissionSets(apiKey, entraObjectId));
+    }
+    if (error){
         sleep(3000);
-        console.log(`Retrying...`);
-        let {error, permissionSets} = await getPermissionSets(apiKey, entraObjectId);
+        console.log(`Error '${error.message}' while fetching permission sets, retrying...`);
+        ({permissionSets} = await getPermissionSets(apiKey, entraObjectId));
     }
 
     event.response = {
