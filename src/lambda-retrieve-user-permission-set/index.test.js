@@ -81,7 +81,7 @@ describe('getPermissionSets', () => {
         const apiKey = 'apikey'
 
         // When
-        const {error, permissionSets} = await getPermissionSets(apiKey, userId);
+        const {permissionSets} = await getPermissionSets(apiKey, userId);
 
         // Then
         expect(mockedFetch).toHaveBeenCalledTimes(1);
@@ -106,11 +106,11 @@ describe('handler', () => {
      */
     test('Cached Secrets are used for subsequent requests', async () => {
         // Given
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
         // When
-        const result = await handler(inputToken);
-        const result2 = await handler(inputToken);
-        const result3 = await handler(inputToken);
+        await handler(inputToken);
+        await handler(inputToken);
+        await handler(inputToken);
 
         // Then
         expect(secretsMock.commandCalls(GetSecretValueCommand)).toHaveLength(1);
@@ -124,28 +124,30 @@ describe('handler', () => {
      */
     test('401 triggers updating API key and retry', async () => {
         // Given
-        let mockedFetch401 = jest.fn(
+
+        let mockedFetch401 = mockedFetch.mockImplementationOnce(
             () => Promise.resolve(
                 {
                     ok: false,
                     status: 401, 
+                    statusText: 'Not authenticated',
                 }
             ) 
         )
         globalThis.fetch = mockedFetch401;
         const logSpy = jest.spyOn(console, 'log');
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
 
         // When
-        const result = await handler(inputToken);
+        await handler(inputToken);
 
         // Then
-        const expectedFirstLogStatement = `API key invalid, updating cached key...`
+        const expectedFirstLogStatement = `Error 'Fetch error 401: Not authenticated' while fetching permission sets, retrying with updated API key...`
         expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
     })
     /**
      * Given an input jwt
-     * When `handler()` is called and getPermissionSets receives a non 200 repsonse
+     * When `handler()` is called and getPermissionSets receives a non 200 response
      * Then getPermissionSets is retried
      */
     beforeEach(() => {
@@ -153,24 +155,46 @@ describe('handler', () => {
     });
     test('404 triggers sleep and retry', async () => {
         // Given
-        let mockedFetch404 = jest.fn(
+        let mockedFetch404 = mockedFetch.mockImplementationOnce(
             () => Promise.resolve(
                 {
                     ok: false,
                     status: 404, 
+                    statusText: 'Not found',
                 }
             ) 
         )
         globalThis.fetch = mockedFetch404;
         const logSpy = jest.spyOn(console, 'log');
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
 
         // When
-        const result = await handler(inputToken);
+        await handler(inputToken);
+
+        // Then
+        const expectedFirstLogStatement = `Error 'Fetch error 404: Not found' while fetching permission sets, retrying...`
+        expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
+    })
+
+    /**
+     * Given an input jwt
+     * When `handler()` is called and getPermissionSets receives a 200 response
+     * Then getPermissionSets is not retried
+     */
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+    test("200 doesn't trigger sleep and retry", async () => {
+        // Given
+        const logSpy = jest.spyOn(console, 'log');
+        const inputToken = structuredClone(fakeInputToken)
+
+        // When
+        await handler(inputToken);
 
         // Then
         const expectedFirstLogStatement = `Error fetching permission sets, wait and retry:`
-        expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
+        expect(logSpy).not.toHaveBeenCalledWith(expectedFirstLogStatement);
     })
 
     /**
@@ -181,7 +205,7 @@ describe('handler', () => {
      */
     test('Token added to claims override', async () => {
         // Given
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
         // When
         const result = await handler(inputToken);
 
@@ -198,7 +222,7 @@ describe('handler', () => {
      */
     test('Records log statement when event received', async () => {
         // Given
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
 
         const logSpy = jest.spyOn(console, 'log');
 
