@@ -1,9 +1,10 @@
 module "cognito" {
-  source           = "../modules/cognito"
-  user_pool_name   = "${local.prefix}-user-pool"
-  client_name      = "${local.prefix}-client"
-  user_pool_domain = "${local.prefix}-domain"
-  region           = local.region
+  source                = "../modules/cognito"
+  user_pool_name        = "${local.prefix}-user-pool"
+  client_name           = "${local.prefix}-client"
+  client_perf_test_name = "${local.prefix}-client-perf-test"
+  user_pool_domain      = "${local.prefix}-domain"
+  region                = local.region
 
   callback_urls = concat(
     ["${local.urls.front_end}/api/auth/callback/cognito"],
