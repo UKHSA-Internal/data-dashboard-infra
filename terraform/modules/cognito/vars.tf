@@ -39,6 +39,11 @@ variable "client_name" {
   type        = string
 }
 
+variable "client_perf_test_name" {
+  description = "Name of the Cognito User Pool Client for Performance Testing"
+  type        = string
+}
+
 variable "user_pool_domain" {
   description = "Domain for the Cognito User Pool"
   type        = string
