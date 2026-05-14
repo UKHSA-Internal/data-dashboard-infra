@@ -60,6 +60,7 @@ const fakeInputToken = {
             "cognito:user_status": "CONFIRMED",
             "email": "user.name@ukhsa.gov.uk",
             "email_verified": "true",
+            "entraObjectId": "11111111-2222-3333-abcd-444444444444",
             "sub": "e6429214-e051-7098-998d-414acc8730a1"
         }
     },
@@ -73,17 +74,13 @@ const fakeInputToken = {
 }
 
 describe('getPermissionSets', () => {
-    const userId = 'abc123'
-    const apiKey = 'apikey'
-
 
     test('Calls fetch with the correct args', async () => {
         // Given
+        const userId = 'abc123'
+        const apiKey = 'apikey'
 
         // When
-        // const result = await getPermissionSets(apiKey, userId);
-        // console.log(`Result: '${JSON.stringify(result)}'`);
-        // const {error, permissionSets} = result;
         const {error, permissionSets} = await getPermissionSets(apiKey, userId);
 
         // Then
@@ -91,12 +88,12 @@ describe('getPermissionSets', () => {
 
         const mockedCall = mockedFetch.mock.lastCall
         const calledUrl = mockedCall[0];
+        const calledArgs = mockedCall[1]
         const expectedURL = `${fakeAPIURL}/api/user/${userId}/permissions/hierarchy`
-        const headers = { Authorization: apiKey,  'content-type': 'application/json' };
+        const expectedHeaders = { Authorization: apiKey,  'content-type': 'application/json' };
         expect(calledUrl.toString()).toEqual(expectedURL);
-        expect(mockedCall[1]).toEqual({"method": "GET", headers})
+        expect(calledArgs).toEqual({"method": "GET", "headers": expectedHeaders})
         expect(permissionSets).toEqual(fakePermissionSet)
-
     });
 });
 
@@ -148,9 +145,8 @@ describe('handler', () => {
     })
     /**
      * Given an input jwt
-     * When `handler()` is called and getPermissionSets receives a 401 error
-     * Then the secretsManager is called again to update the API_KEY and 
-     * getPermissionSets is called again with the update API_KEY
+     * When `handler()` is called and getPermissionSets receives a non 200 repsonse
+     * Then getPermissionSets is retried
      */
     beforeEach(() => {
         jest.useFakeTimers();
