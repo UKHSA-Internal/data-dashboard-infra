@@ -38,16 +38,16 @@ async function handler(event) {
     const entraObjectId = event.request.userAttributes['custom:entraObjectId'];
     let apiKey = await getSecretApiKey();
 
-    let {error, permissionSets} = await getPermissionSets(apiKey, entraObjectId);
+    let {error, permissionSets = []} = await getPermissionSets(apiKey, entraObjectId);
     if (error?.cause?.status == 401){
         apiKey = await getSecretApiKey(false);
         console.log(`Error '${error.message}' while fetching permission sets, retrying with updated API key...`);
-        ({error, permissionSets} = await getPermissionSets(apiKey, entraObjectId));
+        ({error, permissionSets = []} = await getPermissionSets(apiKey, entraObjectId));
     }
     if (error){
         sleep(3000);
         console.log(`Error '${error.message}' while fetching permission sets, retrying...`);
-        ({permissionSets} = await getPermissionSets(apiKey, entraObjectId));
+        ({permissionSets = []} = await getPermissionSets(apiKey, entraObjectId));
     }
 
     event.response = {

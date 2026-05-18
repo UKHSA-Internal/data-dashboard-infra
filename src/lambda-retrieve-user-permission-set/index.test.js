@@ -145,10 +145,11 @@ describe('handler', () => {
         const expectedFirstLogStatement = `Error 'Fetch error 401: Not authenticated' while fetching permission sets, retrying with updated API key...`
         expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
     })
+
     /**
      * Given an input jwt
      * When `handler()` is called and getPermissionSets receives a non 200 response
-     * Then getPermissionSets is retried
+     * Then getPermissionSets is retried and the token is still populated
      */
     beforeEach(() => {
         jest.useFakeTimers();
@@ -169,11 +170,44 @@ describe('handler', () => {
         const inputToken = structuredClone(fakeInputToken)
 
         // When
-        await handler(inputToken);
+        const result = await handler(inputToken);
 
         // Then
         const expectedFirstLogStatement = `Error 'Fetch error 404: Not found' while fetching permission sets, retrying...`
         expect(logSpy).toHaveBeenCalledWith(expectedFirstLogStatement);
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.entraObjectId).toBe(inputToken.request.userAttributes['custom:entraObjectId'])
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.permissionSets).toBe(fakePermissionSet)
+    })
+
+    /**
+     * Given an input jwt
+     * When `handler()` is called and getPermissionSets receives a non 200 response
+     * Then the token is populated with the user id and an empty permission set
+     */
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+    test('404 returns user id and empty permission set', async () => {
+        // Given
+        let mockedFetch404 = mockedFetch.mockImplementation(
+            () => Promise.resolve(
+                {
+                    ok: false,
+                    status: 404, 
+                    statusText: 'Not found',
+                }
+            ) 
+        )
+        globalThis.fetch = mockedFetch404;
+        const inputToken = structuredClone(fakeInputToken)
+
+        // When
+        const result = await handler(inputToken);
+
+        // Then
+        const expectedPermissionSets = []
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.entraObjectId).toBe(inputToken.request.userAttributes['custom:entraObjectId'])
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.permissionSets).toMatchObject(expectedPermissionSets)
     })
 
     /**
