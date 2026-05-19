@@ -108,10 +108,6 @@ module "ecs_service_utility_worker" {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
         },
-        {
-          name      = "PAGE_PREVIEWS_TOKEN_SALT"
-          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
-        },
       ]
     }
   }
@@ -141,7 +137,6 @@ module "ecs_service_utility_worker" {
       resources = [
         local.main_db_aurora_password_secret_arn,
         aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
-        aws_secretsmanager_secret.page_previews_token_salt.arn,
       ]
     }
   ]

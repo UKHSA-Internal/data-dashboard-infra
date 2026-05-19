@@ -107,10 +107,6 @@ module "ecs_service_feedback_api" {
           name      = "FEEDBACK_EMAIL_RECIPIENT_ADDRESS",
           valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:feedback_email_recipient_address::"
         },
-        {
-          name      = "PAGE_PREVIEWS_TOKEN_SALT"
-          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
-        },
       ]
     }
   }
@@ -150,7 +146,6 @@ module "ecs_service_feedback_api" {
         local.main_db_aurora_password_secret_arn,
         aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
         aws_secretsmanager_secret.private_api_email_credentials.arn,
-        aws_secretsmanager_secret.page_previews_token_salt.arn,
       ]
     }
   ]
