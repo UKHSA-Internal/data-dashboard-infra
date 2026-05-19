@@ -54,7 +54,6 @@ The following components are important from an operational point of view:
   * env vars 
     * to enable or disable page previews
     * to set the token TTL (increase this if page load times are too slow)
-    * token salt: ensure it is in place - check secrets manager setup
 
 ### Deployment
 

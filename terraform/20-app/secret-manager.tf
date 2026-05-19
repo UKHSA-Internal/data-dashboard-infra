@@ -65,21 +65,6 @@ resource "aws_secretsmanager_secret_version" "private_api_key" {
 }
 
 ################################################################################
-# Page previews
-################################################################################
-
-resource "aws_secretsmanager_secret" "page_previews_token_salt" {
-  name        = "${local.prefix}-page-previews-token-salt"
-  description = "This salt is employed in the generation of the cms-draft-auth HMAC token by the CMS backend."
-  kms_key_id  = module.kms_secrets_app_engineer.key_id
-}
-
-resource "aws_secretsmanager_secret_version" "page_previews_token_salt" {
-  secret_id     = aws_secretsmanager_secret.page_previews_token_salt.id
-  secret_string = random_password.page_previews_token_salt.result
-}
-
-################################################################################
 # Backend application cryptographic key
 ################################################################################
 

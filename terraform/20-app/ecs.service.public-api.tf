@@ -127,10 +127,6 @@ module "ecs_service_public_api" {
           name      = "ENTRA_AUDIENCE",
           valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_AUDIENCE::"
         },
-        {
-          name      = "PAGE_PREVIEWS_TOKEN_SALT"
-          valueFrom = aws_secretsmanager_secret.page_previews_token_salt.arn
-        },
       ]
     }
   }
@@ -170,7 +166,6 @@ module "ecs_service_public_api" {
         local.main_db_aurora_password_secret_arn,
         aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
         data.aws_secretsmanager_secret.entra_api_client_config.arn,
-        aws_secretsmanager_secret.page_previews_token_salt.arn,
       ]
     }
   ]
