@@ -5,7 +5,7 @@ module "aurora_db_feature_flags" {
   name              = "${local.prefix}-aurora-db-feature-flags"
   engine            = "aurora-postgresql"
   engine_mode       = "provisioned"
-  engine_version    = "15.12"
+  engine_version    = "15.15"
   storage_encrypted = true
 
   deletion_protection = local.use_prod_sizing
