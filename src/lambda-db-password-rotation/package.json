@@ -13,7 +13,7 @@
   "devDependencies": {
     "@jest/globals": "^30.3.0",
     "jest": "^30.3.0",
-    "jest-junit": "^16.0.0",
+    "jest-junit": "^17.0.0",
     "sinon": "^21.1.2"
   },
   "dependencies": {
