@@ -1,5 +1,5 @@
 resource "aws_iam_role" "firehose_role" {
-  name = "audit_log_firehose_role"
+  name = "${local.prefix}-audit_log_firehose_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -12,7 +12,7 @@ resource "aws_iam_role" "firehose_role" {
 }
 
 resource "aws_iam_role_policy" "firehose_s3_policy" {
-  name = "firehose_s3_policy"
+  name = "${local.prefix}-firehose_s3_policy"
   role = aws_iam_role.firehose_role.id
 
   policy = jsonencode({
