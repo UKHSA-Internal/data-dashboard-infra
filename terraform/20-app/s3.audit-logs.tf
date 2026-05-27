@@ -1,6 +1,5 @@
-# TODO: Use module
 resource "aws_s3_bucket" "audit_logs" {
-  bucket = "uhd-aws-audit-logs-${local.account_id}-${local.region}}"
+  bucket = "${local.prefix}-audit-logs"
 }
 
 resource "aws_s3_bucket_versioning" "audit_logs_versioning" {

@@ -1,4 +1,3 @@
-# TODO: Use module
 resource "aws_iam_role" "firehose_role" {
   name = "audit_log_firehose_role"
 

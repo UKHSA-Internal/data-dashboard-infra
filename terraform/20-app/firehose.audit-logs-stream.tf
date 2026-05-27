@@ -1,6 +1,5 @@
-# TODO: Module? Nearly everything else seems to use them
 resource "aws_kinesis_firehose_delivery_stream" "audit_stream" {
-  name        = "audit-log-to-s3"
+  name        = "${local.prefix}-audit-log-to-s3"
   destination = "extended_s3"
 
   extended_s3_configuration {
