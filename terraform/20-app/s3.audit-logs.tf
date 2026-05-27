@@ -29,4 +29,15 @@ resource "aws_s3_bucket_lifecycle_configuration" "audit_logs_lifecycle" {
       noncurrent_days = 2555
     }
   }
+
+  rule {
+    id     = "abort-incomplete-multipart-uploads-rule"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    filter {}
+  }
 }
