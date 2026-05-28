@@ -28,8 +28,8 @@ resource "aws_iam_role_policy" "firehose_s3_policy" {
       ]
       Effect   = "Allow"
       Resource = [
-        aws_s3_bucket.audit_logs.arn,
-        "${aws_s3_bucket.audit_logs.arn}/*"
+        module.s3_audit_logs.s3_bucket_arn,
+        "${module.s3_audit_logs.s3_bucket_arn}/*"
       ]
     }]
   })

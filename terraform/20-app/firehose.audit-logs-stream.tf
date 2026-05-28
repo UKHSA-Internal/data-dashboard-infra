@@ -4,9 +4,7 @@ resource "aws_kinesis_firehose_delivery_stream" "audit_stream" {
 
   extended_s3_configuration {
     role_arn   = aws_iam_role.firehose_role.arn
-    bucket_arn = aws_s3_bucket.audit_logs.arn
-    
-    compression_format = "GZIP"
+    bucket_arn = module.s3_audit_logs.s3_bucket_arn
     
     # Deliver every 5MB or every 5 minutes (whichever comes first)
     buffering_size = 5
