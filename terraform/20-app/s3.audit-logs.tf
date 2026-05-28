@@ -25,6 +25,14 @@ module "s3_audit_logs" {
         noncurrent_days = 2555
       }
     },
+    {
+      id      = "abort-incomplete-multipart-uploads"
+      enabled = true
+      filter  = {}
+      abort_incomplete_multipart_upload = {
+        days_after_initiation = 7
+      }
+    }
   ]
 
   policy = jsonencode({
@@ -61,6 +69,34 @@ module "s3_audit_logs_access_logs" {
 
   access_log_delivery_policy_source_accounts = [local.account_id]
   access_log_delivery_policy_source_buckets  = [module.s3_audit_logs.s3_bucket_arn]
+
+  lifecycle_rule = [
+    {
+      id      = "audit-access-retention-policy"
+      enabled = true
+      filter = {
+        prefix = ""
+      }
+      transition = {
+        days          = 90
+        storage_class = "GLACIER"
+      }
+      expiration = {
+        days = 365
+      }
+      noncurrent_version_expiration = {
+        noncurrent_days = 365
+      }
+    },
+    {
+      id      = "abort-incomplete-multipart-uploads-rule"
+      enabled = true
+      filter  = {}
+      abort_incomplete_multipart_upload = {
+        days_after_initiation = 7
+      }
+    }
+  ]
 }
 
 
