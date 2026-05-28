@@ -24,9 +24,7 @@ module "s3_audit_logs" {
       noncurrent_version_expiration = {
         noncurrent_days = 2555
       }
-      abort_incomplete_multipart_upload = {
-        days_after_initiation = 7
-      }
+      abort_incomplete_multipart_upload_days = 7
     }
   ]
 }
@@ -61,9 +59,7 @@ module "s3_audit_logs_access_logs" {
       noncurrent_version_expiration = {
         noncurrent_days = 365
       }
-      abort_incomplete_multipart_upload = {
-        days_after_initiation = 7
-      }
+      abort_incomplete_multipart_upload_days = 7
     }
   ]
 }
