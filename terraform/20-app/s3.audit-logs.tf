@@ -60,7 +60,7 @@ module "s3_audit_logs_access_logs" {
   force_destroy                         = true
 
   access_log_delivery_policy_source_accounts = [local.account_id]
-  access_log_delivery_policy_source_buckets  = [module.s3_audit_logs.s3_bucket_id]
+  access_log_delivery_policy_source_buckets  = [module.s3_audit_logs.s3_bucket_arn]
 }
 
 
