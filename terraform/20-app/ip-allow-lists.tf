@@ -18,7 +18,7 @@ locals {
       "102.129.155.34/32",  # Dan
       "82.33.136.192/32",   # Marco
       "149.107.78.78/32",   # Scott
-      "62.7.180.165/32",    # Jean-Pierre
+      "62.7.180.240/32",    # Jean-Pierre
       "176.26.230.164/32",  # Ian
     ],
     project_team = [
@@ -48,7 +48,7 @@ locals {
       "90.252.15.44/32",    # Andrew Williams
       "172.27.130.67/32",   # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
-      "86.177.109.255/32",  # Jean-Pierre Fouche
+      "62.7.180.240/32",    # Jean-Pierre Fouche
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
       "165.225.197.15/32",  # Mike Elshaw
