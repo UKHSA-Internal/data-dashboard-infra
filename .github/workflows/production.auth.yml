@@ -20,7 +20,7 @@ jobs:
     name: Terraform plan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.branch }}
       - uses: actions/setup-python@v6
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_plan"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.branch }}
       - uses: actions/setup-python@v6
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.branch }}
 
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["push_docker_images"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.branch }}
 
