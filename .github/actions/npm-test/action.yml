@@ -22,13 +22,13 @@ runs:
       working-directory: ./src/${{inputs.function-name}}
 
     - name: Cache unit test summary
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: ${{inputs.function-name}}-coverage-summary
         path: ./src/${{inputs.function-name}}/coverage/coverage-summary.json
 
     - name: Cache unit test report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: ${{inputs.function-name}}-coverage-report
         path: ./src/${{inputs.function-name}}/junit.xml
