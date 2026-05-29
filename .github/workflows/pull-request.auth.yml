@@ -131,7 +131,7 @@ jobs:
     needs: ["build_base_auth", "unit_test_functions_auth"]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -157,7 +157,7 @@ jobs:
     needs: ["build_base_auth", "terraform_plan_auth"]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -249,7 +249,7 @@ jobs:
     needs: ["restart_services_auth"]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
