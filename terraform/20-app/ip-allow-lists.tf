@@ -13,12 +13,10 @@ locals {
       "191.101.81.106/32",  # Shahrukh
       "176.35.199.118/32",  # Aidan
       "82.68.5.88/32",      # Kathryn
-      "90.194.137.99/32",   # Yomi
       "92.21.224.175/32",   # Pete
       "102.129.155.34/32",  # Dan
       "82.33.136.192/32",   # Marco
       "149.107.78.78/32",   # Scott
-      "62.7.180.240/32",    # Jean-Pierre
       "176.26.230.164/32",  # Ian
     ],
     project_team = [
@@ -48,7 +46,6 @@ locals {
       "90.252.15.44/32",    # Andrew Williams
       "172.27.130.67/32",   # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
-      "62.7.180.240/32",    # Jean-Pierre Fouche
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
       "165.225.197.15/32",  # Mike Elshaw
