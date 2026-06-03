@@ -249,6 +249,25 @@ describe('handler', () => {
     })
 
     /**
+     * Given an input jwt with a modified event to match performance testing input
+     * When `handler()` is called 
+     * Then the returned payload has an entraObjectId and permissionSets
+     * added to response...claimsToAddOrOverride 
+     */
+    test('Perf Test Token added to claims override', async () => {
+        // Given
+        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        inputToken.triggerSource = "TokenGeneration_ClientCredentials"
+        inputToken.request.clientMetadata = {"user_uuid": "9999-8888-7777-abcd-666666666666"}
+        // When
+        const result = await handler(inputToken);
+
+        // Then
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.entraObjectId).toBe(inputToken.request.clientMetadata.user_uuid)
+        expect(result.response.claimsAndScopeOverrideDetails.accessTokenGeneration.claimsToAddOrOverride.permissionSets).toBe(fakePermissionSet)
+    })
+
+    /**
      * Given an input jwt
      * When `handler()` is called
      * Then a log statement is recorded for the event

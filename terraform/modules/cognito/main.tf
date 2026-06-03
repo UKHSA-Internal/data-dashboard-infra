@@ -83,6 +83,48 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   supported_identity_providers = var.enable_ukhsa_oidc ? ["UKHSAOIDC"] : ["COGNITO"]
 }
 
+resource "aws_cognito_user_pool_client" "user_pool_client_perf_test" {
+  depends_on = [aws_cognito_resource_server.resource_perf_test]
+
+  name            = var.client_perf_test_name
+  user_pool_id    = aws_cognito_user_pool.user_pool.id
+  generate_secret = true
+
+  allowed_oauth_flows = ["client_credentials"]
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_scopes = ["perf_test/perf_test"]
+
+  access_token_validity  = 60
+  id_token_validity      = 60
+  refresh_token_validity = 30
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "minutes"
+    refresh_token = "days"
+  }
+
+  enable_token_revocation       = true
+  prevent_user_existence_errors = "ENABLED"
+
+  callback_urls = var.callback_urls
+  logout_urls   = var.logout_urls
+
+  supported_identity_providers = ["COGNITO"]
+}
+
+resource "aws_cognito_resource_server" "resource_perf_test" {
+  identifier = "perf_test"
+  name       = "perf_test"
+
+  scope {
+    scope_name        = "perf_test"
+    scope_description = "Performance Testing"
+  }
+
+  user_pool_id    = aws_cognito_user_pool.user_pool.id
+}
+
 resource "aws_cognito_user_pool_domain" "cognito_user_pool_domain" {
   domain       = var.user_pool_domain
   user_pool_id = aws_cognito_user_pool.user_pool.id
