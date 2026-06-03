@@ -50,8 +50,58 @@ resource "aws_wafv2_web_acl" "public_api" {
   }
 
   rule {
-    name     = "ip-allow-list"
+    name     = "entra-claims-provider"
     priority = 6
+
+    action {
+      allow {}
+    }
+
+    statement {
+      and_statement {
+        statement {
+          byte_match_statement {
+            field_to_match {
+              uri_path {}
+            }
+            positional_constraint = "ENDS_WITH"
+            # Can't check full path due to user UUID being in the path
+            search_string         = "/permissions/hierarchy"
+            text_transformation {
+              priority = 0
+              type     = "LOWERCASE"
+            }
+          }
+        }
+
+        statement {
+          byte_match_statement {
+            field_to_match {
+              single_header {
+                name = "x-claims-provider-secret"
+              }
+            }
+            positional_constraint = "EXACTLY"
+            search_string         = "testvalue"
+            text_transformation {
+              priority = 0
+              type     = "NONE"
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "EntraClaimsProvider"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "ip-allow-list"
+    priority = 7
 
     action {
       allow {}
@@ -72,7 +122,7 @@ resource "aws_wafv2_web_acl" "public_api" {
 
   rule {
     name     = "rate-limiting"
-    priority = 7
+    priority = 8
 
     action {
       block {}
