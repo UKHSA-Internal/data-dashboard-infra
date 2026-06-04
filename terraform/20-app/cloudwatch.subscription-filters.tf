@@ -4,6 +4,8 @@ resource "aws_cloudwatch_log_subscription_filter" "ecs_public_api_audit_filter" 
   filter_pattern  = "\"[AUDIT_EVENT]\""
   destination_arn = aws_kinesis_firehose_delivery_stream.audit_stream.arn
   role_arn        = aws_iam_role.cloudwatch_to_firehose_role.arn
+
+  depends_on = [module.ecs_service_public_api]
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "ecs_private_api_audit_filter" {
@@ -12,6 +14,8 @@ resource "aws_cloudwatch_log_subscription_filter" "ecs_private_api_audit_filter"
   filter_pattern  = "\"[AUDIT_EVENT]\""
   destination_arn = aws_kinesis_firehose_delivery_stream.audit_stream.arn
   role_arn        = aws_iam_role.cloudwatch_to_firehose_role.arn
+
+  depends_on = [module.ecs_service_private_api]
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "ecs_frontend_audit_filter" {
@@ -20,6 +24,8 @@ resource "aws_cloudwatch_log_subscription_filter" "ecs_frontend_audit_filter" {
   filter_pattern  = "\"[AUDIT_EVENT]\""
   destination_arn = aws_kinesis_firehose_delivery_stream.audit_stream.arn
   role_arn        = aws_iam_role.cloudwatch_to_firehose_role.arn
+
+  depends_on = [module.ecs_service_front_end]
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "ecs_cms_admin_audit_filter" {
@@ -28,4 +34,6 @@ resource "aws_cloudwatch_log_subscription_filter" "ecs_cms_admin_audit_filter" {
   filter_pattern  = "\"[AUDIT_EVENT]\""
   destination_arn = aws_kinesis_firehose_delivery_stream.audit_stream.arn
   role_arn        = aws_iam_role.cloudwatch_to_firehose_role.arn
+
+  depends_on = [module.ecs_service_cms_admin]
 }
