@@ -11,7 +11,7 @@
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
   "devDependencies": {
-    "@jest/globals": "^30.3.0",
+    "@jest/globals": "^30.4.1",
     "jest": "^30.3.0",
     "jest-junit": "^17.0.0",
     "sinon": "^21.1.2"
