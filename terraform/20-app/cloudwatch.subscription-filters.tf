@@ -1,21 +1,21 @@
 resource "time_sleep" "wait_for_public_api_log_group" {
   depends_on      = [module.ecs_service_public_api]
-  create_duration = "15s"
+  create_duration = "45s"
 }
 
 resource "time_sleep" "wait_for_private_api_log_group" {
   depends_on      = [module.ecs_service_private_api]
-  create_duration = "15s"
+  create_duration = "45s"
 }
 
 resource "time_sleep" "wait_for_front_end_log_group" {
   depends_on      = [module.ecs_service_front_end]
-  create_duration = "15s"
+  create_duration = "45s"
 }
 
 resource "time_sleep" "wait_for_cms_admin_log_group" {
   depends_on      = [module.ecs_service_cms_admin]
-  create_duration = "15s"
+  create_duration = "45s"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "ecs_public_api_audit_filter" {
