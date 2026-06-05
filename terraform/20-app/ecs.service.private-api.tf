@@ -1,3 +1,8 @@
+resource "aws_cloudwatch_log_group" "ecs_service_private_api_log_group" {
+  name              = "/aws/ecs/${local.prefix}-private-api-auditable/api"
+  retention_in_days = local.default_log_retention_in_days
+}
+
 module "ecs_service_private_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -33,7 +38,8 @@ module "ecs_service_private_api" {
 
   container_definitions = {
     api = {
-      cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
+      create_cloudwatch_log_group            = false
+      cloudwatch_log_group_name              = aws_cloudwatch_log_group.ecs_service_private_api_log_group.name
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
