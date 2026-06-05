@@ -31,8 +31,7 @@ module "ecs_service_cms_admin" {
 
   container_definitions = {
     api = {
-      create_cloudwatch_log_group            = false
-      cloudwatch_log_group_name              = aws_cloudwatch_log_group.ecs_service_cms_admin_log_group.name
+      cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       cpu                                    = local.use_prod_sizing ? 2048 : 512
       memory                                 = local.use_prod_sizing ? 4096 : 1024
       essential                              = true
