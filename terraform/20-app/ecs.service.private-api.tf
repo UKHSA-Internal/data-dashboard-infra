@@ -1,8 +1,3 @@
-resource "aws_cloudwatch_log_group" "ecs_service_private_api_log_group" {
-  name              = "/aws/ecs/${local.prefix}-private-api-auditable/api"
-  retention_in_days = local.default_log_retention_in_days
-}
-
 module "ecs_service_private_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
