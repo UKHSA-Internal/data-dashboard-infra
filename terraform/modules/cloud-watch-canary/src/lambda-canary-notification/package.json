@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
-    "@aws-sdk/client-secrets-manager": "^3.1045.0",
+    "@aws-sdk/client-secrets-manager": "^3.1048.0",
     "@aws-sdk/client-synthetics": "^3.1045.0",
     "@slack/web-api": "^7.3.1",
     "axios": "^1.16.0",
