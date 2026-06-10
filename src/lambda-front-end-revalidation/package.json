@@ -17,7 +17,7 @@
     "sinon": "^21.1.2"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.1061.0"
+      "@aws-sdk/client-secrets-manager": "^3.1066.0"
   },
   "engines": {
     "node": "=24.x"
