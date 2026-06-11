@@ -1,33 +1,34 @@
 locals {
   ip_allow_list = {
     engineers = [
-      "154.51.68.102/32",   # Burendo Leeds
-      "167.98.124.170/32",  # Burendo London
-      "90.222.26.80/32",    # Phil
-      "82.28.94.171/32",    # Phil 2
-      "86.9.74.13/32",      # Rhys
-      "81.98.116.189/32",   # Manu
-      "143.58.138.190/32",  # Josh
-      "80.42.138.138/32",   # Matt R
-      "82.42.127.246/32",   # Taiwo
-      "191.101.81.106/32",  # Shahrukh
-      "176.35.199.118/32",  # Aidan
-      "136.226.167.99/32",  # Sathiya
-      "82.68.5.88/32",      # Kathryn
-      "82.11.222.204/32",   # Kathryn 2
-      "92.21.224.175/32",   # Pete
-      "102.129.155.34/32",  # Dan
-      "82.33.136.192/32",   # Marco
-      "149.107.78.78/32",   # Scott
-      "176.26.230.164/32",  # Ian
+      "154.51.68.102/32",  # Burendo Leeds
+      "167.98.124.170/32", # Burendo London
+      "90.222.26.80/32",   # Phil
+      "82.28.94.171/32",   # Phil 2
+      "86.9.74.13/32",     # Rhys
+      "81.98.116.189/32",  # Manu
+      "143.58.138.190/32", # Josh
+      "80.42.138.138/32",  # Matt R
+      "82.42.127.246/32",  # Taiwo
+      "191.101.81.106/32", # Shahrukh
+      "176.35.199.118/32", # Aidan
+      "136.226.167.99/32", # Sathiya
+      "82.68.5.88/32",     # Kathryn
+      "82.11.222.204/32",  # Kathryn 2
+      "92.21.224.175/32",  # Pete
+      "102.129.155.34/32", # Dan
+      "82.33.136.192/32",  # Marco
+      "149.107.78.78/32",  # Scott
+      "176.26.230.164/32", # Ian
+      "88.97.219.66/32",   # Megan
     ],
     project_team = [
-      "77.100.107.252/32",  # Laura
-      "109.156.183.33/32",  # Khawar
-      "80.1.86.138/32",     # Ehsan
-      "92.234.44.48/31",    # Zesh
-      "86.24.105.111/32",   # Subhana
-      "86.0.177.34/32",     # Chadrak
+      "77.100.107.252/32", # Laura
+      "109.156.183.33/32", # Khawar
+      "80.1.86.138/32",    # Ehsan
+      "92.234.44.48/31",   # Zesh
+      "86.24.105.111/32",  # Subhana
+      "86.0.177.34/32",    # Chadrak
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -56,11 +57,11 @@ locals {
       "86.1.114.97/32",     # Lianne Carolan
     ]
     pen_testers = [
-      "82.68.136.38/32",    # Steve Ryan
+      "82.68.136.38/32", # Steve Ryan
     ],
     perf_testers = [
-      "172.25.173.128/26",   # Mike Elshaw's perf runners
-      "18.133.90.54/32",     # Mike Elshaw's perf runner
+      "172.25.173.128/26", # Mike Elshaw's perf runners
+      "18.133.90.54/32",   # Mike Elshaw's perf runner
     ],
   }
   complete_ip_allow_list = tolist(
@@ -80,7 +81,7 @@ locals {
         # Add pen testers IP addresses only for the `pen` test environment
         local.environment == "pen" ? local.ip_allow_list.pen_testers : [],
         # add perf testers IP addresses only for the `perf` test environment
-        local.environment == "perf" ? local.ip_allow_list.perf_testers: [],
+        local.environment == "perf" ? local.ip_allow_list.perf_testers : [],
       )
     )
   )
