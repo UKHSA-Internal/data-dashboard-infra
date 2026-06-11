@@ -94,18 +94,6 @@ module "ecs_service_public_api" {
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
-        },
-        {
-          name      = "ENTRA_TENANT_ID",
-          valueFrom = data.aws_secretsmanager_secret.entra_tenant_id.arn
-        },
-        {
-          name      = "ENTRA_APP_ID",
-          valueFrom = data.aws_secretsmanager_secret.entra_app_id.arn
-        },
-        {
-          name      = "ENTRA_AUDIENCE",
-          valueFrom = data.aws_secretsmanager_secret.entra_audience.arn
         }
       ]
     }
