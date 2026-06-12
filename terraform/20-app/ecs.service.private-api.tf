@@ -1,7 +1,10 @@
 locals {
   private_api_sizing = {
-    cpu    = local.use_prod_sizing ? 2048 : 512
-    memory = local.use_prod_sizing ? 4096 : 1024
+    # provision more resources for prod and the mid-sized envs, but note that the mid-sized envs only have 1 instance
+    # running as per our autoscaling configuration lower down so they aren't as expensive as prod, but they are more
+    # capable than the smaller envs
+    cpu    = local.use_prod_sizing || local.use_mid_sizing ? 2048 : 512
+    memory = local.use_prod_sizing || local.use_mid_sizing ? 4096 : 1024
   }
 }
 

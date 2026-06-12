@@ -1,7 +1,7 @@
 locals {
   cms_sizing = {
-    cpu    = local.use_prod_sizing ? 2048 : 512
-    memory = local.use_prod_sizing ? 4096 : 1024
+    cpu    = local.use_prod_sizing ? 2048 : local.use_mid_sizing ? 1024 : 512
+    memory = local.use_prod_sizing ? 4096 : local.use_mid_sizing ? 2048 : 1024
   }
 }
 
