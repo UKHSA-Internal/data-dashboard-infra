@@ -1,3 +1,13 @@
+locals {
+  private_api_sizing = {
+    # provision more resources for prod and the mid-sized envs, but note that the mid-sized envs only have 1 instance
+    # running as per our autoscaling configuration lower down so they aren't as expensive as prod, but they are more
+    # capable than the smaller envs
+    cpu    = local.use_prod_sizing || local.use_mid_sizing ? 2048 : 512
+    memory = local.use_prod_sizing || local.use_mid_sizing ? 4096 : 1024
+  }
+}
+
 module "ecs_service_private_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -6,8 +16,8 @@ module "ecs_service_private_api" {
   cluster_arn            = module.ecs.cluster_arn
   enable_execute_command = true
 
-  cpu        = local.use_prod_sizing ? 2048 : 512
-  memory     = local.use_prod_sizing ? 4096 : 1024
+  cpu        = local.private_api_sizing.cpu
+  memory     = local.private_api_sizing.memory
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
@@ -34,8 +44,8 @@ module "ecs_service_private_api" {
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
-      cpu                                    = local.use_prod_sizing ? 2048 : 512
-      memory                                 = local.use_prod_sizing ? 4096 : 1024
+      cpu                                    = local.private_api_sizing.cpu
+      memory                                 = local.private_api_sizing.memory
       essential                              = true
       readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri
