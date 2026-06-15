@@ -1,3 +1,10 @@
+locals {
+  bastion_sizing = {
+    cpu    = 256
+    memory = 512
+  }
+}
+
 module "ecs_service_bastion" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -6,8 +13,8 @@ module "ecs_service_bastion" {
   cluster_arn            = module.ecs.cluster_arn
   enable_execute_command = true
 
-  cpu        = 256
-  memory     = 512
+  cpu        = local.bastion_sizing.cpu
+  memory     = local.bastion_sizing.memory
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling = false
@@ -22,10 +29,10 @@ module "ecs_service_bastion" {
     bastion = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
       command = ["sleep", "infinity"]
-      cpu                                    = 256
+      cpu                                    = local.bastion_sizing.cpu
+      memory                                 = local.bastion_sizing.memory
       essential                              = true
       image                                  = "public.ecr.aws/amazonlinux/amazonlinux:2023"
-      memory                                 = 512
       readonly_root_filesystem               = false
     }
   }
