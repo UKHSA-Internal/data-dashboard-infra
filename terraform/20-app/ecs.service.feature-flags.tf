@@ -1,3 +1,10 @@
+locals {
+  flags_sizing = {
+    cpu    = 256
+    memory = 512
+  }
+}
+
 module "ecs_service_feature_flags" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -8,8 +15,8 @@ module "ecs_service_feature_flags" {
 
   create_iam_role = true
 
-  cpu        = 256
-  memory     = 512
+  cpu        = local.flags_sizing.cpu
+  memory     = local.flags_sizing.memory
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
@@ -26,8 +33,8 @@ module "ecs_service_feature_flags" {
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
-      cpu                                    = 256
-      memory                                 = 512
+      cpu                                    = local.flags_sizing.cpu
+      memory                                 = local.flags_sizing.memory
       essential                              = true
       readonlyRootFilesystem                 = false
       image                                  = "unleashorg/unleash-server:5.10.1"

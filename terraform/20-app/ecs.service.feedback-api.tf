@@ -1,3 +1,10 @@
+locals {
+  feedback_sizing = {
+    cpu    = local.use_prod_sizing ? 1024 : 512
+    memory = local.use_prod_sizing ? 2048 : 1024
+  }
+}
+
 module "ecs_service_feedback_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -6,8 +13,8 @@ module "ecs_service_feedback_api" {
   cluster_arn            = module.ecs.cluster_arn
   enable_execute_command = true
 
-  cpu        = local.use_prod_sizing ? 1024 : 512
-  memory     = local.use_prod_sizing ? 2048 : 1024
+  cpu        = local.feedback_sizing.cpu
+  memory     = local.feedback_sizing.memory
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling       = true
@@ -32,8 +39,8 @@ module "ecs_service_feedback_api" {
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
-      cpu                                    = local.use_prod_sizing ? 1024 : 512
-      memory                                 = local.use_prod_sizing ? 2048 : 1024
+      cpu                                    = local.feedback_sizing.cpu
+      memory                                 = local.feedback_sizing.memory
       essential                              = true
       readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri

@@ -1,3 +1,10 @@
+locals {
+  utility_worker_sizing = {
+    cpu    = 16384
+    memory = 32768
+  }
+}
+
 module "ecs_service_utility_worker" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "6.10.0"
@@ -6,8 +13,8 @@ module "ecs_service_utility_worker" {
   cluster_arn            = module.ecs.cluster_arn
   enable_execute_command = true
 
-  cpu        = 16384
-  memory     = 32768
+  cpu        = local.utility_worker_sizing.cpu
+  memory     = local.utility_worker_sizing.memory
   subnet_ids = module.vpc.private_subnets
 
   enable_autoscaling = false
@@ -30,8 +37,8 @@ module "ecs_service_utility_worker" {
   container_definitions = {
     api = {
       cloudwatch_log_group_retention_in_days = local.default_log_retention_in_days
-      cpu                                    = 16384
-      memory                                 = 32768
+      cpu                                    = local.utility_worker_sizing.cpu
+      memory                                 = local.utility_worker_sizing.memory
       essential                              = true
       readonlyRootFilesystem                 = true
       image                                  = module.ecr_back_end_ecs.image_uri

@@ -12,6 +12,7 @@ locals {
   use_prod_sizing            = contains([
     "perf", "auth-perf", "pen", "auth-pen", "prod", "auth-prod", "staging",
   ], local.environment)
+  use_mid_sizing             = contains(["dpd"], local.environment)
   # Temporarily switch off auth challenge in staging
   add_password_protection    = false
   auth_enabled               = var.auth_enabled
