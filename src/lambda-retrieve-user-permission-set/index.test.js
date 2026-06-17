@@ -256,7 +256,7 @@ describe('handler', () => {
      */
     test('Perf Test Token added to claims override', async () => {
         // Given
-        const inputToken = JSON.parse(JSON.stringify(fakeInputToken))
+        const inputToken = structuredClone(fakeInputToken)
         inputToken.triggerSource = "TokenGeneration_ClientCredentials"
         inputToken.request.clientMetadata = {"user_uuid": "9999-8888-7777-abcd-666666666666"}
         // When
