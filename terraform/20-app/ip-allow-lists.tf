@@ -19,7 +19,7 @@ locals {
       "102.129.155.34/32", # Dan
       "82.33.136.192/32",  # Marco
       "149.107.78.78/32",  # Scott
-      "2.120.132.149/32", # Ian
+      "2.120.132.149/32",  # Ian
       "88.97.219.66/32",   # Megan
     ],
     project_team = [
@@ -63,6 +63,12 @@ locals {
       "172.25.173.128/26", # Mike Elshaw's perf runners
       "18.133.90.54/32",   # Mike Elshaw's perf runner
     ],
+    apim = [
+      "172.25.135.0/28",  # APIM SIT AWS
+      "172.25.135.16/28", # APIM SIT AWS
+      "172.25.135.32/28", # APIM SIT AWS
+      "172.25.16.64/29",  # APIM SIT Azure
+    ],
   }
   complete_ip_allow_list = tolist(
     # Cast back to a list for portability
@@ -78,6 +84,7 @@ locals {
         local.ip_allow_list.engineers,
         local.ip_allow_list.project_team,
         local.ip_allow_list.other_stakeholders,
+        local.ip_allow_list.apim,
         # Add pen testers IP addresses only for the `pen` test environment
         local.environment == "pen" ? local.ip_allow_list.pen_testers : [],
         # add perf testers IP addresses only for the `perf` test environment
