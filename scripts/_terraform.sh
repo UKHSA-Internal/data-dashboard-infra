@@ -374,7 +374,7 @@ function _terraform_output_layer_file() {
     fi
 
     if [[ -z ${address} ]]; then
-        echo "Workspace is required" >&2
+        echo "Resource address is required" >&2
         return 1
     fi
 

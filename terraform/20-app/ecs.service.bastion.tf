@@ -62,7 +62,7 @@ module "ecs_service_bastion" {
       actions = ["secretsmanager:GetSecretValue"]
       resources = [
         local.main_db_aurora_password_secret_arn,
-        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
       ]
     }
   ]

@@ -83,7 +83,19 @@ module "ecs_service_feedback_api" {
         {
           name  = "FEEDBACK_EMAIL_SENDER_ADDRESS"
           value = "feedback@${aws_ses_domain_mail_from.sender.mail_from_domain}"
-        }
+        },
+        {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
+          name  = "PAGE_PREVIEWS_TOKEN_TTL_SECONDS"
+          value = local.page_previews_token_ttl_seconds
+        },
+        {
+          name  = "FRONTEND_URL"
+          value = local.urls.front_end
+        },
       ],
       secrets = [
         {
@@ -101,7 +113,7 @@ module "ecs_service_feedback_api" {
         {
           name      = "FEEDBACK_EMAIL_RECIPIENT_ADDRESS",
           valueFrom = "${aws_secretsmanager_secret.private_api_email_credentials.arn}:feedback_email_recipient_address::"
-        }
+        },
       ]
     }
   }
@@ -125,14 +137,14 @@ module "ecs_service_feedback_api" {
       resources = ["*"]
     },
     {
-      actions = ["ses:SendEmail", "ses:SendRawEmail"]
+      actions   = ["ses:SendEmail", "ses:SendRawEmail"]
       resources = [aws_ses_domain_identity.sender.arn]
     }
   ]
 
   task_exec_iam_statements = [
     {
-      actions = ["kms:Decrypt"]
+      actions   = ["kms:Decrypt"]
       resources = [module.kms_secrets_app_engineer.key_arn]
     },
     {
