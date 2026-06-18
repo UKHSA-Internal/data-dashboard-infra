@@ -63,3 +63,9 @@ output "acm" {
     }
   }
 }
+
+output "kms" {
+  value = {
+    account_key_arn = module.kms_secrets.key_arn
+  }
+}
