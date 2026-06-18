@@ -85,6 +85,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
 
 resource "aws_cognito_user_pool_client" "user_pool_client_perf_test" {
   depends_on = [aws_cognito_resource_server.resource_perf_test]
+  count = var.is_perf ? 1 : 0 
 
   name            = var.client_perf_test_name
   user_pool_id    = aws_cognito_user_pool.user_pool.id
@@ -114,6 +115,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client_perf_test" {
 }
 
 resource "aws_cognito_resource_server" "resource_perf_test" {
+  count = var.is_perf ? 1 : 0 
   identifier = "perf_test"
   name       = "perf_test"
 

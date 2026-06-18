@@ -34,6 +34,12 @@ variable "user_pool_name" {
   type        = string
 }
 
+variable "is_perf" {
+  description = "Is this a performance testing environment"
+  type        = bool
+  default     = false
+}
+
 variable "client_name" {
   description = "Name of the Cognito User Pool Client"
   type        = string
