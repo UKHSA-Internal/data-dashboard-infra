@@ -17,7 +17,7 @@ jobs:
     name: Build base env
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           ref: ${{ github.base_ref }}
 
@@ -47,7 +47,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Install node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["build_base_auth", "unit_test_functions_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["build_base_auth", "terraform_plan_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
@@ -182,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["terraform_apply_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["push_docker_images_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
@@ -248,7 +248,7 @@ jobs:
     if: ${{ always() }}
     needs: ["restart_services_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
 
       - name: Configure AWS credentials for tools account
@@ -274,7 +274,7 @@ jobs:
     if: ${{ always() }}
     needs: ["terraform_destroy_auth"]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Configure AWS credentials for tools account
         uses: ./.github/actions/configure-aws-credentials
