@@ -93,18 +93,6 @@ module "ecs_service_public_api" {
           name  = "AUTH_ENABLED"
           value = local.auth_enabled
         },
-        {
-          name  = "COGNITO_AWS_REGION",
-          value = local.region
-        },
-        {
-          name  = "COGNITO_JWT_AUTH_HEADER"
-          value = "HTTP_X_UHD_AUTH"
-        },
-        {
-          name  = "COGNITO_USER_POOL",
-          value = module.cognito.user_pool_id
-        },
       ],
       secrets = [
         {
