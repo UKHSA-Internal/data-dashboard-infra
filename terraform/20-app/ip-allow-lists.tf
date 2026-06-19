@@ -64,10 +64,7 @@ locals {
       "18.133.90.54/32",   # Mike Elshaw's perf runner
     ],
     apim = [
-      "172.25.135.0/28",  # APIM SIT AWS
-      "172.25.135.16/28", # APIM SIT AWS
-      "172.25.135.32/28", # APIM SIT AWS
-      "172.25.16.64/29",  # APIM SIT Azure
+      "18.135.50.191/32", # APIM SIT NAT gateway outbound IP
     ],
   }
   complete_ip_allow_list = tolist(
