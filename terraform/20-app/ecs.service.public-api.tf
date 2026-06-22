@@ -1,3 +1,8 @@
+data "aws_secretsmanager_secret" "entra_api_client_config" {
+  name = "entra-api-client-config"
+}
+
+
 locals {
   public_api_sizing = {
     cpu    = local.use_prod_sizing ? 1024 : 512
@@ -101,6 +106,18 @@ module "ecs_service_public_api" {
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+        },
+        {
+          name      = "ENTRA_TENANT_ID",
+          valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_TENANT_ID::"
+        },
+        {
+          name      = "ENTRA_APP_ID",
+          valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_APP_ID::"
+        },
+        {
+          name      = "ENTRA_AUDIENCE",
+          valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_AUDIENCE::"
         }
       ]
     }
@@ -131,14 +148,16 @@ module "ecs_service_public_api" {
       actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn,
-        module.kms_app_rds.key_arn
+        module.kms_app_rds.key_arn,
+        local.account_layer.kms.account_key_arn
       ]
     },
     {
       actions = ["secretsmanager:GetSecretValue"]
       resources = [
         local.main_db_aurora_password_secret_arn,
-        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
+        aws_secretsmanager_secret.backend_cryptographic_signing_key.arn,
+        data.aws_secretsmanager_secret.entra_api_client_config.arn,
       ]
     }
   ]

@@ -112,6 +112,10 @@ module "ecs_service_private_api" {
           value = "HTTP_X_UHD_AUTH"
         },
         {
+          name  = "JWT_AUTH_HEADER"
+          value = "HTTP_X_UHD_AUTH"
+        },
+        {
           name  = "COGNITO_USER_POOL",
           value = module.cognito.user_pool_id
         },
