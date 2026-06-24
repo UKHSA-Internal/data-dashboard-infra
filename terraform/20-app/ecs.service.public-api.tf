@@ -112,8 +112,8 @@ module "ecs_service_public_api" {
           valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_TENANT_ID::"
         },
         {
-          name      = "ENTRA_APP_ID",
-          valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_APP_ID::"
+          name      = "ENTRA_ALLOWED_APP_IDS",
+          valueFrom = "${data.aws_secretsmanager_secret.entra_api_client_config.arn}:ENTRA_ALLOWED_APP_IDS::"
         },
         {
           name      = "ENTRA_AUDIENCE",
