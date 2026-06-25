@@ -55,6 +55,8 @@ locals {
       "165.225.197.22/32",  # Mike Elshaw
       "147.161.145.99/32",  # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
+      "136.226.167.99/32",  # Sathiya Karuppaiah   
+
     ]
     pen_testers = [
       "82.68.136.38/32", # Steve Ryan
