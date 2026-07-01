@@ -18,7 +18,7 @@
   },
   "dependencies": {
       "@aws-sdk/client-secrets-manager": "^3.1066.0",
-      "@slack/webhook": "^7.0.9"
+      "@slack/webhook": "^7.1.0"
   },
   "engines": {
     "node": "=24.x"
