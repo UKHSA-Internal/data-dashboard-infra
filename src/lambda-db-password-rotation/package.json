@@ -17,7 +17,7 @@
     "sinon": "^22.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-ecs": "^3.1075.0"
+    "@aws-sdk/client-ecs": "^3.1078.0"
   },
   "engines": {
       "node": "=24.x"
