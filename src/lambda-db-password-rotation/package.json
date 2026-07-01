@@ -14,7 +14,7 @@
     "@jest/globals": "^30.3.0",
     "jest": "^30.4.2",
     "jest-junit": "^17.0.0",
-    "sinon": "^21.1.2"
+    "sinon": "^22.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-ecs": "^3.1075.0"
