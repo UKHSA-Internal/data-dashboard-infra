@@ -1,6 +1,6 @@
 module "cms_admin_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "10.4.0"
+  version = "10.5.0"
 
   name = "${local.prefix}-cms-admin"
 
