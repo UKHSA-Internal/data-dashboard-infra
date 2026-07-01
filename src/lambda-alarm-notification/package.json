@@ -17,7 +17,7 @@
     "sinon": "^22.0.0"
   },
   "dependencies": {
-      "@aws-sdk/client-secrets-manager": "^3.1066.0",
+      "@aws-sdk/client-secrets-manager": "^3.1078.0",
       "@slack/webhook": "^7.0.9"
   },
   "engines": {
