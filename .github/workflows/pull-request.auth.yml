@@ -22,7 +22,7 @@ jobs:
           ref: ${{ github.base_ref }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59
+        uses: aws-actions/configure-aws-credentials@254c19bd240aabef8777f48595e9d2d7b972184b
         with:
           role-to-assume: ${{ secrets.UHD_TERRAFORM_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
