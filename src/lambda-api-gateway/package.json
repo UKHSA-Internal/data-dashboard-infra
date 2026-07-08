@@ -16,7 +16,7 @@
     "sinon": "^22.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.1030.0",
+    "@aws-sdk/client-secrets-manager": "^3.1071.0",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^4.0.1"
   },
