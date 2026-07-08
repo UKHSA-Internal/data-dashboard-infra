@@ -33,7 +33,8 @@ module "iam_cloudwatch_readonly_policy" {
         Action =  [
           "cloudwatch:GetMetricStatistics",
           "cloudwatch:GetMetricData",
-          "cloudwatch:ListMetrics"
+          "cloudwatch:ListMetrics",
+          "cloudwatch:DescribeAlarms"
         ],
         Resource = "*"
       },
