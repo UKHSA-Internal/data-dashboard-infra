@@ -50,6 +50,15 @@ module "iam_cloudwatch_readonly_policy" {
           "logs:StopQuery"
         ],
         Resource = "*"
+      },
+      {
+        Sid = "ResourceDiscovery",
+        Effect = "Allow",
+        Action = [
+          "tag:GetResources",
+          "iam:ListAccountAliases"
+        ],
+        Resource = "*"
       }
     ]
   })
