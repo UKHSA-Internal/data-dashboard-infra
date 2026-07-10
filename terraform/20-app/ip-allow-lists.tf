@@ -50,9 +50,7 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
-      "165.225.197.15/32",  # Mike Elshaw
-      "165.225.197.22/32",  # Mike Elshaw
-      "147.161.145.99/32",  # Mike Elshaw
+      "147.161.237.110/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
       "136.226.167.99/32",  # Sathiya Karuppaiah   
 
