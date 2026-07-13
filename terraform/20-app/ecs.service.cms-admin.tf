@@ -79,7 +79,19 @@ module "ecs_service_cms_admin" {
         {
           name  = "APIENV"
           value = "PROD"
-        }
+        },
+        {
+          name  = "PAGE_PREVIEWS_ENABLED"
+          value = local.page_previews_enabled
+        },
+        {
+          name  = "PAGE_PREVIEWS_TOKEN_TTL_SECONDS"
+          value = local.page_previews_token_ttl_seconds
+        },
+        {
+          name  = "FRONTEND_URL"
+          value = local.urls.front_end
+        },
       ],
       secrets = [
         {
@@ -93,7 +105,7 @@ module "ecs_service_cms_admin" {
         {
           name      = "SECRET_KEY",
           valueFrom = aws_secretsmanager_secret.backend_cryptographic_signing_key.arn
-        }
+        },
       ]
     }
   }

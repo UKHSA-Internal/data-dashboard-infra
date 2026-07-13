@@ -1,6 +1,6 @@
 locals {
-  eight_hours_in_seconds              = 28800
-  managed_caching_disabled_policy_id  = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+  eight_hours_in_seconds             = 28800
+  managed_caching_disabled_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
 }
 
 module "cloudfront_front_end" {
@@ -46,12 +46,12 @@ module "cloudfront_front_end" {
   }
 
   default_cache_behavior = {
-    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cache_policy_id            = (
-        local.is_front_end_bypassing_cdn ?
-        local.managed_caching_disabled_policy_id :
-        aws_cloudfront_cache_policy.front_end.id
-      )
+    allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cache_policy_id = (
+      local.is_front_end_bypassing_cdn ?
+      local.managed_caching_disabled_policy_id :
+      aws_cloudfront_cache_policy.front_end.id
+    )
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -59,7 +59,7 @@ module "cloudfront_front_end" {
     target_origin_id           = "alb"
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
-    function_association       = local.add_password_protection ? {
+    function_association = local.add_password_protection ? {
       viewer-request = {
         function_arn = module.cloudfront_password_protection_frontend.arn
       }
@@ -98,9 +98,9 @@ module "cloudfront_front_end" {
     ] : [],
     # Behaviour to bypass CDN for the dynamic alert pages
     {
-      path_pattern               = "/"
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = (
+      path_pattern    = "/"
+      allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id = (
         local.is_front_end_bypassing_cdn ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
@@ -114,9 +114,9 @@ module "cloudfront_front_end" {
       viewer_protocol_policy     = "redirect-to-https"
     },
     {
-      path_pattern               = "/weather-health-alerts"
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = (
+      path_pattern    = "/weather-health-alerts"
+      allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id = (
         local.is_front_end_bypassing_cdn ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
@@ -130,9 +130,9 @@ module "cloudfront_front_end" {
       viewer_protocol_policy     = "redirect-to-https"
     },
     {
-      path_pattern               = "/weather-health-alerts/*"
-      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id            = (
+      path_pattern    = "/weather-health-alerts/*"
+      allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_id = (
         local.is_front_end_bypassing_cdn ?
         local.managed_caching_disabled_policy_id :
         aws_cloudfront_cache_policy.front_end_low_ttl.id
@@ -147,6 +147,30 @@ module "cloudfront_front_end" {
     },
     {
       path_pattern               = "/api/proxy/alerts/*"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_name          = "Managed-CachingDisabled"
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/preview*" # previews to draft pages must be uncached
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cache_policy_name          = "Managed-CachingDisabled"
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
+      target_origin_id           = "alb"
+      use_forwarded_values       = false
+      viewer_protocol_policy     = "redirect-to-https"
+    },
+    {
+      path_pattern               = "/nocache*" # previews to published pages must be uncached
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_name          = "Managed-CachingDisabled"
       cached_methods             = ["GET", "HEAD"]
@@ -185,14 +209,14 @@ resource "aws_cloudfront_origin_request_policy" "front_end" {
     cookie_behavior = "whitelist"
     cookies {
       items = flatten(concat(["UKHSAConsentGDPR", local.auth_enabled ? [
-        "__Secure-authjs.callback-url",  # Stores the redirect destination after authentication
-        "__Secure-authjs.csrf-token",  # CSRF token required for authentication flows
-        "__Secure-authjs.session-token",  # Main session token
-        "__Secure-authjs.session-token.0",  # Split session token (if size exceeds 4KB)
-        "__Secure-authjs.session-token.1",  # Additional split session token
-        "__Secure-authjs.session-token.2",  # Additional split session token
-        "__Secure-authjs.session-token.3",  # Additional split session token
-        "__Secure-authjs.session-token.4",  # Additional split session token (safety margin)
+        "__Secure-authjs.callback-url",    # Stores the redirect destination after authentication
+        "__Secure-authjs.csrf-token",      # CSRF token required for authentication flows
+        "__Secure-authjs.session-token",   # Main session token
+        "__Secure-authjs.session-token.0", # Split session token (if size exceeds 4KB)
+        "__Secure-authjs.session-token.1", # Additional split session token
+        "__Secure-authjs.session-token.2", # Additional split session token
+        "__Secure-authjs.session-token.3", # Additional split session token
+        "__Secure-authjs.session-token.4", # Additional split session token (safety margin)
       ] : []]))
     }
   }

@@ -44,24 +44,19 @@ function _delete_all_secrets() {
         return 1
     fi
 
-    secret_ids=("uhd-${env}-private-api-key"
-                "uhd-${env}-cms-admin-user-credentials"
-                "uhd-${env}-backend-cryptographic-signing-key"
-                "uhd-${env}-cdn-front-end-secure-header-value"
-                "uhd-${env}-cdn-public-api-secure-header-value"
-                "uhd-${env}-private-api-email-credentials"
-                "uhd-${env}-google-analytics-credentials"
-                "uhd-${env}-aurora-db-feature-flags-credentials"
-                "uhd-${env}-feature-flags-admin-user-credentials"
-                "uhd-${env}-feature-flags-api-keys"
-                "uhd-${env}-esri-api-key"
-                "uhd-${env}-esri-maps-service-credentials"
-                "uhd-${env}-slack-webhook-url"
-                "uhd-${env}-cognito-service-credentials"
-                "uhd-${env}-auth-secret"
-                "uhd-${env}-revalidate-secret")
+    # get all secrets for $env
+    secret_ids=$(aws secretsmanager list-secrets \
+        --include-planned-deletion \
+        --query "SecretList[?contains(Name, \`$env\`)].Name" \
+        --output json | jq -r '.[]')
 
-    for ((i=1; i<=${#secret_ids[@]}; ++i)); do
-        _delete_secret "${secret_ids[i]}"
-    done
+    if [[ -z "$secret_ids" ]]; then
+      echo "No secrets to delete"
+    return 0
+    fi
+ 
+    # call delete on all secrets in $env
+    while IFS= read -r secret_id; do
+      _delete_secret $secret_id
+    done <<< "$secret_ids"
 }

@@ -9,7 +9,7 @@ resource "aws_secretsmanager_secret" "feature_flags_api_keys" {
 }
 
 resource "aws_secretsmanager_secret_version" "feature_flags_api_keys" {
-  secret_id     = aws_secretsmanager_secret.feature_flags_api_keys.id
+  secret_id = aws_secretsmanager_secret.feature_flags_api_keys.id
   secret_string = jsonencode({
     client_api_key = local.feature_flags_client_api_key
     x_auth         = local.feature_flags_x_auth
@@ -24,7 +24,7 @@ resource "aws_secretsmanager_secret" "feature_flags_admin_user_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "feature_flags_admin_user_credentials" {
-  secret_id     = aws_secretsmanager_secret.feature_flags_admin_user_credentials.id
+  secret_id = aws_secretsmanager_secret.feature_flags_admin_user_credentials.id
   secret_string = jsonencode({
     username = "admin"
     password = random_password.feature_flags_admin_user_password.result
@@ -42,7 +42,7 @@ resource "aws_secretsmanager_secret" "cms_admin_user_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "cms_admin_user_credentials" {
-  secret_id     = aws_secretsmanager_secret.cms_admin_user_credentials.id
+  secret_id = aws_secretsmanager_secret.cms_admin_user_credentials.id
   secret_string = jsonencode({
     username = "testadmin"
     password = random_password.cms_admin_user_password.result
@@ -115,7 +115,7 @@ resource "aws_secretsmanager_secret" "private_api_email_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "private_api_email_credentials" {
-  secret_id     = aws_secretsmanager_secret.private_api_email_credentials.id
+  secret_id = aws_secretsmanager_secret.private_api_email_credentials.id
   secret_string = jsonencode({
     email_host_user                  = ""
     email_host_password              = ""
@@ -134,7 +134,7 @@ resource "aws_secretsmanager_secret" "google_analytics_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "google_analytics_credentials" {
-  secret_id     = aws_secretsmanager_secret.google_analytics_credentials.id
+  secret_id = aws_secretsmanager_secret.google_analytics_credentials.id
   secret_string = jsonencode({
     google_tag_manager_id = ""
   })
@@ -151,7 +151,7 @@ resource "aws_secretsmanager_secret" "cognito_service_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "cognito_service_credentials" {
-  secret_id     = aws_secretsmanager_secret.cognito_service_credentials.id
+  secret_id = aws_secretsmanager_secret.cognito_service_credentials.id
   secret_string = jsonencode({
     client_url    = module.cognito.cognito_user_pool_issuer_endpoint,
     client_id     = module.cognito.client_id
@@ -170,7 +170,7 @@ resource "aws_secretsmanager_secret" "auth_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "auth_secret" {
-  secret_id     = aws_secretsmanager_secret.auth_secret.id
+  secret_id = aws_secretsmanager_secret.auth_secret.id
   secret_string = jsonencode({
     auth_secret = local.auth_secret
   })
@@ -183,7 +183,7 @@ resource "aws_secretsmanager_secret" "revalidate_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "revalidate_secret" {
-  secret_id     = aws_secretsmanager_secret.revalidate_secret.id
+  secret_id = aws_secretsmanager_secret.revalidate_secret.id
   secret_string = jsonencode({
     revalidate_secret = random_password.revalidate_secret.result
   })
@@ -201,7 +201,7 @@ resource "aws_secretsmanager_secret" "esri_api_key" {
 }
 
 resource "aws_secretsmanager_secret_version" "esri_api_key" {
-  secret_id     = aws_secretsmanager_secret.esri_api_key.id
+  secret_id = aws_secretsmanager_secret.esri_api_key.id
   secret_string = jsonencode({
     esri_api_key = ""
   })
@@ -214,7 +214,7 @@ resource "aws_secretsmanager_secret" "esri_maps_service_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "esri_maps_service_credentials" {
-  secret_id     = aws_secretsmanager_secret.esri_maps_service_credentials.id
+  secret_id = aws_secretsmanager_secret.esri_maps_service_credentials.id
   secret_string = jsonencode({
     client_url    = ""
     client_id     = ""
@@ -233,10 +233,10 @@ resource "aws_secretsmanager_secret" "slack_webhook_url" {
 }
 
 resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
-  secret_id     = aws_secretsmanager_secret.slack_webhook_url.id
+  secret_id = aws_secretsmanager_secret.slack_webhook_url.id
   secret_string = jsonencode({
     slack_webhook_url = ""
-    slack_token = ""
-    slack_channel_id = ""
+    slack_token       = ""
+    slack_channel_id  = ""
   })
 }

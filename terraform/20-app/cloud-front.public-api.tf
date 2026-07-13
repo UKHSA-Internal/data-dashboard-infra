@@ -79,7 +79,7 @@ module "cloudfront_public_api" {
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
       query_string               = false
-    }
+    },
   ]
 
   custom_error_response = [
