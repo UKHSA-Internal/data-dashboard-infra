@@ -2,4 +2,4 @@ environment_type                = "auth-test"
 halo_account_type               = "nl7"
 auth_enabled                    = true
 page_previews_enabled           = true
-page_previews_token_ttl_seconds = 30
+page_previews_token_ttl_seconds = 300
