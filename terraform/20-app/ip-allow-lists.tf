@@ -26,7 +26,7 @@ locals {
       "109.156.183.33/32", # Khawar
       "80.1.86.138/32",    # Ehsan
       "92.234.44.48/31",   # Zesh
-      "86.24.105.111/32",  # Subhana
+      "86.16.189.191/32",  # Subhana
       "86.0.177.34/32",    # Chadrak
     ],
     other_stakeholders = [
@@ -43,7 +43,7 @@ locals {
       "172.28.215.10/32",   # Alana Firth
       "165.225.17.43/32",   # Maria Tsiko
       "136.226.167.91/32",  # Emmanuel Ughoo
-      "147.161.224.180/32", # Osazee Ogunje
+      "80.41.52.150/32",    # Osazee Ogunje
       "165.225.199.111/32", # Jayne Gilbert
       "90.252.15.44/32",    # Andrew Williams
       "172.27.130.67/32",   # Dan Jendrissek
