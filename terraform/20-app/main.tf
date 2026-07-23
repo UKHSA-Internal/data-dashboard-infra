@@ -10,6 +10,10 @@ provider "aws" {
       env          = terraform.workspace
     }
   }
+
+  ignore_tags {
+    key_prefixes = ["lz:"]
+  }
 }
 
 provider "aws" {
@@ -17,6 +21,10 @@ provider "aws" {
   region = "us-east-1"
   assume_role {
     role_arn = "arn:aws:iam::${var.assume_account_id}:role/${var.assume_role_name}"
+  }
+
+  ignore_tags {
+    key_prefixes = ["lz:"]
   }
 }
 
