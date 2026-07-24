@@ -10,7 +10,7 @@ locals {
 
 module "ecs_service_private_api" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "6.10.0"
+  version = "7.2.0"
 
   name                   = "${local.prefix}-private-api"
   cluster_arn            = module.ecs.cluster_arn
