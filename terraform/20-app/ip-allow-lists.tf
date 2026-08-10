@@ -56,7 +56,7 @@ locals {
 
     ]
     pen_testers = [
-      "82.68.136.38/32", # Steve Ryan
+      "195.95.131.0/24", # NCC Manchester
     ],
     perf_testers = [
       "172.25.173.128/26", # Mike Elshaw's perf runners
