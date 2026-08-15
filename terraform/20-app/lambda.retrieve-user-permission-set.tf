@@ -6,6 +6,10 @@ module "lambda_retrieve_user_permission_set" {
 
   cloudwatch_logs_retention_in_days = local.default_log_retention_in_days
 
+  vpc_subnet_ids         = module.vpc.private_subnets
+  vpc_security_group_ids = [module.lambda_retrieve_user_permission_set_security_group.security_group_id]
+  attach_network_policy  = true
+
   create_package = true
   runtime        = "nodejs24.x"
   handler        = "index.handler"
@@ -45,4 +49,20 @@ resource "aws_lambda_permission" "lambda_retrieve_user_permission_set" {
   function_name = module.lambda_retrieve_user_permission_set.lambda_function_name
   principal     = "cognito-idp.amazonaws.com"
   source_arn    = "arn:aws:cognito-idp:${local.region}:${data.aws_caller_identity.current.account_id}:userpool/*"
+}
+
+module "lambda_retrieve_user_permission_set_security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.3.1"
+
+  name   = "${local.prefix}-lambda-retrieve-user-permission-set"
+  vpc_id = module.vpc.vpc_id
+
+  egress_with_cidr_blocks = [
+    {
+      description = "https to internet (private API ALB via VPC / Secrets Manager via NAT)"
+      rule        = "https-443-tcp"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
 }
