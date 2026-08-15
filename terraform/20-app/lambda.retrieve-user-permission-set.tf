@@ -33,14 +33,13 @@ module "lambda_retrieve_user_permission_set" {
       resources = [aws_secretsmanager_secret.private_api_key.arn]
     }
     kms_decrypt = {
-      effect    = "Allow"
-      actions   = ["kms:Decrypt"]
+      effect  = "Allow"
+      actions = ["kms:Decrypt"]
       resources = [
         module.kms_secrets_app_engineer.key_arn
       ]
     }
   }
-
 }
 
 resource "aws_lambda_permission" "lambda_retrieve_user_permission_set" {
