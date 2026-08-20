@@ -61,10 +61,10 @@ locals {
     ],
     perf_testers = [
       "172.25.173.128/26", # Mike Elshaw's perf runners
-      "18.133.90.54/32",   # Mike Elshaw's perf runner
     ],
     apim = [
       "18.135.50.191/32", # APIM SIT NAT gateway outbound IP
+      "18.133.90.54/32",  # APIM SIT NAT gateway outbound IP (second egress)
     ],
   }
   complete_ip_allow_list = tolist(
