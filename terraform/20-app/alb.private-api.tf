@@ -57,7 +57,7 @@ module "private_api_alb" {
         enforce-api-key = {
           listener_key = "${local.prefix}-private-api-alb-listener"
           priority     = 1
-          actions      = [
+          actions = [
             {
               forward = {
                 target_group_key = "${local.prefix}-private-api"
@@ -85,8 +85,14 @@ module "private_api_alb" {
         ip_protocol                  = "tcp"
         referenced_security_group_id = module.ecs_service_front_end.security_group_id
       }
+      ingress_from_retrieve_user_permission_set = {
+        from_port                    = 443
+        to_port                      = 443
+        ip_protocol                  = "tcp"
+        referenced_security_group_id = module.lambda_retrieve_user_permission_set_security_group.security_group_id
+      }
     },
-      local.is_dev ? {
+    local.is_dev ? {
       ingress_from_internet = {
         from_port   = 443
         to_port     = 443
