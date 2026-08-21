@@ -18,9 +18,12 @@ function handler(event) {
   var headers = request.headers;
   var cookies = request.cookies;
 
-  var hasAuthSession = Object.keys(cookies).some(function (name) {
-      return name.indexOf('authjs.session-token') !== -1;
-  });
+  if (cookies) {
+    var hasAuthSession = Object.keys(cookies).some(function (name) {
+        console.log(`Cookie name is: ${name}`)
+        return name.indexOf('authjs.session-token') !== -1;
+    });
+  }
 
   if (hasAuthSession || headers['HTTP_X_UHD_AUTH']) {
       // Append a random, unique, query string so it's treated as an unreachable object by CloudFront
