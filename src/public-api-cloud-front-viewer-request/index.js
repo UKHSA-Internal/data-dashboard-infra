@@ -18,7 +18,7 @@ function handler(event) {
   const headers = request.headers;
   const cookies = request.cookies;
 
-  let hasAuthSession = false;
+  var hasAuthSession = false;
   if (cookies) {
     hasAuthSession = Object.keys(cookies).some(function (name) {
         console.log(`Cookie name is: ${name}`)
