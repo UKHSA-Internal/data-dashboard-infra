@@ -15,13 +15,14 @@ function handler(event) {
 
   // Duplicate of logic in cloudfront-cache-bypass
   // Bypassing the cache for authenticated requests
-  var headers = request.headers;
-  var cookies = request.cookies;
+  const headers = request.headers;
+  const cookies = request.cookies;
 
+  let hasAuthSession = false;
   if (cookies) {
-    var hasAuthSession = Object.keys(cookies).some(function (name) {
+    hasAuthSession = Object.keys(cookies).some(function (name) {
         console.log(`Cookie name is: ${name}`)
-        return name.indexOf('authjs.session-token') !== -1;
+        return name.includes('authjs.session-token');
     });
   }
 

@@ -1,11 +1,12 @@
 function handler(event) {
-    var request = event.request;
-    var headers = request.headers;
-    var cookies = request.cookies;
+    const request = event.request;
+    const headers = request.headers;
+    const cookies = request.cookies;
 
+    let hasAuthSession = false;
     if (cookies) {
-        var hasAuthSession = Object.keys(cookies).some(function (name) {
-            return name.indexOf('authjs.session-token') !== -1;
+        hasAuthSession = Object.keys(cookies).some(function (name) {
+            return name.includes('authjs.session-token');
         });
     }
 
