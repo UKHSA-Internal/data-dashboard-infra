@@ -10,8 +10,8 @@ function handler(event) {
     }
 
     if (hasAuthSession || headers['HTTP_X_UHD_AUTH']) {
-        // Append a random, unique, query string so it's treated as an unreachable object by CloudFront
-        request.querystring['_cb'] = { value: Date.now().toString() + Math.random().toString(36).slice(2) };
+        // Append a unique query string so it's treated as an unreachable object by CloudFront
+        request.querystring['_cb'] = { value: Date.now().toString() + event.context.requestId };
     }
 
     return request;
