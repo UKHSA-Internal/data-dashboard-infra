@@ -203,11 +203,3 @@ resource "aws_cloudwatch_log_group" "cloud_front_function_public_api_viewer_requ
   provider          = aws.us_east_1
   retention_in_days = local.default_log_retention_in_days
 }
-
-resource "aws_cloudfront_function" "cloudfront_auth_bypass_public_api" {
-  name    = "${local.prefix}-public-api-auth-bypass"
-  runtime = "cloudfront-js-2.0"
-  comment = "Bypasses CDN cache when Auth header is present"
-  publish = true
-  code    = file("../../src/cloudfront-cache-bypass/index.js")
-}
