@@ -7,7 +7,7 @@ locals {
       "82.28.94.171/32",   # Phil 2
       "86.9.74.13/32",     # Rhys
       "90.240.43.246/32",  # Manu
-      "143.58.138.190/32", # Josh
+      "143.58.199.243/32", # Josh
       "80.42.138.138/32",  # Matt R
       "82.42.127.246/32",  # Taiwo
       "191.101.81.106/32", # Shahrukh
@@ -51,20 +51,19 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
-      "170.85.63.72/32",    # Mike Elshaw
+      "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
       "136.226.167.99/32",  # Sathiya Karuppaiah   
-
     ]
     pen_testers = [
       "195.95.131.0/24", # NCC Manchester
     ],
     perf_testers = [
       "172.25.173.128/26", # Mike Elshaw's perf runners
-      "18.133.90.54/32",   # Mike Elshaw's perf runner
     ],
     apim = [
       "18.135.50.191/32", # APIM SIT NAT gateway outbound IP
+      "18.133.90.54/32",  # APIM SIT NAT gateway outbound IP (second egress)
     ],
   }
   complete_ip_allow_list = tolist(
