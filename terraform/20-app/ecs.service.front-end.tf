@@ -133,22 +133,6 @@ module "ecs_service_front_end" {
           valueFrom = "${aws_secretsmanager_secret.feature_flags_api_keys.arn}:x_auth::"
         },
         {
-          name      = "ESRI_API_KEY"
-          valueFrom = "${aws_secretsmanager_secret.esri_api_key.arn}:esri_api_key::"
-        },
-        {
-          name      = "ESRI_CLIENT_URL"
-          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_url::"
-        },
-        {
-          name      = "ESRI_CLIENT_ID"
-          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_id::"
-        },
-        {
-          name      = "ESRI_CLIENT_SECRET"
-          valueFrom = "${aws_secretsmanager_secret.esri_maps_service_credentials.arn}:client_secret::"
-        },
-        {
           name      = "AUTH_SECRET"
           valueFrom = "${aws_secretsmanager_secret.auth_secret.arn}:auth_secret::"
         },
@@ -206,8 +190,6 @@ module "ecs_service_front_end" {
         aws_secretsmanager_secret.private_api_key.arn,
         aws_secretsmanager_secret.google_analytics_credentials.arn,
         aws_secretsmanager_secret.feature_flags_api_keys.arn,
-        aws_secretsmanager_secret.esri_api_key.arn,
-        aws_secretsmanager_secret.esri_maps_service_credentials.arn,
         aws_secretsmanager_secret.auth_secret.arn,
         aws_secretsmanager_secret.cognito_service_credentials.arn,
         aws_secretsmanager_secret.revalidate_secret.arn,
