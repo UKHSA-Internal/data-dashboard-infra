@@ -46,11 +46,7 @@ module "cloudfront_public_api" {
 
   default_cache_behavior = {
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
-    cache_policy_id = (
-      local.auth_enabled ?
-      local.managed_caching_disabled_policy_id :
-      aws_cloudfront_cache_policy.public_api.id
-    )
+    cache_policy_id = aws_cloudfront_cache_policy.public_api.id
     cached_methods           = ["GET", "HEAD"]
     compress                 = true
     origin_request_policy_id = aws_cloudfront_origin_request_policy.public_api.id
@@ -60,7 +56,7 @@ module "cloudfront_public_api" {
     viewer_protocol_policy   = "redirect-to-https"
     function_association = {
       viewer-request = {
-        function_arn = local.add_password_protection ? module.cloudfront_password_protection_public_api.arn : aws_cloudfront_function.public_api_viewer_request.arn
+        function_arn = aws_cloudfront_function.public_api_viewer_request.arn
       }
     }
   }
@@ -155,6 +151,7 @@ resource "aws_cloudfront_cache_policy" "public_api" {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
+          "_cb",
           "age",
           "date",
           "epiweek",
@@ -205,10 +202,4 @@ resource "aws_cloudwatch_log_group" "cloud_front_function_public_api_viewer_requ
   name              = "/aws/cloudfront/function/${aws_cloudfront_function.public_api_viewer_request.name}"
   provider          = aws.us_east_1
   retention_in_days = local.default_log_retention_in_days
-}
-
-module "cloudfront_password_protection_public_api" {
-  source = "../modules/cloud-front-basic-password-protection"
-  create = local.add_password_protection
-  name   = "${local.prefix}-public-api-password-protection"
 }

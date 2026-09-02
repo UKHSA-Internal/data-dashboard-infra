@@ -47,11 +47,7 @@ module "cloudfront_front_end" {
 
   default_cache_behavior = {
     allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cache_policy_id = (
-      local.is_front_end_bypassing_cdn ?
-      local.managed_caching_disabled_policy_id :
-      aws_cloudfront_cache_policy.front_end.id
-    )
+    cache_policy_id = aws_cloudfront_cache_policy.front_end.id
     cached_methods             = ["GET", "HEAD"]
     compress                   = true
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -59,11 +55,11 @@ module "cloudfront_front_end" {
     target_origin_id           = "alb"
     use_forwarded_values       = false
     viewer_protocol_policy     = "redirect-to-https"
-    function_association = local.add_password_protection ? {
+    function_association       = {
       viewer-request = {
-        function_arn = module.cloudfront_password_protection_frontend.arn
+        function_arn = aws_cloudfront_function.cloudfront_auth_bypass_frontend.arn
       }
-    } : {}
+    }
   }
 
   ordered_cache_behavior = flatten(concat([
@@ -100,11 +96,7 @@ module "cloudfront_front_end" {
     {
       path_pattern    = "/"
       allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id = (
-        local.is_front_end_bypassing_cdn ?
-        local.managed_caching_disabled_policy_id :
-        aws_cloudfront_cache_policy.front_end_low_ttl.id
-      )
+      cache_policy_id = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -112,15 +104,16 @@ module "cloudfront_front_end" {
       target_origin_id           = "alb"
       use_forwarded_values       = false
       viewer_protocol_policy     = "redirect-to-https"
+      function_association       = {
+      viewer-request = {
+          function_arn = aws_cloudfront_function.cloudfront_auth_bypass_frontend.arn
+        }
+      }
     },
     {
       path_pattern    = "/weather-health-alerts"
       allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id = (
-        local.is_front_end_bypassing_cdn ?
-        local.managed_caching_disabled_policy_id :
-        aws_cloudfront_cache_policy.front_end_low_ttl.id
-      )
+      cache_policy_id = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -132,11 +125,7 @@ module "cloudfront_front_end" {
     {
       path_pattern    = "/weather-health-alerts/*"
       allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id = (
-        local.is_front_end_bypassing_cdn ?
-        local.managed_caching_disabled_policy_id :
-        aws_cloudfront_cache_policy.front_end_low_ttl.id
-      )
+      cache_policy_id = aws_cloudfront_cache_policy.front_end_low_ttl.id
       cached_methods             = ["GET", "HEAD"]
       compress                   = true
       origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
@@ -280,6 +269,7 @@ resource "aws_cloudfront_cache_policy" "front_end" {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
+          "_cb",
           "_rsc",
           "areaName",
           "areaType",
@@ -317,6 +307,7 @@ resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
+          "_cb",
           "_rsc",
           "areaName",
           "areaType",
@@ -337,10 +328,12 @@ resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
 # Request viewer
 ################################################################################
 
-module "cloudfront_password_protection_frontend" {
-  source = "../modules/cloud-front-basic-password-protection"
-  create = local.add_password_protection
-  name   = "${local.prefix}-front-end-password-protection"
+resource "aws_cloudfront_function" "cloudfront_auth_bypass_frontend" {
+  name    = "${local.prefix}-front-end-auth-bypass"
+  runtime = "cloudfront-js-2.0"
+  comment = "Bypasses CDN cache when Auth header is present"
+  publish = true
+  code    = file("../../src/cloudfront-cache-bypass/index.js")
 }
 
 
