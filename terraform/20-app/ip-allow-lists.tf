@@ -51,10 +51,9 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
-      "170.85.63.72/32",    # Mike Elshaw
+      "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
       "136.226.167.99/32",  # Sathiya Karuppaiah   
-
     ]
     pen_testers = [
       "195.95.131.0/24", # NCC Manchester
