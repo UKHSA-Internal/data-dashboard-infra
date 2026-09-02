@@ -40,6 +40,8 @@ module "lambda_ingestion" {
     SECRETS_MANAGER_DB_CREDENTIALS_ARN = local.main_db_aurora_password_secret_arn
     APIENV                             = "PROD"
     APP_MODE                           = "INGESTION"
+    AUTH_ENABLED                       = local.auth_enabled
+    ALLOW_MISSING_IS_PUBLIC_FIELD      = !local.auth_enforce_strict_ingest
   }
 
   attach_policy_statements = true
