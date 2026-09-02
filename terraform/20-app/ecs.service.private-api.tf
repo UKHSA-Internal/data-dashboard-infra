@@ -100,6 +100,10 @@ module "ecs_service_private_api" {
           value = local.auth_enabled
         },
         {
+          name  = "ALLOW_MISSING_IS_PUBLIC_FIELD"
+          value = !local.auth_enforce_strict_ingest
+        },
+        {
           name  = "CACHING_V2_ENABLED",
           value = local.caching_v2_enabled
         },
