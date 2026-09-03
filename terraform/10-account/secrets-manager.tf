@@ -30,8 +30,8 @@ resource "aws_secretsmanager_secret" "ukhsa_azure_ad_credentials" {
 resource "aws_secretsmanager_secret_version" "ukhsa_azure_ad_credentials" {
   secret_id = aws_secretsmanager_secret.ukhsa_azure_ad_credentials.id
   secret_string = jsonencode({
-    ukhsa_tenant_id= ""
-    ukhsa_client_id = ""
-    ukhsa_client_secret = ""
+    ukhsa_tenant_id= "replace_me"
+    ukhsa_client_id = "replace_me"
+    ukhsa_client_secret = "replace_me"
   })
 }
