@@ -21,10 +21,10 @@ module "lambda_api_gateway" {
 
   environment_variables = {
     SECRET_COGNITO_CREDENTIALS = "${local.prefix}-cognito-service-credentials"
-    UKHSA_TENANT_ID            = var.ukhsa_tenant_id
     COGNITO_USER_POOL_ID       = module.cognito.user_pool_id
-    UKHSA_CLIENT_ID            = var.ukhsa_client_id
-    UKHSA_CLIENT_SECRET        = var.ukhsa_client_secret
+    UKHSA_TENANT_ID            = local.ukhsa_azure_ad_credentials.ukhsa_tenant_id
+    UKHSA_CLIENT_ID            = local.ukhsa_azure_ad_credentials.ukhsa_client_id
+    UKHSA_CLIENT_SECRET        = local.ukhsa_azure_ad_credentials.ukhsa_client_secret
   }
 
   attach_policy_statements = true

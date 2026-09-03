@@ -1,3 +1,11 @@
+data "aws_secretsmanager_secret" "ukhsa_azure_ad_config" {
+  name = "ukhsa-azure-ad-credentials"
+}
+
+data "aws_secretsmanager_secret_version" "ukhsa_azure_ad_config_version" {
+  secret_id = data.aws_secretsmanager_secret.ukhsa_azure_ad_config.id
+}
+
 locals {
   region      = "eu-west-2"
   project     = "uhd"
@@ -85,4 +93,8 @@ locals {
 
   main_db_aurora_password_secret_arn          = module.aurora_db_app.cluster_master_user_secret[0]["secret_arn"]
   feature_flags_db_aurora_password_secret_arn = try(module.aurora_db_feature_flags.cluster_master_user_secret[0]["secret_arn"], "")
+
+  ukhsa_azure_ad_credentials = jsondecode(
+    data.aws_secretsmanager_secret_version.ukhsa_azure_ad_config_version.secret_string
+  )
 }
