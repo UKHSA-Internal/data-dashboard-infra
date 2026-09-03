@@ -18,9 +18,9 @@ module "cognito" {
 
   enable_ukhsa_oidc = true
 
-  ukhsa_client_id     = var.ukhsa_client_id
-  ukhsa_client_secret = var.ukhsa_client_secret
-  ukhsa_tenant_id     = var.ukhsa_tenant_id
+  ukhsa_client_id     = local.ukhsa_azure_ad_credentials.ukhsa_client_id
+  ukhsa_client_secret = local.ukhsa_azure_ad_credentials.ukhsa_client_secret
+  ukhsa_tenant_id     = local.ukhsa_azure_ad_credentials.ukhsa_tenant_id
 
   prefix          = local.prefix
   is_perf         = local.is_perf
