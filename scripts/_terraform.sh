@@ -134,9 +134,7 @@ function _terraform_plan_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
-    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
-    local ukhsa_client_id=$(_get_ukhsa_client_id)
-    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
+    IFS=$'\t' read -r ukhsa_client_id ukhsa_client_secret ukhsa_tenant_id < <(_get_ukhsa_client_details $target_account_name)
 
     echo "Running terraform plan for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -195,9 +193,7 @@ function _terraform_import_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
-    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
-    local ukhsa_client_id=$(_get_ukhsa_client_id)
-    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
+    IFS=$'\t' read -r ukhsa_client_id ukhsa_client_secret ukhsa_tenant_id < <(_get_ukhsa_client_details $target_account_name)
 
     echo "Running terraform import for address '$address' and id '$id' into layer '$layer', workspace '$workspace', and account '$target_account_name'..."
 
@@ -252,9 +248,7 @@ function _terraform_apply_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
-    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
-    local ukhsa_client_id=$(_get_ukhsa_client_id)
-    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
+    IFS=$'\t' read -r ukhsa_client_id ukhsa_client_secret ukhsa_tenant_id < <(_get_ukhsa_client_details $target_account_name)
 
     echo "Running terraform apply for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -412,9 +406,7 @@ function _terraform_destroy_layer() {
     local target_account_name=$(_get_target_aws_account_name $layer $workspace)
     local tools_account_id=$(_get_tools_account_id)
     local python_version=$(_get_python_version)
-    local ukhsa_tenant_id=$(_get_ukhsa_tenant_id)
-    local ukhsa_client_id=$(_get_ukhsa_client_id)
-    local ukhsa_client_secret=$(_get_ukhsa_client_secret)
+    IFS=$'\t' read -r ukhsa_client_id ukhsa_client_secret ukhsa_tenant_id < <(_get_ukhsa_client_details $target_account_name)
 
     echo "Running terraform destroy for layer '$layer', workspace '$workspace', into account '$target_account_name'..."
 
@@ -719,16 +711,19 @@ function _get_etl_sibling_aws_account_id() {
     --output text
 }
 
-function _get_ukhsa_tenant_id() {
-  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-tenant-id" --query SecretString --output text
-}
+function _get_ukhsa_client_details() {
+    local account_name="$1"
+    account_name="${account_name#auth-}"
 
-function _get_ukhsa_client_id() {
-  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-id" --query SecretString --output text
-}
+    local secret_name="aws/auth/ukhsa-client-details-${account_name}"
 
-function _get_ukhsa_client_secret() {
-  aws secretsmanager get-secret-value --secret-id "aws/auth/ukhsa-client-secret" --query SecretString --output text
+    local secret_json
+    secret_json=$(aws secretsmanager get-secret-value \
+        --secret-id "$secret_name" \
+        --query SecretString \
+        --output text)
+
+    jq -r '[.["client-id"], .["client-secret"], .["tenant-id"]] | @tsv' <<< "$secret_json"
 }
 
 function _get_target_aws_account_name() {
