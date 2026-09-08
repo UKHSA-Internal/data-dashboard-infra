@@ -715,7 +715,7 @@ function _get_ukhsa_client_details() {
     local account_name="$1"
     account_name="${account_name#auth-}"
 
-    local secret_name="aws/auth/ukhsa-client-details-${account_name}"
+    local secret_name="aws/auth/ukhsa-entra-details-${account_name}"
 
     local secret_json
     secret_json=$(aws secretsmanager get-secret-value \
