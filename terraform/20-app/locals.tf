@@ -18,6 +18,7 @@ locals {
   page_previews_enabled           = var.page_previews_enabled
   page_previews_token_ttl_seconds = var.page_previews_token_ttl_seconds
   auth_enabled                    = var.auth_enabled
+  auth_enforce_strict_ingest      = contains(["dev", "auth-dev", "test", "uat"], var.environment_type)
   caching_v2_enabled              = false
   is_front_end_bypassing_cdn      = local.auth_enabled || local.caching_v2_enabled
 
