@@ -57,7 +57,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
 
   allowed_oauth_flows = ["code"]
   allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_scopes = ["openid", "email", "profile", "aws.cognito.signin.user.admin"]
+  allowed_oauth_scopes = ["openid", "email", "profile"]
 
   access_token_validity  = 60
   id_token_validity      = 60
