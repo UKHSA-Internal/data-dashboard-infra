@@ -10,7 +10,14 @@ function handler(event) {
         });
     }
 
-    if (hasAuthSession || headers['HTTP_X_UHD_AUTH']) {
+    var hasAuthHeader = false;
+    if (headers) {
+        hasAuthHeader = Object.keys(headers).some(function (name) {
+            return name === 'x-uhd-auth' || name === 'x_uhd_auth' || name === 'authorization';
+        });
+    }
+
+    if (hasAuthSession || hasAuthHeader) {
         // Append a unique query string so it's treated as an unreachable object by CloudFront
         request.querystring['_cb'] = { value: Date.now().toString() + event.context.requestId };
     }
