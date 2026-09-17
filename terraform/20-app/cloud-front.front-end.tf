@@ -111,30 +111,6 @@ module "cloudfront_front_end" {
       }
     },
     {
-      path_pattern    = "/weather-health-alerts"
-      allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id = aws_cloudfront_cache_policy.front_end_low_ttl.id
-      cached_methods             = ["GET", "HEAD"]
-      compress                   = true
-      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
-      target_origin_id           = "alb"
-      use_forwarded_values       = false
-      viewer_protocol_policy     = "redirect-to-https"
-    },
-    {
-      path_pattern    = "/weather-health-alerts/*"
-      allowed_methods = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-      cache_policy_id = aws_cloudfront_cache_policy.front_end_low_ttl.id
-      cached_methods             = ["GET", "HEAD"]
-      compress                   = true
-      origin_request_policy_id   = aws_cloudfront_origin_request_policy.front_end.id
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.front_end.id
-      target_origin_id           = "alb"
-      use_forwarded_values       = false
-      viewer_protocol_policy     = "redirect-to-https"
-    },
-    {
       path_pattern               = "/api/proxy/alerts/*"
       allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
       cache_policy_name          = "Managed-CachingDisabled"
