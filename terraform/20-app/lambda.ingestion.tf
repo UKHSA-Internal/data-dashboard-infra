@@ -41,7 +41,7 @@ module "lambda_ingestion" {
     APIENV                             = "PROD"
     APP_MODE                           = "INGESTION"
     AUTH_ENABLED                       = local.auth_enabled
-    ALLOW_MISSING_IS_PUBLIC_FIELD      = !local.auth_enforce_strict_ingest
+    ALLOW_MISSING_IS_PUBLIC_FIELD      = false
   }
 
   attach_policy_statements = true
