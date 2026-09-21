@@ -5,7 +5,7 @@ module "private_api_alb" {
   name = "${local.prefix}-private-api"
 
   load_balancer_type = "application"
-  internal           = local.is_dev ? false : true
+  internal           = false
 
   vpc_id                     = module.vpc.vpc_id
   subnets                    = module.vpc.public_subnets
@@ -92,14 +92,14 @@ module "private_api_alb" {
         referenced_security_group_id = module.lambda_retrieve_user_permission_set_security_group.security_group_id
       }
     },
-    local.is_dev ? {
+    {
       ingress_from_internet = {
         from_port   = 443
         to_port     = 443
         ip_protocol = "tcp"
         cidr_ipv4   = "0.0.0.0/0"
       }
-    } : {}
+    }
   )
 
   security_group_egress_rules = {
