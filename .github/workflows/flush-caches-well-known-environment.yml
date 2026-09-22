@@ -15,6 +15,7 @@ on:
           - test
           - staging
           - perf
+          - pen
 
 env:
   AWS_REGION: "eu-west-2"
