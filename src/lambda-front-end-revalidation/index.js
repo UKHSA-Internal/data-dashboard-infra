@@ -38,8 +38,12 @@ async function getRevalidateSecretFromSecretsManager(overridenDependencies = {})
 async function sendRevalidateRequest(revalidateSecret) {
     const baseURL = process.env.FRONT_END_URL
     const targetURL = new URL('/api/revalidate', baseURL)
-    targetURL.searchParams.set('secret', revalidateSecret)
-    return await fetch(targetURL, {method: 'POST'})
+    return await fetch(targetURL, {
+        method: 'POST',
+        headers: {
+            'X-Revalidate-Secret': revalidateSecret,
+        },
+    })
 }
 
 
