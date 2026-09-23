@@ -22,6 +22,8 @@ resource "aws_cognito_user_pool" "user_pool" {
     }
   }
 
+  # Deprecated: no longer populated from Entra (see attribute_mapping below).
+  # Cognito does not allow schema attributes to be removed, so this stays.
   schema {
     name                = "groups"
     attribute_data_type = "String"
@@ -151,7 +153,6 @@ resource "aws_cognito_identity_provider" "ukhsa_oidc_idp" {
   }
 
   attribute_mapping = {
-    "custom:groups" = "groups"
     "custom:entraObjectId" = "oid"
     "name"          = "name"
     "username"      = "sub"
