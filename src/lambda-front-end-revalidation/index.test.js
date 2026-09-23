@@ -77,9 +77,14 @@ describe('sendRevalidateRequest', () => {
 
         const mockedCall = mockedFetch.mock.lastCall
         const calledUrl = mockedCall[0];
-        const expectedURL = `${fakeFrontendURL}/api/revalidate?secret=${revalidateSecret}`
+        const expectedURL = `${fakeFrontendURL}/api/revalidate`
         expect(calledUrl.toString()).toEqual(expectedURL);
-        expect(mockedCall[1]).toEqual({"method": "POST"})
+        expect(mockedCall[1]).toEqual({
+            "method": "POST",
+            "headers": {
+                "X-Revalidate-Secret": revalidateSecret,
+            },
+        })
 
         expect(response).toEqual(mockedFetch.result)
 
