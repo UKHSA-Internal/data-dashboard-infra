@@ -16,3 +16,22 @@ resource "aws_secretsmanager_secret_version" "entra_api_client_config_value" {
     ENTRA_TENANT_ID = "REPLACE ME"
   })
 }
+
+################################################################################
+# OS GDN map credentials
+################################################################################
+
+# Deprecated secret
+resource "aws_secretsmanager_secret" "os_gdn_api_key" {
+  name        = "os-gdn-api-key"
+  description = "This is the API key required for the OS GDN maps service."
+  kms_key_id  = module.kms_secrets.key_id
+}
+
+resource "aws_secretsmanager_secret_version" "os_gdn_api_key" {
+  secret_id = aws_secretsmanager_secret.os_gdn_api_key.id
+  secret_string = jsonencode({
+    PROJECT_API_KEY = "",
+    PROJECT_API_SECRET = ""
+  })
+}
