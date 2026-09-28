@@ -47,7 +47,7 @@ locals {
       "80.41.52.150/32",    # Osazee Ogunje
       "165.225.199.111/32", # Jayne Gilbert
       "90.252.15.44/32",    # Andrew Williams
-      "172.27.130.67/32",   # Dan Jendrissek
+      "172.27.128.106/32",   # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
       "147.161.237.115/32", # Hashim Malik
       "86.134.220.148/32",  # Hassan Hashmi
