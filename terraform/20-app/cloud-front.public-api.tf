@@ -144,14 +144,16 @@ resource "aws_cloudfront_cache_policy" "public_api" {
     headers_config {
       header_behavior = "whitelist"
       headers {
-        items = ["accept"]
+        items = [
+          "accept",
+          "x-cache-bypass"
+        ]
       }
     }
     query_strings_config {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
-          "_cb",
           "age",
           "date",
           "epiweek",

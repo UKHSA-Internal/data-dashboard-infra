@@ -34,8 +34,8 @@ function handler(event) {
   }
 
   if (hasAuthSession || hasAuthHeader) {
-      // Append a unique query string so it's treated as an unreachable object by CloudFront
-      request.querystring['_cb'] = { value: Date.now().toString() + event.context.requestId };
+      // Append a unique header so it's treated as an unreachable object by CloudFront
+      request.headers['x-cache-bypass'] = { value: Date.now().toString() + event.context.requestId };
   }
 
   return request;
