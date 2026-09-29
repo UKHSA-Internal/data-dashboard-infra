@@ -262,14 +262,16 @@ resource "aws_cloudfront_cache_policy" "front_end" {
       }
     }
     headers_config {
-      header_behavior = "none"
+      header_behavior = "whitelist"
+      headers {
+        items = ["x-cache-bypass"]
+      }
     }
 
     query_strings_config {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
-          "_cb",
           "_rsc",
           "areaName",
           "areaType",
@@ -300,14 +302,16 @@ resource "aws_cloudfront_cache_policy" "front_end_low_ttl" {
       }
     }
     headers_config {
-      header_behavior = "none"
+      header_behavior = "whitelist"
+      headers {
+        items = ["x-cache-bypass"]
+      }
     }
 
     query_strings_config {
       query_string_behavior = "whitelist"
       query_strings {
         items = [
-          "_cb",
           "_rsc",
           "areaName",
           "areaType",
