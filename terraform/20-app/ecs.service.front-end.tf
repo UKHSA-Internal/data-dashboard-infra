@@ -1,3 +1,8 @@
+# this secret is defined in the 10-account
+data "aws_secretsmanager_secret" "os_gdn_api_key" {
+  name = "os-gdn-api-key"
+}
+
 locals {
   frontend_sizing = {
     # provision more resources for prod and the mid-sized envs, but note that the mid-sized envs only have 1 instance
@@ -170,11 +175,11 @@ module "ecs_service_front_end" {
         },
         {
           name      = "OS_GDN_PROJECT_API_KEY"
-          valueFrom = "${aws_secretsmanager_secret.os_gdn_api_key.arn}:PROJECT_API_KEY::"
+          valueFrom = "${data.aws_secretsmanager_secret.os_gdn_api_key.arn}:PROJECT_API_KEY::"
         },
         {
           name      = "OS_GDN_PROJECT_API_SECRET"
-          valueFrom = "${aws_secretsmanager_secret.os_gdn_api_key.arn}:PROJECT_API_SECRET::"
+          valueFrom = "${data.aws_secretsmanager_secret.os_gdn_api_key.arn}:PROJECT_API_SECRET::"
         }
       ]
     }
@@ -219,7 +224,7 @@ module "ecs_service_front_end" {
         aws_secretsmanager_secret.auth_secret.arn,
         aws_secretsmanager_secret.cognito_service_credentials.arn,
         aws_secretsmanager_secret.revalidate_secret.arn,
-        aws_secretsmanager_secret.os_gdn_api_key.arn
+        data.aws_secretsmanager_secret.os_gdn_api_key.arn,
       ]
     }
   ]
