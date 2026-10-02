@@ -210,6 +210,7 @@ module "ecs_service_front_end" {
       resources = [
         module.kms_secrets_app_engineer.key_arn,
         module.kms_secrets_app_operator.key_arn,
+        local.account_layer.kms.account_key_arn,
       ]
     },
     {
