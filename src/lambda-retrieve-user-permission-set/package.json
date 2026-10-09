@@ -11,13 +11,8 @@
   "author": "UKHSA Data Dashboard",
   "license": "ISC",
   "devDependencies": {
-    "aws-sdk-client-mock": "4.1.0",
     "jest": "^30.4.2",
-    "jest-junit": "^17.0.0",
-    "sinon": "^22.0.0"
-  },
-  "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.1088.0"
+    "jest-junit": "^17.0.0"
   },
   "engines": {
     "node": "=24.x"
