@@ -22,6 +22,7 @@ locals {
       "87.192.106.180/32",  # Megan
       "88.97.177.122/32",   # Chris W
       "86.173.192.222/32",  # Mathew Munro
+      "92.16.219.45/32",    # Jaroslaw Michalski
     ],
     project_team = [
       "77.100.107.252/32", # Laura
@@ -54,7 +55,7 @@ locals {
       "86.134.220.148/32",  # Hassan Hashmi
       "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
-      "136.226.167.99/32",  # Sathiya Karuppaiah   
+      "136.226.167.99/32",  # Sathiya Karuppaiah
     ]
     pen_testers = [
       "195.95.131.0/24", # NCC Manchester
