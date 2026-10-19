@@ -23,6 +23,7 @@ locals {
       "88.97.177.122/32",   # Chris W
       "86.173.192.222/32",  # Mathew Munro
       "92.16.219.45/32",    # Jaroslaw Michalski
+      "80.235.143.47/32",   #Kirn Chakraborty
     ],
     project_team = [
       "77.100.107.252/32", # Laura
