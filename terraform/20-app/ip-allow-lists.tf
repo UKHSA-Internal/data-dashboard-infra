@@ -8,30 +8,13 @@ locals {
       "86.9.74.13/32",      # Rhys
       "90.240.43.246/32",   # Manu
       "143.58.199.243/32",  # Josh
-      "80.42.138.138/32",   # Matt R
-      "82.42.127.246/32",   # Taiwo
       "191.101.81.106/32",  # Shahrukh
-      "176.35.199.118/32",  # Aidan
-      "136.226.191.104/32", # Sathiya
-      "92.21.224.175/32",   # Pete
-      "102.129.155.34/32",  # Dan
-      "82.33.136.192/32",   # Marco
-      "149.107.78.78/32",   # Scott
-      "2.120.132.149/32",   # Ian
       "82.10.110.74/32",    # Danny
-      "87.192.106.180/32",  # Megan
-      "88.97.177.122/32",   # Chris W
       "86.173.192.222/32",  # Mathew Munro
       "92.16.219.45/32",    # Jaroslaw Michalski
-      "80.235.143.47/32",   #Kirn Chakraborty
+      "80.235.143.47/32",   # Kirn Chakraborty
     ],
     project_team = [
-      "77.100.107.252/32", # Laura
-      "109.156.183.33/32", # Khawar
-      "80.1.86.138/32",    # Ehsan
-      "92.234.44.48/31",   # Zesh
-      "86.16.189.191/32",  # Subhana
-      "86.0.177.34/32",    # Chadrak
     ],
     other_stakeholders = [
       "62.253.228.56/32",   # UKHSA gateway
@@ -44,22 +27,16 @@ locals {
       "86.11.171.6/32",     # Jason Deakin
       "147.161.236.110/32", # Jason Deakin 2
       "194.9.109.118/32",   # Georgina Milne
-      "172.28.215.10/32",   # Alana Firth
-      "165.225.17.43/32",   # Maria Tsiko
       "136.226.167.91/32",  # Emmanuel Ughoo
       "80.41.52.150/32",    # Osazee Ogunje
       "165.225.199.111/32", # Jayne Gilbert
       "90.252.15.44/32",    # Andrew Williams
-      "172.27.128.106/32",   # Dan Jendrissek
+      "172.27.128.106/32",  # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
-      "147.161.237.115/32", # Hashim Malik
-      "86.134.220.148/32",  # Hassan Hashmi
       "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
-      "136.226.167.99/32",  # Sathiya Karuppaiah
     ]
     pen_testers = [
-      "195.95.131.0/24", # NCC Manchester
     ],
     perf_testers = [
       "172.25.173.128/26", # Mike Elshaw's perf runners
