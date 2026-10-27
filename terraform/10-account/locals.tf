@@ -5,6 +5,17 @@ locals {
 
   is_dev = contains(["dev", "auth-dev"], local.account)
 
+  observability_platform_account_ids = {
+    dev        = "943339978990"
+    "auth-dev" = "943339978990"
+    uat        = "825834484886"
+  }
+  observability_platform_account_id = try(
+    local.observability_platform_account_ids[local.account],
+    null
+  )
+  create_observability_role = local.observability_platform_account_id != null
+
   wke_dns_names = {
     dev       = "dev.ukhsa-dashboard.data.gov.uk"
     auth-dev  = "non-public-dev.ukhsa-dashboard.data.gov.uk"
