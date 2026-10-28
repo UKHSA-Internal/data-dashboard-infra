@@ -11,7 +11,7 @@ locals {
       "191.101.81.106/32",  # Shahrukh
       "82.10.110.74/32",    # Danny
       "86.173.192.222/32",  # Mathew Munro
-      "92.16.219.45/32",    # Jaroslaw Michalski
+      "79.77.193.27/32",    # Jaroslaw Michalski
       "77.100.147.47/32",   # Kirn Chakraborty
     ],
     project_team = [
