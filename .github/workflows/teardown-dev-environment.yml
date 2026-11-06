@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: "The name of the development environment which you want to teardown. E.g abcd1234 or auth-abcd1234. Note this must be lowercased."
+        description: "The name of the development environment which you want to teardown. E.g abcd1234. Note this must be lowercased."
         required: true
         type: string
 
@@ -60,10 +60,9 @@ jobs:
       - name: Configure AWS credentials for account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          account-name: ${{ case(startsWith(inputs.name, 'auth-'), 'auth-dev', 'dev') }}
+          account-name: 'dev'
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
-          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
 
       - name: Remove deletion protection on DB clusters
         run: |
@@ -114,10 +113,9 @@ jobs:
       - name: Configure AWS credentials for account
         uses: ./.github/actions/configure-aws-credentials
         with:
-          account-name: ${{ case(startsWith(inputs.name, 'auth-'), 'auth-dev', 'dev') }}
+          account-name: 'dev'
           aws-region: ${{ env.AWS_REGION }}
           dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_DEV }}
-          auth-dev-account-role: ${{ secrets.UHD_TERRAFORM_ROLE_AUTH_DEV }}
 
       - name: Delete secrets
         run: |
