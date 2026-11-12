@@ -30,6 +30,8 @@ module "aurora_db_app" {
   vpc_id               = module.vpc.vpc_id
   db_subnet_group_name = module.vpc.database_subnet_group_name
 
+  enable_http_endpoint = true
+
   security_group_rules = {
     # Ingress rules for connecting services
     private_api_tasks_to_db = {
