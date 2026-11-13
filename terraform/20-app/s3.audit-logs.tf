@@ -1,6 +1,6 @@
 module "s3_audit_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.10.0"
+  version = "5.15.4"
 
   bucket = "${local.prefix}-audit-logs"
 
@@ -31,7 +31,7 @@ module "s3_audit_logs" {
 
 module "s3_audit_logs_access_logs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.10.0"
+  version = "5.15.4"
 
   bucket = "${local.prefix}-audit-logs-access-logs"
 
