@@ -52,7 +52,7 @@ resource "aws_lambda_permission" "lambda_retrieve_user_permission_set" {
 
 module "lambda_retrieve_user_permission_set_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.1"
+  version = "6.0.0"
 
   name   = "${local.prefix}-lambda-retrieve-user-permission-set"
   vpc_id = module.vpc.vpc_id
