@@ -13,6 +13,7 @@ locals {
       "86.173.192.222/32",  # Mathew Munro
       "79.77.193.27/32",    # Jaroslaw Michalski
       "77.100.147.47/32",   # Kirn Chakraborty
+      "80.1.86.138/32",     # Ehsan Afzal
     ],
     project_team = [
     ],
@@ -35,6 +36,7 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
+      "147.161.236.123/32", # Jen Smith
     ]
     pen_testers = [
     ],
