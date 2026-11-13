@@ -13,6 +13,7 @@ locals {
       "86.173.192.222/32",  # Mathew Munro
       "79.77.193.27/32",    # Jaroslaw Michalski
       "77.100.147.47/32",   # Kirn Chakraborty
+      "80.1.86.138/32",     # Ehsan Afzal
     ],
     project_team = [
     ],
