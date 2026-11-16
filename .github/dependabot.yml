@@ -15,8 +15,8 @@ updates:
     schedule:
       interval: "weekly"
 
-  # group each package update that is common across all the lambdas together into a single PR to control the number of
-  # PRs created by dependabot
+  # group all minor/patch updates across every lambda into a single PR; major updates are grouped into a separate PR
+  # so risky upgrades can be reviewed on their own
   - package-ecosystem: "npm"
     directories:
       - "/src/lambda-alarm-notification"
@@ -30,5 +30,14 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      monorepo-dependencies:
-        group-by: "dependency-name"
+      npm-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
