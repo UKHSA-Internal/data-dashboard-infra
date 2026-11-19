@@ -5,16 +5,6 @@
 This document lists and outlines the major outstanding tech debt items 
 which should be considered by the next engineering team taking ownership of the UKHSA data dashboard.
 
-### CI/CD pipeline flakiness
-
-There is currently a flaky bug in the VPC flow logs which rears its head infrequently during the `build-base-env` build.
-```
-api error 400: Access Denied for LogDestination: uhd-aws-vpc-flow-logs-<>>-eu-west-2. Please check LogDestination permission
-with module.vpc.aws_flow_log.this[0]
-    on .terraform/modules/vpc/vpc-flow-logs.tf line 36, in resource "aws_flow_log" "this":
-    resource "aws_flow_log" "this"
-```
-
 ### AWS provider version bump
 
 Both the application and account layer infrastructure currently use the terraform AWS provider version `5.98.0`.
