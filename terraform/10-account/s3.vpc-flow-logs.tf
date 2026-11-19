@@ -25,7 +25,7 @@ module "s3_vpc_flow_logs" {
                     "s3:x-amz-acl" = "bucket-owner-full-control"
                 },
                 ArnLike= {
-                    "aws:SourceArn"= "arn:aws:logs:region:${local.account_id}:*"
+                    "aws:SourceArn"= "arn:aws:logs:${local.region}:${local.account_id}:*"
                 }
             }
         },
@@ -45,7 +45,7 @@ module "s3_vpc_flow_logs" {
                     "aws:SourceAccount": local.account_id
                 },
                 ArnLike= {
-                    "aws:SourceArn": "arn:aws:logs:region:${local.account_id}:*"
+                    "aws:SourceArn": "arn:aws:logs:${local.region}:${local.account_id}:*"
                 }
             }
         }
