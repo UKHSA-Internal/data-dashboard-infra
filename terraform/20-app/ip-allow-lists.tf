@@ -36,7 +36,8 @@ locals {
       "194.9.111.78/32",    # Alexandra Yearbridge
       "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
-      "147.161.236.123/32", # Jen Smith
+      "83.106.25.6/32",     # Jen Smith
+      "165.225.197.15/32",  # Jen Smith 2
     ]
     pen_testers = [
     ],
