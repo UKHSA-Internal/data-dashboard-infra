@@ -34,7 +34,6 @@ locals {
       "90.252.15.44/32",    # Andrew Williams
       "172.27.128.106/32",  # Dan Jendrissek
       "194.9.111.78/32",    # Alexandra Yearbridge
-      "136.226.191.109/32", # Mike Elshaw
       "86.1.114.97/32",     # Lianne Carolan
       "83.106.25.6/32",     # Jen Smith
       "165.225.197.15/32",  # Jen Smith 2
@@ -42,6 +41,7 @@ locals {
     pen_testers = [
     ],
     perf_testers = [
+      "165.225.197.19/32", # Mike Elshaw
       "172.25.173.128/26", # Mike Elshaw's perf runners
     ],
     apim = [
