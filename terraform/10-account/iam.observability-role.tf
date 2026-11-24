@@ -1,6 +1,6 @@
 module "iam_observability_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "5.44.0"
+  version = "6.11.1"
 
   create_role          = local.create_observability_role
   max_session_duration = 43200
@@ -19,7 +19,7 @@ module "iam_observability_role" {
 
 module "iam_cloudwatch_readonly_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.44.0"
+  version = "6.11.1"
 
   create_policy = local.create_observability_role
   name          = "ObservabilityReadOnly"
