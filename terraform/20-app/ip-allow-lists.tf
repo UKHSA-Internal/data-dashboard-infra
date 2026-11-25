@@ -41,7 +41,7 @@ locals {
     pen_testers = [
     ],
     perf_testers = [
-      "165.225.197.19/32", # Mike Elshaw
+      "170.85.63.14/32",   # Mike Elshaw
       "172.25.173.128/26", # Mike Elshaw's perf runners
     ],
     apim = [
